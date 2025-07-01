@@ -3,7 +3,7 @@
     "name": "\ud83d\udcf8 Photo Booth",
     "slug": "photo-booth",
     "ServiceType": "Interactive Booths",
-    "price": 0,
+    "price": 500,
     "basePrice": 0,
     "pricingTiers": [
       {
@@ -100,8 +100,7 @@
           ]
         }
       ]
-    },
-    "description": "Capture memories with our stylish photo booth\u2014choose between digital-only or unlimited prints."
+    }
   },
   {
     "name": "\ud83c\udfa5 360 Video Booth",
@@ -192,8 +191,7 @@
           ]
         }
       ]
-    },
-    "description": "Immersive slow-motion videos captured on a rotating 360 platform with lighting setup."
+    }
   },
   {
     "name": "\ud83c\udfa4 Audio Guest Book",
@@ -284,8 +282,7 @@
           ]
         }
       ]
-    },
-    "description": "Let your guests leave heartfelt voice messages to commemorate your event."
+    }
   },
   {
     "name": "\ud83d\udcf0 Magazine Photo Booth",
@@ -376,14 +373,13 @@
           ]
         }
       ]
-    },
-    "description": "Strike a pose and appear on a custom magazine-style print for your guests."
+    }
   },
   {
     "name": "\u2615 Espresso Booth",
     "slug": "espresso-booth",
     "ServiceType": "Sweets and Brews",
-    "price": 0,
+    "price": 700,
     "basePrice": 0,
     "pricingTiers": [
       {
@@ -490,14 +486,13 @@
           ]
         }
       ]
-    },
-    "description": "Barista-quality espresso drinks served live at your event\u2014scaled by guest size."
+    }
   },
   {
     "name": "\ud83e\uddc7 Waffle Booth",
     "slug": "waffle-booth",
     "ServiceType": "Sweets and Brews",
-    "price": 0,
+    "price": 800,
     "basePrice": 0,
     "pricingTiers": [
       {
@@ -604,14 +599,13 @@
           ]
         }
       ]
-    },
-    "description": "Delicious waffles made fresh at your event\u2014priced based on number of guests."
+    }
   },
   {
     "name": "\ud83c\udf79 Smoothie Booth",
     "slug": "smoothie-booth",
     "ServiceType": "Sweets and Brews",
-    "price": 0,
+    "price": 900,
     "basePrice": 0,
     "pricingTiers": [
       {
@@ -718,8 +712,7 @@
           ]
         }
       ]
-    },
-    "description": "Healthy and refreshing smoothies crafted for your guests in real-time."
+    }
   },
   {
     "name": "\u2728 Sparklers Box",
@@ -827,8 +820,7 @@
           ]
         }
       ]
-    },
-    "description": "Light up the celebration with handheld sparklers\u2014choose quantity based on your needs."
+    }
   },
   {
     "name": "\u2744\ufe0f Dry Ice Fog",
@@ -919,8 +911,7 @@
           ]
         }
       ]
-    },
-    "description": "Create a magical low-lying fog effect to enhance your dance floor or grand entrance."
+    }
   },
   {
     "name": "\ud83d\udc83 Laser First Dance",
@@ -1011,7 +1002,6 @@
           ]
         }
       ]
-    },
-    "description": "Dazzling laser show synchronized to your first dance\u2014make your moment unforgettable."
+    }
   }
 ]
