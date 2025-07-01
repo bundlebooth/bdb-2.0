@@ -102,7 +102,7 @@
       ]
     },
     "description": "\ud83d\udcf8 Photo Booth is a premium service offered by Bundle Booth to enhance your event experience.",
-    "durationHours": 3
+    "duration": 3
   },
   {
     "name": "\ud83c\udfa5 360 Video Booth",
@@ -195,7 +195,7 @@
       ]
     },
     "description": "\ud83c\udfa5 360 Video Booth is a premium service offered by Bundle Booth to enhance your event experience.",
-    "durationHours": 3
+    "duration": 3
   },
   {
     "name": "\ud83c\udfa4 Audio Guest Book",
@@ -288,7 +288,7 @@
       ]
     },
     "description": "\ud83c\udfa4 Audio Guest Book is a premium service offered by Bundle Booth to enhance your event experience.",
-    "durationHours": 3
+    "duration": 3
   },
   {
     "name": "\ud83d\udcf0 Magazine Photo Booth",
@@ -381,7 +381,7 @@
       ]
     },
     "description": "\ud83d\udcf0 Magazine Photo Booth is a premium service offered by Bundle Booth to enhance your event experience.",
-    "durationHours": 3
+    "duration": 3
   },
   {
     "name": "\u2615 Espresso Booth",
@@ -496,7 +496,7 @@
       ]
     },
     "description": "\u2615 Espresso Booth is a premium service offered by Bundle Booth to enhance your event experience.",
-    "durationHours": 3
+    "duration": 3
   },
   {
     "name": "\ud83e\uddc7 Waffle Booth",
@@ -611,7 +611,7 @@
       ]
     },
     "description": "\ud83e\uddc7 Waffle Booth is a premium service offered by Bundle Booth to enhance your event experience.",
-    "durationHours": 3
+    "duration": 3
   },
   {
     "name": "\ud83c\udf79 Smoothie Booth",
@@ -726,7 +726,7 @@
       ]
     },
     "description": "\ud83c\udf79 Smoothie Booth is a premium service offered by Bundle Booth to enhance your event experience.",
-    "durationHours": 3
+    "duration": 3
   },
   {
     "name": "\u2728 Sparklers Box",
@@ -836,7 +836,7 @@
       ]
     },
     "description": "\u2728 Sparklers Box is a premium service offered by Bundle Booth to enhance your event experience.",
-    "durationHours": 1
+    "duration": 1
   },
   {
     "name": "\u2744\ufe0f Dry Ice Fog",
@@ -929,7 +929,7 @@
       ]
     },
     "description": "\u2744\ufe0f Dry Ice Fog is a premium service offered by Bundle Booth to enhance your event experience.",
-    "durationHours": 1
+    "duration": 1
   },
   {
     "name": "\ud83d\udc83 Laser First Dance",
