@@ -1,6 +1,6 @@
 [
   {
-    "name": "\ud83d\udcf8 Photo Booth - Classic Package",
+    "name": "📸 Photo Booth - Classic Package",
     "slug": "photo-booth-classic",
     "price": 500,
     "regPrice": 500,
@@ -97,10 +97,12 @@
           ]
         }
       ]
-    }
+    },
+    "Category": "Interactive Booths",
+    "ServiceType": "Photo Booth"
   },
   {
-    "name": "\ud83d\udcf8 Photo Booth - Deluxe Package",
+    "name": "📸 Photo Booth - Deluxe Package",
     "slug": "photo-booth-deluxe",
     "price": 600,
     "regPrice": 600,
@@ -197,10 +199,12 @@
           ]
         }
       ]
-    }
+    },
+    "Category": "Interactive Booths",
+    "ServiceType": "Photo Booth"
   },
   {
-    "name": "\ud83c\udfa5 360 Video Booth - Classic Package",
+    "name": "🎥 360 Video Booth - Classic Package",
     "slug": "360-video-booth-classic",
     "price": 600,
     "regPrice": 600,
@@ -297,10 +301,12 @@
           ]
         }
       ]
-    }
+    },
+    "Category": "Interactive Booths",
+    "ServiceType": "360 Video Booth"
   },
   {
-    "name": "\u260e\ufe0f Audio Guest Book - Classic Package",
+    "name": "☎️ Audio Guest Book - Classic Package",
     "slug": "audio-guest-book-classic",
     "price": 350,
     "regPrice": 350,
@@ -397,10 +403,12 @@
           ]
         }
       ]
-    }
+    },
+    "Category": "Interactive Booths",
+    "ServiceType": "Audio Guest Book"
   },
   {
-    "name": "\u2b50 Magazine Photo Booth Box - Classic Package",
+    "name": "⭐ Magazine Photo Booth Box - Classic Package",
     "slug": "magazine-photo-booth-box-classic",
     "price": 600,
     "regPrice": 600,
@@ -497,15 +505,17 @@
           ]
         }
       ]
-    }
+    },
+    "Category": "Interactive Booths",
+    "ServiceType": "Magazine Booth Box"
   },
   {
-    "name": "\u2615 Espresso & Coffee Booth (50 Guests)",
+    "name": "☕ Espresso & Coffee Booth (50 Guests)",
     "slug": "espresso-coffee-booth-50-guests",
     "price": 700,
     "regPrice": 700,
     "discount": 0,
-    "description": "Bring the caf\u00e9 experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
+    "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
     "guests": 50,
     "maxDuration": 2,
     "servicesIncluded": [
@@ -597,15 +607,17 @@
           ]
         }
       ]
-    }
+    },
+    "Category": "Sweets and Brews",
+    "ServiceType": "Espresso & Coffee Booth"
   },
   {
-    "name": "\u2615 Espresso & Coffee Booth (100 Guests)",
+    "name": "☕ Espresso & Coffee Booth (100 Guests)",
     "slug": "espresso-coffee-booth-100-guests",
     "price": 1100,
     "regPrice": 1100,
     "discount": 0,
-    "description": "Bring the caf\u00e9 experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
+    "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
     "guests": 100,
     "maxDuration": 2,
     "servicesIncluded": [
@@ -697,15 +709,17 @@
           ]
         }
       ]
-    }
+    },
+    "Category": "Sweets and Brews",
+    "ServiceType": "Espresso & Coffee Booth"
   },
   {
-    "name": "\u2615 Espresso & Coffee Booth (150 Guests)",
+    "name": "☕ Espresso & Coffee Booth (150 Guests)",
     "slug": "espresso-coffee-booth-150-guests",
     "price": 1500,
     "regPrice": 1500,
     "discount": 0,
-    "description": "Bring the caf\u00e9 experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, cappuccinos, and more.",
+    "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, cappuccinos, and more.",
     "guests": 150,
     "maxDuration": 2,
     "servicesIncluded": [
@@ -797,15 +811,17 @@
           ]
         }
       ]
-    }
+    },
+    "Category": "Sweets and Brews",
+    "ServiceType": "Espresso & Coffee Booth"
   },
   {
-    "name": "\u2615 Espresso & Coffee Booth (200 Guests)",
+    "name": "☕ Espresso & Coffee Booth (200 Guests)",
     "slug": "espresso-coffee-booth-200-guests",
     "price": 1900,
     "regPrice": 1900,
     "discount": 0,
-    "description": "Bring the caf\u00e9 experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
+    "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
     "guests": 200,
     "maxDuration": 2,
     "servicesIncluded": [
@@ -897,15 +913,17 @@
           ]
         }
       ]
-    }
+    },
+    "Category": "Sweets and Brews",
+    "ServiceType": "Espresso & Coffee Booth"
   },
   {
-    "name": "\ud83e\uddc7 Waffle Booth (50 Guests)",
+    "name": "🧇 Waffle Booth (50 Guests)",
     "slug": "waffle-booth-50-guests",
     "price": 800,
     "regPrice": 800,
     "discount": 0,
-    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings\u2014from fresh fruits and whipped cream to chocolate drizzle and syrups.",
+    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings—from fresh fruits and whipped cream to chocolate drizzle and syrups.",
     "guests": 50,
     "maxDuration": 2,
     "servicesIncluded": [
@@ -997,15 +1015,17 @@
           ]
         }
       ]
-    }
+    },
+    "Category": "Sweets and Brews",
+    "ServiceType": "Waffle Booth"
   },
   {
-    "name": "\ud83e\uddc7 Waffle Booth (100 Guests)",
+    "name": "🧇 Waffle Booth (100 Guests)",
     "slug": "waffle-booth-100-guests",
     "price": 1200,
     "regPrice": 1200,
     "discount": 0,
-    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings\u2014from fresh fruits and whipped cream to chocolate drizzle and syrups.",
+    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings—from fresh fruits and whipped cream to chocolate drizzle and syrups.",
     "guests": 100,
     "maxDuration": 2,
     "servicesIncluded": [
@@ -1097,15 +1117,17 @@
           ]
         }
       ]
-    }
+    },
+    "Category": "Sweets and Brews",
+    "ServiceType": "Waffle Booth"
   },
   {
-    "name": "\ud83e\uddc7 Waffle Booth (150 Guests)",
+    "name": "🧇 Waffle Booth (150 Guests)",
     "slug": "waffle-booth-150-guests",
     "price": 1600,
     "regPrice": 1600,
     "discount": 0,
-    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings\u2014from fresh fruits and whipped cream to chocolate drizzle and syrups.",
+    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings—from fresh fruits and whipped cream to chocolate drizzle and syrups.",
     "guests": 150,
     "maxDuration": 2,
     "servicesIncluded": [
@@ -1197,15 +1219,17 @@
           ]
         }
       ]
-    }
+    },
+    "Category": "Sweets and Brews",
+    "ServiceType": "Waffle Booth"
   },
   {
-    "name": "\ud83e\uddc7 Waffle Booth (200 Guests)",
+    "name": "🧇 Waffle Booth (200 Guests)",
     "slug": "waffle-booth-200-guests",
     "price": 2000,
     "regPrice": 2000,
     "discount": 0,
-    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings\u2014from fresh fruits and whipped cream to chocolate drizzle and syrups.",
+    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings—from fresh fruits and whipped cream to chocolate drizzle and syrups.",
     "guests": 200,
     "maxDuration": 2,
     "servicesIncluded": [
@@ -1297,10 +1321,12 @@
           ]
         }
       ]
-    }
+    },
+    "Category": "Sweets and Brews",
+    "ServiceType": "Waffle Booth"
   },
   {
-    "name": "\ud83e\udd64 Smoothies Booth (50 Guests)",
+    "name": "🥤 Smoothies Booth (50 Guests)",
     "slug": "smoothies-booth-50-guests",
     "price": 900,
     "regPrice": 900,
@@ -1397,10 +1423,12 @@
           ]
         }
       ]
-    }
+    },
+    "Category": "Sweets and Brews",
+    "ServiceType": "Smoothies Booth"
   },
   {
-    "name": "\ud83e\udd64 Smoothies Booth (100 Guests)",
+    "name": "🥤 Smoothies Booth (100 Guests)",
     "slug": "smoothies-booth-100-guests",
     "price": 1300,
     "regPrice": 1300,
@@ -1497,10 +1525,12 @@
           ]
         }
       ]
-    }
+    },
+    "Category": "Sweets and Brews",
+    "ServiceType": "Smoothies Booth"
   },
   {
-    "name": "\ud83e\udd64 Smoothies Booth (150 Guests)",
+    "name": "🥤 Smoothies Booth (150 Guests)",
     "slug": "smoothies-booth-150-guests",
     "price": 1700,
     "regPrice": 1700,
@@ -1597,10 +1627,12 @@
           ]
         }
       ]
-    }
+    },
+    "Category": "Sweets and Brews",
+    "ServiceType": "Smoothies Booth"
   },
   {
-    "name": "\ud83e\udd64 Smoothies Booth (200 Guests)",
+    "name": "🥤 Smoothies Booth (200 Guests)",
     "slug": "smoothies-booth-200-guests",
     "price": 2100,
     "regPrice": 2100,
@@ -1697,10 +1729,12 @@
           ]
         }
       ]
-    }
+    },
+    "Category": "Sweets and Brews",
+    "ServiceType": "Smoothies Booth"
   },
   {
-    "name": "\u2728 Sparkler Boxes - Classic Package",
+    "name": "✨ Sparkler Boxes - Classic Package",
     "slug": "sparkler-boxes-classic",
     "price": 400,
     "regPrice": 400,
@@ -1797,10 +1831,12 @@
           ]
         }
       ]
-    }
+    },
+    "Category": "Scene Setters",
+    "ServiceType": "Sparkler Boxes"
   },
   {
-    "name": "\u2728 Sparkler Boxes - Deluxe Package",
+    "name": "✨ Sparkler Boxes - Deluxe Package",
     "slug": "sparkler-boxes-deluxe",
     "price": 600,
     "regPrice": 600,
@@ -1897,10 +1933,12 @@
           ]
         }
       ]
-    }
+    },
+    "Category": "Scene Setters",
+    "ServiceType": "Sparkler Boxes"
   },
   {
-    "name": "\u2728 Sparkler Boxes - Red Carpet Package",
+    "name": "✨ Sparkler Boxes - Red Carpet Package",
     "slug": "sparkler-boxes-red-carpet",
     "price": 800,
     "regPrice": 800,
@@ -1997,10 +2035,12 @@
           ]
         }
       ]
-    }
+    },
+    "Category": "Scene Setters",
+    "ServiceType": "Sparkler Boxes"
   },
   {
-    "name": "\ud83c\udf2b\ufe0f Dry Ice Fog - Classic Package",
+    "name": "🌫️ Dry Ice Fog - Classic Package",
     "slug": "dry-ice-fog-classic",
     "price": 400,
     "regPrice": 400,
@@ -2097,10 +2137,12 @@
           ]
         }
       ]
-    }
+    },
+    "Category": "Scene Setters",
+    "ServiceType": "Dry Ice Fog"
   },
   {
-    "name": "\ud83e\udea9 Laser First Dance - Classic Package",
+    "name": "🪩 Laser First Dance - Classic Package",
     "slug": "laser-first-dance-classic",
     "price": 900,
     "regPrice": 900,
@@ -2197,6 +2239,8 @@
           ]
         }
       ]
-    }
+    },
+    "Category": "Scene Setters",
+    "ServiceType": "Laser First Dance"
   }
 ]
