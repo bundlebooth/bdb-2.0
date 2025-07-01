@@ -1,20 +1,22 @@
 [
   {
-    "name": "📸 Photo Booth - Classic Package",
-    "slug": "photo-booth-classic",
-    "price": 500,
-    "regPrice": 500,
-    "discount": 0,
-    "description": "The photo booth experience adds a vibrant touch to any event, creating instant, tangible memories for your guests. All photos delivered digitally.",
-    "guests": 200,
-    "maxDuration": 3,
-    "servicesIncluded": [
-      "Photo Booth"
+    "name": "\ud83d\udcf8 Photo Booth",
+    "slug": "photo-booth",
+    "ServiceType": "Interactive Booths",
+    "price": 0,
+    "basePrice": 0,
+    "pricingTiers": [
+      {
+        "label": "Digital Only",
+        "value": "digital",
+        "price": 500
+      },
+      {
+        "label": "Unlimited Prints",
+        "value": "print",
+        "price": 600
+      }
     ],
-    "equipment": [
-      "Photo Booth"
-    ],
-    "note": "Additional hour: C$100",
     "locations": [
       {
         "location": "Client will provide the address",
@@ -34,13 +36,14 @@
     "startTime": "09:00",
     "endTime": "23:59",
     "eventType": [
-      "All"
+      "All",
+      "Corporate"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/photo-booth-classic",
-    "Sale": "N",
+    "bookingUrl": "https://cal.com/bundlebooth/placeholder",
+    "Sale": "Y",
     "New": "N",
-    "dateAdded": "05-31-2025",
+    "dateAdded": "07-01-2025",
     "disableGuestsCancelling": true,
     "disableGuestsRescheduling": true,
     "disableCalVideoTranscription": true,
@@ -97,26 +100,14 @@
           ]
         }
       ]
-    },
-    "Category": "Interactive Booths",
-    "ServiceType": "Photo Booth"
+    }
   },
   {
-    "name": "📸 Photo Booth - Deluxe Package",
-    "slug": "photo-booth-deluxe",
+    "name": "\ud83c\udfa5 360 Video Booth",
+    "slug": "360-video-booth",
+    "ServiceType": "Interactive Booths",
     "price": 600,
-    "regPrice": 600,
-    "discount": 0,
-    "description": "The photo booth experience adds a vibrant touch to any event, creating instant, tangible memories for your guests. Unlimited prints + digital copies.",
-    "guests": 200,
-    "maxDuration": 3,
-    "servicesIncluded": [
-      "Photo Booth"
-    ],
-    "equipment": [
-      "Photo Booth"
-    ],
-    "note": "Additional hour: C$100",
+    "basePrice": 600,
     "locations": [
       {
         "location": "Client will provide the address",
@@ -136,13 +127,14 @@
     "startTime": "09:00",
     "endTime": "23:59",
     "eventType": [
-      "All"
+      "All",
+      "Corporate"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/photo-booth-deluxe",
-    "Sale": "N",
+    "bookingUrl": "https://cal.com/bundlebooth/placeholder",
+    "Sale": "Y",
     "New": "N",
-    "dateAdded": "05-31-2025",
+    "dateAdded": "07-01-2025",
     "disableGuestsCancelling": true,
     "disableGuestsRescheduling": true,
     "disableCalVideoTranscription": true,
@@ -199,128 +191,14 @@
           ]
         }
       ]
-    },
-    "Category": "Interactive Booths",
-    "ServiceType": "Photo Booth"
+    }
   },
   {
-    "name": "🎥 360 Video Booth - Classic Package",
-    "slug": "360-video-booth-classic",
-    "price": 600,
-    "regPrice": 600,
-    "discount": 0,
-    "description": "Elevate your event with the sophistication of our 360 Video Booth experience. Guests are invited to step onto a sleek platform as a rotating camera captures elegant, slow-motion videos from every angle.",
-    "guests": 200,
-    "maxDuration": 3,
-    "servicesIncluded": [
-      "360 Video Booth"
-    ],
-    "equipment": [
-      "360 Video Booth"
-    ],
-    "note": "Additional hour: C$100",
-    "locations": [
-      {
-        "location": "Client will provide the address",
-        "location_type": "ask"
-      }
-    ],
-    "currency": "CAD",
-    "availabilityDays": [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday"
-    ],
-    "startTime": "09:00",
-    "endTime": "23:59",
-    "eventType": [
-      "All"
-    ],
-    "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/360-video-booth",
-    "Sale": "N",
-    "New": "N",
-    "dateAdded": "05-31-2025",
-    "disableGuestsCancelling": true,
-    "disableGuestsRescheduling": true,
-    "disableCalVideoTranscription": true,
-    "disableGuests": true,
-    "color": {
-      "lightThemeHex": "#292929"
-    },
-    "minimumBookingNotice": 20160,
-    "bookerLayouts": {
-      "defaultLayout": "month",
-      "enabledLayouts": [
-        "month"
-      ]
-    },
-    "bookingFields": [
-      {
-        "name": "phoneNumber",
-        "slug": "phoneNumber",
-        "label": "Phone Number",
-        "type": "phone",
-        "required": true,
-        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
-      },
-      {
-        "name": "eventAddress",
-        "slug": "eventAddress",
-        "label": "Event Address",
-        "type": "textarea",
-        "required": true,
-        "placeholder": "Please enter the full address where the event will take place"
-      }
-    ],
-    "availability": {
-      "timeZone": "America/Toronto",
-      "schedules": [
-        {
-          "name": "Availability",
-          "timeZone": "America/Toronto",
-          "isDefault": true,
-          "availability": [
-            {
-              "days": [
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-                "Sunday"
-              ],
-              "startTime": "09:00",
-              "endTime": "23:59"
-            }
-          ]
-        }
-      ]
-    },
-    "Category": "Interactive Booths",
-    "ServiceType": "360 Video Booth"
-  },
-  {
-    "name": "☎️ Audio Guest Book - Classic Package",
-    "slug": "audio-guest-book-classic",
+    "name": "\ud83c\udfa4 Audio Guest Book",
+    "slug": "audio-guest-book",
+    "ServiceType": "Interactive Booths",
     "price": 350,
-    "regPrice": 350,
-    "discount": 0,
-    "description": "The Audio Guest Book offers a timeless and personal way to capture heartfelt moments. Guests simply pick up the vintage-style phone and leave a message.",
-    "guests": 200,
-    "maxDuration": 6,
-    "servicesIncluded": [
-      "Audio Guest Book"
-    ],
-    "equipment": [
-      "Audio Guest Book"
-    ],
-    "note": "Additional hour: C$50",
+    "basePrice": 350,
     "locations": [
       {
         "location": "Client will provide the address",
@@ -340,13 +218,14 @@
     "startTime": "09:00",
     "endTime": "23:59",
     "eventType": [
-      "All"
+      "All",
+      "Corporate"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/audio-guest-book",
-    "Sale": "N",
+    "bookingUrl": "https://cal.com/bundlebooth/placeholder",
+    "Sale": "Y",
     "New": "N",
-    "dateAdded": "05-31-2025",
+    "dateAdded": "07-01-2025",
     "disableGuestsCancelling": true,
     "disableGuestsRescheduling": true,
     "disableCalVideoTranscription": true,
@@ -403,26 +282,14 @@
           ]
         }
       ]
-    },
-    "Category": "Interactive Booths",
-    "ServiceType": "Audio Guest Book"
+    }
   },
   {
-    "name": "⭐ Magazine Photo Booth Box - Classic Package",
-    "slug": "magazine-photo-booth-box-classic",
+    "name": "\ud83d\udcf0 Magazine Photo Booth",
+    "slug": "magazine-photo-booth",
+    "ServiceType": "Interactive Booths",
     "price": 600,
-    "regPrice": 600,
-    "discount": 0,
-    "description": "Bring the allure of a fashion magazine cover to your next event with our Magazine Photo Booth Box. Guests pose inside a life-sized, custom-branded magazine frame.",
-    "guests": 200,
-    "maxDuration": 6,
-    "servicesIncluded": [
-      "Magazine Booth Box"
-    ],
-    "equipment": [
-      "Magazine Booth Box"
-    ],
-    "note": "Additional hour: C$100",
+    "basePrice": 600,
     "locations": [
       {
         "location": "Client will provide the address",
@@ -442,13 +309,14 @@
     "startTime": "09:00",
     "endTime": "23:59",
     "eventType": [
-      "All"
+      "All",
+      "Corporate"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/magazine-photo-booth",
-    "Sale": "N",
+    "bookingUrl": "https://cal.com/bundlebooth/placeholder",
+    "Sale": "Y",
     "New": "N",
-    "dateAdded": "05-31-2025",
+    "dateAdded": "07-01-2025",
     "disableGuestsCancelling": true,
     "disableGuestsRescheduling": true,
     "disableCalVideoTranscription": true,
@@ -505,26 +373,36 @@
           ]
         }
       ]
-    },
-    "Category": "Interactive Booths",
-    "ServiceType": "Magazine Booth Box"
+    }
   },
   {
-    "name": "☕ Espresso & Coffee Booth (50 Guests)",
-    "slug": "espresso-coffee-booth-50-guests",
-    "price": 700,
-    "regPrice": 700,
-    "discount": 0,
-    "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
-    "guests": 50,
-    "maxDuration": 2,
-    "servicesIncluded": [
-      "Espresso & Coffee Booth"
+    "name": "\u2615 Espresso Booth",
+    "slug": "espresso-booth",
+    "ServiceType": "Sweets and Brews",
+    "price": 0,
+    "basePrice": 0,
+    "pricingTiers": [
+      {
+        "label": "50 Guests",
+        "value": 50,
+        "price": 700
+      },
+      {
+        "label": "100 Guests",
+        "value": 100,
+        "price": 1100
+      },
+      {
+        "label": "150 Guests",
+        "value": 150,
+        "price": 1500
+      },
+      {
+        "label": "200 Guests",
+        "value": 200,
+        "price": 1900
+      }
     ],
-    "equipment": [
-      "Espresso & Coffee Booth"
-    ],
-    "note": "Additional hour: C$100",
     "locations": [
       {
         "location": "Client will provide the address",
@@ -544,13 +422,14 @@
     "startTime": "09:00",
     "endTime": "23:59",
     "eventType": [
-      "All"
+      "All",
+      "Corporate"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/espresso-coffee-booth-50",
-    "Sale": "N",
+    "bookingUrl": "https://cal.com/bundlebooth/placeholder",
+    "Sale": "Y",
     "New": "N",
-    "dateAdded": "05-31-2025",
+    "dateAdded": "07-01-2025",
     "disableGuestsCancelling": true,
     "disableGuestsRescheduling": true,
     "disableCalVideoTranscription": true,
@@ -607,26 +486,36 @@
           ]
         }
       ]
-    },
-    "Category": "Sweets and Brews",
-    "ServiceType": "Espresso & Coffee Booth"
+    }
   },
   {
-    "name": "☕ Espresso & Coffee Booth (100 Guests)",
-    "slug": "espresso-coffee-booth-100-guests",
-    "price": 1100,
-    "regPrice": 1100,
-    "discount": 0,
-    "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
-    "guests": 100,
-    "maxDuration": 2,
-    "servicesIncluded": [
-      "Espresso & Coffee Booth"
+    "name": "\ud83e\uddc7 Waffle Booth",
+    "slug": "waffle-booth",
+    "ServiceType": "Sweets and Brews",
+    "price": 0,
+    "basePrice": 0,
+    "pricingTiers": [
+      {
+        "label": "50 Guests",
+        "value": 50,
+        "price": 800
+      },
+      {
+        "label": "100 Guests",
+        "value": 100,
+        "price": 1200
+      },
+      {
+        "label": "150 Guests",
+        "value": 150,
+        "price": 1600
+      },
+      {
+        "label": "200 Guests",
+        "value": 200,
+        "price": 2000
+      }
     ],
-    "equipment": [
-      "Espresso & Coffee Booth"
-    ],
-    "note": "Additional hour: C$150",
     "locations": [
       {
         "location": "Client will provide the address",
@@ -646,13 +535,14 @@
     "startTime": "09:00",
     "endTime": "23:59",
     "eventType": [
-      "All"
+      "All",
+      "Corporate"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/espresso-coffee-booth-100",
-    "Sale": "N",
+    "bookingUrl": "https://cal.com/bundlebooth/placeholder",
+    "Sale": "Y",
     "New": "N",
-    "dateAdded": "05-31-2025",
+    "dateAdded": "07-01-2025",
     "disableGuestsCancelling": true,
     "disableGuestsRescheduling": true,
     "disableCalVideoTranscription": true,
@@ -709,26 +599,36 @@
           ]
         }
       ]
-    },
-    "Category": "Sweets and Brews",
-    "ServiceType": "Espresso & Coffee Booth"
+    }
   },
   {
-    "name": "☕ Espresso & Coffee Booth (150 Guests)",
-    "slug": "espresso-coffee-booth-150-guests",
-    "price": 1500,
-    "regPrice": 1500,
-    "discount": 0,
-    "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, cappuccinos, and more.",
-    "guests": 150,
-    "maxDuration": 2,
-    "servicesIncluded": [
-      "Espresso & Coffee Booth"
+    "name": "\ud83c\udf79 Smoothie Booth",
+    "slug": "smoothie-booth",
+    "ServiceType": "Sweets and Brews",
+    "price": 0,
+    "basePrice": 0,
+    "pricingTiers": [
+      {
+        "label": "50 Guests",
+        "value": 50,
+        "price": 900
+      },
+      {
+        "label": "100 Guests",
+        "value": 100,
+        "price": 1300
+      },
+      {
+        "label": "150 Guests",
+        "value": 150,
+        "price": 1700
+      },
+      {
+        "label": "200 Guests",
+        "value": 200,
+        "price": 2100
+      }
     ],
-    "equipment": [
-      "Espresso & Coffee Booth"
-    ],
-    "note": "Additional hour: C$175",
     "locations": [
       {
         "location": "Client will provide the address",
@@ -748,13 +648,14 @@
     "startTime": "09:00",
     "endTime": "23:59",
     "eventType": [
-      "All"
+      "All",
+      "Corporate"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/espresso-coffee-booth-150",
-    "Sale": "N",
+    "bookingUrl": "https://cal.com/bundlebooth/placeholder",
+    "Sale": "Y",
     "New": "N",
-    "dateAdded": "05-31-2025",
+    "dateAdded": "07-01-2025",
     "disableGuestsCancelling": true,
     "disableGuestsRescheduling": true,
     "disableCalVideoTranscription": true,
@@ -811,26 +712,31 @@
           ]
         }
       ]
-    },
-    "Category": "Sweets and Brews",
-    "ServiceType": "Espresso & Coffee Booth"
+    }
   },
   {
-    "name": "☕ Espresso & Coffee Booth (200 Guests)",
-    "slug": "espresso-coffee-booth-200-guests",
-    "price": 1900,
-    "regPrice": 1900,
-    "discount": 0,
-    "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
-    "guests": 200,
-    "maxDuration": 2,
-    "servicesIncluded": [
-      "Espresso & Coffee Booth"
+    "name": "\u2728 Sparklers Box",
+    "slug": "sparklers-box",
+    "ServiceType": "Scene Setters",
+    "price": 0,
+    "basePrice": 0,
+    "pricingTiers": [
+      {
+        "label": "2 Sparklers",
+        "value": 2,
+        "price": 400
+      },
+      {
+        "label": "4 Sparklers",
+        "value": 4,
+        "price": 600
+      },
+      {
+        "label": "6 Sparklers",
+        "value": 6,
+        "price": 800
+      }
     ],
-    "equipment": [
-      "Espresso & Coffee Booth"
-    ],
-    "note": "Additional hour: C$200",
     "locations": [
       {
         "location": "Client will provide the address",
@@ -850,13 +756,14 @@
     "startTime": "09:00",
     "endTime": "23:59",
     "eventType": [
-      "All"
+      "All",
+      "Corporate"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/espresso-coffee-booth-200",
-    "Sale": "N",
+    "bookingUrl": "https://cal.com/bundlebooth/placeholder",
+    "Sale": "Y",
     "New": "N",
-    "dateAdded": "05-31-2025",
+    "dateAdded": "07-01-2025",
     "disableGuestsCancelling": true,
     "disableGuestsRescheduling": true,
     "disableCalVideoTranscription": true,
@@ -913,842 +820,14 @@
           ]
         }
       ]
-    },
-    "Category": "Sweets and Brews",
-    "ServiceType": "Espresso & Coffee Booth"
+    }
   },
   {
-    "name": "🧇 Waffle Booth (50 Guests)",
-    "slug": "waffle-booth-50-guests",
-    "price": 800,
-    "regPrice": 800,
-    "discount": 0,
-    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings—from fresh fruits and whipped cream to chocolate drizzle and syrups.",
-    "guests": 50,
-    "maxDuration": 2,
-    "servicesIncluded": [
-      "Waffle Booth"
-    ],
-    "equipment": [
-      "Waffle Booth"
-    ],
-    "note": "Additional hour: C$100",
-    "locations": [
-      {
-        "location": "Client will provide the address",
-        "location_type": "ask"
-      }
-    ],
-    "currency": "CAD",
-    "availabilityDays": [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday"
-    ],
-    "startTime": "09:00",
-    "endTime": "23:59",
-    "eventType": [
-      "All"
-    ],
-    "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/waffle-booth-50",
-    "Sale": "N",
-    "New": "N",
-    "dateAdded": "05-31-2025",
-    "disableGuestsCancelling": true,
-    "disableGuestsRescheduling": true,
-    "disableCalVideoTranscription": true,
-    "disableGuests": true,
-    "color": {
-      "lightThemeHex": "#292929"
-    },
-    "minimumBookingNotice": 20160,
-    "bookerLayouts": {
-      "defaultLayout": "month",
-      "enabledLayouts": [
-        "month"
-      ]
-    },
-    "bookingFields": [
-      {
-        "name": "phoneNumber",
-        "slug": "phoneNumber",
-        "label": "Phone Number",
-        "type": "phone",
-        "required": true,
-        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
-      },
-      {
-        "name": "eventAddress",
-        "slug": "eventAddress",
-        "label": "Event Address",
-        "type": "textarea",
-        "required": true,
-        "placeholder": "Please enter the full address where the event will take place"
-      }
-    ],
-    "availability": {
-      "timeZone": "America/Toronto",
-      "schedules": [
-        {
-          "name": "Availability",
-          "timeZone": "America/Toronto",
-          "isDefault": true,
-          "availability": [
-            {
-              "days": [
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-                "Sunday"
-              ],
-              "startTime": "09:00",
-              "endTime": "23:59"
-            }
-          ]
-        }
-      ]
-    },
-    "Category": "Sweets and Brews",
-    "ServiceType": "Waffle Booth"
-  },
-  {
-    "name": "🧇 Waffle Booth (100 Guests)",
-    "slug": "waffle-booth-100-guests",
-    "price": 1200,
-    "regPrice": 1200,
-    "discount": 0,
-    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings—from fresh fruits and whipped cream to chocolate drizzle and syrups.",
-    "guests": 100,
-    "maxDuration": 2,
-    "servicesIncluded": [
-      "Waffle Booth"
-    ],
-    "equipment": [
-      "Waffle Booth"
-    ],
-    "note": "Additional hour: C$150",
-    "locations": [
-      {
-        "location": "Client will provide the address",
-        "location_type": "ask"
-      }
-    ],
-    "currency": "CAD",
-    "availabilityDays": [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday"
-    ],
-    "startTime": "09:00",
-    "endTime": "23:59",
-    "eventType": [
-      "All"
-    ],
-    "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/waffle-booth-100",
-    "Sale": "N",
-    "New": "N",
-    "dateAdded": "05-31-2025",
-    "disableGuestsCancelling": true,
-    "disableGuestsRescheduling": true,
-    "disableCalVideoTranscription": true,
-    "disableGuests": true,
-    "color": {
-      "lightThemeHex": "#292929"
-    },
-    "minimumBookingNotice": 20160,
-    "bookerLayouts": {
-      "defaultLayout": "month",
-      "enabledLayouts": [
-        "month"
-      ]
-    },
-    "bookingFields": [
-      {
-        "name": "phoneNumber",
-        "slug": "phoneNumber",
-        "label": "Phone Number",
-        "type": "phone",
-        "required": true,
-        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
-      },
-      {
-        "name": "eventAddress",
-        "slug": "eventAddress",
-        "label": "Event Address",
-        "type": "textarea",
-        "required": true,
-        "placeholder": "Please enter the full address where the event will take place"
-      }
-    ],
-    "availability": {
-      "timeZone": "America/Toronto",
-      "schedules": [
-        {
-          "name": "Availability",
-          "timeZone": "America/Toronto",
-          "isDefault": true,
-          "availability": [
-            {
-              "days": [
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-                "Sunday"
-              ],
-              "startTime": "09:00",
-              "endTime": "23:59"
-            }
-          ]
-        }
-      ]
-    },
-    "Category": "Sweets and Brews",
-    "ServiceType": "Waffle Booth"
-  },
-  {
-    "name": "🧇 Waffle Booth (150 Guests)",
-    "slug": "waffle-booth-150-guests",
-    "price": 1600,
-    "regPrice": 1600,
-    "discount": 0,
-    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings—from fresh fruits and whipped cream to chocolate drizzle and syrups.",
-    "guests": 150,
-    "maxDuration": 2,
-    "servicesIncluded": [
-      "Waffle Booth"
-    ],
-    "equipment": [
-      "Waffle Booth"
-    ],
-    "note": "Additional hour: C$175",
-    "locations": [
-      {
-        "location": "Client will provide the address",
-        "location_type": "ask"
-      }
-    ],
-    "currency": "CAD",
-    "availabilityDays": [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday"
-    ],
-    "startTime": "09:00",
-    "endTime": "23:59",
-    "eventType": [
-      "All"
-    ],
-    "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/waffle-booth-150",
-    "Sale": "N",
-    "New": "N",
-    "dateAdded": "05-31-2025",
-    "disableGuestsCancelling": true,
-    "disableGuestsRescheduling": true,
-    "disableCalVideoTranscription": true,
-    "disableGuests": true,
-    "color": {
-      "lightThemeHex": "#292929"
-    },
-    "minimumBookingNotice": 20160,
-    "bookerLayouts": {
-      "defaultLayout": "month",
-      "enabledLayouts": [
-        "month"
-      ]
-    },
-    "bookingFields": [
-      {
-        "name": "phoneNumber",
-        "slug": "phoneNumber",
-        "label": "Phone Number",
-        "type": "phone",
-        "required": true,
-        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
-      },
-      {
-        "name": "eventAddress",
-        "slug": "eventAddress",
-        "label": "Event Address",
-        "type": "textarea",
-        "required": true,
-        "placeholder": "Please enter the full address where the event will take place"
-      }
-    ],
-    "availability": {
-      "timeZone": "America/Toronto",
-      "schedules": [
-        {
-          "name": "Availability",
-          "timeZone": "America/Toronto",
-          "isDefault": true,
-          "availability": [
-            {
-              "days": [
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-                "Sunday"
-              ],
-              "startTime": "09:00",
-              "endTime": "23:59"
-            }
-          ]
-        }
-      ]
-    },
-    "Category": "Sweets and Brews",
-    "ServiceType": "Waffle Booth"
-  },
-  {
-    "name": "🧇 Waffle Booth (200 Guests)",
-    "slug": "waffle-booth-200-guests",
-    "price": 2000,
-    "regPrice": 2000,
-    "discount": 0,
-    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings—from fresh fruits and whipped cream to chocolate drizzle and syrups.",
-    "guests": 200,
-    "maxDuration": 2,
-    "servicesIncluded": [
-      "Waffle Booth"
-    ],
-    "equipment": [
-      "Waffle Booth"
-    ],
-    "note": "Additional hour: C$200",
-    "locations": [
-      {
-        "location": "Client will provide the address",
-        "location_type": "ask"
-      }
-    ],
-    "currency": "CAD",
-    "availabilityDays": [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday"
-    ],
-    "startTime": "09:00",
-    "endTime": "23:59",
-    "eventType": [
-      "All"
-    ],
-    "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/waffle-booth-200",
-    "Sale": "N",
-    "New": "N",
-    "dateAdded": "05-31-2025",
-    "disableGuestsCancelling": true,
-    "disableGuestsRescheduling": true,
-    "disableCalVideoTranscription": true,
-    "disableGuests": true,
-    "color": {
-      "lightThemeHex": "#292929"
-    },
-    "minimumBookingNotice": 20160,
-    "bookerLayouts": {
-      "defaultLayout": "month",
-      "enabledLayouts": [
-        "month"
-      ]
-    },
-    "bookingFields": [
-      {
-        "name": "phoneNumber",
-        "slug": "phoneNumber",
-        "label": "Phone Number",
-        "type": "phone",
-        "required": true,
-        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
-      },
-      {
-        "name": "eventAddress",
-        "slug": "eventAddress",
-        "label": "Event Address",
-        "type": "textarea",
-        "required": true,
-        "placeholder": "Please enter the full address where the event will take place"
-      }
-    ],
-    "availability": {
-      "timeZone": "America/Toronto",
-      "schedules": [
-        {
-          "name": "Availability",
-          "timeZone": "America/Toronto",
-          "isDefault": true,
-          "availability": [
-            {
-              "days": [
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-                "Sunday"
-              ],
-              "startTime": "09:00",
-              "endTime": "23:59"
-            }
-          ]
-        }
-      ]
-    },
-    "Category": "Sweets and Brews",
-    "ServiceType": "Waffle Booth"
-  },
-  {
-    "name": "🥤 Smoothies Booth (50 Guests)",
-    "slug": "smoothies-booth-50-guests",
-    "price": 900,
-    "regPrice": 900,
-    "discount": 0,
-    "description": "Add a fresh, healthy twist to your event with our vibrant Smoothie Booth! We blend delicious smoothies with real fruits, natural ingredients and a variety of add-ins.",
-    "guests": 50,
-    "maxDuration": 2,
-    "servicesIncluded": [
-      "Smoothies Booth"
-    ],
-    "equipment": [
-      "Smoothies Booth"
-    ],
-    "note": "Additional hour: C$100",
-    "locations": [
-      {
-        "location": "Client will provide the address",
-        "location_type": "ask"
-      }
-    ],
-    "currency": "CAD",
-    "availabilityDays": [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday"
-    ],
-    "startTime": "09:00",
-    "endTime": "23:59",
-    "eventType": [
-      "All"
-    ],
-    "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smoothies-booth-50",
-    "Sale": "N",
-    "New": "N",
-    "dateAdded": "05-31-2025",
-    "disableGuestsCancelling": true,
-    "disableGuestsRescheduling": true,
-    "disableCalVideoTranscription": true,
-    "disableGuests": true,
-    "color": {
-      "lightThemeHex": "#292929"
-    },
-    "minimumBookingNotice": 20160,
-    "bookerLayouts": {
-      "defaultLayout": "month",
-      "enabledLayouts": [
-        "month"
-      ]
-    },
-    "bookingFields": [
-      {
-        "name": "phoneNumber",
-        "slug": "phoneNumber",
-        "label": "Phone Number",
-        "type": "phone",
-        "required": true,
-        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
-      },
-      {
-        "name": "eventAddress",
-        "slug": "eventAddress",
-        "label": "Event Address",
-        "type": "textarea",
-        "required": true,
-        "placeholder": "Please enter the full address where the event will take place"
-      }
-    ],
-    "availability": {
-      "timeZone": "America/Toronto",
-      "schedules": [
-        {
-          "name": "Availability",
-          "timeZone": "America/Toronto",
-          "isDefault": true,
-          "availability": [
-            {
-              "days": [
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-                "Sunday"
-              ],
-              "startTime": "09:00",
-              "endTime": "23:59"
-            }
-          ]
-        }
-      ]
-    },
-    "Category": "Sweets and Brews",
-    "ServiceType": "Smoothies Booth"
-  },
-  {
-    "name": "🥤 Smoothies Booth (100 Guests)",
-    "slug": "smoothies-booth-100-guests",
-    "price": 1300,
-    "regPrice": 1300,
-    "discount": 0,
-    "description": "Add a fresh, healthy twist to your event with our vibrant Smoothie Booth! We blend delicious smoothies using real fruits, natural ingredients and a variety of add-ins.",
-    "guests": 100,
-    "maxDuration": 2,
-    "servicesIncluded": [
-      "Smoothies Booth"
-    ],
-    "equipment": [
-      "Smoothies Booth"
-    ],
-    "note": "Additional hour: C$150",
-    "locations": [
-      {
-        "location": "Client will provide the address",
-        "location_type": "ask"
-      }
-    ],
-    "currency": "CAD",
-    "availabilityDays": [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday"
-    ],
-    "startTime": "09:00",
-    "endTime": "23:59",
-    "eventType": [
-      "All"
-    ],
-    "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smoothies-booth-100",
-    "Sale": "N",
-    "New": "N",
-    "dateAdded": "05-31-2025",
-    "disableGuestsCancelling": true,
-    "disableGuestsRescheduling": true,
-    "disableCalVideoTranscription": true,
-    "disableGuests": true,
-    "color": {
-      "lightThemeHex": "#292929"
-    },
-    "minimumBookingNotice": 20160,
-    "bookerLayouts": {
-      "defaultLayout": "month",
-      "enabledLayouts": [
-        "month"
-      ]
-    },
-    "bookingFields": [
-      {
-        "name": "phoneNumber",
-        "slug": "phoneNumber",
-        "label": "Phone Number",
-        "type": "phone",
-        "required": true,
-        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
-      },
-      {
-        "name": "eventAddress",
-        "slug": "eventAddress",
-        "label": "Event Address",
-        "type": "textarea",
-        "required": true,
-        "placeholder": "Please enter the full address where the event will take place"
-      }
-    ],
-    "availability": {
-      "timeZone": "America/Toronto",
-      "schedules": [
-        {
-          "name": "Availability",
-          "timeZone": "America/Toronto",
-          "isDefault": true,
-          "availability": [
-            {
-              "days": [
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-                "Sunday"
-              ],
-              "startTime": "09:00",
-              "endTime": "23:59"
-            }
-          ]
-        }
-      ]
-    },
-    "Category": "Sweets and Brews",
-    "ServiceType": "Smoothies Booth"
-  },
-  {
-    "name": "🥤 Smoothies Booth (150 Guests)",
-    "slug": "smoothies-booth-150-guests",
-    "price": 1700,
-    "regPrice": 1700,
-    "discount": 0,
-    "description": "Add a fresh, healthy twist to your event with our vibrant Smoothie Booth! We blend delicious smoothies using real fruits, natural ingredients and a variety of add-ins.",
-    "guests": 150,
-    "maxDuration": 2,
-    "servicesIncluded": [
-      "Smoothies Booth"
-    ],
-    "equipment": [
-      "Smoothies Booth"
-    ],
-    "note": "Additional hour: C$175",
-    "locations": [
-      {
-        "location": "Client will provide the address",
-        "location_type": "ask"
-      }
-    ],
-    "currency": "CAD",
-    "availabilityDays": [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday"
-    ],
-    "startTime": "09:00",
-    "endTime": "23:59",
-    "eventType": [
-      "All"
-    ],
-    "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smoothies-booth-150",
-    "Sale": "N",
-    "New": "N",
-    "dateAdded": "05-31-2025",
-    "disableGuestsCancelling": true,
-    "disableGuestsRescheduling": true,
-    "disableCalVideoTranscription": true,
-    "disableGuests": true,
-    "color": {
-      "lightThemeHex": "#292929"
-    },
-    "minimumBookingNotice": 20160,
-    "bookerLayouts": {
-      "defaultLayout": "month",
-      "enabledLayouts": [
-        "month"
-      ]
-    },
-    "bookingFields": [
-      {
-        "name": "phoneNumber",
-        "slug": "phoneNumber",
-        "label": "Phone Number",
-        "type": "phone",
-        "required": true,
-        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
-      },
-      {
-        "name": "eventAddress",
-        "slug": "eventAddress",
-        "label": "Event Address",
-        "type": "textarea",
-        "required": true,
-        "placeholder": "Please enter the full address where the event will take place"
-      }
-    ],
-    "availability": {
-      "timeZone": "America/Toronto",
-      "schedules": [
-        {
-          "name": "Availability",
-          "timeZone": "America/Toronto",
-          "isDefault": true,
-          "availability": [
-            {
-              "days": [
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-                "Sunday"
-              ],
-              "startTime": "09:00",
-              "endTime": "23:59"
-            }
-          ]
-        }
-      ]
-    },
-    "Category": "Sweets and Brews",
-    "ServiceType": "Smoothies Booth"
-  },
-  {
-    "name": "🥤 Smoothies Booth (200 Guests)",
-    "slug": "smoothies-booth-200-guests",
-    "price": 2100,
-    "regPrice": 2100,
-    "discount": 0,
-    "description": "Add a fresh, healthy twist to your event with our vibrant Smoothie Booth! We blend delicious smoothies using real fruits, natural ingredients and a variety of add-ins.",
-    "guests": 200,
-    "maxDuration": 2,
-    "servicesIncluded": [
-      "Smoothies Booth"
-    ],
-    "equipment": [
-      "Smoothies Booth"
-    ],
-    "note": "Additional hour: C$200",
-    "locations": [
-      {
-        "location": "Client will provide the address",
-        "location_type": "ask"
-      }
-    ],
-    "currency": "CAD",
-    "availabilityDays": [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday"
-    ],
-    "startTime": "09:00",
-    "endTime": "23:59",
-    "eventType": [
-      "All"
-    ],
-    "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smoothies-booth-200",
-    "Sale": "N",
-    "New": "N",
-    "dateAdded": "05-31-2025",
-    "disableGuestsCancelling": true,
-    "disableGuestsRescheduling": true,
-    "disableCalVideoTranscription": true,
-    "disableGuests": true,
-    "color": {
-      "lightThemeHex": "#292929"
-    },
-    "minimumBookingNotice": 20160,
-    "bookerLayouts": {
-      "defaultLayout": "month",
-      "enabledLayouts": [
-        "month"
-      ]
-    },
-    "bookingFields": [
-      {
-        "name": "phoneNumber",
-        "slug": "phoneNumber",
-        "label": "Phone Number",
-        "type": "phone",
-        "required": true,
-        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
-      },
-      {
-        "name": "eventAddress",
-        "slug": "eventAddress",
-        "label": "Event Address",
-        "type": "textarea",
-        "required": true,
-        "placeholder": "Please enter the full address where the event will take place"
-      }
-    ],
-    "availability": {
-      "timeZone": "America/Toronto",
-      "schedules": [
-        {
-          "name": "Availability",
-          "timeZone": "America/Toronto",
-          "isDefault": true,
-          "availability": [
-            {
-              "days": [
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-                "Sunday"
-              ],
-              "startTime": "09:00",
-              "endTime": "23:59"
-            }
-          ]
-        }
-      ]
-    },
-    "Category": "Sweets and Brews",
-    "ServiceType": "Smoothies Booth"
-  },
-  {
-    "name": "✨ Sparkler Boxes - Classic Package",
-    "slug": "sparkler-boxes-classic",
+    "name": "\u2744\ufe0f Dry Ice Fog",
+    "slug": "dry-ice-fog",
+    "ServiceType": "Scene Setters",
     "price": 400,
-    "regPrice": 400,
-    "discount": 0,
-    "description": "Light up your celebration with our elegant Sparkler Boxes! A stylish station offering guests premium sparklers for that magical photo moment or grand finale.",
-    "guests": 200,
-    "maxDuration": 1,
-    "servicesIncluded": [
-      "Sparkler Boxes"
-    ],
-    "equipment": [
-      "Sparkler Boxes"
-    ],
-    "note": "Two sparklers included",
+    "basePrice": 400,
     "locations": [
       {
         "location": "Client will provide the address",
@@ -1768,13 +847,14 @@
     "startTime": "09:00",
     "endTime": "23:59",
     "eventType": [
-      "All"
+      "All",
+      "Corporate"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/sparklers-box-classic",
-    "Sale": "N",
+    "bookingUrl": "https://cal.com/bundlebooth/placeholder",
+    "Sale": "Y",
     "New": "N",
-    "dateAdded": "05-31-2025",
+    "dateAdded": "07-01-2025",
     "disableGuestsCancelling": true,
     "disableGuestsRescheduling": true,
     "disableCalVideoTranscription": true,
@@ -1831,332 +911,14 @@
           ]
         }
       ]
-    },
-    "Category": "Scene Setters",
-    "ServiceType": "Sparkler Boxes"
+    }
   },
   {
-    "name": "✨ Sparkler Boxes - Deluxe Package",
-    "slug": "sparkler-boxes-deluxe",
-    "price": 600,
-    "regPrice": 600,
-    "discount": 0,
-    "description": "Light up your celebration with our elegant Sparkler Boxes! A stylish station offering guests premium sparklers for that magical photo moment or grand finale.",
-    "guests": 200,
-    "maxDuration": 1,
-    "servicesIncluded": [
-      "Sparkler Boxes"
-    ],
-    "equipment": [
-      "Sparkler Boxes"
-    ],
-    "note": "Four sparklers included",
-    "locations": [
-      {
-        "location": "Client will provide the address",
-        "location_type": "ask"
-      }
-    ],
-    "currency": "CAD",
-    "availabilityDays": [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday"
-    ],
-    "startTime": "09:00",
-    "endTime": "23:59",
-    "eventType": [
-      "All"
-    ],
-    "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/sparklers-box-deluxe",
-    "Sale": "N",
-    "New": "N",
-    "dateAdded": "05-31-2025",
-    "disableGuestsCancelling": true,
-    "disableGuestsRescheduling": true,
-    "disableCalVideoTranscription": true,
-    "disableGuests": true,
-    "color": {
-      "lightThemeHex": "#292929"
-    },
-    "minimumBookingNotice": 20160,
-    "bookerLayouts": {
-      "defaultLayout": "month",
-      "enabledLayouts": [
-        "month"
-      ]
-    },
-    "bookingFields": [
-      {
-        "name": "phoneNumber",
-        "slug": "phoneNumber",
-        "label": "Phone Number",
-        "type": "phone",
-        "required": true,
-        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
-      },
-      {
-        "name": "eventAddress",
-        "slug": "eventAddress",
-        "label": "Event Address",
-        "type": "textarea",
-        "required": true,
-        "placeholder": "Please enter the full address where the event will take place"
-      }
-    ],
-    "availability": {
-      "timeZone": "America/Toronto",
-      "schedules": [
-        {
-          "name": "Availability",
-          "timeZone": "America/Toronto",
-          "isDefault": true,
-          "availability": [
-            {
-              "days": [
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-                "Sunday"
-              ],
-              "startTime": "09:00",
-              "endTime": "23:59"
-            }
-          ]
-        }
-      ]
-    },
-    "Category": "Scene Setters",
-    "ServiceType": "Sparkler Boxes"
-  },
-  {
-    "name": "✨ Sparkler Boxes - Red Carpet Package",
-    "slug": "sparkler-boxes-red-carpet",
-    "price": 800,
-    "regPrice": 800,
-    "discount": 0,
-    "description": "Light up your celebration with our elegant Sparkler Boxes! A stylish station offering guests premium sparklers for that magical photo moment or grand finale.",
-    "guests": 200,
-    "maxDuration": 1,
-    "servicesIncluded": [
-      "Sparkler Boxes"
-    ],
-    "equipment": [
-      "Sparkler Boxes"
-    ],
-    "note": "Six sparklers included",
-    "locations": [
-      {
-        "location": "Client will provide the address",
-        "location_type": "ask"
-      }
-    ],
-    "currency": "CAD",
-    "availabilityDays": [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday"
-    ],
-    "startTime": "09:00",
-    "endTime": "23:59",
-    "eventType": [
-      "All"
-    ],
-    "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/sparklers-box-red-carpet",
-    "Sale": "N",
-    "New": "N",
-    "dateAdded": "05-31-2025",
-    "disableGuestsCancelling": true,
-    "disableGuestsRescheduling": true,
-    "disableCalVideoTranscription": true,
-    "disableGuests": true,
-    "color": {
-      "lightThemeHex": "#292929"
-    },
-    "minimumBookingNotice": 20160,
-    "bookerLayouts": {
-      "defaultLayout": "month",
-      "enabledLayouts": [
-        "month"
-      ]
-    },
-    "bookingFields": [
-      {
-        "name": "phoneNumber",
-        "slug": "phoneNumber",
-        "label": "Phone Number",
-        "type": "phone",
-        "required": true,
-        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
-      },
-      {
-        "name": "eventAddress",
-        "slug": "eventAddress",
-        "label": "Event Address",
-        "type": "textarea",
-        "required": true,
-        "placeholder": "Please enter the full address where the event will take place"
-      }
-    ],
-    "availability": {
-      "timeZone": "America/Toronto",
-      "schedules": [
-        {
-          "name": "Availability",
-          "timeZone": "America/Toronto",
-          "isDefault": true,
-          "availability": [
-            {
-              "days": [
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-                "Sunday"
-              ],
-              "startTime": "09:00",
-              "endTime": "23:59"
-            }
-          ]
-        }
-      ]
-    },
-    "Category": "Scene Setters",
-    "ServiceType": "Sparkler Boxes"
-  },
-  {
-    "name": "🌫️ Dry Ice Fog - Classic Package",
-    "slug": "dry-ice-fog-classic",
-    "price": 400,
-    "regPrice": 400,
-    "discount": 0,
-    "description": "Create a stunning, cinematic atmosphere with our Dry Ice Fog Effect! This low-lying fog adds a magical touch to first dances, stage entrances, or any moment you want to make unforgettable.",
-    "guests": 200,
-    "maxDuration": 1,
-    "servicesIncluded": [
-      "Dry Ice Fog"
-    ],
-    "equipment": [
-      "Dry Ice Fog"
-    ],
-    "note": "One dry ice machine included",
-    "locations": [
-      {
-        "location": "Client will provide the address",
-        "location_type": "ask"
-      }
-    ],
-    "currency": "CAD",
-    "availabilityDays": [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday"
-    ],
-    "startTime": "09:00",
-    "endTime": "23:59",
-    "eventType": [
-      "All"
-    ],
-    "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/dry-ice-fog",
-    "Sale": "N",
-    "New": "N",
-    "dateAdded": "05-31-2025",
-    "disableGuestsCancelling": true,
-    "disableGuestsRescheduling": true,
-    "disableCalVideoTranscription": true,
-    "disableGuests": true,
-    "color": {
-      "lightThemeHex": "#292929"
-    },
-    "minimumBookingNotice": 20160,
-    "bookerLayouts": {
-      "defaultLayout": "month",
-      "enabledLayouts": [
-        "month"
-      ]
-    },
-    "bookingFields": [
-      {
-        "name": "phoneNumber",
-        "slug": "phoneNumber",
-        "label": "Phone Number",
-        "type": "phone",
-        "required": true,
-        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
-      },
-      {
-        "name": "eventAddress",
-        "slug": "eventAddress",
-        "label": "Event Address",
-        "type": "textarea",
-        "required": true,
-        "placeholder": "Please enter the full address where the event will take place"
-      }
-    ],
-    "availability": {
-      "timeZone": "America/Toronto",
-      "schedules": [
-        {
-          "name": "Availability",
-          "timeZone": "America/Toronto",
-          "isDefault": true,
-          "availability": [
-            {
-              "days": [
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-                "Sunday"
-              ],
-              "startTime": "09:00",
-              "endTime": "23:59"
-            }
-          ]
-        }
-      ]
-    },
-    "Category": "Scene Setters",
-    "ServiceType": "Dry Ice Fog"
-  },
-  {
-    "name": "🪩 Laser First Dance - Classic Package",
-    "slug": "laser-first-dance-classic",
+    "name": "\ud83d\udc83 Laser First Dance",
+    "slug": "laser-first-dance",
+    "ServiceType": "Scene Setters",
     "price": 900,
-    "regPrice": 900,
-    "discount": 0,
-    "description": "Make your first dance truly unforgettable with our Laser First Dance Experience! Set beneath a canopy of synchronized laser lights and dreamy effects.",
-    "guests": 200,
-    "maxDuration": 1,
-    "servicesIncluded": [
-      "Laser First Dance"
-    ],
-    "equipment": [
-      "Laser First Dance"
-    ],
-    "note": "Laser light show for first dance",
+    "basePrice": 900,
     "locations": [
       {
         "location": "Client will provide the address",
@@ -2176,13 +938,14 @@
     "startTime": "09:00",
     "endTime": "23:59",
     "eventType": [
-      "All"
+      "All",
+      "Corporate"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/laser-first-dance",
-    "Sale": "N",
+    "bookingUrl": "https://cal.com/bundlebooth/placeholder",
+    "Sale": "Y",
     "New": "N",
-    "dateAdded": "05-31-2025",
+    "dateAdded": "07-01-2025",
     "disableGuestsCancelling": true,
     "disableGuestsRescheduling": true,
     "disableCalVideoTranscription": true,
@@ -2239,8 +1002,6 @@
           ]
         }
       ]
-    },
-    "Category": "Scene Setters",
-    "ServiceType": "Laser First Dance"
+    }
   }
 ]
