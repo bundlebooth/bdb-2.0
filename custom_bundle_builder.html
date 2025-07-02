@@ -5,221 +5,293 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Custom Bundle Builder</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f3f4f6; margin: 0; padding: 0; }
-    .step-header { font-weight: bold; color: #2563eb; }
-    .hidden { display: none; }
-    .step { transition: all 0.3s ease-in-out; }
-    .btn { padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; }
-    .btn-blue { background: #2563eb; color: white; }
-    .btn-gray { background: #d1d5db; }
-    .btn-red { background: #ef4444; color: white; }
-    .btn-green { background: #10b981; color: white; }
-    .card { border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; margin: 0.5rem; background: white; }
-    .form-select, .form-input { width: 100%; padding: 0.5rem; margin-top: 0.25rem; border: 1px solid #d1d5db; border-radius: 0.25rem; }
-    .grid-cols-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #fafafa;
+      margin: 0 auto;
+      padding: 0 20px;
+      max-width: 1200px;
+    }
+    .step {
+      display: none;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    .step.active {
+      display: block;
+    }
+    .progress-bar {
+      display: flex;
+      justify-content: space-between;
+      margin: 30px 0;
+    }
+    .progress-bar div {
+      flex: 1;
+      padding: 12px;
+      background-color: #e0e0e0;
+      margin: 0 5px;
+      border-radius: 30px;
+      text-align: center;
+      font-weight: 600;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .progress-bar div.active {
+      background-color: #007BFF;
+      color: white;
+    }
+    #services-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 25px;
+    }
+    .card {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      transition: transform 0.2s;
+      cursor: pointer;
+      position: relative;
+      border: 2px solid transparent;
+    }
+    .card h3 {
+      margin-top: 0;
+      font-size: 1.2rem;
+    }
+    .card p, .card small {
+      margin: 8px 0;
+      font-size: 0.95rem;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+    }
+    .card.selected {
+      border: 2px solid #007BFF;
+    }
+    .overlay-blur {
+      filter: blur(4px);
+      pointer-events: none;
+      user-select: none;
+    }
+    .continue-slider {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: #fff;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      display: none;
+      transition: height 0.5s ease-in-out;
+      z-index: 999;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .continue-slider.show {
+      display: block;
+    }
+    .continue-slider.expanded {
+      height: auto;
+    }
+    .continue-slider .adjustments {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .form-group {
+      background: #f0f4ff;
+      padding: 15px;
+      border-radius: 10px;
+      flex: 1 1 45%;
+    }
+    .number-picker {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .number-picker button {
+      width: 35px;
+      height: 35px;
+      font-size: 18px;
+      background: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .number-picker span {
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+    #total-price {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #007BFF;
+    }
+    .back-button {
+      margin-top: 15px;
+      background: #6c757d;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      color: white;
+      display: none;
+    }
+    .back-button.show {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
-  <div id="app" class="max-w-4xl mx-auto bg-white shadow-lg p-6 mt-10 rounded-xl">
-    <h1 class="text-2xl font-bold mb-4">Create Your Custom Bundle</h1>
-
-    <div id="step-indicator" class="mb-4">
-      <div class="step-header">Step <span id="step-num">1</span>: <span id="step-title">Choose Services</span></div>
+  <div id="main-content">
+    <h1>Select Your Services</h1>
+    <div class="progress-bar">
+      <div id="step-indicator-1" class="active">Step 1: Choose Services</div>
+      <div id="step-indicator-2">Step 2: Adjust Factors</div>
+      <div id="step-indicator-3">Step 3: Review & Book</div>
     </div>
-
-    <div id="step-1" class="step">
-      <div id="services-list" class="grid-cols-2"></div>
-    </div>
-
-    <div id="step-2" class="step hidden">
-      <div class="mb-4" id="guest-size-container"></div>
-      <div id="adjustments"></div>
-    </div>
-
-    <div id="step-3" class="step hidden">
-      <ul id="summary-list" class="mb-4"></ul>
-      <div class="font-bold text-xl">Total: $<span id="total">0</span></div>
-      <button class="btn btn-green mt-4">Book Now</button>
-    </div>
-
-    <div class="flex justify-between mt-6">
-      <button id="back-btn" class="btn btn-gray" disabled>Back</button>
-      <button id="next-btn" class="btn btn-blue">Next</button>
-      <button id="clear-btn" class="btn btn-red">Clear</button>
+    <div id="step-1" class="step active">
+      <div id="services-list">Loading services...</div>
     </div>
   </div>
 
+  <div class="continue-slider" id="continue-slider">
+    <span>You've selected one or more services.</span>
+    <button onclick="expandAndContinue()">Continue to Adjust Factors</button>
+    <div id="total-price">Total: $0</div>
+    <div class="adjustments" id="inline-adjustments" style="display:none;"></div>
+    <button class="back-button" id="back-button" onclick="goBackToStep1()">Return to Step 1</button>
+  </div>
+
   <script>
-    const services = [
-      { name: "Photo Booth", options: { "Digital Only": 500, "Unlimited Prints": 600 } },
-      { name: "360 Video Booth", prices: { flat: 600 } },
-      { name: "Audio Guest Book", prices: { flat: 350 } },
-      { name: "Magazine Photo Booth", prices: { flat: 600 } },
-      { name: "Espresso & Coffee Booth", prices: { 50: 700, 100: 1100, 150: 1500, 200: 1900 }, guestBased: true },
-      { name: "Waffle Booth", prices: { 50: 800, 100: 1200, 150: 1600, 200: 2000 }, guestBased: true },
-      { name: "Smoothies Booth", prices: { 50: 900, 100: 1300, 150: 1700, 200: 2100 }, guestBased: true },
-      { name: "Sparkler Boxes", options: { "2 Sparklers": 400, "4 Sparklers": 600, "6 Sparklers": 800 } },
-      { name: "Dry Ice Fog", prices: { flat: 400 } },
-      { name: "Laser First Dance", prices: { flat: 900 } }
-    ];
-
-    let currentStep = 1;
     let selectedServices = [];
-    let adjustments = {};
     let guestCount = 50;
+    let total = 0;
 
-    const stepTitle = document.getElementById("step-title");
-    const stepNum = document.getElementById("step-num");
-    const step1 = document.getElementById("step-1");
-    const step2 = document.getElementById("step-2");
-    const step3 = document.getElementById("step-3");
-    const servicesList = document.getElementById("services-list");
-    const adjustmentsDiv = document.getElementById("adjustments");
-    const guestSizeContainer = document.getElementById("guest-size-container");
-    const summaryList = document.getElementById("summary-list");
-    const totalDisplay = document.getElementById("total");
-
-    function renderServices() {
-      servicesList.innerHTML = "";
-      services.forEach(service => {
-        const card = document.createElement("label");
-        card.className = "card flex items-center space-x-2";
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.value = service.name;
-        checkbox.onchange = () => {
-          if (checkbox.checked) selectedServices.push(service.name);
-          else selectedServices = selectedServices.filter(s => s !== service.name);
-        };
-        card.appendChild(checkbox);
-        const text = document.createElement("span");
-        text.textContent = service.name;
-        card.appendChild(text);
-        servicesList.appendChild(card);
-      });
-    }
-
-    function renderAdjustments() {
-      adjustmentsDiv.innerHTML = "";
-      guestSizeContainer.innerHTML = "";
-
-      const needsGuestInput = selectedServices.some(name => {
-        const service = services.find(s => s.name === name);
-        return service.guestBased;
-      });
-
-      if (needsGuestInput) {
-        const guestDiv = document.createElement("div");
-        guestDiv.className = "mb-4";
-        guestDiv.innerHTML = `
-          <label class="block font-semibold">Guest Size</label>
-          <select id="guest-size" class="form-select">
-            <option value="50">50 Guests</option>
-            <option value="100">100 Guests</option>
-            <option value="150">150 Guests</option>
-            <option value="200">200 Guests</option>
-          </select>
-        `;
-        guestSizeContainer.appendChild(guestDiv);
-
-        guestDiv.querySelector("select").value = guestCount;
-        guestDiv.querySelector("select").onchange = (e) => {
-          guestCount = parseInt(e.target.value);
-          renderAdjustments();
-        };
-      }
-
-      selectedServices.forEach(serviceName => {
-        const service = services.find(s => s.name === serviceName);
-        const container = document.createElement("div");
-        container.className = "mb-4";
-        const label = document.createElement("div");
-        label.className = "font-semibold";
-        label.textContent = service.name;
-        container.appendChild(label);
-
-        if (service.options) {
-          const select = document.createElement("select");
-          select.className = "form-select";
-          for (let [option, value] of Object.entries(service.options)) {
-            const opt = document.createElement("option");
-            opt.value = value;
-            opt.textContent = `${option} - $${value}`;
-            select.appendChild(opt);
-          }
-          select.onchange = () => {
-            adjustments[service.name] = parseInt(select.value);
-            renderSummary();
-          };
-          select.dispatchEvent(new Event('change'));
-          container.appendChild(select);
-        } else if (service.prices && service.prices.flat) {
-          adjustments[service.name] = service.prices.flat;
-          container.appendChild(document.createTextNode(`$${service.prices.flat}`));
-        } else if (service.guestBased && service.prices[guestCount]) {
-          adjustments[service.name] = service.prices[guestCount];
-          container.appendChild(document.createTextNode(`${guestCount} Guests - $${service.prices[guestCount]}`));
+    function updateTotal() {
+      total = 0;
+      selectedServices.forEach(service => {
+        if (service.name.includes('Photo Booth')) {
+          const selectedType = document.querySelector('input[name="photobooth-type"]:checked')?.value;
+          const tier = service.pricingTiers?.find(t => t.value === selectedType);
+          total += tier ? tier.price : 0;
+        } else if (["Espresso", "Waffle", "Smoothie"].some(type => service.name.includes(type))) {
+          const tier = service.pricingTiers?.find(t => parseInt(t.label) === guestCount);
+          total += tier ? tier.price : 0;
+        } else {
+          total += service.price || 0;
         }
-
-        adjustmentsDiv.appendChild(container);
       });
+      document.getElementById('total-price').innerText = `Total: $${total}`;
     }
 
-    function renderSummary() {
-      summaryList.innerHTML = "";
-      let total = 0;
-      selectedServices.forEach(name => {
-        const li = document.createElement("li");
-        const price = adjustments[name] || 0;
-        li.textContent = `${name}: $${price}`;
-        total += price;
-        summaryList.appendChild(li);
-      });
-      totalDisplay.textContent = total;
-    }
+    function expandAndContinue() {
+      const slider = document.getElementById('continue-slider');
+      const adjustments = document.getElementById('inline-adjustments');
+      const mainContent = document.getElementById('main-content');
+      const backBtn = document.getElementById('back-button');
 
-    document.getElementById("next-btn").onclick = () => {
-      if (currentStep === 1) renderAdjustments();
-      if (currentStep === 2) renderSummary();
-      currentStep++;
-      updateSteps();
-    };
+      slider.classList.add('expanded');
+      backBtn.classList.add('show');
+      document.getElementById('step-indicator-1').classList.remove('active');
+      document.getElementById('step-indicator-2').classList.add('active');
+      adjustments.style.display = 'flex';
+      adjustments.innerHTML = '';
+      mainContent.classList.add('overlay-blur');
 
-    document.getElementById("back-btn").onclick = () => {
-      currentStep--;
-      updateSteps();
-    };
+      adjustments.innerHTML += `
+        <div class="form-group">
+          <label>Number of Guests:</label>
+          <div class="number-picker">
+            <button onclick="changeGuestCount(-50)">-</button>
+            <span id="guest-count">${guestCount}</span>
+            <button onclick="changeGuestCount(50)">+</button>
+          </div>
+        </div>`;
 
-    document.getElementById("clear-btn").onclick = () => {
-      currentStep = 1;
-      selectedServices = [];
-      adjustments = {};
-      guestCount = 50;
-      renderServices();
-      updateSteps();
-    };
-
-    function updateSteps() {
-      step1.classList.add("hidden");
-      step2.classList.add("hidden");
-      step3.classList.add("hidden");
-      document.getElementById("back-btn").disabled = currentStep === 1;
-      document.getElementById("next-btn").style.display = currentStep === 3 ? "none" : "inline-block";
-
-      if (currentStep === 1) {
-        step1.classList.remove("hidden");
-        stepTitle.textContent = "Choose Services";
-      } else if (currentStep === 2) {
-        step2.classList.remove("hidden");
-        stepTitle.textContent = "Adjust Factors";
-      } else if (currentStep === 3) {
-        step3.classList.remove("hidden");
-        stepTitle.textContent = "Review & Book";
+      const group1 = selectedServices.filter(s => s.name.includes('Photo Booth'));
+      if (group1.length > 0) {
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'form-group';
+        groupDiv.innerHTML = `<h4>Photo Booth Options</h4>
+          <label><input type="radio" name="photobooth-type" value="digital" checked onchange="updateTotal()"> Digital Only</label><br>
+          <label><input type="radio" name="photobooth-type" value="print" onchange="updateTotal()"> Unlimited Prints</label>`;
+        adjustments.appendChild(groupDiv);
       }
-      stepNum.textContent = currentStep;
+
+      updateTotal();
     }
 
-    renderServices();
+    function goBackToStep1() {
+      const slider = document.getElementById('continue-slider');
+      slider.classList.remove('expanded');
+      document.getElementById('inline-adjustments').style.display = 'none';
+      document.getElementById('step-indicator-2').classList.remove('active');
+      document.getElementById('step-indicator-1').classList.add('active');
+      document.getElementById('main-content').classList.remove('overlay-blur');
+      document.getElementById('back-button').classList.remove('show');
+      guestCount = 50;
+      document.getElementById('guest-count').innerText = guestCount;
+      updateTotal();
+    }
+
+    function changeGuestCount(delta) {
+      guestCount = Math.min(200, Math.max(50, guestCount + delta));
+      document.getElementById('guest-count').innerText = guestCount;
+      updateTotal();
+    }
+
+    fetch("https://raw.githubusercontent.com/bundlebooth/bdb-2.0/main/individual_packages.json")
+      .then(response => response.json())
+      .then(data => {
+        const list = document.getElementById('services-list');
+        list.innerHTML = '';
+        data.forEach(service => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <h3>${service.name}</h3>
+            <p>${service.description || ''}</p>
+            <p>Duration: ${service.duration || '3'} hours</p>
+            <p>Price: CAD $${service.price || (service.pricingTiers && service.pricingTiers[0].price)}</p>
+            <small>Additional charges apply for extended hours or additional services.</small>`;
+          card.addEventListener('click', () => {
+            const index = selectedServices.findIndex(s => s.name === service.name);
+            if (index === -1) {
+              selectedServices.push(service);
+              card.classList.add('selected');
+            } else {
+              selectedServices.splice(index, 1);
+              card.classList.remove('selected');
+            }
+            const slider = document.getElementById('continue-slider');
+            if (selectedServices.length > 0) {
+              slider.classList.add('show');
+              updateTotal();
+            } else {
+              slider.classList.remove('show', 'expanded');
+              document.getElementById('inline-adjustments').style.display = 'none';
+              document.getElementById('step-indicator-2').classList.remove('active');
+              document.getElementById('step-indicator-1').classList.add('active');
+              document.getElementById('main-content').classList.remove('overlay-blur');
+              document.getElementById('back-button').classList.remove('show');
+            }
+          });
+          list.appendChild(card);
+        });
+      })
+      .catch(error => {
+        document.getElementById('services-list').innerText = 'Failed to load services.';
+        console.error(error);
+      });
   </script>
 </body>
 </html>
