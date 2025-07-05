@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Starter Celebration",
+    "slug": "starter-celebration",
+    "price": 799,
+    "description": "Perfect for small events and private parties.",
+    "categories": {
+      "Interactive Booths": 1,
+      "Scene Setters": 1
+    }
+  },
+  {
+    "name": "Deluxe Wedding Bundle",
+    "slug": "deluxe-wedding",
+    "price": 1999,
+    "description": "Ideal for weddings with all the glam included.",
+    "categories": {
+      "Interactive Booths": 2,
+      "Scene Setters": 2,
+      "Special Effects": 1
+    }
+  }
+]
