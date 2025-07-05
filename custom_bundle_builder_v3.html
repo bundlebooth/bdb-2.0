@@ -226,4 +226,649 @@ document.addEventListener("DOMContentLoaded", () => {
     observer.observe(target, { childList: true });
   }
 });
-</script></body></html>
+</script>
+<script>
+let selectedCustomBundle = null;
+
+function loadCustomBundles() {
+  const container = document.getElementById("services-list");
+  container.innerHTML = "Loading bundles...";
+
+  fetch("https://raw.githubusercontent.com/bundlebooth/bdb-2.0/refs/heads/main/bundles.json")
+    .then(res => res.json())
+    .then(data => {
+      container.innerHTML = "";
+      data.forEach(bundle => {
+        const card = document.createElement("div");
+        card.className = "package";
+        card.style.cursor = "pointer";
+        card.innerHTML = `
+          <div class="package-content">
+            <h3>${bundle.name}</h3>
+            <span class="package-type-tag">Custom Bundle</span>
+            <p class="description">${bundle.description || ""}</p>
+            <p><strong>Guests:</strong> ${bundle.guests || "N/A"}</p>
+            <p><strong>Duration:</strong> ${bundle.duration || "N/A"}</p>
+            <p><strong>Price:</strong> ${bundle.price ? `C$${bundle.price}` : "Custom Pricing"}</p>
+            <button class="book-now-button">Select This Bundle</button>
+          </div>
+        `;
+
+        card.querySelector("button").addEventListener("click", () => {
+          selectedCustomBundle = bundle;
+          document.querySelectorAll("#services-list .package").forEach(el => el.classList.remove("selected"));
+          card.classList.add("selected");
+          document.getElementById("step-indicator-1").classList.remove("active");
+          document.getElementById("step-indicator-2").classList.add("active");
+          document.getElementById("step-1").classList.remove("active");
+          document.getElementById("step-2").classList.add("active");
+          loadServices();
+        });
+
+        container.appendChild(card);
+      });
+    })
+    .catch(err => {
+      console.error("Error loading custom bundles", err);
+      container.innerHTML = "<p>Unable to load bundles. Please try again later.</p>";
+    });
+}
+
+function openCustomBuilder() {
+  const main = document.querySelector('main');
+  const builder = document.getElementById('main-content');
+  if (main && builder) {
+    main.style.display = 'none';
+    builder.style.display = 'block';
+    loadCustomBundles();
+  }
+}
+</script>
+
+
+<script>
+let selectedCustomBundle = null;
+
+function loadCustomBundles() {
+  const container = document.getElementById("services-list");
+  container.innerHTML = "Loading bundles...";
+
+  fetch("https://raw.githubusercontent.com/bundlebooth/bdb-2.0/refs/heads/main/bundles.json")
+    .then(res => res.json())
+    .then(data => {
+      container.innerHTML = "";
+      data.forEach(bundle => {
+        const card = document.createElement("div");
+        card.className = "package";
+        card.style.cursor = "pointer";
+        card.innerHTML = `
+          <div class="package-content">
+            <h3>${bundle.name}</h3>
+            <span class="package-type-tag">Custom Bundle</span>
+            <p class="description">${bundle.description || ""}</p>
+            <p><strong>Guests:</strong> ${bundle.guests || "N/A"}</p>
+            <p><strong>Duration:</strong> ${bundle.duration || "N/A"}</p>
+            <p><strong>Price:</strong> ${bundle.price ? `C$${bundle.price}` : "Custom Pricing"}</p>
+            <button class="book-now-button">Select This Bundle</button>
+          </div>
+        `;
+
+        card.querySelector("button").addEventListener("click", () => {
+          selectedCustomBundle = bundle;
+          document.querySelectorAll("#services-list .package").forEach(el => el.classList.remove("selected"));
+          card.classList.add("selected");
+
+          // Proceed to Step 2
+          document.getElementById("step-indicator-1").classList.remove("active");
+          document.getElementById("step-indicator-2").classList.add("active");
+          document.getElementById("step-1").classList.remove("active");
+          document.getElementById("step-2").classList.add("active");
+
+          loadServices();
+        });
+
+        container.appendChild(card);
+      });
+    })
+    .catch(err => {
+      console.error("Error loading custom bundles", err);
+      container.innerHTML = "<p>Unable to load bundles. Please try again later.</p>";
+    });
+}
+
+function loadServices() {
+  const container = document.getElementById("services-container");
+  container.innerHTML = "Loading services...";
+
+  fetch("https://raw.githubusercontent.com/bundlebooth/bdb-2.0/main/individual_packages.json")
+    .then(res => res.json())
+    .then(data => {
+      container.innerHTML = "";
+      if (!selectedCustomBundle || !Array.isArray(data)) {
+        container.innerHTML = "<p>No bundle selected or data unavailable.</p>";
+        return;
+      }
+
+      const allowedTypes = selectedCustomBundle.allowedServices || [];
+
+      const filtered = data.filter(service => {
+        return allowedTypes.length === 0 || allowedTypes.includes(service.type);
+      });
+
+      filtered.forEach(service => {
+        const card = document.createElement("div");
+        card.className = "package";
+        card.innerHTML = `
+          <div class="package-content">
+            <h3>${service.name}</h3>
+            <p class="description">${service.description || ""}</p>
+            <p><strong>Price:</strong> C$${service.price || "N/A"}</p>
+            <button class="book-now-button">Add Service</button>
+          </div>
+        `;
+
+        card.querySelector("button").addEventListener("click", () => {
+          card.classList.toggle("selected");
+        });
+
+        container.appendChild(card);
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = "<p>No services available for this bundle.</p>";
+      }
+    })
+    .catch(err => {
+      console.error("Error loading services", err);
+      container.innerHTML = "<p>Unable to load services. Please try again later.</p>";
+    });
+}
+
+function openCustomBuilder() {
+  const main = document.querySelector('main');
+  const builder = document.getElementById('main-content');
+  if (main && builder) {
+    main.style.display = 'none';
+    builder.style.display = 'block';
+    loadCustomBundles();
+  }
+}
+</script>
+
+
+<script>
+let selectedCustomBundle = null;
+
+function loadCustomBundles() {
+  const container = document.getElementById("services-list");
+  container.innerHTML = "Loading bundles...";
+
+  fetch("https://raw.githubusercontent.com/bundlebooth/bdb-2.0/refs/heads/main/bundles.json")
+    .then(res => res.json())
+    .then(data => {
+      container.innerHTML = "";
+      data.forEach(bundle => {
+        const card = document.createElement("div");
+        card.className = "package";
+        card.style.cursor = "pointer";
+        card.innerHTML = `
+          <div class="package-content">
+            <h3>${bundle.name}</h3>
+            <span class="package-type-tag">Custom Bundle</span>
+            <p class="description">${bundle.description || ""}</p>
+            <p><strong>Guests:</strong> ${bundle.guests || "N/A"}</p>
+            <p><strong>Duration:</strong> ${bundle.duration || "N/A"}</p>
+            <p><strong>Price:</strong> ${bundle.price ? `C$${bundle.price}` : "Custom Pricing"}</p>
+            <button class="book-now-button">Select This Bundle</button>
+          </div>
+        `;
+
+        card.querySelector("button").addEventListener("click", () => {
+          selectedCustomBundle = bundle;
+          document.querySelectorAll("#services-list .package").forEach(el => el.classList.remove("selected"));
+          card.classList.add("selected");
+
+          // Move to Step 2
+          document.getElementById("step-indicator-1").classList.remove("active");
+          document.getElementById("step-indicator-2").classList.add("active");
+          document.getElementById("step-1").classList.remove("active");
+          document.getElementById("step-2").classList.add("active");
+
+          loadServices();
+        });
+
+        container.appendChild(card);
+      });
+    })
+    .catch(err => {
+      console.error("Error loading custom bundles", err);
+      container.innerHTML = "<p>Unable to load bundles. Please try again later.</p>";
+    });
+}
+
+function loadServices() {
+  const container = document.getElementById("services-container");
+  container.innerHTML = "Loading services...";
+
+  fetch("https://raw.githubusercontent.com/bundlebooth/bdb-2.0/main/individual_packages.json")
+    .then(res => res.json())
+    .then(data => {
+      container.innerHTML = "";
+
+      data.forEach(service => {
+        const card = document.createElement("div");
+        card.className = "package";
+        card.innerHTML = `
+          <div class="package-content">
+            <h3>${service.name}</h3>
+            <p class="description">${service.description || ""}</p>
+            <p><strong>Price:</strong> C$${service.price || "N/A"}</p>
+            <button class="book-now-button">Add Service</button>
+          </div>
+        `;
+
+        card.querySelector("button").addEventListener("click", () => {
+          card.classList.toggle("selected");
+        });
+
+        container.appendChild(card);
+      });
+    })
+    .catch(err => {
+      console.error("Error loading services", err);
+      container.innerHTML = "<p>Unable to load services. Please try again later.</p>";
+    });
+}
+
+function openCustomBuilder() {
+  const main = document.querySelector('main');
+  const builder = document.getElementById('main-content');
+  if (main && builder) {
+    main.style.display = 'none';
+    builder.style.display = 'block';
+    loadCustomBundles();
+  }
+}
+</script>
+
+
+<script>
+let selectedCustomBundle = null;
+let selectedServices = [];
+let allServices = [];
+
+function openCustomBuilder() {
+  document.querySelector("main").style.display = "none";
+  document.getElementById("main-content").style.display = "block";
+  loadCustomBundles();
+}
+
+function loadCustomBundles() {
+  const container = document.getElementById("services-list");
+  container.innerHTML = "";
+
+  fetch("https://raw.githubusercontent.com/bundlebooth/bdb-2.0/refs/heads/main/bundles.json")
+    .then(res => res.json())
+    .then(data => {
+      data.forEach(bundle => {
+        const limits = bundle.rules ? Object.entries(bundle.rules).map(([k, v]) => `<li>${v} × ${k}</li>`).join('') : '';
+        const card = document.createElement("div");
+        card.className = "package";
+        card.style.cursor = "pointer";
+        card.innerHTML = `
+          <div class="package-content">
+            <h3>${bundle.name}</h3>
+            <span class="package-type-tag">Custom Bundle</span>
+            <p class="description">${bundle.description || ""}</p>
+            <ul>${limits}</ul>
+            <button class="book-now-button">Select Bundle</button>
+          </div>
+        `;
+        card.querySelector("button").addEventListener("click", () => {
+          selectedCustomBundle = bundle;
+          selectedServices = [];
+          document.querySelectorAll("#services-list .package").forEach(el => el.classList.remove("selected"));
+          card.classList.add("selected");
+          document.getElementById("step-indicator-1").classList.remove("active");
+          document.getElementById("step-indicator-2").classList.add("active");
+          document.getElementById("step-1").classList.remove("active");
+          document.getElementById("step-2").classList.add("active");
+          loadServices();
+        });
+        container.appendChild(card);
+      });
+    });
+}
+
+
+
+
+function loadServices() {
+  const container = document.getElementById("services-container");
+  const warning = document.getElementById("warning-message");
+  warning.innerHTML = "";
+  container.innerHTML = "Loading services...";
+
+  fetch("https://raw.githubusercontent.com/bundlebooth/bdb-2.0/main/individual_packages.json", { mode: "cors" })
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to fetch services: " + res.status);
+      return res.json();
+    })
+    .then(data => {
+      const list = Array.isArray(data) ? data : (data.services || []);
+      allServices = list;
+      container.innerHTML = "";
+
+      list.forEach(service => {
+        const card = document.createElement("div");
+        card.className = "package";
+        card.style.cursor = "pointer";
+        card.innerHTML = `
+          <div class="package-content">
+            <h3>${service.name}</h3>
+            <span class="package-type-tag">${service.type}</span>
+            <p class="description">${service.description || ""}</p>
+            <p><strong>Price:</strong> C$${service.price}</p>
+            <button class="book-now-button">Add Service</button>
+          </div>
+        `;
+
+        card.querySelector("button").addEventListener("click", () => {
+          const maxAllowed = selectedCustomBundle?.rules?.[service.type] || Infinity;
+          const selectedCount = selectedServices.filter(s => s.type === service.type).length;
+          const isSelected = selectedServices.find(s => s.name === service.name);
+
+          if (isSelected) {
+            selectedServices = selectedServices.filter(s => s.name !== service.name);
+            card.classList.remove("selected");
+            warning.innerHTML = "";
+          } else {
+            if (selectedCount >= maxAllowed) {
+              warning.innerHTML = `⚠️ You can only select ${maxAllowed} ${service.type}(s) for this bundle.`;
+              return;
+            }
+            selectedServices.push(service);
+            card.classList.add("selected");
+            warning.innerHTML = "";
+          }
+        });
+
+        container.appendChild(card);
+      });
+
+      if (list.length === 0) {
+        container.innerHTML = "<p>No services available.</p>";
+      }
+    })
+    .catch(err => {
+      console.error("Service fetch error:", err);
+      container.innerHTML = "<p>Error loading services. See console for details.</p>";
+    });
+}
+
+            selectedServices.push(service);
+            card.classList.add("selected");
+            warning.innerHTML = "";
+          }
+        });
+
+        container.appendChild(card);
+      });
+
+      if (list.length === 0) {
+        container.innerHTML = "<p>No services found in the list.</p>";
+      }
+    })
+    .catch(err => {
+      console.error("Services fetch error:", err);
+      container.innerHTML = "<p>Error loading services. See console for details.</p>";
+    });
+}
+
+
+      allServices = data;
+      container.innerHTML = "";
+
+      data.forEach(service => {
+        const card = document.createElement("div");
+        card.className = "package";
+        card.style.cursor = "pointer";
+        card.innerHTML = `
+          <div class="package-content">
+            <h3>${service.name}</h3>
+            <p>${service.description || ""}</p>
+            <p><strong>Type:</strong> ${service.type}</p>
+            <p><strong>Price:</strong> C$${service.price}</p>
+            <button class="book-now-button">Add</button>
+          </div>
+        `;
+
+        card.querySelector("button").addEventListener("click", () => {
+          const maxAllowed = selectedCustomBundle?.rules?.[service.type] || Infinity;
+          const selectedCount = selectedServices.filter(s => s.type === service.type).length;
+          const isSelected = selectedServices.find(s => s.name === service.name);
+
+          if (isSelected) {
+            selectedServices = selectedServices.filter(s => s.name !== service.name);
+            card.classList.remove("selected");
+            warning.innerHTML = "";
+          } else {
+            if (selectedCount >= maxAllowed) {
+              warning.innerHTML = `⚠️ Limit reached: ${maxAllowed} ${service.type}(s) allowed.`;
+              return;
+            }
+            selectedServices.push(service);
+            card.classList.add("selected");
+            warning.innerHTML = "";
+          }
+        });
+
+        container.appendChild(card);
+      });
+
+      if (data.length === 0) {
+        container.innerHTML = "<p>No services found in the list.</p>";
+      }
+    })
+    .catch(err => {
+      console.error("Services fetch error:", err);
+      container.innerHTML = "<p>Error loading services. See console for details.</p>";
+    });
+}
+
+            selectedServices.push(service);
+            card.classList.add("selected");
+            warning.innerHTML = "";
+          }
+        });
+
+        container.appendChild(card);
+      });
+    });
+}
+
+document.getElementById("continue-button").addEventListener("click", () => {
+  document.getElementById("step-indicator-2").classList.remove("active");
+  document.getElementById("step-indicator-3").classList.add("active");
+  document.getElementById("step-2").classList.remove("active");
+  document.getElementById("step-3").classList.add("active");
+
+  document.getElementById("adjustments-container").innerHTML = `
+    <label>Guest Count: <input id="guest-count" type="number" placeholder="e.g. 150" /></label><br><br>
+    <label>Event Notes:<br><textarea id="event-notes" rows="4" style="width:100%"></textarea></label>
+  `;
+});
+
+document.getElementById("review-button").addEventListener("click", () => {
+  document.getElementById("step-indicator-3").classList.remove("active");
+  document.getElementById("step-indicator-4").classList.add("active");
+  document.getElementById("step-3").classList.remove("active");
+  document.getElementById("step-4").classList.add("active");
+
+  const review = document.getElementById("review-section");
+  const guestCount = document.getElementById("guest-count")?.value || "N/A";
+  const notes = document.getElementById("event-notes")?.value || "None";
+
+  const rows = selectedServices.map(s => `
+    <tr><td>${s.name}</td><td>${s.type}</td><td>C$${s.price}</td></tr>
+  `).join("");
+
+  const total = selectedServices.reduce((sum, s) => sum + (parseFloat(s.price) || 0), 0);
+
+  review.innerHTML = `
+    <h3>Review Your Bundle</h3>
+    <table style="width:100%; border-collapse:collapse;">
+      <thead><tr><th>Service</th><th>Type</th><th>Price</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <p><strong>Guest Count:</strong> ${guestCount}</p>
+    <p><strong>Event Notes:</strong> ${notes}</p>
+    <h3>Total: C$${total.toFixed(2)}</h3>
+  `;
+});
+</script>
+<style>
+.step { display: none; margin-top: 20px; }
+.step.active { display: block; }
+.package { background: white; border: 1px solid #ccc; border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); transition: 0.2s; }
+.package:hover { box-shadow: 0 6px 12px rgba(0,0,0,0.1); transform: scale(1.01); }
+.package.selected { border-color: #3498db; background: #f0f8ff; }
+.book-now-button { margin-top: 12px; background: #3498db; color: white; padding: 10px; border: none; border-radius: 6px; cursor: pointer; }
+.book-now-button:hover { background: #2c80b4; }
+.progress-bar { display: flex; gap: 10px; margin-top: 20px; }
+.progress-bar div { flex: 1; padding: 10px; background: #ddd; border-radius: 6px; text-align: center; }
+.progress-bar .active { background: #3498db; color: white; font-weight: bold; }
+</style>
+
+
+<script>
+function loadServices() {
+  const container = document.getElementById("services-container");
+  const warning = document.getElementById("warning-message");
+  warning.innerHTML = "";
+  container.innerHTML = "Loading services...";
+
+  fetch("https://raw.githubusercontent.com/bundlebooth/bdb-2.0/main/individual_packages.json", { mode: "cors" })
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to fetch services: " + res.status);
+      return res.json();
+    })
+    .then(data => {
+      const list = Array.isArray(data) ? data : (data.services || []);
+      allServices = list;
+      container.innerHTML = "";
+
+      list.forEach(service => {
+        const card = document.createElement("div");
+        card.className = "package";
+        card.style.cursor = "pointer";
+        card.innerHTML = `
+          <div class="package-content">
+            <h3>${service.name}</h3>
+            <span class="package-type-tag">${service.type}</span>
+            <p class="description">${service.description || ""}</p>
+            <p><strong>Price:</strong> C$${service.price}</p>
+            <button class="book-now-button">Add Service</button>
+          </div>
+        `;
+
+        card.querySelector("button").addEventListener("click", () => {
+          const maxAllowed = selectedCustomBundle?.rules?.[service.type] || Infinity;
+          const selectedCount = selectedServices.filter(s => s.type === service.type).length;
+          const isSelected = selectedServices.find(s => s.name === service.name);
+
+          if (isSelected) {
+            selectedServices = selectedServices.filter(s => s.name !== service.name);
+            card.classList.remove("selected");
+            warning.innerHTML = "";
+          } else {
+            if (selectedCount >= maxAllowed) {
+              warning.innerHTML = `⚠️ You can only select ${maxAllowed} ${service.type}(s).`;
+              return;
+            }
+            selectedServices.push(service);
+            card.classList.add("selected");
+            warning.innerHTML = "";
+          }
+        });
+
+        container.appendChild(card);
+      });
+
+      if (list.length === 0) {
+        container.innerHTML = "<p>No services found in the list.</p>";
+      }
+    })
+    .catch(err => {
+      console.error("Services fetch error:", err);
+      container.innerHTML = "<p>Error loading services. See console for details.</p>";
+    });
+}
+</script>
+
+
+<script>
+function loadServices() {
+  const container = document.getElementById("services-container");
+  const warning = document.getElementById("warning-message");
+  warning.innerHTML = "";
+  container.innerHTML = "Loading services...";
+
+  fetch("https://raw.githubusercontent.com/bundlebooth/bdb-2.0/main/individual_packages.json")
+    .then(response => {
+      if (!response.ok) throw new Error("Fetch error: " + response.status);
+      return response.json();
+    })
+    .then(allServices => {
+      console.log("✅ Fetched services:", allServices);
+      container.innerHTML = "";
+
+      allServices.forEach(service => {
+        const card = document.createElement("div");
+        card.className = "package";
+        card.style.cursor = "pointer";
+        card.innerHTML = `
+          <div class="package-content">
+            <h3>${service.name}</h3>
+            <span class="package-type-tag">${service.type}</span>
+            <p>${service.description || ""}</p>
+            <p><strong>Price:</strong> C$${service.price}</p>
+            <button class="book-now-button">Add Service</button>
+          </div>
+        `;
+
+        card.querySelector("button").addEventListener("click", () => {
+          const maxAllowed = selectedCustomBundle?.rules?.[service.type] || Infinity;
+          const selectedCount = selectedServices.filter(s => s.type === service.type).length;
+          const isSelected = selectedServices.find(s => s.name === service.name);
+
+          if (isSelected) {
+            selectedServices = selectedServices.filter(s => s.name !== service.name);
+            card.classList.remove("selected");
+            warning.innerHTML = "";
+          } else {
+            if (selectedCount >= maxAllowed) {
+              warning.innerHTML = `⚠️ You can only select ${maxAllowed} ${service.type}(s).`;
+              return;
+            }
+            selectedServices.push(service);
+            card.classList.add("selected");
+            warning.innerHTML = "";
+          }
+        });
+
+        container.appendChild(card);
+      });
+
+      if (allServices.length === 0) {
+        container.innerHTML = "<p>No services found.</p>";
+      }
+    })
+    .catch(error => {
+      console.error("❌ Service fetch failed:", error);
+      container.innerHTML = "<p>Error loading services. Check browser console.</p>";
+    });
+}
+</script>
+
+</body></html>
