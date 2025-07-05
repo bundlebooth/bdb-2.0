@@ -75,7 +75,7 @@
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    #continue-button {
+    #continue-button, #review-button {
       display: block;
       margin: 30px auto;
       padding: 10px 20px;
@@ -91,6 +91,23 @@
       font-weight: bold;
       text-align: center;
       margin-top: 10px;
+    }
+    #review-section {
+      border-top: 1px solid #ccc;
+      margin-top: 30px;
+      padding-top: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
     }
   </style>
 </head>
@@ -115,6 +132,11 @@
     <div id="step-3" class="step">
       <h2>Adjust Customization Factors</h2>
       <div id="adjustments-container">Loading adjustments...</div>
+      <button id="review-button">Continue to Review & Book</button>
+    </div>
+    <div id="step-4" class="step">
+      <h2>Review & Book</h2>
+      <div id="review-section"></div>
     </div>
   </div>
 
@@ -135,13 +157,15 @@
     }
 
     function showStep(stepNumber) {
-      for (let i = 1; i <= 3; i++) {
-        document.getElementById(`step-${i}`).classList.remove('active');
+      for (let i = 1; i <= 4; i++) {
+        const el = document.getElementById(`step-${i}`);
+        if (el) el.classList.remove('active');
       }
-      document.getElementById(`step-${stepNumber}`).classList.add('active');
+      const current = document.getElementById(`step-${stepNumber}`);
+      if (current) current.classList.add('active');
       updateStepIndicators(stepNumber);
-
       if (stepNumber === 3) renderAdjustments();
+      if (stepNumber === 4) renderReview();
     }
 
     function renderAdjustments() {
@@ -167,6 +191,25 @@
           container.appendChild(boothOptions);
         }
       });
+    }
+
+    function renderReview() {
+      const section = document.getElementById('review-section');
+      let guestCount = parseInt(document.getElementById('guest-count')?.value || '0');
+      let total = 0;
+
+      let html = '<table><thead><tr><th>Service</th><th>Price</th></tr></thead><tbody>';
+      selectedServices.forEach(service => {
+        let price = service.price;
+        if (["Espresso Booth", "Waffle Booth", "Smoothie Booth"].includes(service.name)) {
+          const tier = service.pricingTiers?.find(t => t.guests === guestCount);
+          if (tier) price = tier.price;
+        }
+        html += `<tr><td>${service.name}</td><td>$${price}</td></tr>`;
+        total += price;
+      });
+      html += `</tbody></table><h3>Total: $${total}</h3>`;
+      section.innerHTML = html;
     }
 
     function fetchServicesAndRender(bundleCategories) {
@@ -255,6 +298,10 @@
 
     document.getElementById('continue-button').addEventListener('click', () => {
       showStep(3);
+    });
+
+    document.getElementById('review-button').addEventListener('click', () => {
+      showStep(4);
     });
   </script>
 </body>
