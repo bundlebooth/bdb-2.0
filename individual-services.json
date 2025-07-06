@@ -1,0 +1,1027 @@
+[
+  {
+    "name": "\ud83d\udcf8 Photo Booth",
+    "slug": "photo-booth",
+    "ServiceType": "Interactive Booths",
+    "price": 500,
+    "basePrice": 0,
+    "pricingTiers": [
+      {
+        "label": "Digital Only",
+        "value": "digital",
+        "price": 500
+      },
+      {
+        "label": "Unlimited Prints",
+        "value": "print",
+        "price": 600
+      }
+    ],
+    "locations": [
+      {
+        "location": "Client will provide the address",
+        "location_type": "ask"
+      }
+    ],
+    "currency": "CAD",
+    "availabilityDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "startTime": "09:00",
+    "endTime": "23:59",
+    "eventType": [
+      "All",
+      "Corporate"
+    ],
+    "packageType": "Individual",
+    "bookingUrl": "https://cal.com/bundlebooth/placeholder",
+    "Sale": "Y",
+    "New": "N",
+    "dateAdded": "07-01-2025",
+    "disableGuestsCancelling": true,
+    "disableGuestsRescheduling": true,
+    "disableCalVideoTranscription": true,
+    "disableGuests": true,
+    "color": {
+      "lightThemeHex": "#292929"
+    },
+    "minimumBookingNotice": 20160,
+    "bookerLayouts": {
+      "defaultLayout": "month",
+      "enabledLayouts": [
+        "month"
+      ]
+    },
+    "bookingFields": [
+      {
+        "name": "phoneNumber",
+        "slug": "phoneNumber",
+        "label": "Phone Number",
+        "type": "phone",
+        "required": true,
+        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
+      },
+      {
+        "name": "eventAddress",
+        "slug": "eventAddress",
+        "label": "Event Address",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Please enter the full address where the event will take place"
+      }
+    ],
+    "availability": {
+      "timeZone": "America/Toronto",
+      "schedules": [
+        {
+          "name": "Availability",
+          "timeZone": "America/Toronto",
+          "isDefault": true,
+          "availability": [
+            {
+              "days": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday"
+              ],
+              "startTime": "09:00",
+              "endTime": "23:59"
+            }
+          ]
+        }
+      ]
+    },
+    "description": "The photo booth experience adds a vibrant touch to any event, creating instant, tangible memories for your guests. All photos delivered digitally.",
+    "duration": 3
+  },
+  {
+    "name": "\ud83c\udfa5 360 Video Booth",
+    "slug": "360-video-booth",
+    "ServiceType": "Interactive Booths",
+    "price": 600,
+    "basePrice": 600,
+    "locations": [
+      {
+        "location": "Client will provide the address",
+        "location_type": "ask"
+      }
+    ],
+    "currency": "CAD",
+    "availabilityDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "startTime": "09:00",
+    "endTime": "23:59",
+    "eventType": [
+      "All",
+      "Corporate"
+    ],
+    "packageType": "Individual",
+    "bookingUrl": "https://cal.com/bundlebooth/placeholder",
+    "Sale": "Y",
+    "New": "N",
+    "dateAdded": "07-01-2025",
+    "disableGuestsCancelling": true,
+    "disableGuestsRescheduling": true,
+    "disableCalVideoTranscription": true,
+    "disableGuests": true,
+    "color": {
+      "lightThemeHex": "#292929"
+    },
+    "minimumBookingNotice": 20160,
+    "bookerLayouts": {
+      "defaultLayout": "month",
+      "enabledLayouts": [
+        "month"
+      ]
+    },
+    "bookingFields": [
+      {
+        "name": "phoneNumber",
+        "slug": "phoneNumber",
+        "label": "Phone Number",
+        "type": "phone",
+        "required": true,
+        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
+      },
+      {
+        "name": "eventAddress",
+        "slug": "eventAddress",
+        "label": "Event Address",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Please enter the full address where the event will take place"
+      }
+    ],
+    "availability": {
+      "timeZone": "America/Toronto",
+      "schedules": [
+        {
+          "name": "Availability",
+          "timeZone": "America/Toronto",
+          "isDefault": true,
+          "availability": [
+            {
+              "days": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday"
+              ],
+              "startTime": "09:00",
+              "endTime": "23:59"
+            }
+          ]
+        }
+      ]
+    },
+    "description": "Elevate your event with the sophistication of our 360 Video Booth experience. Guests are invited to step onto a sleek platform as a rotating camera captures elegant, slow-motion videos from every angle.",
+    "duration": 3
+  },
+  {
+    "name": "\ud83c\udfa4 Audio Guest Book",
+    "slug": "audio-guest-book",
+    "ServiceType": "Interactive Booths",
+    "price": 350,
+    "basePrice": 350,
+    "locations": [
+      {
+        "location": "Client will provide the address",
+        "location_type": "ask"
+      }
+    ],
+    "currency": "CAD",
+    "availabilityDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "startTime": "09:00",
+    "endTime": "23:59",
+    "eventType": [
+      "All",
+      "Corporate"
+    ],
+    "packageType": "Individual",
+    "bookingUrl": "https://cal.com/bundlebooth/placeholder",
+    "Sale": "Y",
+    "New": "N",
+    "dateAdded": "07-01-2025",
+    "disableGuestsCancelling": true,
+    "disableGuestsRescheduling": true,
+    "disableCalVideoTranscription": true,
+    "disableGuests": true,
+    "color": {
+      "lightThemeHex": "#292929"
+    },
+    "minimumBookingNotice": 20160,
+    "bookerLayouts": {
+      "defaultLayout": "month",
+      "enabledLayouts": [
+        "month"
+      ]
+    },
+    "bookingFields": [
+      {
+        "name": "phoneNumber",
+        "slug": "phoneNumber",
+        "label": "Phone Number",
+        "type": "phone",
+        "required": true,
+        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
+      },
+      {
+        "name": "eventAddress",
+        "slug": "eventAddress",
+        "label": "Event Address",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Please enter the full address where the event will take place"
+      }
+    ],
+    "availability": {
+      "timeZone": "America/Toronto",
+      "schedules": [
+        {
+          "name": "Availability",
+          "timeZone": "America/Toronto",
+          "isDefault": true,
+          "availability": [
+            {
+              "days": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday"
+              ],
+              "startTime": "09:00",
+              "endTime": "23:59"
+            }
+          ]
+        }
+      ]
+    },
+    "description": "The Audio Guest Book offers a timeless and personal way to capture heartfelt moments. Guests simply pick up the vintage-style phone and leave a message.",
+    "duration": 3
+  },
+  {
+    "name": "\ud83d\udcf0 Magazine Photo Booth",
+    "slug": "magazine-photo-booth",
+    "ServiceType": "Interactive Booths",
+    "price": 600,
+    "basePrice": 600,
+    "locations": [
+      {
+        "location": "Client will provide the address",
+        "location_type": "ask"
+      }
+    ],
+    "currency": "CAD",
+    "availabilityDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "startTime": "09:00",
+    "endTime": "23:59",
+    "eventType": [
+      "All",
+      "Corporate"
+    ],
+    "packageType": "Individual",
+    "bookingUrl": "https://cal.com/bundlebooth/placeholder",
+    "Sale": "Y",
+    "New": "N",
+    "dateAdded": "07-01-2025",
+    "disableGuestsCancelling": true,
+    "disableGuestsRescheduling": true,
+    "disableCalVideoTranscription": true,
+    "disableGuests": true,
+    "color": {
+      "lightThemeHex": "#292929"
+    },
+    "minimumBookingNotice": 20160,
+    "bookerLayouts": {
+      "defaultLayout": "month",
+      "enabledLayouts": [
+        "month"
+      ]
+    },
+    "bookingFields": [
+      {
+        "name": "phoneNumber",
+        "slug": "phoneNumber",
+        "label": "Phone Number",
+        "type": "phone",
+        "required": true,
+        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
+      },
+      {
+        "name": "eventAddress",
+        "slug": "eventAddress",
+        "label": "Event Address",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Please enter the full address where the event will take place"
+      }
+    ],
+    "availability": {
+      "timeZone": "America/Toronto",
+      "schedules": [
+        {
+          "name": "Availability",
+          "timeZone": "America/Toronto",
+          "isDefault": true,
+          "availability": [
+            {
+              "days": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday"
+              ],
+              "startTime": "09:00",
+              "endTime": "23:59"
+            }
+          ]
+        }
+      ]
+    },
+    "description": "Bring the allure of a fashion magazine cover to your next event with our Magazine Photo Booth Box. Guests pose inside a life-sized, custom-branded magazine frame.",
+    "duration": 3
+  },
+  {
+    "name": "\u2615 Espresso Booth",
+    "slug": "espresso-booth",
+    "ServiceType": "Sweets and Brews",
+    "price": 700,
+    "basePrice": 0,
+    "pricingTiers": [
+      {
+        "label": "50 Guests",
+        "value": 50,
+        "price": 700
+      },
+      {
+        "label": "100 Guests",
+        "value": 100,
+        "price": 1100
+      },
+      {
+        "label": "150 Guests",
+        "value": 150,
+        "price": 1500
+      },
+      {
+        "label": "200 Guests",
+        "value": 200,
+        "price": 1900
+      }
+    ],
+    "locations": [
+      {
+        "location": "Client will provide the address",
+        "location_type": "ask"
+      }
+    ],
+    "currency": "CAD",
+    "availabilityDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "startTime": "09:00",
+    "endTime": "23:59",
+    "eventType": [
+      "All",
+      "Corporate"
+    ],
+    "packageType": "Individual",
+    "bookingUrl": "https://cal.com/bundlebooth/placeholder",
+    "Sale": "Y",
+    "New": "N",
+    "dateAdded": "07-01-2025",
+    "disableGuestsCancelling": true,
+    "disableGuestsRescheduling": true,
+    "disableCalVideoTranscription": true,
+    "disableGuests": true,
+    "color": {
+      "lightThemeHex": "#292929"
+    },
+    "minimumBookingNotice": 20160,
+    "bookerLayouts": {
+      "defaultLayout": "month",
+      "enabledLayouts": [
+        "month"
+      ]
+    },
+    "bookingFields": [
+      {
+        "name": "phoneNumber",
+        "slug": "phoneNumber",
+        "label": "Phone Number",
+        "type": "phone",
+        "required": true,
+        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
+      },
+      {
+        "name": "eventAddress",
+        "slug": "eventAddress",
+        "label": "Event Address",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Please enter the full address where the event will take place"
+      }
+    ],
+    "availability": {
+      "timeZone": "America/Toronto",
+      "schedules": [
+        {
+          "name": "Availability",
+          "timeZone": "America/Toronto",
+          "isDefault": true,
+          "availability": [
+            {
+              "days": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday"
+              ],
+              "startTime": "09:00",
+              "endTime": "23:59"
+            }
+          ]
+        }
+      ]
+    },
+    "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
+    "duration": 3
+  },
+  {
+    "name": "\ud83e\uddc7 Waffle Booth",
+    "slug": "waffle-booth",
+    "ServiceType": "Sweets and Brews",
+    "price": 800,
+    "basePrice": 0,
+    "pricingTiers": [
+      {
+        "label": "50 Guests",
+        "value": 50,
+        "price": 800
+      },
+      {
+        "label": "100 Guests",
+        "value": 100,
+        "price": 1200
+      },
+      {
+        "label": "150 Guests",
+        "value": 150,
+        "price": 1600
+      },
+      {
+        "label": "200 Guests",
+        "value": 200,
+        "price": 2000
+      }
+    ],
+    "locations": [
+      {
+        "location": "Client will provide the address",
+        "location_type": "ask"
+      }
+    ],
+    "currency": "CAD",
+    "availabilityDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "startTime": "09:00",
+    "endTime": "23:59",
+    "eventType": [
+      "All",
+      "Corporate"
+    ],
+    "packageType": "Individual",
+    "bookingUrl": "https://cal.com/bundlebooth/placeholder",
+    "Sale": "Y",
+    "New": "N",
+    "dateAdded": "07-01-2025",
+    "disableGuestsCancelling": true,
+    "disableGuestsRescheduling": true,
+    "disableCalVideoTranscription": true,
+    "disableGuests": true,
+    "color": {
+      "lightThemeHex": "#292929"
+    },
+    "minimumBookingNotice": 20160,
+    "bookerLayouts": {
+      "defaultLayout": "month",
+      "enabledLayouts": [
+        "month"
+      ]
+    },
+    "bookingFields": [
+      {
+        "name": "phoneNumber",
+        "slug": "phoneNumber",
+        "label": "Phone Number",
+        "type": "phone",
+        "required": true,
+        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
+      },
+      {
+        "name": "eventAddress",
+        "slug": "eventAddress",
+        "label": "Event Address",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Please enter the full address where the event will take place"
+      }
+    ],
+    "availability": {
+      "timeZone": "America/Toronto",
+      "schedules": [
+        {
+          "name": "Availability",
+          "timeZone": "America/Toronto",
+          "isDefault": true,
+          "availability": [
+            {
+              "days": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday"
+              ],
+              "startTime": "09:00",
+              "endTime": "23:59"
+            }
+          ]
+        }
+      ]
+    },
+    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings—from fresh fruits and whipped cream to chocolate drizzle and syrups.",
+    "duration": 3
+  },
+  {
+    "name": "\ud83c\udf79 Smoothie Booth",
+    "slug": "smoothie-booth",
+    "ServiceType": "Sweets and Brews",
+    "price": 900,
+    "basePrice": 0,
+    "pricingTiers": [
+      {
+        "label": "50 Guests",
+        "value": 50,
+        "price": 900
+      },
+      {
+        "label": "100 Guests",
+        "value": 100,
+        "price": 1300
+      },
+      {
+        "label": "150 Guests",
+        "value": 150,
+        "price": 1700
+      },
+      {
+        "label": "200 Guests",
+        "value": 200,
+        "price": 2100
+      }
+    ],
+    "locations": [
+      {
+        "location": "Client will provide the address",
+        "location_type": "ask"
+      }
+    ],
+    "currency": "CAD",
+    "availabilityDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "startTime": "09:00",
+    "endTime": "23:59",
+    "eventType": [
+      "All",
+      "Corporate"
+    ],
+    "packageType": "Individual",
+    "bookingUrl": "https://cal.com/bundlebooth/placeholder",
+    "Sale": "Y",
+    "New": "N",
+    "dateAdded": "07-01-2025",
+    "disableGuestsCancelling": true,
+    "disableGuestsRescheduling": true,
+    "disableCalVideoTranscription": true,
+    "disableGuests": true,
+    "color": {
+      "lightThemeHex": "#292929"
+    },
+    "minimumBookingNotice": 20160,
+    "bookerLayouts": {
+      "defaultLayout": "month",
+      "enabledLayouts": [
+        "month"
+      ]
+    },
+    "bookingFields": [
+      {
+        "name": "phoneNumber",
+        "slug": "phoneNumber",
+        "label": "Phone Number",
+        "type": "phone",
+        "required": true,
+        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
+      },
+      {
+        "name": "eventAddress",
+        "slug": "eventAddress",
+        "label": "Event Address",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Please enter the full address where the event will take place"
+      }
+    ],
+    "availability": {
+      "timeZone": "America/Toronto",
+      "schedules": [
+        {
+          "name": "Availability",
+          "timeZone": "America/Toronto",
+          "isDefault": true,
+          "availability": [
+            {
+              "days": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday"
+              ],
+              "startTime": "09:00",
+              "endTime": "23:59"
+            }
+          ]
+        }
+      ]
+    },
+    "description": "Add a fresh, healthy twist to your event with our vibrant Smoothie Booth! We blend delicious smoothies with real fruits, natural ingredients and a variety of add-ins.",
+    "duration": 3
+  },
+  {
+    "name": "\u2728 Sparklers Box",
+    "slug": "sparklers-box",
+    "ServiceType": "Scene Setters",
+    "price": 0,
+    "basePrice": 0,
+    "pricingTiers": [
+      {
+        "label": "2 Sparklers",
+        "value": 2,
+        "price": 400
+      },
+      {
+        "label": "4 Sparklers",
+        "value": 4,
+        "price": 600
+      },
+      {
+        "label": "6 Sparklers",
+        "value": 6,
+        "price": 800
+      }
+    ],
+    "locations": [
+      {
+        "location": "Client will provide the address",
+        "location_type": "ask"
+      }
+    ],
+    "currency": "CAD",
+    "availabilityDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "startTime": "09:00",
+    "endTime": "23:59",
+    "eventType": [
+      "All",
+      "Corporate"
+    ],
+    "packageType": "Individual",
+    "bookingUrl": "https://cal.com/bundlebooth/placeholder",
+    "Sale": "Y",
+    "New": "N",
+    "dateAdded": "07-01-2025",
+    "disableGuestsCancelling": true,
+    "disableGuestsRescheduling": true,
+    "disableCalVideoTranscription": true,
+    "disableGuests": true,
+    "color": {
+      "lightThemeHex": "#292929"
+    },
+    "minimumBookingNotice": 20160,
+    "bookerLayouts": {
+      "defaultLayout": "month",
+      "enabledLayouts": [
+        "month"
+      ]
+    },
+    "bookingFields": [
+      {
+        "name": "phoneNumber",
+        "slug": "phoneNumber",
+        "label": "Phone Number",
+        "type": "phone",
+        "required": true,
+        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
+      },
+      {
+        "name": "eventAddress",
+        "slug": "eventAddress",
+        "label": "Event Address",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Please enter the full address where the event will take place"
+      }
+    ],
+    "availability": {
+      "timeZone": "America/Toronto",
+      "schedules": [
+        {
+          "name": "Availability",
+          "timeZone": "America/Toronto",
+          "isDefault": true,
+          "availability": [
+            {
+              "days": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday"
+              ],
+              "startTime": "09:00",
+              "endTime": "23:59"
+            }
+          ]
+        }
+      ]
+    },
+    "description": "Light up your celebration with our elegant Sparkler Boxes! A stylish station offering guests premium sparklers for that magical photo moment or grand finale.",
+    "duration": 1
+  },
+  {
+    "name": "\u2744\ufe0f Dry Ice Fog",
+    "slug": "dry-ice-fog",
+    "ServiceType": "Scene Setters",
+    "price": 400,
+    "basePrice": 400,
+    "locations": [
+      {
+        "location": "Client will provide the address",
+        "location_type": "ask"
+      }
+    ],
+    "currency": "CAD",
+    "availabilityDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "startTime": "09:00",
+    "endTime": "23:59",
+    "eventType": [
+      "All",
+      "Corporate"
+    ],
+    "packageType": "Individual",
+    "bookingUrl": "https://cal.com/bundlebooth/placeholder",
+    "Sale": "Y",
+    "New": "N",
+    "dateAdded": "07-01-2025",
+    "disableGuestsCancelling": true,
+    "disableGuestsRescheduling": true,
+    "disableCalVideoTranscription": true,
+    "disableGuests": true,
+    "color": {
+      "lightThemeHex": "#292929"
+    },
+    "minimumBookingNotice": 20160,
+    "bookerLayouts": {
+      "defaultLayout": "month",
+      "enabledLayouts": [
+        "month"
+      ]
+    },
+    "bookingFields": [
+      {
+        "name": "phoneNumber",
+        "slug": "phoneNumber",
+        "label": "Phone Number",
+        "type": "phone",
+        "required": true,
+        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
+      },
+      {
+        "name": "eventAddress",
+        "slug": "eventAddress",
+        "label": "Event Address",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Please enter the full address where the event will take place"
+      }
+    ],
+    "availability": {
+      "timeZone": "America/Toronto",
+      "schedules": [
+        {
+          "name": "Availability",
+          "timeZone": "America/Toronto",
+          "isDefault": true,
+          "availability": [
+            {
+              "days": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday"
+              ],
+              "startTime": "09:00",
+              "endTime": "23:59"
+            }
+          ]
+        }
+      ]
+    },
+    "description": "Create a stunning, cinematic atmosphere with our Dry Ice Fog Effect! This low-lying fog adds a magical touch to first dances, stage entrances, or any moment you want to make unforgettable.",
+    "duration": 1
+  },
+  {
+    "name": "\ud83d\udc83 Laser First Dance",
+    "slug": "laser-first-dance",
+    "ServiceType": "Scene Setters",
+    "price": 900,
+    "basePrice": 900,
+    "locations": [
+      {
+        "location": "Client will provide the address",
+        "location_type": "ask"
+      }
+    ],
+    "currency": "CAD",
+    "availabilityDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "startTime": "09:00",
+    "endTime": "23:59",
+    "eventType": [
+      "All",
+      "Corporate"
+    ],
+    "packageType": "Individual",
+    "bookingUrl": "https://cal.com/bundlebooth/placeholder",
+    "Sale": "Y",
+    "New": "N",
+    "dateAdded": "07-01-2025",
+    "disableGuestsCancelling": true,
+    "disableGuestsRescheduling": true,
+    "disableCalVideoTranscription": true,
+    "disableGuests": true,
+    "color": {
+      "lightThemeHex": "#292929"
+    },
+    "minimumBookingNotice": 20160,
+    "bookerLayouts": {
+      "defaultLayout": "month",
+      "enabledLayouts": [
+        "month"
+      ]
+    },
+    "bookingFields": [
+      {
+        "name": "phoneNumber",
+        "slug": "phoneNumber",
+        "label": "Phone Number",
+        "type": "phone",
+        "required": true,
+        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
+      },
+      {
+        "name": "eventAddress",
+        "slug": "eventAddress",
+        "label": "Event Address",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Please enter the full address where the event will take place"
+      }
+    ],
+    "availability": {
+      "timeZone": "America/Toronto",
+      "schedules": [
+        {
+          "name": "Availability",
+          "timeZone": "America/Toronto",
+          "isDefault": true,
+          "availability": [
+            {
+              "days": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday"
+              ],
+              "startTime": "09:00",
+              "endTime": "23:59"
+            }
+          ]
+        }
+      ]
+    },
+    "description": "Make your first dance truly unforgettable with our Laser First Dance Experience! Set beneath a canopy of synchronized laser lights and dreamy effects.",
+    "duration": 1
+  }
+]
