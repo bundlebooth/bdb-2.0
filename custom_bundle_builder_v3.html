@@ -55,7 +55,44 @@
   display: none !important;
 }
 </style>
-</head><body><div class="container"><aside><div class="results-count desktop-results-count" id="desktop-results-count">🎁 No Packages Available</div><div class="filter-section"><div class="filter-header" data-filter="package-type"><h3>Package Type</h3><span class="toggle-icon"></span></div><div class="filter-content" id="package-type-filters"><label><input checked="" name="package-type" type="checkbox" value="All"/>All</label><label><input name="package-type" type="checkbox" value="Bundle"/><span class="tag bundled-tag">Bundled</span></label><label><input name="package-type" type="checkbox" value="Individual"/><span class="tag package-type-tag">Individual</span></label></div></div><div class="filter-section"><div class="filter-header" data-filter="package-options"><h3>Package Options</h3><span class="toggle-icon"></span></div><div class="filter-content" id="package-options-filters"><label><input checked="" name="package-options" type="checkbox" value="All"/>All</label><label><input name="package-options" type="checkbox" value="Sale"/><span class="tag sale-tag">On Sale!</span></label><label><input name="package-options" type="checkbox" value="New"/><span class="tag new-tag">New!</span></label></div></div><div class="filter-section"><div class="filter-header" data-filter="event-type"><h3>Event Type</h3><span class="toggle-icon"></span></div><div class="filter-content" id="event-type-filters"><label><input checked="" name="event-type" type="checkbox" value="All"/>All</label></div></div><div class="filter-section"><div class="filter-header" data-filter="equipment"><h3>Services Type</h3><span class="toggle-icon"></span></div><div class="filter-content" id="equipment-filters"><label><input checked="" name="equipment" type="checkbox" value="All"/>All</label><label><input name="equipment" type="checkbox" value="Photo Booth"/><span class="tag equipment-tag-photo-booth">Photo Booth</span></label><label><input name="equipment" type="checkbox" value="360 Video Booth"/><span class="tag equipment-tag-360-video-booth">360 Video Booth</span></label><label><input name="equipment" type="checkbox" value="Audio Guest Book"/><span class="tag equipment-tag-audio-guest-book">Audio Guest Book</span></label><label><input name="equipment" type="checkbox" value="Magazine Booth Box"/><span class="tag equipment-tag-magazine-photo-booth-box">Magazine Booth Box</span></label><label><input name="equipment" type="checkbox" value="Espresso &amp; Coffee Booth"/><span class="tag equipment-tag-espresso-coffee-booth">Espresso &amp; Coffee Booth</span></label><label><input name="equipment" type="checkbox" value="Waffle Booth"/><span class="tag equipment-tag-waffle-booth">Waffle Booth</span></label><label><input name="equipment" type="checkbox" value="Smoothies Booth"/><span class="tag equipment-tag-smoothies-booth">Smoothies Booth</span></label><label><input name="equipment" type="checkbox" value="Sparkler Boxes"/><span class="tag equipment-tag-sparkler-boxes">Sparkler Boxes</span></label><label><input name="equipment" type="checkbox" value="Dry Ice Fog"/><span class="tag equipment-tag-dry-ice-fog">Dry Ice (Fog Effect)</span></label><label><input name="equipment" type="checkbox" value="Laser First Dance"/><span class="tag equipment-tag-laser-effect-first-dance">Laser First Dance</span></label></div></div><div class="mobile-only-filters"><div class="filter-section"><div class="filter-content" id="general-filters"><label for="mobileGuestFilter">Guests</label><select id="mobileGuestFilter"><option value="">Any</option><option value="50">0-50</option><option value="100">51-100</option><option value="150">101-150</option><option value="200">151-200</option><option value="250">201-250</option><option value="300">251-300</option></select><label for="mobileDurationFilter">Duration (hrs)</label><select id="mobileDurationFilter"><option value="">Any</option></select><label for="mobileMinPrice">Price Min (C$)</label><input id="mobileMinPrice" min="0" placeholder="0" type="number"/><label for="mobileMaxPrice">Price Max (C$)</label><input id="mobileMaxPrice" min="0" placeholder="4000" type="number"/><label for="mobileSortBy">Sort By</label><select id="mobileSortBy"><option value="">Select</option><option value="price-desc">Most Expensive</option><option value="price-asc">Least Expensive</option><option value="date-newest">Date: Newest</option><option value="date-oldest">Date: Oldest</option></select></div></div></div><button class="apply-filters-button" id="apply-filters-button">Apply Filters</button></aside><main><div class="filter-results-wrapper"><button class="filter-toggle-icon" id="filter-toggle-icon" title="Toggle Filters"><svg fill="none" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"></path></svg></button><div class="results-count mobile-results-count" id="mobile-results-count">🎁 No Packages Available</div></div><div id="filters-horizontal"><div><label for="guestFilter">Guest Size</label><select id="guestFilter"><option value="">Any</option><option value="50">0-50</option><option value="100">51-100</option><option value="150">101-150</option><option value="200">151-200</option><option value="250">201-250</option><option value="300">251-300</option></select></div><div><label for="durationFilter">Duration (hrs)</label><select id="durationFilter"><option value="">Any</option></select></div><div><label for="minPrice">Price Min (C$)</label><input id="minPrice" min="0" placeholder="0" type="number"/></div><div><label for="maxPrice">Price Max (C$)</label><input id="maxPrice" min="0" placeholder="4000" type="number"/></div><div><label for="sortBy">Sort By</label><select id="sortBy"><option value="">Select</option><option value="price-desc">Most Expensive</option><option value="price-asc">Least Expensive</option><option value="date-newest">Date: Newest</option><option value="date-oldest">Date: Oldest</option></select></div></div><div class="pagination" id="pagination-top"></div><div id="packages-container" tabindex="0">
+<style>
+#services-list,
+#services-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+</style><style>
+/* Fix container layout */
+.container {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+}
+
+/* Fix main area to allow enough width */
+main {
+  flex-grow: 1;
+  max-width: 100%;
+}
+
+/* Ensure tiles are uniform size regardless of filter panel */
+#services-list,
+#services-container,
+#packages-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  align-items: stretch;
+}
+
+/* Prevent filter sidebar from shrinking or affecting grid */
+aside {
+  flex-shrink: 0;
+  width: 280px;
+  max-width: 280px;
+}
+</style></head><body><div class="container"><aside><div class="results-count desktop-results-count" id="desktop-results-count">🎁 No Packages Available</div><div class="filter-section"><div class="filter-header" data-filter="package-type"><h3>Package Type</h3><span class="toggle-icon"></span></div><div class="filter-content" id="package-type-filters"><label><input checked="" name="package-type" type="checkbox" value="All"/>All</label><label><input name="package-type" type="checkbox" value="Bundle"/><span class="tag bundled-tag">Bundled</span></label><label><input name="package-type" type="checkbox" value="Individual"/><span class="tag package-type-tag">Individual</span></label></div></div><div class="filter-section"><div class="filter-header" data-filter="package-options"><h3>Package Options</h3><span class="toggle-icon"></span></div><div class="filter-content" id="package-options-filters"><label><input checked="" name="package-options" type="checkbox" value="All"/>All</label><label><input name="package-options" type="checkbox" value="Sale"/><span class="tag sale-tag">On Sale!</span></label><label><input name="package-options" type="checkbox" value="New"/><span class="tag new-tag">New!</span></label></div></div><div class="filter-section"><div class="filter-header" data-filter="event-type"><h3>Event Type</h3><span class="toggle-icon"></span></div><div class="filter-content" id="event-type-filters"><label><input checked="" name="event-type" type="checkbox" value="All"/>All</label></div></div><div class="filter-section"><div class="filter-header" data-filter="equipment"><h3>Services Type</h3><span class="toggle-icon"></span></div><div class="filter-content" id="equipment-filters"><label><input checked="" name="equipment" type="checkbox" value="All"/>All</label><label><input name="equipment" type="checkbox" value="Photo Booth"/><span class="tag equipment-tag-photo-booth">Photo Booth</span></label><label><input name="equipment" type="checkbox" value="360 Video Booth"/><span class="tag equipment-tag-360-video-booth">360 Video Booth</span></label><label><input name="equipment" type="checkbox" value="Audio Guest Book"/><span class="tag equipment-tag-audio-guest-book">Audio Guest Book</span></label><label><input name="equipment" type="checkbox" value="Magazine Booth Box"/><span class="tag equipment-tag-magazine-photo-booth-box">Magazine Booth Box</span></label><label><input name="equipment" type="checkbox" value="Espresso &amp; Coffee Booth"/><span class="tag equipment-tag-espresso-coffee-booth">Espresso &amp; Coffee Booth</span></label><label><input name="equipment" type="checkbox" value="Waffle Booth"/><span class="tag equipment-tag-waffle-booth">Waffle Booth</span></label><label><input name="equipment" type="checkbox" value="Smoothies Booth"/><span class="tag equipment-tag-smoothies-booth">Smoothies Booth</span></label><label><input name="equipment" type="checkbox" value="Sparkler Boxes"/><span class="tag equipment-tag-sparkler-boxes">Sparkler Boxes</span></label><label><input name="equipment" type="checkbox" value="Dry Ice Fog"/><span class="tag equipment-tag-dry-ice-fog">Dry Ice (Fog Effect)</span></label><label><input name="equipment" type="checkbox" value="Laser First Dance"/><span class="tag equipment-tag-laser-effect-first-dance">Laser First Dance</span></label></div></div><div class="mobile-only-filters"><div class="filter-section"><div class="filter-content" id="general-filters"><label for="mobileGuestFilter">Guests</label><select id="mobileGuestFilter"><option value="">Any</option><option value="50">0-50</option><option value="100">51-100</option><option value="150">101-150</option><option value="200">151-200</option><option value="250">201-250</option><option value="300">251-300</option></select><label for="mobileDurationFilter">Duration (hrs)</label><select id="mobileDurationFilter"><option value="">Any</option></select><label for="mobileMinPrice">Price Min (C$)</label><input id="mobileMinPrice" min="0" placeholder="0" type="number"/><label for="mobileMaxPrice">Price Max (C$)</label><input id="mobileMaxPrice" min="0" placeholder="4000" type="number"/><label for="mobileSortBy">Sort By</label><select id="mobileSortBy"><option value="">Select</option><option value="price-desc">Most Expensive</option><option value="price-asc">Least Expensive</option><option value="date-newest">Date: Newest</option><option value="date-oldest">Date: Oldest</option></select></div></div></div><button class="apply-filters-button" id="apply-filters-button">Apply Filters</button></aside><main><div class="filter-results-wrapper"><button class="filter-toggle-icon" id="filter-toggle-icon" title="Toggle Filters"><svg fill="none" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"></path></svg></button><div class="results-count mobile-results-count" id="mobile-results-count">🎁 No Packages Available</div></div><div id="filters-horizontal"><div><label for="guestFilter">Guest Size</label><select id="guestFilter"><option value="">Any</option><option value="50">0-50</option><option value="100">51-100</option><option value="150">101-150</option><option value="200">151-200</option><option value="250">201-250</option><option value="300">251-300</option></select></div><div><label for="durationFilter">Duration (hrs)</label><select id="durationFilter"><option value="">Any</option></select></div><div><label for="minPrice">Price Min (C$)</label><input id="minPrice" min="0" placeholder="0" type="number"/></div><div><label for="maxPrice">Price Max (C$)</label><input id="maxPrice" min="0" placeholder="4000" type="number"/></div><div><label for="sortBy">Sort By</label><select id="sortBy"><option value="">Select</option><option value="price-desc">Most Expensive</option><option value="price-asc">Least Expensive</option><option value="date-newest">Date: Newest</option><option value="date-oldest">Date: Oldest</option></select></div></div><div class="pagination" id="pagination-top"></div><div id="packages-container" tabindex="0">
 <div class="package" id="custom-builder-tile" onclick="openCustomBuilder()" style="cursor:pointer;">
 <div class="package-content">
 <h3>✨ Build Your Own Bundle</h3>
@@ -284,8 +321,6 @@ function openCustomBuilder() {
   }
 }
 </script>
-
-
 <script>
 let selectedCustomBundle = null;
 
@@ -394,8 +429,6 @@ function openCustomBuilder() {
   }
 }
 </script>
-
-
 <script>
 let selectedCustomBundle = null;
 
@@ -490,8 +523,6 @@ function openCustomBuilder() {
   }
 }
 </script>
-
-
 <script>
 let selectedCustomBundle = null;
 let selectedServices = [];
@@ -739,8 +770,6 @@ document.getElementById("review-button").addEventListener("click", () => {
 .progress-bar div { flex: 1; padding: 10px; background: #ddd; border-radius: 6px; text-align: center; }
 .progress-bar .active { background: #3498db; color: white; font-weight: bold; }
 </style>
-
-
 <script>
 function loadServices() {
   const container = document.getElementById("services-container");
@@ -805,8 +834,6 @@ function loadServices() {
     });
 }
 </script>
-
-
 <script>
 function loadServices() {
   const container = document.getElementById("services-container");
@@ -870,5 +897,43 @@ function loadServices() {
     });
 }
 </script>
+<script>
+function renderBuilderServices(services) {
+  const servicesContainer = document.getElementById("services-container");
+  servicesContainer.innerHTML = "";
 
-</body></html>
+  services.forEach(service => {
+    const card = document.createElement("div");
+    card.className = "package";
+
+    const tagClass = service.packageType === "Bundle" ? "bundled-tag" : "package-type-tag";
+    const guests = service.guests || "Custom";
+    const duration = service.duration || "Custom";
+    const price = service.price ? `C$${service.price}` : "Custom Pricing";
+    const note = service.note || "";
+
+    card.innerHTML = \`
+      <div class="compare-message" style="display:none;"></div>
+      <div class="package-content">
+        <h3>\${service.icon || "🧩"} \${service.name}</h3>
+        <span class="\${tagClass}">\${service.packageType || "Service"}</span>
+        <p class="description">\${service.description}</p>
+        <p><strong>Guests:</strong> \${guests}</p>
+        <p><strong>Duration:</strong> \${duration}</p>
+        <p><strong>Price:</strong> \${price}</p>
+        <div class="equipment-tags">\${(service.equipment || []).map(eq =>
+          `<span class="equipment-tag-photo-booth">\${eq}</span>`).join("")}
+        </div>
+        <p class="package-note">\${note}</p>
+        <button class="book-now-button">Add Service</button>
+      </div>
+    \`;
+
+    card.querySelector(".book-now-button").addEventListener("click", () => {
+      alert(\`Added \${service.name}\`);
+    });
+
+    servicesContainer.appendChild(card);
+  });
+}
+</script></body></html>
