@@ -936,4 +936,49 @@ function renderBuilderServices(services) {
     servicesContainer.appendChild(card);
   });
 }
+</script><script>
+document.addEventListener("DOMContentLoaded", () => {
+  const step2 = document.getElementById("step-2");
+  const servicesContainer = document.getElementById("services-container");
+
+  // Example selected service state
+  let selectedServices = [];
+  let mostRecentService = null;
+
+  // When services are loaded dynamically, they should be rendered with class "package"
+  // so we'll delegate click handling to container
+  servicesContainer.addEventListener("click", function(e) {
+    const card = e.target.closest(".package");
+    if (!card || !servicesContainer.contains(card)) return;
+
+    const id = card.dataset.index || card.getAttribute("data-id") || card.id;
+
+    if (card.classList.contains("selected")) {
+      card.classList.remove("selected", "most-recent");
+      selectedServices = selectedServices.filter(s => s !== id);
+      if (mostRecentService === id) {
+        mostRecentService = selectedServices.length > 0 ? selectedServices[selectedServices.length - 1] : null;
+      }
+    } else {
+      card.classList.add("selected");
+      selectedServices.push(id);
+      mostRecentService = id;
+    }
+
+    // Update all service tiles
+    document.querySelectorAll("#services-container .package").forEach(pkg => {
+      const pkgId = pkg.dataset.index || pkg.getAttribute("data-id") || pkg.id;
+      pkg.classList.toggle("most-recent", pkgId === mostRecentService);
+      pkg.querySelector(".compare-message")?.remove();
+      if (pkg.classList.contains("most-recent")) {
+        const msg = document.createElement("div");
+        msg.className = "compare-message";
+        msg.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px;fill:#3498db;margin-right:10px" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 15a1 1 0 110-2 1 1 0 010 2zm1-4h-2V7h2v6z"/></svg>' +
+          '<span class="compare-bar-count">' + selectedServices.length + ' Selected</span>' +
+          '<span class="compare-bar-message">Service added to your bundle</span>';
+        pkg.insertBefore(msg, pkg.firstChild);
+      }
+    });
+  });
+});
 </script></body></html>
