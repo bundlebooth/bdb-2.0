@@ -2,7 +2,7 @@
   {
     "name": "Deluxe Wedding Bundle",
     "slug": "deluxe-wedding-bundle",
-    "description": "For weddings with glam and customization",
+    "description": "TEST1 For weddings with glam and customization",
     "price": 2200,
     "packageType": "Bundle",
     "categories": {
@@ -14,7 +14,7 @@
   {
     "name": "Corporate Essentials",
     "slug": "corporate-essentials",
-    "description": "Professional-grade booths and effects for corporate events.",
+    "description": "TEST2 Professional-grade booths and effects for corporate events.",
     "price": 1600,
     "packageType": "Bundle",
     "categories": {
