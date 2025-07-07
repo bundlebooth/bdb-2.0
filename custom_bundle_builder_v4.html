@@ -1167,6 +1167,58 @@
     .compare-table .features-overlay {
       display: none !important;
     }
+    /* Step navigation styles */
+    #progress-bar {
+      margin: 20px 0;
+      display: flex;
+      justify-content: center;
+    }
+    #progress-bar > div {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      border-bottom: 4px solid #ccc;
+      color: #999;
+      font-weight: normal;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    #progress-bar > div.active {
+      border-bottom-color: #3498db;
+      color: #3498db;
+      font-weight: bold;
+    }
+    /* Review step styles */
+    .review-section {
+      background: #f8f9fa;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+    .review-section h3 {
+      margin-top: 0;
+    }
+    .review-section ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+    .review-section li {
+      margin-bottom: 8px;
+    }
+    .price-summary {
+      font-size: 16px;
+    }
+    .price-summary strong {
+      font-weight: 600;
+    }
+    .discount-price {
+      color: #2ecc71;
+      font-weight: 600;
+    }
+    .original-price {
+      text-decoration: line-through;
+      color: #666;
+    }
   </style>
   <script type="text/javascript">(function(C,A,L){let p=function(a,ar){a.q.push(ar);};let d=C.document;C.Cal=C.Cal||function(){let cal=C.Cal;let ar=arguments;if(!cal.loaded){cal.ns={};cal.q=cal.q||[];d.head.appendChild(d.createElement("script")).src=A;cal.loaded=true;}if(ar[0]===L){const api=function(){p(api,arguments);};const namespace=ar[1];api.q=api.q||[];if(typeof namespace==="string"){cal.ns[namespace]=cal.ns[namespace]||api;p(cal.ns[namespace],ar);p(cal,["initNamespace",namespace]);}else p(cal,ar);return;}p(cal,ar);};})(window,"https://app.cal.com/embed/embed.js","init");</script>
 </head>
@@ -2063,7 +2115,7 @@
     }
 
     function renderProgressBar(currentStep) {
-      const steps = ["Choose a Bundle", "Select Services"];
+      const steps = ["Choose a Bundle", "Select Services", "Review & Book"];
       return `
         <div id="progress-bar" style="display:flex;justify-content:center;margin:20px 0;">
           ${steps.map((step, i) => `
@@ -2075,10 +2127,18 @@
               color:${i === currentStep ? '#3498db' : '#999'};
               font-weight:${i === currentStep ? 'bold' : 'normal'};
               font-size:14px;
-            ">Step ${i + 1}: ${step}</div>
+              cursor: ${i <= currentStep ? 'pointer' : 'default'};
+            " onclick="${i <= currentStep ? `navigateToStep(${i})` : ''}">Step ${i + 1}: ${step}</div>
           `).join("")}
         </div>
       `;
+    }
+
+    function navigateToStep(stepIndex) {
+      document.querySelectorAll('.step').forEach((el, i) => {
+        el.style.display = i === stepIndex ? 'block' : 'none';
+      });
+      document.getElementById('progress-bar').outerHTML = renderProgressBar(stepIndex);
     }
 
     function injectCustomBuilderTile() {
@@ -2124,7 +2184,17 @@
           <div id="progress-bars-container" style="margin-bottom:20px;"></div>
           <div id="compare-warning" class="compare-message" style="display:none;"></div>
           <div id="services-container" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">Loading services...</div>
-          <button id="review-selection" style="display:none;margin-top:20px;" class="book-now-button">Review Selection</button>
+          <button id="proceed-to-review" style="display:none;margin-top:20px;" class="book-now-button">Proceed to Review</button>
+        </div>
+        <div class="step" id="step-3" style="display:none;">
+          <h2 style="margin-bottom:16px;">Step 3: Review Your Selection</h2>
+          <div id="review-container" style="margin-bottom:20px;">
+            <div id="bundle-summary" style="background:#f8f9fa;padding:16px;border-radius:8px;margin-bottom:16px;"></div>
+            <div id="services-summary" style="background:#f8f9fa;padding:16px;border-radius:8px;margin-bottom:16px;"></div>
+            <div id="price-summary" style="background:#f8f9fa;padding:16px;border-radius:8px;margin-bottom:16px;"></div>
+          </div>
+          <button id="back-to-services" class="book-now-button" style="background:#666;margin-right:10px;">Back to Services</button>
+          <button id="book-now" class="book-now-button">Book Now</button>
         </div>
       `;
       initCustomBuilderLogic();
@@ -2272,17 +2342,33 @@
         updateAllProgressBars();
         hideCompareWarning();
         
-        // Show/hide review button based on selections
-        document.getElementById('review-selection').style.display = 
-          selectedServices.length > 0 ? 'block' : 'none';
+        // Show/hide proceed button based on selections
+        document.getElementById('proceed-to-review').style.display = 
+          validateSelection() ? 'block' : 'none';
       }
 
       function getSelectedCount(category) {
         return selectedServices.filter(s => s.ServiceType === category).length;
       }
 
+      function validateSelection() {
+        if (!selectedBundle) return false;
+        
+        // Check if all category requirements are met
+        for (const [category, limit] of Object.entries(selectedBundle.categories)) {
+          const selectedCount = getSelectedCount(category);
+          if (selectedCount < limit) {
+            return false;
+          }
+        }
+        
+        return true;
+      }
+
       function updateAllProgressBars() {
         if (!selectedBundle) return;
+        
+        let allRequirementsMet = true;
         
         Object.entries(selectedBundle.categories).forEach(([category, limit]) => {
           const categoryId = category.toLowerCase().replace(/\s+/g, '-');
@@ -2295,7 +2381,6 @@
           if (progressBar) {
             progressBar.style.width = `${percent}%`;
             progressBar.style.backgroundColor = percent === 100 ? '#2ecc71' : '#3498db';
-            progressBar.style.transition = 'width 0.3s ease, background-color 0.3s ease';
           }
           
           if (countSpan) {
@@ -2303,7 +2388,17 @@
             countSpan.style.color = percent === 100 ? '#2ecc71' : '#3498db';
             countSpan.style.fontWeight = 'bold';
           }
+          
+          if (selectedCount < limit) {
+            allRequirementsMet = false;
+          }
         });
+        
+        // Show proceed button only when all requirements are met
+        const proceedBtn = document.getElementById('proceed-to-review');
+        if (proceedBtn) {
+          proceedBtn.style.display = allRequirementsMet ? 'block' : 'none';
+        }
       }
 
       function showCompareWarning(category, limit) {
@@ -2323,16 +2418,87 @@
         document.getElementById("compare-warning").style.display = "none";
       }
 
+      function renderReviewStep() {
+        if (!selectedBundle || selectedServices.length === 0) return;
+        
+        // Bundle summary
+        document.getElementById('bundle-summary').innerHTML = `
+          <h3 style="margin-top:0;">${selectedBundle.name}</h3>
+          <p>${selectedBundle.description || "No description provided."}</p>
+        `;
+        
+        // Services summary
+        const servicesByCategory = {};
+        selectedServices.forEach(service => {
+          if (!servicesByCategory[service.ServiceType]) {
+            servicesByCategory[service.ServiceType] = [];
+          }
+          servicesByCategory[service.ServiceType].push(service);
+        });
+        
+        let servicesHTML = '';
+        for (const [category, services] of Object.entries(servicesByCategory)) {
+          servicesHTML += `
+            <div style="margin-bottom:12px;">
+              <h4 style="margin-bottom:8px;">${category}</h4>
+              <ul style="margin-top:0;">
+                ${services.map(service => `
+                  <li>${service.name} - C$${service.price || 'Contact for pricing'}</li>
+                `).join('')}
+              </ul>
+            </div>
+          `;
+        }
+        document.getElementById('services-summary').innerHTML = servicesHTML;
+        
+        // Price summary
+        const totalPrice = selectedServices.reduce((sum, service) => sum + (service.price || 0), 0);
+        const discount = selectedBundle.discount || 0;
+        const discountedPrice = totalPrice * (1 - discount / 100);
+        
+        document.getElementById('price-summary').innerHTML = `
+          <h4 style="margin-top:0;">Pricing Summary</h4>
+          <p><strong>Subtotal:</strong> C$${totalPrice.toFixed(2)}</p>
+          ${discount > 0 ? `
+            <p><strong>Bundle Discount (${discount}%):</strong> -C$${(totalPrice * discount / 100).toFixed(2)}</p>
+          ` : ''}
+          <p><strong>Total Price:</strong> C$${discountedPrice.toFixed(2)}</p>
+        `;
+      }
+
+      function bookCustomBundle() {
+        // Here you would implement the actual booking logic
+        // For now, we'll just show a confirmation
+        const totalPrice = selectedServices.reduce((sum, service) => sum + (service.price || 0), 0);
+        const discount = selectedBundle.discount || 0;
+        const discountedPrice = totalPrice * (1 - discount / 100);
+        
+        alert(`Your custom bundle has been submitted for booking!\n\nTotal Price: C$${discountedPrice.toFixed(2)}\n\nWe'll contact you shortly to confirm your booking.`);
+        
+        // In a real implementation, you would:
+        // 1. Send the selection to your backend
+        // 2. Redirect to a booking page or open a calendar
+        // 3. Handle payment processing
+      }
+
       // Initialize the builder
       (async () => {
         await fetchBundles();
         await fetchServices();
         
-        // Add event listener for review button
-        document.getElementById('review-selection')?.addEventListener('click', () => {
-          alert(`You've selected ${selectedServices.length} services:\n\n` +
-            selectedServices.map(s => `• ${s.name} (${s.ServiceType})`).join('\n'));
+        // Add event listeners for navigation
+        document.getElementById('proceed-to-review')?.addEventListener('click', () => {
+          if (validateSelection()) {
+            renderReviewStep();
+            navigateToStep(2);
+          }
         });
+
+        document.getElementById('back-to-services')?.addEventListener('click', () => {
+          navigateToStep(1);
+        });
+
+        document.getElementById('book-now')?.addEventListener('click', bookCustomBundle);
       })();
     }
 
