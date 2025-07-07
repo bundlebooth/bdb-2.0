@@ -1,23 +1,25 @@
 [
   {
-    "name": "Starter Celebration",
-    "slug": "starter-celebration",
-    "price": 799,
-    "description": "Perfect for small events and private parties.",
+    "name": "Deluxe Wedding Bundle",
+    "slug": "deluxe-wedding-bundle",
+    "description": "For weddings with glam and customization",
+    "price": 2200,
+    "packageType": "Bundle",
     "categories": {
-      "Interactive Booths": 1,
-      "Scene Setters": 1
+      "Interactive Booths": 2,
+      "Scene Setters": 1,
+      "Sweets and Brews": 1
     }
   },
   {
-    "name": "Deluxe Wedding Bundle",
-    "slug": "deluxe-wedding",
-    "price": 1999,
-    "description": "Ideal for weddings with all the glam included.",
+    "name": "Corporate Essentials",
+    "slug": "corporate-essentials",
+    "description": "Professional-grade booths and effects for corporate events.",
+    "price": 1600,
+    "packageType": "Bundle",
     "categories": {
-      "Interactive Booths": 2,
-      "Scene Setters": 2,
-      "Sweets and Brews": 1
+      "Interactive Booths": 1,
+      "Scene Setters": 1
     }
   }
 ]
