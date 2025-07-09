@@ -1,7 +1,8 @@
 require('dotenv').config(); // Add this at the top
 const express = require('express');
 const bodyParser = require('body-parser');
-const SibApiV3Sdk = require('sib-api-v3-sdk');
+const brevo = require('@getbrevo/brevo');
+const defaultClient = brevo.ApiClient.instance;
 const cors = require('cors'); // Add CORS support
 const app = express();
 
