@@ -5,9 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BundleBooth - Review & Book</title>
     <script src="https://js.stripe.com/v3/"></script>
-    <script type="text/javascript">(function(e,t,n){let p=function(t,r){t.q.push(r)};let d=e.document;e.Cal=e.Cal||function(){let t=e.Cal;let r=arguments;if(!t.loaded){t.ns={};t.q=t.q||[];d.head.appendChild(d.createElement("script")).src=t;t.loaded=true}if(r[0]===n){const i=function(){p(i,arguments)};const s=r[1];i.q=i.q||[];typeof s==="string"?(t.ns[s]=t.ns[s]||i):p(t,r);p(t.ns[s],r);p(t,["initNamespace",s])}else p(t,r)}})(window,"https://app.cal.com/embed/embed.js","init");</script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
+            --primary: #3E63DD;
+            --primary-dark: #2F4FBD;
+            --text: #2E2E2E;
+            --text-light: #666;
+            --border: #E5E7EB;
+            --bg: #F9FAFB;
+            --success: #2ECC71;
+            --error: #E74C3C;
             --bb-blue: #333;
             --bb-red: #e74c3c;
             --bb-light: #f4f4f4;
@@ -15,43 +23,27 @@
             --bb-green: #2ecc71;
             --bb-accent: #3498db;
         }
+        
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
             font-family: 'Poppins', sans-serif;
         }
+        
         body {
-            margin: 0;
-            padding: 20px;
-            background: var(--bb-light);
-            color: var(--bb-dark);
-            line-height: 1.5;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
         }
+        
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 20px;
         }
-        #progress-bar {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0;
-        }
-        #progress-bar div {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            border-bottom: 4px solid #ccc;
-            color: #999;
-            font-size: 14px;
-        }
-        #progress-bar div.active {
-            border-bottom-color: var(--bb-blue);
-            color: var(--bb-blue);
-            font-weight: bold;
-        }
+        
+        /* Summary Card Styles */
         .summary-card {
             background: #fff;
             border-radius: 12px;
@@ -59,6 +51,7 @@
             margin-bottom: 20px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
+        
         .summary-header {
             display: flex;
             justify-content: space-between;
@@ -67,31 +60,38 @@
             padding-bottom: 12px;
             border-bottom: 1px solid #eee;
         }
+        
         .summary-title {
             font-size: 1.2rem;
             font-weight: 600;
             color: var(--bb-blue);
         }
+        
         .summary-price {
             font-size: 1.2rem;
             font-weight: 600;
             color: var(--bb-green);
         }
+        
         .service-item {
             display: flex;
             justify-content: space-between;
             padding: 12px 0;
             border-bottom: 1px solid #f5f5f5;
         }
+        
         .service-item:last-child {
             border-bottom: none;
         }
+        
         .service-name {
             font-weight: 500;
         }
+        
         .service-price {
             color: var(--bb-dark);
         }
+        
         .total-row {
             display: flex;
             justify-content: space-between;
@@ -101,12 +101,14 @@
             font-weight: 600;
             font-size: 1.1rem;
         }
+        
         .discount-row {
             display: flex;
             justify-content: space-between;
             margin-top: 8px;
             color: var(--bb-green);
         }
+        
         .final-total {
             display: flex;
             justify-content: space-between;
@@ -117,14 +119,18 @@
             font-size: 1.3rem;
             color: var(--bb-green);
         }
+        
+        /* Form Styles */
         .form-group {
             margin-bottom: 16px;
         }
+        
         .form-group label {
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
         }
+        
         .form-group input,
         .form-group select,
         .form-group textarea {
@@ -134,21 +140,203 @@
             border-radius: 6px;
             font-size: 14px;
         }
+        
         .form-group textarea {
             min-height: 100px;
         }
+        
         .form-row {
             display: flex;
             gap: 16px;
         }
+        
         .form-row .form-group {
             flex: 1;
         }
+        
+        /* Calendar Booking Styles */
+        .booking-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        
+        .calendar-section {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+            border-right: 1px solid var(--border);
+        }
+        
+        .times-section {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .calendar-header h2 {
+            font-size: 20px;
+        }
+        
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .calendar-nav button {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .calendar-nav button:hover {
+            background: var(--bg);
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--text-light);
+            padding: 5px;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .calendar-day:hover {
+            background-color: var(--bg);
+        }
+        
+        .calendar-day.selected {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .calendar-day.disabled {
+            color: #CCC;
+            cursor: not-allowed;
+        }
+        
+        .calendar-day.today {
+            font-weight: bold;
+            position: relative;
+        }
+        
+        .calendar-day.today::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background-color: var(--primary);
+        }
+        
+        .calendar-day.selected.today::after {
+            background-color: white;
+        }
+        
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .time-slot {
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .time-slot:hover {
+            border-color: var(--primary);
+        }
+        
+        .time-slot.selected {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .time-slot.unavailable {
+            background-color: var(--bg);
+            color: var(--text-light);
+            cursor: not-allowed;
+            text-decoration: line-through;
+        }
+        
+        .timezone-info {
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--text-light);
+            text-align: center;
+        }
+        
+        /* Payment Form Styles */
+        #stripe-payment-form {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        #card-element {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            margin-bottom: 20px;
+        }
+        
+        #payment-errors {
+            color: var(--bb-red);
+            margin-bottom: 15px;
+        }
+        
+        /* Action Buttons */
         .action-buttons {
             display: flex;
             gap: 12px;
             margin-top: 24px;
         }
+        
         .book-now-button {
             display: inline-block;
             padding: 12px 24px;
@@ -162,17 +350,22 @@
             font-size: 16px;
             transition: all 0.3s;
         }
+        
         .book-now-button:hover {
             background: var(--bb-accent);
             transform: translateY(-2px);
         }
+        
         .back-button {
             background: #f0f0f0;
             color: var(--bb-dark);
         }
+        
         .back-button:hover {
             background: #e0e0e0;
         }
+        
+        /* Confirmation Message */
         .confirmation-message {
             background: #f8f9fa;
             padding: 20px;
@@ -181,11 +374,13 @@
             text-align: center;
             display: none;
         }
+        
         .confirmation-icon {
             font-size: 48px;
             color: var(--bb-green);
             margin-bottom: 16px;
         }
+        
         .service-category {
             display: inline-block;
             background: #f0f0f0;
@@ -195,6 +390,7 @@
             margin-left: 8px;
             color: #666;
         }
+        
         .package-notes {
             margin-top: 24px;
             padding: 12px;
@@ -202,48 +398,38 @@
             border-radius: 6px;
             font-size: 14px;
         }
-        #stripe-payment-form {
-            margin-top: 20px;
-            padding: 20px;
-            background: #f9f9f9;
-            border-radius: 8px;
-            display: none;
-        }
-        #card-element {
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background: white;
-            margin-bottom: 20px;
-        }
-        #payment-errors {
-            color: var(--bb-red);
-            margin-bottom: 15px;
-        }
+        
         @media (max-width: 768px) {
             .form-row {
                 flex-direction: column;
                 gap: 0;
             }
+            
             .action-buttons {
                 flex-direction: column;
             }
+            
             .action-buttons button {
                 width: 100%;
+            }
+            
+            .booking-container {
+                flex-direction: column;
+            }
+            
+            .calendar-section {
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+            
+            .time-slots {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div id="progress-bar">
-            <div>Step 1: Choose a Bundle</div>
-            <div>Step 2: Select Services</div>
-            <div class="active">Step 3: Review & Book</div>
-        </div>
-
-        <h2>Step 3: Review & Book</h2>
-        
         <div class="summary-card">
             <div class="summary-header">
                 <div class="summary-title">Your Custom Bundle</div>
@@ -272,13 +458,13 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="event-name">Event Name</label>
-                        <input type="text" id="event-name" required>
+                        <input type="text" id="event-name" required value="Sarah & Michael's Wedding">
                     </div>
                     <div class="form-group">
                         <label for="event-type">Event Type</label>
                         <select id="event-type" required>
                             <option value="">Select Event Type</option>
-                            <option value="Wedding">Wedding</option>
+                            <option value="Wedding" selected>Wedding</option>
                             <option value="Corporate">Corporate Event</option>
                             <option value="Birthday">Birthday Party</option>
                             <option value="Other">Other</option>
@@ -288,57 +474,104 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="event-date">Event Date</label>
-                        <input type="date" id="event-date" required>
+                        <input type="date" id="event-date" required value="2024-12-15">
                     </div>
                     <div class="form-group">
                         <label for="event-duration">Duration (hours)</label>
-                        <input type="number" id="event-duration" min="1" max="12" value="4" required>
+                        <input type="number" id="event-duration" min="1" max="12" value="6" required>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label for="guest-count">Estimated Guest Count</label>
-                        <input type="number" id="guest-count" min="10" max="500" value="100" required>
+                        <input type="number" id="guest-count" min="10" max="500" value="150" required>
                     </div>
                     <div class="form-group">
                         <label for="event-location">Event Location</label>
-                        <input type="text" id="event-location" placeholder="Venue name or address" required>
+                        <input type="text" id="event-location" placeholder="Venue name or address" required value="Grand Ballroom, The Ritz Hotel">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="special-requests">Special Requests or Notes</label>
-                    <textarea id="special-requests" placeholder="Any additional requirements or notes for our team"></textarea>
+                    <textarea id="special-requests" placeholder="Any additional requirements or notes for our team">We would like a vintage photo booth setup with props matching our 1920s theme. Please ensure the booth is set up near the dance floor.</textarea>
                 </div>
                 <div class="form-group">
                     <label for="contact-name">Your Name</label>
-                    <input type="text" id="contact-name" required>
+                    <input type="text" id="contact-name" required value="Sarah Johnson">
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label for="contact-email">Email</label>
-                        <input type="email" id="contact-email" required>
+                        <input type="email" id="contact-email" required value="sarah.johnson@example.com">
                     </div>
                     <div class="form-group">
                         <label for="contact-phone">Phone Number</label>
-                        <input type="tel" id="contact-phone" required>
+                        <input type="tel" id="contact-phone" required value="(555) 123-4567">
                     </div>
                 </div>
             </form>
         </div>
 
+        <!-- Calendar Booking Section -->
+        <div class="booking-container">
+            <div class="calendar-section">
+                <div class="calendar-header">
+                    <h2 id="current-month">June 2023</h2>
+                    <div class="calendar-nav">
+                        <button id="prev-month"><</button>
+                        <button id="next-month">></button>
+                    </div>
+                </div>
+                
+                <div class="calendar-grid" id="day-headers">
+                    <div class="calendar-day-header">Sun</div>
+                    <div class="calendar-day-header">Mon</div>
+                    <div class="calendar-day-header">Tue</div>
+                    <div class="calendar-day-header">Wed</div>
+                    <div class="calendar-day-header">Thu</div>
+                    <div class="calendar-day-header">Fri</div>
+                    <div class="calendar-day-header">Sat</div>
+                </div>
+                
+                <div class="calendar-grid" id="calendar-days"></div>
+            </div>
+            
+            <div class="times-section">
+                <h2>Available Times</h2>
+                <p id="selected-date">Select a date to see available times</p>
+                
+                <div class="time-slots" id="time-slots">
+                    <!-- Time slots will be dynamically inserted here -->
+                </div>
+                
+                <div class="timezone-info">
+                    Times are shown in your local timezone: <span id="timezone">Detecting...</span>
+                </div>
+            </div>
+        </div>
+
         <!-- Stripe Payment Form (hidden by default) -->
         <div id="stripe-payment-form">
             <h3>Payment Information</h3>
+            <p>Test Payment Amount: <strong>$0.50</strong></p>
             <div id="payment-errors"></div>
             <div id="card-element"></div>
-            <button id="submit-payment" class="book-now-button">Pay Deposit (50%)</button>
+            <button id="submit-payment" class="book-now-button">Pay $0.50 Now</button>
+            <div style="margin-top: 15px; font-size: 13px; color: #666;">
+                <p><strong>Test Card Numbers:</strong></p>
+                <ul style="margin-top: 5px;">
+                    <li>4242 4242 4242 4242 - Visa (success)</li>
+                    <li>4000 0000 0000 3220 - 3D Secure required</li>
+                    <li>4000 0000 0000 9995 - Will decline</li>
+                </ul>
+            </div>
         </div>
         
         <div class="package-notes">
             <p><strong>Important Notes:</strong></p>
             <ul>
                 <li>Your booking is not confirmed until payment is received</li>
-                <li>A 50% deposit is required to secure your date</li>
+                <li>This is a test payment of $0.50</li>
                 <li>Final guest count and details must be confirmed 14 days before your event</li>
             </ul>
         </div>
@@ -350,14 +583,20 @@
         
         <div class="confirmation-message" id="confirmation-message">
             <div class="confirmation-icon">✓</div>
-            <h3>Booking Request Submitted!</h3>
-            <p>Thank you for your custom bundle request. Our team will review your selections and contact you within 24 hours to confirm availability and finalize your booking.</p>
-            <p>A confirmation email has been sent to <span id="sent-email"></span> with your bundle details.</p>
+            <h3>Booking Confirmed!</h3>
+            <p>Thank you for your booking. Your payment of $0.50 was successful.</p>
+            <p>A confirmation email has been sent to <span id="sent-email">sarah.johnson@example.com</span> with your booking details.</p>
             <button class="book-now-button" id="new-bundle-button">Create Another Bundle</button>
         </div>
     </div>
 
     <script>
+        // Initialize Stripe with your test key
+        const stripe = Stripe('pk_test_51Rijz8FJtS8tRcsDMLlOODCVKyY0HupDrxiw7nSWUYQymKml5YM4Nwj9O7WrGyPUd9TAhchuL0MfEWbtTWUrlqlc00KSoZn1Th');
+        const elements = stripe.elements();
+        const cardElement = elements.create('card');
+        cardElement.mount('#card-element');
+
         // Sample data for testing
         const selectedServices = [
             {
@@ -374,34 +613,255 @@
             }
         ];
 
-        // Initialize Cal.com
-        Cal('init', {
-            origin: 'https://cal.com'
-        });
+        // Calendar Configuration
+        const config = {
+            workingHours: {
+                start: 9, // 9am
+                end: 17   // 5pm
+            },
+            slotDuration: 30, // minutes
+            unavailableSlots: [], // Will be populated from Google Calendar
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+        };
 
-        // Initialize Stripe (replace with your publishable key)
-        const stripe = Stripe('pk_test_your_publishable_key_here');
-        const elements = stripe.elements();
-        const cardElement = elements.create('card');
-        cardElement.mount('#card-element');
+        // DOM Elements
+        const domElements = {
+            currentMonth: document.getElementById('current-month'),
+            calendarDays: document.getElementById('calendar-days'),
+            prevMonth: document.getElementById('prev-month'),
+            nextMonth: document.getElementById('next-month'),
+            selectedDate: document.getElementById('selected-date'),
+            timeSlots: document.getElementById('time-slots'),
+            timezone: document.getElementById('timezone'),
+            bookButton: document.getElementById('book-button'),
+            // Other elements
+            subtotalPrice: document.getElementById('subtotal-price'),
+            discountAmount: document.getElementById('discount-amount'),
+            finalTotalPrice: document.getElementById('final-total-price'),
+            bundleTotalPrice: document.getElementById('bundle-total-price'),
+            selectedServicesList: document.getElementById('selected-services-list'),
+            submitBooking: document.getElementById('submit-booking'),
+            submitPayment: document.getElementById('submit-payment'),
+            stripePaymentForm: document.getElementById('stripe-payment-form'),
+            confirmationMessage: document.getElementById('confirmation-message'),
+            backToServices: document.getElementById('back-to-services'),
+            newBundleButton: document.getElementById('new-bundle-button'),
+            sentEmail: document.getElementById('sent-email')
+        };
+
+        // State
+        let state = {
+            currentDate: new Date(),
+            selectedDate: null,
+            selectedTime: null,
+            events: [], // Will store busy times from Google Calendar
+            // Other state
+            bookingConfirmed: false
+        };
+
+        // Initialize
+        function init() {
+            domElements.timezone.textContent = config.timezone;
+            renderCalendar();
+            setupEventListeners();
+            updatePrices();
+            renderServicesList();
+            // In a real app, you would fetch busy times from your calendar API here
+            simulateFetchBusyTimes();
+        }
+
+        // Render the calendar
+        function renderCalendar() {
+            domElements.calendarDays.innerHTML = '';
+            
+            const year = state.currentDate.getFullYear();
+            const month = state.currentDate.getMonth();
+            
+            // Update month header
+            domElements.currentMonth.textContent = new Date(year, month).toLocaleDateString('en-US', {
+                month: 'long',
+                year: 'numeric'
+            });
+            
+            // Get first day of month and total days
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            // Get days from previous month
+            const prevMonthDays = new Date(year, month, 0).getDate();
+            
+            // Render days
+            let day = 1;
+            let nextMonthDay = 1;
+            const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
+            
+            for (let i = 0; i < totalCells; i++) {
+                const date = new Date(year, month, day);
+                const cell = document.createElement('div');
+                
+                if (i < firstDay) {
+                    // Previous month
+                    const prevDay = prevMonthDays - (firstDay - i - 1);
+                    cell.textContent = prevDay;
+                    cell.classList.add('calendar-day', 'disabled');
+                } else if (day > daysInMonth) {
+                    // Next month
+                    cell.textContent = nextMonthDay++;
+                    cell.classList.add('calendar-day', 'disabled');
+                } else {
+                    // Current month
+                    cell.textContent = day;
+                    cell.classList.add('calendar-day');
+                    
+                    // Check if today
+                    const today = new Date();
+                    if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                        cell.classList.add('today');
+                    }
+                    
+                    // Check if selected
+                    if (state.selectedDate && 
+                        day === state.selectedDate.getDate() && 
+                        month === state.selectedDate.getMonth() && 
+                        year === state.selectedDate.getFullYear()) {
+                        cell.classList.add('selected');
+                    }
+                    
+                    // Check if date is in the past
+                    if (date < new Date(new Date().setHours(0, 0, 0, 0))) {
+                        cell.classList.add('disabled');
+                    }
+                    
+                    day++;
+                }
+                
+                domElements.calendarDays.appendChild(cell);
+            }
+        }
+
+        // Render time slots for selected date
+        function renderTimeSlots() {
+            domElements.timeSlots.innerHTML = '';
+            
+            if (!state.selectedDate) {
+                domElements.selectedDate.textContent = 'Select a date to see available times';
+                return;
+            }
+            
+            // Format selected date
+            domElements.selectedDate.textContent = state.selectedDate.toLocaleDateString('en-US', {
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric'
+            });
+            
+            // Generate time slots
+            const startHour = config.workingHours.start;
+            const endHour = config.workingHours.end;
+            const slotDuration = config.slotDuration;
+            
+            for (let hour = startHour; hour < endHour; hour++) {
+                for (let minute = 0; minute < 60; minute += slotDuration) {
+                    const slotTime = new Date(state.selectedDate);
+                    slotTime.setHours(hour, minute, 0, 0);
+                    
+                    const slot = document.createElement('div');
+                    slot.classList.add('time-slot');
+                    
+                    // Format time
+                    const timeString = slotTime.toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true
+                    });
+                    
+                    slot.textContent = timeString;
+                    slot.dataset.time = slotTime.getTime();
+                    
+                    // Check if time slot is available
+                    const isUnavailable = isTimeSlotUnavailable(slotTime);
+                    if (isUnavailable) {
+                        slot.classList.add('unavailable');
+                    } else {
+                        // Check if selected
+                        if (state.selectedTime && state.selectedTime.getTime() === slotTime.getTime()) {
+                            slot.classList.add('selected');
+                        }
+                    }
+                    
+                    domElements.timeSlots.appendChild(slot);
+                }
+            }
+        }
+
+        // Check if time slot is unavailable
+        function isTimeSlotUnavailable(slotTime) {
+            const endTime = new Date(slotTime.getTime() + config.slotDuration * 60000);
+            
+            // Check if in the past
+            if (slotTime < new Date()) {
+                return true;
+            }
+            
+            // Check against busy events
+            for (const event of state.events) {
+                const eventStart = new Date(event.start);
+                const eventEnd = new Date(event.end);
+                
+                if ((slotTime >= eventStart && slotTime < eventEnd) || 
+                    (endTime > eventStart && endTime <= eventEnd) ||
+                    (slotTime <= eventStart && endTime >= eventEnd)) {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
+        // Simulate fetching busy times from Google Calendar
+        function simulateFetchBusyTimes() {
+            // In a real app, you would make an API call to your backend
+            // which would then call the Google Calendar API
+            
+            // For demo purposes, we'll simulate some busy times
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            state.events = [
+                {
+                    start: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 10, 0, 0),
+                    end: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 11, 30, 0)
+                },
+                {
+                    start: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 14, 0, 0),
+                    end: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 15, 0, 0)
+                },
+                {
+                    start: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 9, 0, 0),
+                    end: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 10, 0, 0)
+                }
+            ];
+            
+            console.log("Simulated busy times:", state.events);
+        }
 
         // Calculate and display prices
         function updatePrices() {
             const subtotal = selectedServices.reduce((sum, service) => sum + service.price, 0);
             const discount = subtotal * 0.1; // 10% discount
             const total = subtotal - discount;
-            const deposit = total * 0.5; // 50% deposit
 
-            document.getElementById('subtotal-price').textContent = `C$${subtotal.toFixed(2)}`;
-            document.getElementById('discount-amount').textContent = `-C$${discount.toFixed(2)}`;
-            document.getElementById('final-total-price').textContent = `C$${total.toFixed(2)}`;
-            document.getElementById('bundle-total-price').textContent = `C$${total.toFixed(2)}`;
+            domElements.subtotalPrice.textContent = `C$${subtotal.toFixed(2)}`;
+            domElements.discountAmount.textContent = `-C$${discount.toFixed(2)}`;
+            domElements.finalTotalPrice.textContent = `C$${total.toFixed(2)}`;
+            domElements.bundleTotalPrice.textContent = `C$${total.toFixed(2)}`;
         }
 
-        // Render selected services
-        function renderServices() {
-            const servicesList = document.getElementById('selected-services-list');
-            servicesList.innerHTML = '';
+        // Render selected services list
+        function renderServicesList() {
+            domElements.selectedServicesList.innerHTML = '';
             
             selectedServices.forEach(service => {
                 const serviceDiv = document.createElement('div');
@@ -412,116 +872,152 @@
                     </div>
                     <div class="service-price">C$${service.price.toFixed(2)}</div>
                 `;
-                servicesList.appendChild(serviceDiv);
+                domElements.selectedServicesList.appendChild(serviceDiv);
             });
         }
 
-        // Handle form submission
-        document.getElementById('submit-booking').addEventListener('click', async (e) => {
-            e.preventDefault();
+        // Setup event listeners
+        function setupEventListeners() {
+            // Previous month button
+            domElements.prevMonth.addEventListener('click', () => {
+                state.currentDate.setMonth(state.currentDate.getMonth() - 1);
+                renderCalendar();
+            });
             
-            // Validate form
-            if (!document.getElementById('event-details-form').checkValidity()) {
-                document.getElementById('event-details-form').reportValidity();
-                return;
-            }
-
-            // Show payment form
-            document.getElementById('stripe-payment-form').style.display = 'block';
-            document.getElementById('submit-booking').style.display = 'none';
-        });
-
-        // Handle Stripe payment
-        document.getElementById('submit-payment').addEventListener('click', async (e) => {
-            e.preventDefault();
+            // Next month button
+            domElements.nextMonth.addEventListener('click', () => {
+                state.currentDate.setMonth(state.currentDate.getMonth() + 1);
+                renderCalendar();
+            });
             
-            const {error, paymentMethod} = await stripe.createPaymentMethod({
-                type: 'card',
-                card: cardElement,
-                billing_details: {
-                    name: document.getElementById('contact-name').value,
-                    email: document.getElementById('contact-email').value,
-                    phone: document.getElementById('contact-phone').value
+            // Calendar day click
+            domElements.calendarDays.addEventListener('click', (e) => {
+                if (e.target.classList.contains('calendar-day') && 
+                    !e.target.classList.contains('disabled')) {
+                    
+                    const day = parseInt(e.target.textContent);
+                    const year = state.currentDate.getFullYear();
+                    const month = state.currentDate.getMonth();
+                    
+                    // Find if this is a previous/next month day
+                    const cellIndex = Array.from(domElements.calendarDays.children).indexOf(e.target);
+                    const firstDay = new Date(year, month, 1).getDay();
+                    
+                    if (cellIndex < firstDay) {
+                        // Previous month
+                        state.currentDate.setMonth(month - 1);
+                        state.currentDate.setDate(day);
+                        renderCalendar();
+                    } else if (day > new Date(year, month + 1, 0).getDate()) {
+                        // Next month
+                        state.currentDate.setMonth(month + 1);
+                        state.currentDate.setDate(day);
+                        renderCalendar();
+                    } else {
+                        // Current month
+                        state.selectedDate = new Date(year, month, day);
+                        state.selectedTime = null;
+                        renderCalendar();
+                        renderTimeSlots();
+                        domElements.submitBooking.disabled = false;
+                    }
                 }
             });
-
-            if (error) {
-                document.getElementById('payment-errors').textContent = error.message;
-                return;
-            }
-
-            // In a real app, you would send paymentMethod.id to your server
-            console.log('PaymentMethod:', paymentMethod.id);
             
-            // Simulate successful payment
-            document.getElementById('stripe-payment-form').style.display = 'none';
-            document.getElementById('event-details-form').style.display = 'none';
-            document.getElementById('back-to-services').style.display = 'none';
-            document.getElementById('sent-email').textContent = document.getElementById('contact-email').value;
-            document.getElementById('confirmation-message').style.display = 'block';
-            
-            // Here you would typically:
-            // 1. Send booking details to your backend
-            // 2. Process payment
-            // 3. Show confirmation
-        });
-
-        // Initialize Cal.com booking when clicking "Book Now"
-        document.getElementById('submit-booking').addEventListener('click', () => {
-            const formData = {
-                name: document.getElementById('contact-name').value,
-                email: document.getElementById('contact-email').value,
-                phone: document.getElementById('contact-phone').value,
-                eventName: document.getElementById('event-name').value,
-                eventType: document.getElementById('event-type').value,
-                eventDate: document.getElementById('event-date').value,
-                eventLocation: document.getElementById('event-location').value,
-                services: selectedServices.map(s => s.name).join(', '),
-                total: document.getElementById('final-total-price').textContent
-            };
-
-            Cal('init', 'bundleboothca/custom-bundle-booking', {
-                origin: 'https://cal.com'
-            });
-
-            Cal.ns['custom-bundle-booking']('ui', {
-                hideEventTypeDetails: false,
-                layout: 'month_view'
-            });
-
-            Cal.ns['custom-bundle-booking']('prefill', {
-                name: formData.name,
-                email: formData.email,
-                guests: [formData.email],
-                notes: `Custom Bundle Request\n\nServices: ${formData.services}\n\nEvent Details:\n- Name: ${formData.eventName}\n- Type: ${formData.eventType}\n- Date: ${formData.eventDate}\n- Location: ${formData.eventLocation}\n\nTotal: ${formData.total}`,
-                customInputs: {
-                    "Event-Type": formData.eventType,
-                    "Event-Location": formData.eventLocation,
-                    "Phone-Number": formData.phone,
-                    "Selected-Services": formData.services
+            // Time slot click
+            domElements.timeSlots.addEventListener('click', (e) => {
+                if (e.target.classList.contains('time-slot') && 
+                    !e.target.classList.contains('unavailable')) {
+                    
+                    // Remove previous selection
+                    const previouslySelected = domElements.timeSlots.querySelector('.selected');
+                    if (previouslySelected) {
+                        previouslySelected.classList.remove('selected');
+                    }
+                    
+                    // Set new selection
+                    e.target.classList.add('selected');
+                    state.selectedTime = new Date(parseInt(e.target.dataset.time));
+                    domElements.submitBooking.disabled = false;
                 }
             });
+            
+            // Book button click (shows payment form)
+            domElements.submitBooking.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Validate form
+                if (!document.getElementById('event-details-form').checkValidity()) {
+                    document.getElementById('event-details-form').reportValidity();
+                    return;
+                }
 
-            Cal.ns['custom-bundle-booking']('open');
-        });
+                // Show payment form
+                domElements.stripePaymentForm.style.display = 'block';
+                domElements.submitBooking.style.display = 'none';
+            });
+            
+            // Stripe payment submission
+            domElements.submitPayment.addEventListener('click', async (e) => {
+                e.preventDefault();
+                
+                // Show loading state
+                e.target.disabled = true;
+                e.target.textContent = 'Processing...';
+                domElements.paymentErrors.textContent = '';
 
-        // Back button
-        document.getElementById('back-to-services').addEventListener('click', () => {
-            alert('Would go back to services selection');
-        });
+                const {error, paymentMethod} = await stripe.createPaymentMethod({
+                    type: 'card',
+                    card: cardElement,
+                    billing_details: {
+                        name: document.getElementById('contact-name').value,
+                        email: document.getElementById('contact-email').value,
+                        phone: document.getElementById('contact-phone').value
+                    }
+                });
 
-        // New bundle button
-        document.getElementById('new-bundle-button').addEventListener('click', () => {
-            window.location.reload();
-        });
+                if (error) {
+                    document.getElementById('payment-errors').textContent = error.message;
+                    e.target.disabled = false;
+                    e.target.textContent = 'Pay $0.50 Now';
+                    return;
+                }
 
-        // Initialize the page
-        updatePrices();
-        renderServices();
+                // In a real app, you would send paymentMethod.id to your server
+                // Here we'll simulate a successful payment for testing
+                console.log('Test PaymentMethod created:', paymentMethod.id);
+                
+                // Simulate server-side payment processing
+                setTimeout(() => {
+                    // Show confirmation
+                    domElements.stripePaymentForm.style.display = 'none';
+                    document.getElementById('event-details-form').style.display = 'none';
+                    domElements.backToServices.style.display = 'none';
+                    domElements.sentEmail.textContent = document.getElementById('contact-email').value;
+                    domElements.confirmationMessage.style.display = 'block';
+                    
+                    // Reset button
+                    e.target.disabled = false;
+                    e.target.textContent = 'Pay $0.50 Now';
+                    
+                    // Set booking as confirmed
+                    state.bookingConfirmed = true;
+                }, 1500);
+            });
+            
+            // Back button
+            domElements.backToServices.addEventListener('click', () => {
+                alert('Would go back to services selection');
+            });
+            
+            // New bundle button
+            domElements.newBundleButton.addEventListener('click', () => {
+                window.location.reload();
+            });
+        }
 
-        // Set today's date as default
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('event-date').value = today;
+        // Initialize the app
+        init();
     </script>
 </body>
 </html>
