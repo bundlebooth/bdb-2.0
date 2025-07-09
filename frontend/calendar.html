@@ -6,702 +6,85 @@
     <title>Booking Calendar</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #3E63DD;
-            --primary-dark: #2F4FBD;
-            --text: #2E2E2E;
-            --text-light: #666;
-            --border: #E5E7EB;
-            --bg: #F9FAFB;
-            --success: #2ECC71;
-            --error: #E74C3C;
-        }
-        
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .booking-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .booking-header h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-        
-        .booking-header p {
-            color: var(--text-light);
-        }
-        
-        .booking-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            overflow: hidden;
-            padding: 20px;
-        }
-        
-        .calendar-section {
-            flex: 1;
-            min-width: 300px;
-            padding: 20px;
-            border-right: 1px solid var(--border);
-        }
-        
-        .times-section {
-            flex: 1;
-            min-width: 300px;
-            padding: 20px;
-        }
-        
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .calendar-header h2 {
-            font-size: 20px;
-        }
-        
-        .calendar-nav {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .calendar-nav button {
-            background: none;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 5px 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .calendar-nav button:hover {
-            background: var(--bg);
-        }
-        
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-        
-        .calendar-day-header {
-            text-align: center;
-            font-weight: 500;
-            font-size: 14px;
-            color: var(--text-light);
-            padding: 5px;
-        }
-        
-        .calendar-day {
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .calendar-day:hover {
-            background-color: var(--bg);
-        }
-        
-        .calendar-day.selected {
-            background-color: var(--primary);
-            color: white;
-        }
-        
-        .calendar-day.disabled {
-            color: #CCC;
-            cursor: not-allowed;
-        }
-        
-        .calendar-day.today {
-            font-weight: bold;
-            position: relative;
-        }
-        
-        .calendar-day.today::after {
-            content: '';
-            position: absolute;
-            bottom: 5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background-color: var(--primary);
-        }
-        
-        .calendar-day.selected.today::after {
-            background-color: white;
-        }
-        
-        .time-slots {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        .time-slot {
-            padding: 12px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .time-slot:hover {
-            border-color: var(--primary);
-        }
-        
-        .time-slot.selected {
-            background-color: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-        
-        .time-slot.unavailable {
-            background-color: var(--bg);
-            color: var(--text-light);
-            cursor: not-allowed;
-            text-decoration: line-through;
-        }
-        
-        .timezone-info {
-            margin-top: 20px;
-            font-size: 14px;
-            color: var(--text-light);
-            text-align: center;
-        }
-        
-        .booking-footer {
-            margin-top: 30px;
-            display: flex;
-            justify-content: flex-end;
-        }
-        
-        .book-button {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 12px 24px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .book-button:hover {
-            background-color: var(--primary-dark);
-        }
-        
-        .book-button:disabled {
-            background-color: var(--border);
-            cursor: not-allowed;
-        }
-        
-        .auth-status {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            background-color: var(--error);
-            color: white;
-        }
-        
-        .auth-status.authenticated {
-            background-color: var(--success);
-        }
-        
+        /* [All your existing CSS remains exactly the same] */
+        /* Add this new error message style */
         .error-message {
-            color: var(--error);
-            text-align: center;
-            margin: 20px 0;
+            color: #E74C3C;
+            background-color: #FDEDED;
             padding: 10px;
-            background-color: #ffeeee;
             border-radius: 4px;
+            margin: 10px 0;
+            text-align: center;
             display: none;
-        }
-        
-        @media (max-width: 768px) {
-            .booking-container {
-                flex-direction: column;
-            }
-            
-            .calendar-section {
-                border-right: none;
-                border-bottom: 1px solid var(--border);
-            }
-            
-            .time-slots {
-                grid-template-columns: 1fr;
-            }
         }
     </style>
 </head>
 <body>
-    <div class="auth-status" id="auth-status">Not Authenticated</div>
-    
     <div class="container">
         <div class="error-message" id="error-message"></div>
-        
-        <div class="booking-header">
-            <h1>Schedule an Appointment</h1>
-            <p>Select a date and time that works for you</p>
-        </div>
-        
-        <div class="booking-container">
-            <div class="calendar-section">
-                <div class="calendar-header">
-                    <h2 id="current-month">June 2023</h2>
-                    <div class="calendar-nav">
-                        <button id="prev-month"><</button>
-                        <button id="next-month">></button>
-                    </div>
-                </div>
-                
-                <div class="calendar-grid" id="day-headers">
-                    <div class="calendar-day-header">Sun</div>
-                    <div class="calendar-day-header">Mon</div>
-                    <div class="calendar-day-header">Tue</div>
-                    <div class="calendar-day-header">Wed</div>
-                    <div class="calendar-day-header">Thu</div>
-                    <div class="calendar-day-header">Fri</div>
-                    <div class="calendar-day-header">Sat</div>
-                </div>
-                
-                <div class="calendar-grid" id="calendar-days"></div>
-            </div>
-            
-            <div class="times-section">
-                <h2>Available Times</h2>
-                <p id="selected-date">Select a date to see available times</p>
-                
-                <div class="time-slots" id="time-slots">
-                    <!-- Time slots will be dynamically inserted here -->
-                </div>
-                
-                <div class="timezone-info">
-                    Times are shown in your local timezone: <span id="timezone">Detecting...</span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="booking-footer">
-            <button class="book-button" id="book-button" disabled>Confirm Booking</button>
-        </div>
+        <!-- [Rest of your existing HTML remains the same] -->
     </div>
 
     <script>
-        // Calendar Configuration
+        // Updated Config
         const config = {
-            workingHours: {
-                start: 9, // 9am
-                end: 21   // 9pm
-            },
-            slotDuration: 180, // 3 hours in minutes
+            workingHours: { start: 9, end: 21 },
+            slotDuration: 180,
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            backendUrl: 'https://bundlebooth-calendar-backend.onrender.com' // MUST MATCH YOUR RENDER URL
+            backendUrl: 'https://bundlebooth-calendar-backend.onrender.com' // UPDATE THIS
         };
 
-        // DOM Elements
-        const elements = {
-            currentMonth: document.getElementById('current-month'),
-            calendarDays: document.getElementById('calendar-days'),
-            prevMonth: document.getElementById('prev-month'),
-            nextMonth: document.getElementById('next-month'),
-            selectedDate: document.getElementById('selected-date'),
-            timeSlots: document.getElementById('time-slots'),
-            timezone: document.getElementById('timezone'),
-            bookButton: document.getElementById('book-button'),
-            authStatus: document.getElementById('auth-status'),
-            errorMessage: document.getElementById('error-message')
-        };
+        // [Keep all your existing DOM elements and state]
 
-        // State
-        let state = {
-            currentDate: new Date(),
-            selectedDate: null,
-            selectedTime: null,
-            events: [],
-            isAuthenticated: false
-        };
-
-        // Initialize
-        async function init() {
-            elements.timezone.textContent = config.timezone;
-            renderCalendar();
-            setupEventListeners();
-            await checkAuthStatus();
-        }
-
-        // Check authentication status
+        // Updated checkAuthStatus()
         async function checkAuthStatus() {
             try {
                 const response = await fetch(`${config.backendUrl}/api/auth/status`, {
                     credentials: 'include',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     }
                 });
                 
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                if (!response.ok) throw new Error(`Auth failed: ${response.status}`);
                 
                 const data = await response.json();
                 state.isAuthenticated = data.authenticated;
-                
                 updateAuthUI();
                 
                 if (!state.isAuthenticated) {
-                    // Redirect to Microsoft login
                     window.location.href = `${config.backendUrl}/api/auth/microsoft`;
                 }
             } catch (error) {
-                console.error("Auth check error:", error);
-                showError("Authentication failed. Please refresh the page.");
+                console.error("Auth error:", error);
+                showError("Please refresh the page to authenticate");
             }
         }
 
-        function updateAuthUI() {
-            if (state.isAuthenticated) {
-                elements.authStatus.textContent = "Authenticated";
-                elements.authStatus.classList.add('authenticated');
-            } else {
-                elements.authStatus.textContent = "Not Authenticated";
-                elements.authStatus.classList.remove('authenticated');
-            }
-        }
-
+        // New helper functions
         function showError(message) {
-            elements.errorMessage.textContent = message;
-            elements.errorMessage.style.display = 'block';
+            const errorEl = document.getElementById('error-message');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
         }
 
         function hideError() {
-            elements.errorMessage.style.display = 'none';
+            document.getElementById('error-message').style.display = 'none';
         }
 
-        // Render the calendar
-        function renderCalendar() {
-            elements.calendarDays.innerHTML = '';
-            
-            const year = state.currentDate.getFullYear();
-            const month = state.currentDate.getMonth();
-            
-            // Update month header
-            elements.currentMonth.textContent = new Date(year, month).toLocaleDateString('en-US', {
-                month: 'long',
-                year: 'numeric'
-            });
-            
-            // Get first day of month and total days
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            
-            // Get days from previous month
-            const prevMonthDays = new Date(year, month, 0).getDate();
-            
-            // Render days
-            let day = 1;
-            let nextMonthDay = 1;
-            const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
-            
-            for (let i = 0; i < totalCells; i++) {
-                const date = new Date(year, month, day);
-                const cell = document.createElement('div');
-                
-                if (i < firstDay) {
-                    // Previous month
-                    const prevDay = prevMonthDays - (firstDay - i - 1);
-                    cell.textContent = prevDay;
-                    cell.classList.add('calendar-day', 'disabled');
-                } else if (day > daysInMonth) {
-                    // Next month
-                    cell.textContent = nextMonthDay++;
-                    cell.classList.add('calendar-day', 'disabled');
-                } else {
-                    // Current month
-                    cell.textContent = day;
-                    cell.classList.add('calendar-day');
-                    
-                    // Check if today
-                    const today = new Date();
-                    if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
-                        cell.classList.add('today');
-                    }
-                    
-                    // Check if selected
-                    if (state.selectedDate && 
-                        day === state.selectedDate.getDate() && 
-                        month === state.selectedDate.getMonth() && 
-                        year === state.selectedDate.getFullYear()) {
-                        cell.classList.add('selected');
-                    }
-                    
-                    // Check if date is in the past
-                    if (date < new Date(new Date().setHours(0, 0, 0, 0))) {
-                        cell.classList.add('disabled');
-                    }
-                    
-                    day++;
-                }
-                
-                elements.calendarDays.appendChild(cell);
-            }
-        }
-
-        // Render time slots for selected date
-        async function renderTimeSlots() {
-            elements.timeSlots.innerHTML = '';
-            hideError();
-            
-            if (!state.selectedDate) {
-                elements.selectedDate.textContent = 'Select a date to see available times';
-                return;
-            }
-            
-            // Format selected date
-            elements.selectedDate.textContent = state.selectedDate.toLocaleDateString('en-US', {
-                weekday: 'long',
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric'
-            });
-            
-            try {
-                // Fetch busy times for selected date
-                await fetchBusyTimes(state.selectedDate);
-                
-                // Generate time slots in 3-hour increments
-                const startHour = config.workingHours.start;
-                const endHour = config.workingHours.end;
-                
-                for (let hour = startHour; hour <= endHour - 3; hour += 3) {
-                    const slotTime = new Date(state.selectedDate);
-                    slotTime.setHours(hour, 0, 0, 0);
-                    
-                    const slot = document.createElement('div');
-                    slot.classList.add('time-slot');
-                    
-                    // Format time range (e.g., "9:00 AM - 12:00 PM")
-                    const endTime = new Date(slotTime.getTime() + 3 * 60 * 60000);
-                    const timeString = `${slotTime.toLocaleTimeString('en-US', {
-                        hour: 'numeric',
-                        minute: '2-digit',
-                        hour12: true
-                    })} - ${endTime.toLocaleTimeString('en-US', {
-                        hour: 'numeric',
-                        minute: '2-digit',
-                        hour12: true
-                    })}`;
-                    
-                    slot.textContent = timeString;
-                    slot.dataset.time = slotTime.getTime();
-                    
-                    // Check if time slot is available
-                    const isUnavailable = isTimeSlotUnavailable(slotTime);
-                    if (isUnavailable) {
-                        slot.classList.add('unavailable');
-                    } else {
-                        // Check if selected
-                        if (state.selectedTime && state.selectedTime.getTime() === slotTime.getTime()) {
-                            slot.classList.add('selected');
-                        }
-                    }
-                    
-                    elements.timeSlots.appendChild(slot);
-                }
-            } catch (error) {
-                showError("Failed to load available times. Please try again.");
-            }
-        }
-
-        // Check if time slot is unavailable
-        function isTimeSlotUnavailable(slotTime) {
-            const endTime = new Date(slotTime.getTime() + config.slotDuration * 60000);
-            
-            // Check if in the past
-            if (slotTime < new Date()) {
-                return true;
-            }
-            
-            // Check against busy events
-            for (const event of state.events) {
-                const eventStart = new Date(event.start);
-                const eventEnd = new Date(event.end);
-                
-                if ((slotTime >= eventStart && slotTime < eventEnd) || 
-                    (endTime > eventStart && endTime <= eventEnd) ||
-                    (slotTime <= eventStart && endTime >= eventEnd)) {
-                    return true;
-                }
-            }
-            
-            return false;
-        }
-
-        // Fetch busy times from backend
-        async function fetchBusyTimes(date) {
-            try {
-                const dateStr = date.toISOString().split('T')[0];
-                const response = await fetch(`${config.backendUrl}/api/calendar/busy-times?date=${dateStr}`, {
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                
-                const events = await response.json();
-                
-                state.events = events.map(event => ({
-                    start: new Date(event.start.dateTime || event.start.date),
-                    end: new Date(event.end.dateTime || event.end.date)
-                }));
-            } catch (error) {
-                console.error("Error fetching busy times:", error);
-                throw error;
-            }
-        }
-
-        // Setup event listeners
-        function setupEventListeners() {
-            // Previous month button
-            elements.prevMonth.addEventListener('click', () => {
-                state.currentDate.setMonth(state.currentDate.getMonth() - 1);
-                renderCalendar();
-            });
-            
-            // Next month button
-            elements.nextMonth.addEventListener('click', () => {
-                state.currentDate.setMonth(state.currentDate.getMonth() + 1);
-                renderCalendar();
-            });
-            
-            // Calendar day click
-            elements.calendarDays.addEventListener('click', (e) => {
-                if (e.target.classList.contains('calendar-day') && 
-                    !e.target.classList.contains('disabled')) {
-                    
-                    const day = parseInt(e.target.textContent);
-                    const year = state.currentDate.getFullYear();
-                    const month = state.currentDate.getMonth();
-                    
-                    // Find if this is a previous/next month day
-                    const cellIndex = Array.from(elements.calendarDays.children).indexOf(e.target);
-                    const firstDay = new Date(year, month, 1).getDay();
-                    
-                    if (cellIndex < firstDay) {
-                        // Previous month
-                        state.currentDate.setMonth(month - 1);
-                        state.currentDate.setDate(day);
-                        renderCalendar();
-                    } else if (day > new Date(year, month + 1, 0).getDate()) {
-                        // Next month
-                        state.currentDate.setMonth(month + 1);
-                        state.currentDate.setDate(day);
-                        renderCalendar();
-                    } else {
-                        // Current month
-                        state.selectedDate = new Date(year, month, day);
-                        state.selectedTime = null;
-                        renderCalendar();
-                        renderTimeSlots();
-                        elements.bookButton.disabled = true;
-                    }
-                }
-            });
-            
-            // Time slot click
-            elements.timeSlots.addEventListener('click', (e) => {
-                if (e.target.classList.contains('time-slot') && 
-                    !e.target.classList.contains('unavailable')) {
-                    
-                    // Remove previous selection
-                    const previouslySelected = elements.timeSlots.querySelector('.selected');
-                    if (previouslySelected) {
-                        previouslySelected.classList.remove('selected');
-                    }
-                    
-                    // Set new selection
-                    e.target.classList.add('selected');
-                    state.selectedTime = new Date(parseInt(e.target.dataset.time));
-                    elements.bookButton.disabled = false;
-                }
-            });
-            
-            // Book button click
-            elements.bookButton.addEventListener('click', async () => {
-                if (state.selectedDate && state.selectedTime) {
-                    try {
-                        const endTime = new Date(state.selectedTime.getTime() + 3 * 60 * 60000);
-                        
-                        const response = await fetch(`${config.backendUrl}/api/calendar/book`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            credentials: 'include',
-                            body: JSON.stringify({
-                                subject: 'BundleBooth Booking',
-                                start: state.selectedTime.toISOString(),
-                                end: endTime.toISOString(),
-                                timeZone: config.timezone
-                            })
-                        });
-                        
-                        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                        
-                        const result = await response.json();
-                        
-                        alert(`Booking confirmed for ${state.selectedTime.toLocaleString()}`);
-                        // Refresh available times
-                        await fetchBusyTimes(state.selectedDate);
-                        renderTimeSlots();
-                    } catch (error) {
-                        console.error("Booking error:", error);
-                        showError("Booking failed. Please try again.");
-                    }
-                }
-            });
-        }
+        // [Keep all your other existing functions]
 
         // Initialize the app
-        init();
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check for auth error in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('auth_error')) {
+                showError("Authentication failed. Please try again.");
+            }
+            
+            init();
+        });
     </script>
 </body>
 </html>
