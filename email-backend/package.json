@@ -1,0 +1,17 @@
+{
+  "name": "bundlebooth-email-backend",
+  "version": "1.0.0",
+  "main": "email-api.js",
+  "scripts": {
+    "start": "node email-api.js"
+  },
+  "dependencies": {
+    "@getbrevo/brevo": "^1.0.0",
+    "dotenv": "^16.4.1",
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
