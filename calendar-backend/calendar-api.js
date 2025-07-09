@@ -9,7 +9,8 @@ const app = express();
 app.use(cors({
   origin: [
     'https://www.bundlebooth.ca', // Replace with your actual domain
-    'http://localhost:3000' // For local testing
+    'http://localhost:8080', 
+    'http://127.0.0.1:8080', 
   ],
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
