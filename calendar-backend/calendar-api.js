@@ -7,7 +7,7 @@ const MicrosoftStrategy = require('passport-microsoft').Strategy;
 
 const app = express();
 
-// Enhanced CORS configuration
+// Enhanced CORS Configuration
 app.use(cors({
   origin: [
     'http://localhost',
@@ -20,6 +20,9 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
+// Handle preflight requests
+app.options('*', cors());
+
 // Middleware
 app.use(express.json());
 app.use(session({
@@ -28,14 +31,15 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
 
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Microsoft OAuth
+// Microsoft OAuth Configuration
 passport.use(new MicrosoftStrategy({
   clientID: process.env.MICROSOFT_CLIENT_ID,
   clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
@@ -57,20 +61,20 @@ app.get('/', (req, res) => {
   });
 });
 
-// Auth Routes
+// Auth Endpoints
 app.get('/api/auth/status', (req, res) => {
-  res.json({ 
+  res.json({
     authenticated: req.isAuthenticated(),
-    user: req.user || null 
+    user: req.user || null
   });
 });
 
 app.get('/api/auth/microsoft', passport.authenticate('microsoft'));
 
 app.get('/api/auth/microsoft/callback',
-  passport.authenticate('microsoft', { 
+  passport.authenticate('microsoft', {
     successRedirect: process.env.FRONTEND_URL,
-    failureRedirect: `${process.env.FRONTEND_URL}?auth=failed`
+    failureRedirect: `${process.env.FRONTEND_URL}?auth_error=1`
   })
 );
 
@@ -80,14 +84,14 @@ app.get('/api/auth/logout', (req, res) => {
   });
 });
 
-// Calendar API
+// Calendar API Endpoints
 app.get('/api/calendar/busy-times', async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).json({ error: 'Not authenticated' });
   }
   
-  // Add your calendar availability logic here
-  res.json([]); // Placeholder
+  // Add your actual calendar availability logic here
+  res.json([]); // Return empty array for now
 });
 
 app.post('/api/calendar/book', async (req, res) => {
@@ -95,11 +99,12 @@ app.post('/api/calendar/book', async (req, res) => {
     return res.status(401).json({ error: 'Not authenticated' });
   }
   
-  // Add your booking logic here
-  res.json({ success: true }); // Placeholder
+  // Add your actual booking logic here
+  res.json({ success: true }); // Return success for now
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`CORS-enabled for origins: ${process.env.FRONTEND_URL}`);
 });
