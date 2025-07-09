@@ -1,12 +1,7 @@
 require('dotenv').config();
 const express = require('express');
-const SibApiV3Sdk = require('sib-api-v3-sdk');
+const Brevo = require('@getbrevo/brevo');
 const app = express();
-
-// Configure Brevo
-const defaultClient = SibApiV3Sdk.ApiClient.instance;
-const apiKey = defaultClient.authentications['api-key'];
-apiKey.apiKey = process.env.BREVO_API_KEY; // Make sure this is set in Render.com environment variables
 
 // Middleware
 app.use(express.json());
@@ -16,54 +11,61 @@ app.use((req, res, next) => {
   next();
 });
 
-// Health check endpoint
+// Configure Brevo
+const defaultClient = Brevo.ApiClient.instance;
+const apiKey = defaultClient.authentications['api-key'];
+apiKey.apiKey = process.env.BREVO_API_KEY;
+
+// Health check
 app.get('/', (req, res) => {
-  res.status(200).json({ 
-    status: 'Server is running',
-    timestamp: new Date(),
-    endpoints: {
-      email: 'POST /send-booking-email'
-    }
+  res.json({
+    status: 'OK',
+    service: 'BundleBooth Email Service',
+    timestamp: new Date()
   });
 });
 
-// Email endpoint - THE MAIN ENDPOINT YOU NEED
+// Email endpoint
 app.post('/send-booking-email', async (req, res) => {
   try {
     const { email, contactName, eventName, services = [] } = req.body;
 
-    // Basic validation
+    // Validation
     if (!email || !contactName || !eventName) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+    // Format services
+    const servicesList = services.map(s => 
+      `${s.name || 'Service'}: C$${(s.price || 0).toFixed(2)}`
+    ).join('<br>') || 'No services selected';
+
+    // Create email
+    const apiInstance = new Brevo.TransactionalEmailsApi();
+    const sendSmtpEmail = new Brevo.SendSmtpEmail();
+    
     sendSmtpEmail.sender = {
       email: process.env.FROM_EMAIL || 'hello@bundlebooth.ca',
       name: process.env.FROM_NAME || 'BundleBooth'
     };
     sendSmtpEmail.to = [{ email, name: contactName }];
     sendSmtpEmail.subject = `Booking Confirmation - ${eventName}`;
-    
-    // Format services list
-    const servicesList = services.map(s => 
-      `${s.name || 'Service'}: C$${(s.price || 0).toFixed(2)}`
-    ).join('<br>');
-
     sendSmtpEmail.htmlContent = `
       <h2>Thank you, ${contactName}!</h2>
       <p>Your booking for <strong>${eventName}</strong> is confirmed.</p>
+      
       <h3>Services Booked:</h3>
       ${servicesList}
+      
       <p>We'll contact you shortly at ${email}.</p>
     `;
 
-    const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
-    const response = await apiInstance.sendTransacEmail(sendSmtpEmail);
-
+    // Send email
+    const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
+    
     res.json({ 
       success: true,
-      messageId: response.messageId,
+      messageId: data.messageId,
       timestamp: new Date()
     });
 
@@ -80,4 +82,5 @@ app.post('/send-booking-email', async (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`Brevo API Key: ${process.env.BREVO_API_KEY ? 'Configured' : 'Missing'}`);
 });
