@@ -5,32 +5,30 @@ const axios = require('axios');
 
 const app = express();
 
-// Enhanced CORS configuration
+// CORS Configuration
 app.use(cors({
   origin: [
-    'https://www.bundlebooth.ca',
+    'https://your-godaddy-domain.com',
     'http://localhost:8080',
     'http://127.0.0.1:8080'
   ],
   methods: ['GET', 'POST', 'OPTIONS'],
   credentials: true,
-  allowedHeaders: ['Content-Type']
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
-
-// Add this handler for preflight requests
-app.options('*', cors());
-
-// Handle preflight requests
-app.options('*', cors());
 
 app.use(express.json());
 
-// Health check endpoint
+// Health Check Endpoint
 app.get('/', (req, res) => {
   res.json({
     status: 'running',
     service: 'BundleBooth Calendar API',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      availability: '/api/availability?date=YYYY-MM-DD',
+      bookings: '/api/bookings'
+    }
   });
 });
 
@@ -52,40 +50,44 @@ const getAccessToken = async () => {
         }
       }
     );
+    
+    if (!response.data.access_token) {
+      throw new Error('No access token received');
+    }
+    
     return response.data.access_token;
   } catch (error) {
-    console.error('Token error:', error.response?.data || error.message);
-    throw new Error('Failed to get access token');
+    console.error('Token Error:', {
+      message: error.message,
+      response: error.response?.data
+    });
+    throw new Error('Failed to authenticate with Microsoft Graph');
   }
 };
 
-// Get availability for specific date
+// Calendar Availability Endpoint
 app.get('/api/availability', async (req, res) => {
   try {
     const date = req.query.date;
-    if (!date) {
-      return res.status(400).json({ error: 'Date parameter is required' });
+    if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return res.status(400).json({ error: 'Valid date parameter (YYYY-MM-DD) is required' });
     }
 
     const accessToken = await getAccessToken();
     
-    const startDate = new Date(date);
-    const endDate = new Date(date);
-    endDate.setDate(endDate.getDate() + 1); // Next day
-    
     const response = await axios.post(
-      'https://graph.microsoft.com/v1.0/me/calendar/getSchedule',
+      `https://graph.microsoft.com/v1.0/users/${process.env.CALENDAR_OWNER_UPN}/calendar/getSchedule`,
       {
-        schedules: ['primary'],
+        schedules: [process.env.CALENDAR_OWNER_UPN],
         startTime: { 
-          dateTime: startDate.toISOString(),
+          dateTime: `${date}T00:00:00`,
           timeZone: 'UTC'
         },
         endTime: { 
-          dateTime: endDate.toISOString(),
+          dateTime: `${date}T23:59:59`, 
           timeZone: 'UTC'
         },
-        availabilityViewInterval: 60 // 60-minute intervals
+        availabilityViewInterval: 60
       },
       { 
         headers: { 
@@ -95,7 +97,7 @@ app.get('/api/availability', async (req, res) => {
       }
     );
 
-    if (!response.data.value || !response.data.value[0]) {
+    if (!response.data.value || response.data.value.length === 0) {
       return res.status(404).json({ error: 'No calendar data found' });
     }
 
@@ -104,7 +106,7 @@ app.get('/api/availability', async (req, res) => {
       availability: response.data.value[0].scheduleItems || []
     });
   } catch (error) {
-    console.error('Availability error:', error.response?.data || error.message);
+    console.error('Availability Error:', error.response?.data || error.message);
     res.status(500).json({ 
       error: 'Failed to fetch availability',
       details: error.response?.data || error.message
@@ -112,7 +114,7 @@ app.get('/api/availability', async (req, res) => {
   }
 });
 
-// Create booking
+// Booking Endpoint
 app.post('/api/bookings', async (req, res) => {
   try {
     const { start, end, name, email, eventDetails } = req.body;
@@ -123,8 +125,8 @@ app.post('/api/bookings', async (req, res) => {
 
     const accessToken = await getAccessToken();
     
-    const eventResponse = await axios.post(
-      'https://graph.microsoft.com/v1.0/me/events',
+    const response = await axios.post(
+      `https://graph.microsoft.com/v1.0/users/${process.env.CALENDAR_OWNER_UPN}/events`,
       {
         subject: `Booking: ${name}`,
         body: {
@@ -157,11 +159,11 @@ app.post('/api/bookings', async (req, res) => {
 
     res.json({ 
       success: true,
-      eventId: eventResponse.data.id,
-      eventLink: eventResponse.data.webLink
+      eventId: response.data.id,
+      eventLink: response.data.webLink
     });
   } catch (error) {
-    console.error('Booking error:', error.response?.data || error.message);
+    console.error('Booking Error:', error.response?.data || error.message);
     res.status(500).json({ 
       error: 'Failed to create booking',
       details: error.response?.data || error.message
@@ -169,17 +171,8 @@ app.post('/api/bookings', async (req, res) => {
   }
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error('Server error:', err);
-  res.status(500).json({ error: 'Internal server error' });
-});
-
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  console.log(`API Documentation:`);
-  console.log(`- GET  /               : Health check`);
-  console.log(`- GET  /api/availability: Check calendar availability`);
-  console.log(`- POST /api/bookings   : Create new booking`);
+  console.log('Configured for calendar owner:', process.env.CALENDAR_OWNER_UPN);
 });
