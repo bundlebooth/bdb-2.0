@@ -22,7 +22,7 @@
     "microsoft-graph",
     "booking"
   ],
-  "author": "Your Name",
+  "author": "Bundle Booth Entertainment",
   "license": "ISC",
   "description": "BundleBooth Calendar API with Microsoft Graph integration"
 }
