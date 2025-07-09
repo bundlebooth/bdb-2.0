@@ -271,13 +271,13 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="event-name">Event Name</label>
-                        <input type="text" id="event-name" required>
+                        <input type="text" id="event-name" required value="Test Wedding Event">
                     </div>
                     <div class="form-group">
                         <label for="event-type">Event Type</label>
                         <select id="event-type" required>
                             <option value="">Select Event Type</option>
-                            <option value="Wedding">Wedding</option>
+                            <option value="Wedding" selected>Wedding</option>
                             <option value="Corporate">Corporate Event</option>
                             <option value="Birthday">Birthday Party</option>
                             <option value="Other">Other</option>
@@ -301,25 +301,25 @@
                     </div>
                     <div class="form-group">
                         <label for="event-location">Event Location</label>
-                        <input type="text" id="event-location" placeholder="Venue name or address" required>
+                        <input type="text" id="event-location" placeholder="Venue name or address" required value="Grand Ballroom, Toronto">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="special-requests">Special Requests or Notes</label>
-                    <textarea id="special-requests" placeholder="Any additional requirements or notes for our team"></textarea>
+                    <textarea id="special-requests" placeholder="Any additional requirements or notes for our team">Test booking - please ignore</textarea>
                 </div>
                 <div class="form-group">
                     <label for="contact-name">Your Name</label>
-                    <input type="text" id="contact-name" required>
+                    <input type="text" id="contact-name" required value="Test User">
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label for="contact-email">Email</label>
-                        <input type="email" id="contact-email" required>
+                        <input type="email" id="contact-email" required value="your-email@example.com">
                     </div>
                     <div class="form-group">
                         <label for="contact-phone">Phone Number</label>
-                        <input type="tel" id="contact-phone" required>
+                        <input type="tel" id="contact-phone" required value="555-123-4567">
                     </div>
                 </div>
             </form>
@@ -358,13 +358,19 @@
     </div>
 
     <script>
-        // Initialize Stripe with your test key
-        const stripe = Stripe('pk_test_51Rijz8FJtS8tRcsDMLlOODCVKyY0HupDrxiw7nSWUYQymKml5YM4Nwj9O7WrGyPUd9TAhchuL0MfEWbtTWUrlqlc00KSoZn1Th');
+        // Configuration
+        const config = {
+            backendUrl: 'https://bdb-2-0-brevo-email-backend.onrender.com/send-booking-email',
+            stripeKey: 'pk_test_51Rijz8FJtS8tRcsDMLlOODCVKyY0HupDrxiw7nSWUYQymKml5YM4Nwj9O7WrGyPUd9TAhchuL0MfEWbtTWUrlqlc00KSoZn1Th'
+        };
+
+        // Initialize Stripe
+        const stripe = Stripe(config.stripeKey);
         const elements = stripe.elements();
         const cardElement = elements.create('card');
         cardElement.mount('#card-element');
 
-        // Sample data for testing
+        // Sample services data
         const selectedServices = [
             {
                 name: "Photo Booth",
@@ -380,10 +386,27 @@
             }
         ];
 
-        // Calculate and display prices
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            updatePrices();
+            renderServices();
+            document.getElementById('event-date').value = new Date().toISOString().split('T')[0];
+            
+            // Set up event listeners
+            document.getElementById('submit-booking').addEventListener('click', handleBookingSubmit);
+            document.getElementById('submit-payment').addEventListener('click', handlePaymentSubmit);
+            document.getElementById('back-to-services').addEventListener('click', () => {
+                alert('Would go back to services selection');
+            });
+            document.getElementById('new-bundle-button').addEventListener('click', () => {
+                window.location.reload();
+            });
+        });
+
+        // Price calculations
         function updatePrices() {
             const subtotal = selectedServices.reduce((sum, service) => sum + service.price, 0);
-            const discount = subtotal * 0.1; // 10% discount
+            const discount = subtotal * 0.1;
             const total = subtotal - discount;
 
             document.getElementById('subtotal-price').textContent = `C$${subtotal.toFixed(2)}`;
@@ -392,7 +415,7 @@
             document.getElementById('bundle-total-price').textContent = `C$${total.toFixed(2)}`;
         }
 
-        // Render selected services
+        // Render services
         function renderServices() {
             const servicesList = document.getElementById('selected-services-list');
             servicesList.innerHTML = '';
@@ -410,94 +433,103 @@
             });
         }
 
-        // Handle form submission
-        document.getElementById('submit-booking').addEventListener('click', async (e) => {
+        // Send email via backend
+        async function sendConfirmationEmail(bookingData) {
+            try {
+                const response = await fetch(config.backendUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        ...bookingData,
+                        services: selectedServices,
+                        subtotal: selectedServices.reduce((sum, service) => sum + service.price, 0),
+                        discount: selectedServices.reduce((sum, service) => sum + service.price, 0) * 0.1,
+                        total: selectedServices.reduce((sum, service) => sum + service.price, 0) * 0.9
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to send confirmation email');
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('Email error:', error);
+                throw error;
+            }
+        }
+
+        // Handle booking submission
+        async function handleBookingSubmit(e) {
             e.preventDefault();
             
-            // Validate form
             if (!document.getElementById('event-details-form').checkValidity()) {
                 document.getElementById('event-details-form').reportValidity();
                 return;
             }
 
-            // Show payment form
             document.getElementById('stripe-payment-form').style.display = 'block';
             document.getElementById('submit-booking').style.display = 'none';
-        });
+        }
 
-        // Handle Stripe payment
-        document.getElementById('submit-payment').addEventListener('click', async (e) => {
+        // Handle payment submission
+        async function handlePaymentSubmit(e) {
             e.preventDefault();
+            const button = e.target;
+            const errorDisplay = document.getElementById('payment-errors');
             
-            // Show loading state
-            e.target.disabled = true;
-            e.target.textContent = 'Processing...';
-            document.getElementById('payment-errors').textContent = '';
+            button.disabled = true;
+            button.textContent = 'Processing...';
+            errorDisplay.textContent = '';
 
-            const {error, paymentMethod} = await stripe.createPaymentMethod({
-                type: 'card',
-                card: cardElement,
-                billing_details: {
-                    name: document.getElementById('contact-name').value,
+            try {
+                // Collect booking data
+                const bookingData = {
+                    eventName: document.getElementById('event-name').value,
+                    eventType: document.getElementById('event-type').value,
+                    eventDate: document.getElementById('event-date').value,
+                    duration: document.getElementById('event-duration').value,
+                    guestCount: document.getElementById('guest-count').value,
+                    location: document.getElementById('event-location').value,
+                    notes: document.getElementById('special-requests').value,
+                    contactName: document.getElementById('contact-name').value,
                     email: document.getElementById('contact-email').value,
                     phone: document.getElementById('contact-phone').value
-                }
-            });
+                };
 
-            if (error) {
-                document.getElementById('payment-errors').textContent = error.message;
-                e.target.disabled = false;
-                e.target.textContent = 'Pay $0.50 Now';
-                return;
-            }
+                // Process payment
+                const { error } = await stripe.createPaymentMethod({
+                    type: 'card',
+                    card: cardElement,
+                    billing_details: {
+                        name: bookingData.contactName,
+                        email: bookingData.email,
+                        phone: bookingData.phone
+                    }
+                });
+                if (error) throw error;
 
-            // In a real app, you would send paymentMethod.id to your server
-            // Here we'll simulate a successful payment for testing
-            console.log('Test PaymentMethod created:', paymentMethod.id);
-            
-            // Simulate server-side payment processing
-            setTimeout(() => {
-                // Show confirmation
+                // Send confirmation email
+                await sendConfirmationEmail(bookingData);
+                
+                // Show success
                 document.getElementById('stripe-payment-form').style.display = 'none';
                 document.getElementById('event-details-form').style.display = 'none';
                 document.getElementById('back-to-services').style.display = 'none';
-                document.getElementById('sent-email').textContent = document.getElementById('contact-email').value;
+                document.getElementById('sent-email').textContent = bookingData.email;
                 document.getElementById('confirmation-message').style.display = 'block';
                 
-                // Reset button
-                e.target.disabled = false;
-                e.target.textContent = 'Pay $0.50 Now';
-                
-                // In a real implementation, you would:
-                // 1. Send paymentMethod.id to your server
-                // 2. Create a PaymentIntent with amount 50 cents (for testing)
-                // 3. Confirm the payment on the server
-                // 4. Show success message only after successful payment
-            }, 1500);
-        });
-
-        // Back button
-        document.getElementById('back-to-services').addEventListener('click', () => {
-            alert('Would go back to services selection');
-        });
-
-        // New bundle button
-        document.getElementById('new-bundle-button').addEventListener('click', () => {
-            window.location.reload();
-        });
-
-        // Initialize the page
-        updatePrices();
-        renderServices();
-
-        // Set today's date as default
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('event-date').value = today;
-
-        // Test card numbers you can use:
-        // 4242 4242 4242 4242 - Visa (success)
-        // 4000 0000 0000 3220 - 3D Secure required
-        // 4000 0000 0000 9995 - Will decline
+            } catch (error) {
+                console.error('Payment error:', error);
+                errorDisplay.textContent = error.message;
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Pay $0.50 Now';
+            }
+        }
     </script>
 </body>
 </html>
