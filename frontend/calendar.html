@@ -28,6 +28,7 @@
             background-color: var(--bg);
             color: var(--text);
             line-height: 1.6;
+            padding: 20px;
         }
         
         .container {
@@ -58,6 +59,7 @@
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             overflow: hidden;
+            padding: 20px;
         }
         
         .calendar-section {
@@ -229,22 +231,6 @@
             cursor: not-allowed;
         }
         
-        @media (max-width: 768px) {
-            .booking-container {
-                flex-direction: column;
-            }
-            
-            .calendar-section {
-                border-right: none;
-                border-bottom: 1px solid var(--border);
-            }
-            
-            .time-slots {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        /* Auth status indicator */
         .auth-status {
             position: fixed;
             top: 10px;
@@ -259,12 +245,39 @@
         .auth-status.authenticated {
             background-color: var(--success);
         }
+        
+        .error-message {
+            color: var(--error);
+            text-align: center;
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #ffeeee;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .booking-container {
+                flex-direction: column;
+            }
+            
+            .calendar-section {
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+            
+            .time-slots {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="auth-status" id="auth-status">Not Authenticated</div>
     
     <div class="container">
+        <div class="error-message" id="error-message"></div>
+        
         <div class="booking-header">
             <h1>Schedule an Appointment</h1>
             <p>Select a date and time that works for you</p>
@@ -321,9 +334,7 @@
             },
             slotDuration: 180, // 3 hours in minutes
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            backendUrl: 'https://bundlebooth-calendar-backend.onrender.com' // Update with your Render URL
-
-            
+            backendUrl: 'https://bundlebooth-calendar-backend.onrender.com' // MUST MATCH YOUR RENDER URL
         };
 
         // DOM Elements
@@ -336,7 +347,8 @@
             timeSlots: document.getElementById('time-slots'),
             timezone: document.getElementById('timezone'),
             bookButton: document.getElementById('book-button'),
-            authStatus: document.getElementById('auth-status')
+            authStatus: document.getElementById('auth-status'),
+            errorMessage: document.getElementById('error-message')
         };
 
         // State
@@ -360,10 +372,13 @@
         async function checkAuthStatus() {
             try {
                 const response = await fetch(`${config.backendUrl}/api/auth/status`, {
-                    credentials: 'include' // Important for session cookies
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
                 });
                 
-                if (!response.ok) throw new Error('Auth check failed');
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 
                 const data = await response.json();
                 state.isAuthenticated = data.authenticated;
@@ -376,7 +391,7 @@
                 }
             } catch (error) {
                 console.error("Auth check error:", error);
-                elements.authStatus.textContent = "Auth Error";
+                showError("Authentication failed. Please refresh the page.");
             }
         }
 
@@ -388,6 +403,15 @@
                 elements.authStatus.textContent = "Not Authenticated";
                 elements.authStatus.classList.remove('authenticated');
             }
+        }
+
+        function showError(message) {
+            elements.errorMessage.textContent = message;
+            elements.errorMessage.style.display = 'block';
+        }
+
+        function hideError() {
+            elements.errorMessage.style.display = 'none';
         }
 
         // Render the calendar
@@ -462,6 +486,7 @@
         // Render time slots for selected date
         async function renderTimeSlots() {
             elements.timeSlots.innerHTML = '';
+            hideError();
             
             if (!state.selectedDate) {
                 elements.selectedDate.textContent = 'Select a date to see available times';
@@ -476,47 +501,51 @@
                 year: 'numeric'
             });
             
-            // Fetch busy times for selected date
-            await fetchBusyTimes(state.selectedDate);
-            
-            // Generate time slots in 3-hour increments
-            const startHour = config.workingHours.start;
-            const endHour = config.workingHours.end;
-            
-            for (let hour = startHour; hour <= endHour - 3; hour += 3) {
-                const slotTime = new Date(state.selectedDate);
-                slotTime.setHours(hour, 0, 0, 0);
+            try {
+                // Fetch busy times for selected date
+                await fetchBusyTimes(state.selectedDate);
                 
-                const slot = document.createElement('div');
-                slot.classList.add('time-slot');
+                // Generate time slots in 3-hour increments
+                const startHour = config.workingHours.start;
+                const endHour = config.workingHours.end;
                 
-                // Format time range (e.g., "9:00 AM - 12:00 PM")
-                const endTime = new Date(slotTime.getTime() + 3 * 60 * 60000);
-                const timeString = `${slotTime.toLocaleTimeString('en-US', {
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    hour12: true
-                })} - ${endTime.toLocaleTimeString('en-US', {
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    hour12: true
-                })}`;
-                
-                slot.textContent = timeString;
-                slot.dataset.time = slotTime.getTime();
-                
-                // Check if time slot is available
-                const isUnavailable = isTimeSlotUnavailable(slotTime);
-                if (isUnavailable) {
-                    slot.classList.add('unavailable');
-                } else {
-                    // Check if selected
-                    if (state.selectedTime && state.selectedTime.getTime() === slotTime.getTime()) {
-                        slot.classList.add('selected');
+                for (let hour = startHour; hour <= endHour - 3; hour += 3) {
+                    const slotTime = new Date(state.selectedDate);
+                    slotTime.setHours(hour, 0, 0, 0);
+                    
+                    const slot = document.createElement('div');
+                    slot.classList.add('time-slot');
+                    
+                    // Format time range (e.g., "9:00 AM - 12:00 PM")
+                    const endTime = new Date(slotTime.getTime() + 3 * 60 * 60000);
+                    const timeString = `${slotTime.toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true
+                    })} - ${endTime.toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true
+                    })}`;
+                    
+                    slot.textContent = timeString;
+                    slot.dataset.time = slotTime.getTime();
+                    
+                    // Check if time slot is available
+                    const isUnavailable = isTimeSlotUnavailable(slotTime);
+                    if (isUnavailable) {
+                        slot.classList.add('unavailable');
+                    } else {
+                        // Check if selected
+                        if (state.selectedTime && state.selectedTime.getTime() === slotTime.getTime()) {
+                            slot.classList.add('selected');
+                        }
                     }
+                    
+                    elements.timeSlots.appendChild(slot);
                 }
-                
-                elements.timeSlots.appendChild(slot);
+            } catch (error) {
+                showError("Failed to load available times. Please try again.");
             }
         }
 
@@ -549,10 +578,13 @@
             try {
                 const dateStr = date.toISOString().split('T')[0];
                 const response = await fetch(`${config.backendUrl}/api/calendar/busy-times?date=${dateStr}`, {
-                    credentials: 'include' // Important for session cookies
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
                 });
                 
-                if (!response.ok) throw new Error('Failed to fetch busy times');
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 
                 const events = await response.json();
                 
@@ -562,7 +594,7 @@
                 }));
             } catch (error) {
                 console.error("Error fetching busy times:", error);
-                alert("Failed to load available times. Please refresh the page.");
+                throw error;
             }
         }
 
@@ -643,7 +675,7 @@
                             headers: {
                                 'Content-Type': 'application/json'
                             },
-                            credentials: 'include', // Important for session cookies
+                            credentials: 'include',
                             body: JSON.stringify({
                                 subject: 'BundleBooth Booking',
                                 start: state.selectedTime.toISOString(),
@@ -652,7 +684,7 @@
                             })
                         });
                         
-                        if (!response.ok) throw new Error('Booking failed');
+                        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                         
                         const result = await response.json();
                         
@@ -662,7 +694,7 @@
                         renderTimeSlots();
                     } catch (error) {
                         console.error("Booking error:", error);
-                        alert('Booking failed. Please try again or check your authentication.');
+                        showError("Booking failed. Please try again.");
                     }
                 }
             });
