@@ -1,0 +1,21 @@
+{
+  "name": "bundlebooth-calendar-backend",
+  "version": "1.0.0",
+  "main": "calendar-api.js",
+  "scripts": {
+    "start": "node calendar-api.js",
+    "dev": "nodemon calendar-api.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.1",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "passport": "^0.7.0",
+    "passport-microsoft": "^1.0.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
