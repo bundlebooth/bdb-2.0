@@ -1,13 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booking Calendar</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- [Keep all your existing head content] -->
     <style>
-        /* [All your existing CSS remains exactly the same] */
-        /* Add this new error message style */
+        /* Add these new styles */
+        .calendar-container {
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .time-slot {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        
+        .time-slot.available {
+            background: #e8f5e9;
+            border-color: #a5d6a7;
+        }
+        
+        .time-slot.booked {
+            background: #ffebee;
+            border-color: #ef9a9a;
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+        
+        .slot-time {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .slot-status {
+            font-size: 0.9em;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        
+        .available .slot-status {
+            background: #2e7d32;
+            color: white;
+        }
+        
+        .booked .slot-status {
+            background: #c62828;
+            color: white;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
         .error-message {
             color: #E74C3C;
             background-color: #FDEDED;
@@ -15,75 +72,202 @@
             border-radius: 4px;
             margin: 10px 0;
             text-align: center;
-            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="error-message" id="error-message"></div>
-        <!-- [Rest of your existing HTML remains the same] -->
+    <!-- [Keep all your existing HTML until before the action-buttons div] -->
+    
+    <div class="calendar-container">
+        <h3>Select Available Time Slot</h3>
+        <div id="calendar-loading" class="loading">Loading availability...</div>
+        <div id="calendar-error" class="error-message" style="display:none;"></div>
+        <div id="time-slots-container" class="time-slots"></div>
     </div>
+    
+    <!-- [Keep the rest of your existing HTML] -->
 
     <script>
-        // Updated Config
+        // Configuration
         const config = {
-            workingHours: { start: 9, end: 21 },
-            slotDuration: 180,
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            backendUrl: 'https://bundlebooth-calendar-backend.onrender.com' // UPDATE THIS
+            backendUrl: 'https://bundlebooth-calendar-backend.onrender.com',
+            stripeKey: 'pk_test_51Rijz8FJtS8tRcsDMLlOODCVKyY0HupDrxiw7nSWUYQymKml5YM4Nwj9O7WrGyPUd9TAhchuL0MfEWbtTWUrlqlc00KSoZn1Th',
+            workingHours: { start: 9, end: 21 }, // 9AM to 9PM
+            slotDuration: 180 // 3 hours in minutes
         };
 
-        // [Keep all your existing DOM elements and state]
-
-        // Updated checkAuthStatus()
-        async function checkAuthStatus() {
+        // Initialize Stripe and other existing code...
+        
+        // NEW CALENDAR FUNCTIONS
+        async function loadAvailability() {
             try {
-                const response = await fetch(`${config.backendUrl}/api/auth/status`, {
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    }
+                document.getElementById('calendar-loading').style.display = 'block';
+                document.getElementById('calendar-error').style.display = 'none';
+                
+                // First check auth status
+                const authResponse = await fetch(`${config.backendUrl}/api/auth/status`, {
+                    credentials: 'include'
                 });
                 
-                if (!response.ok) throw new Error(`Auth failed: ${response.status}`);
-                
-                const data = await response.json();
-                state.isAuthenticated = data.authenticated;
-                updateAuthUI();
-                
-                if (!state.isAuthenticated) {
+                if (!authResponse.ok) {
+                    // Redirect to Microsoft login if not authenticated
                     window.location.href = `${config.backendUrl}/api/auth/microsoft`;
+                    return;
                 }
+                
+                // Fetch availability
+                const response = await fetch(`${config.backendUrl}/api/availability`, {
+                    credentials: 'include'
+                });
+                
+                if (!response.ok) throw new Error('Failed to load availability');
+                
+                const busySlots = await response.json();
+                renderTimeSlots(busySlots);
             } catch (error) {
-                console.error("Auth error:", error);
-                showError("Please refresh the page to authenticate");
+                console.error('Availability error:', error);
+                document.getElementById('calendar-error').textContent = 
+                    'Failed to load availability. Please refresh the page.';
+                document.getElementById('calendar-error').style.display = 'block';
+            } finally {
+                document.getElementById('calendar-loading').style.display = 'none';
             }
         }
-
-        // New helper functions
-        function showError(message) {
-            const errorEl = document.getElementById('error-message');
-            errorEl.textContent = message;
-            errorEl.style.display = 'block';
-        }
-
-        function hideError() {
-            document.getElementById('error-message').style.display = 'none';
-        }
-
-        // [Keep all your other existing functions]
-
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', () => {
-            // Check for auth error in URL
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('auth_error')) {
-                showError("Authentication failed. Please try again.");
+        
+        function renderTimeSlots(busySlots) {
+            const container = document.getElementById('time-slots-container');
+            container.innerHTML = '';
+            
+            const startHour = config.workingHours.start;
+            const endHour = config.workingHours.end;
+            const slotDuration = config.slotDuration;
+            
+            // Generate time slots
+            for (let hour = startHour; hour < endHour; hour += slotDuration / 60) {
+                const slotStart = new Date();
+                slotStart.setHours(hour, 0, 0, 0);
+                
+                const slotEnd = new Date(slotStart);
+                slotEnd.setHours(hour + (slotDuration / 60), 0, 0, 0);
+                
+                // Check if this slot is available
+                const isBooked = busySlots.some(event => {
+                    const eventStart = new Date(event.start.dateTime);
+                    const eventEnd = new Date(event.end.dateTime);
+                    return (slotStart < eventEnd && slotEnd > eventStart);
+                });
+                
+                const slotElement = document.createElement('div');
+                slotElement.className = `time-slot ${isBooked ? 'booked' : 'available'}`;
+                slotElement.innerHTML = `
+                    <div class="slot-time">${formatTime(slotStart)} - ${formatTime(slotEnd)}</div>
+                    <div class="slot-status">${isBooked ? 'Booked' : 'Available'}</div>
+                    ${!isBooked ? `
+                        <button class="select-slot" 
+                                data-start="${slotStart.toISOString()}" 
+                                data-end="${slotEnd.toISOString()}">
+                            Select
+                        </button>
+                    ` : ''}
+                `;
+                
+                container.appendChild(slotElement);
             }
             
-            init();
+            // Add event listeners to select buttons
+            document.querySelectorAll('.select-slot').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const start = e.target.dataset.start;
+                    const end = e.target.dataset.end;
+                    selectTimeSlot(start, end);
+                });
+            });
+        }
+        
+        function selectTimeSlot(start, end) {
+            // Update the event date in your form
+            const date = new Date(start);
+            document.getElementById('event-date').value = date.toISOString().split('T')[0];
+            
+            // Update the duration
+            const duration = (new Date(end) - new Date(start)) / (1000 * 60 * 60);
+            document.getElementById('event-duration').value = duration;
+            
+            // Scroll to form
+            document.getElementById('event-details-form').scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+        
+        function formatTime(date) {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        
+        // MODIFIED BOOKING HANDLER
+        async function handleBookingSubmit(e) {
+            e.preventDefault();
+            
+            if (!document.getElementById('event-details-form').checkValidity()) {
+                document.getElementById('event-details-form').reportValidity();
+                return;
+            }
+            
+            // First create the calendar booking
+            try {
+                const bookingData = {
+                    start: document.getElementById('event-date').value + 'T' + 
+                          document.querySelector('.selected-slot').dataset.start.split('T')[1],
+                    end: document.getElementById('event-date').value + 'T' + 
+                         document.querySelector('.selected-slot').dataset.end.split('T')[1],
+                    name: document.getElementById('contact-name').value,
+                    email: document.getElementById('contact-email').value,
+                    eventDetails: {
+                        eventName: document.getElementById('event-name').value,
+                        location: document.getElementById('event-location').value,
+                        guestCount: document.getElementById('guest-count').value,
+                        notes: document.getElementById('special-requests').value
+                    }
+                };
+                
+                const response = await fetch(`${config.backendUrl}/api/bookings`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(bookingData)
+                });
+                
+                if (!response.ok) throw new Error('Failed to book time slot');
+                
+                // Proceed to payment if calendar booking succeeded
+                document.getElementById('stripe-payment-form').style.display = 'block';
+                document.getElementById('submit-booking').style.display = 'none';
+                
+            } catch (error) {
+                console.error('Booking error:', error);
+                alert('Failed to book time slot. Please try again.');
+            }
+        }
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            updatePrices();
+            renderServices();
+            document.getElementById('event-date').value = new Date().toISOString().split('T')[0];
+            
+            // Load calendar availability
+            loadAvailability();
+            
+            // Set up event listeners
+            document.getElementById('submit-booking').addEventListener('click', handleBookingSubmit);
+            document.getElementById('submit-payment').addEventListener('click', handlePaymentSubmit);
+            document.getElementById('back-to-services').addEventListener('click', () => {
+                alert('Would go back to services selection');
+            });
+            document.getElementById('new-bundle-button').addEventListener('click', () => {
+                window.location.reload();
+            });
         });
     </script>
 </body>
