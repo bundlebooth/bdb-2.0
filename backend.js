@@ -1,19 +1,18 @@
-require('dotenv').config(); // Add this at the top
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const brevo = require('@getbrevo/brevo');
-const defaultClient = brevo.ApiClient.instance;
-const cors = require('cors'); // Add CORS support
+const cors = require('cors');
 const app = express();
 
 // Middleware
-app.use(cors()); // Enable CORS
+app.use(cors());
 app.use(bodyParser.json());
 
 // Configure Brevo
-const defaultClient = SibApiV3Sdk.ApiClient.instance;
+const defaultClient = brevo.ApiClient.instance;
 const apiKey = defaultClient.authentications['api-key'];
-apiKey.apiKey = process.env.BREVO_API_KEY || 'xkeysib-YOUR_API_KEY_HERE';
+apiKey.apiKey = process.env.BREVO_API_KEY || 'your-api-key-here';
 
 // Health check endpoint
 app.get('/', (req, res) => {
@@ -25,18 +24,15 @@ app.post('/send-booking-email', async (req, res) => {
     try {
         const bookingData = req.body;
         
-        // Basic validation
         if (!bookingData.email || !bookingData.contactName) {
             return res.status(400).json({ success: false, error: 'Missing required fields' });
         }
 
-        // Format services list for email
         const servicesList = bookingData.services.map(service => 
             `${service.name} (${service.ServiceType}): C$${service.price.toFixed(2)}`
         ).join('<br>');
 
-        // Create email content
-        const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+        const sendSmtpEmail = new brevo.SendSmtpEmail();
         sendSmtpEmail.sender = { 
             email: process.env.FROM_EMAIL || 'hello@bundlebooth.ca', 
             name: process.env.FROM_NAME || 'BundleBooth' 
@@ -63,12 +59,11 @@ app.post('/send-booking-email', async (req, res) => {
             <p>Bundle Discount (10%): -C$${bookingData.discount.toFixed(2)}</p>
             <p><strong>Total: C$${bookingData.total.toFixed(2)}</strong></p>
             
-            <p>We'll be in touch soon to confirm final details. If you have any questions, please reply to this email.</p>
+            <p>We'll be in touch soon to confirm final details.</p>
             <p>Thank you for choosing BundleBooth!</p>
         `;
 
-        // Send email
-        const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+        const apiInstance = new brevo.TransactionalEmailsApi();
         const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
         
         res.json({ success: true, data });
