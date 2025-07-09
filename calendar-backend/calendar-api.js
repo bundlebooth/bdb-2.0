@@ -5,18 +5,14 @@ const axios = require('axios');
 
 const app = express();
 
-// CORS Configuration
 app.use(cors({
-  origin: [
-    'https://your-godaddy-domain.com', // UPDATE THIS
-    'http://localhost'
-  ],
+  origin: ['https://your-godaddy-domain.com'],
   methods: ['GET', 'POST']
 }));
 
 app.use(express.json());
 
-// Microsoft Graph Authentication (Service Account)
+// Microsoft Graph Authentication
 const getAccessToken = async () => {
   const params = new URLSearchParams();
   params.append('client_id', process.env.MICROSOFT_CLIENT_ID);
@@ -31,13 +27,15 @@ const getAccessToken = async () => {
   return response.data.access_token;
 };
 
-// Get availability
+// Get availability for specific date
 app.get('/api/availability', async (req, res) => {
   try {
+    const date = req.query.date;
     const accessToken = await getAccessToken();
-    const startDate = new Date();
-    const endDate = new Date();
-    endDate.setDate(endDate.getDate() + 30); // 30 days ahead
+    
+    const startDate = new Date(date);
+    const endDate = new Date(date);
+    endDate.setDate(endDate.getDate() + 1); // Next day
     
     const response = await axios.post(
       'https://graph.microsoft.com/v1.0/me/calendar/getSchedule',
@@ -56,7 +54,7 @@ app.get('/api/availability', async (req, res) => {
   }
 });
 
-// Create booking (called after Stripe payment)
+// Create booking
 app.post('/api/bookings', async (req, res) => {
   try {
     const { start, end, name, email, eventDetails } = req.body;
@@ -73,6 +71,8 @@ app.post('/api/bookings', async (req, res) => {
             <p>Email: ${email}</p>
             <p>Event: ${eventDetails.eventName}</p>
             <p>Location: ${eventDetails.location}</p>
+            <p>Guests: ${eventDetails.guestCount}</p>
+            <p>Notes: ${eventDetails.notes}</p>
           `
         },
         start: { dateTime: start, timeZone: 'UTC' },
