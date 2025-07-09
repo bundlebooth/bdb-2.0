@@ -219,6 +219,90 @@
             color: var(--bb-red);
             margin-bottom: 15px;
         }
+        
+        /* CALENDAR STYLES */
+        .calendar-container {
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .time-slot {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+        
+        .time-slot.available {
+            background: #e8f5e9;
+            border-color: #a5d6a7;
+            cursor: pointer;
+        }
+        
+        .time-slot.available:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .time-slot.booked {
+            background: #ffebee;
+            border-color: #ef9a9a;
+            opacity: 0.7;
+        }
+        
+        .slot-time {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .slot-status {
+            font-size: 0.9em;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            color: white;
+        }
+        
+        .available .slot-status {
+            background: #2e7d32;
+        }
+        
+        .booked .slot-status {
+            background: #c62828;
+            text-decoration: line-through;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .calendar-error {
+            color: #E74C3C;
+            background-color: #FDEDED;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            text-align: center;
+            display: none;
+        }
+        
+        .selected-slot {
+            box-shadow: 0 0 0 3px var(--bb-accent);
+        }
+        
         @media (max-width: 768px) {
             .form-row {
                 flex-direction: column;
@@ -229,6 +313,9 @@
             }
             .action-buttons button {
                 width: 100%;
+            }
+            .time-slots {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -325,7 +412,17 @@
             </form>
         </div>
 
-        <!-- Stripe Payment Form (hidden by default) -->
+        <!-- CALENDAR SECTION -->
+        <div class="calendar-container">
+            <h3>Available Time Slots</h3>
+            <p>Select a 3-hour time slot for your event (9AM-9PM)</p>
+            
+            <div id="calendar-loading" class="loading">Loading availability...</div>
+            <div id="calendar-error" class="calendar-error"></div>
+            <div id="time-slots-container" class="time-slots"></div>
+        </div>
+
+        <!-- Stripe Payment Form -->
         <div id="stripe-payment-form">
             <h3>Payment Information</h3>
             <p>Test Payment Amount: <strong>$0.50</strong></p>
@@ -360,8 +457,10 @@
     <script>
         // Configuration
         const config = {
-            backendUrl: 'https://bdb-2-0-brevo-email-backend.onrender.com/send-booking-email',
-            stripeKey: 'pk_test_51Rijz8FJtS8tRcsDMLlOODCVKyY0HupDrxiw7nSWUYQymKml5YM4Nwj9O7WrGyPUd9TAhchuL0MfEWbtTWUrlqlc00KSoZn1Th'
+            backendUrl: 'https://bdb-2-0-calendar-api-backend.onrender.com',
+            stripeKey: 'pk_test_51Rijz8FJtS8tRcsDMLlOODCVKyY0HupDrxiw7nSWUYQymKml5YM4Nwj9O7WrGyPUd9TAhchuL0MfEWbtTWUrlqlc00KSoZn1Th',
+            workingHours: { start: 9, end: 21 }, // 9AM to 9PM
+            slotDuration: 180 // 3 hours in minutes
         };
 
         // Initialize Stripe
@@ -390,7 +489,13 @@
         document.addEventListener('DOMContentLoaded', () => {
             updatePrices();
             renderServices();
-            document.getElementById('event-date').value = new Date().toISOString().split('T')[0];
+            
+            // Set default date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('event-date').value = today;
+            
+            // Load availability for today
+            loadAvailability(today);
             
             // Set up event listeners
             document.getElementById('submit-booking').addEventListener('click', handleBookingSubmit);
@@ -400,6 +505,11 @@
             });
             document.getElementById('new-bundle-button').addEventListener('click', () => {
                 window.location.reload();
+            });
+            
+            // When date changes, reload availability
+            document.getElementById('event-date').addEventListener('change', (e) => {
+                loadAvailability(e.target.value);
             });
         });
 
@@ -433,33 +543,116 @@
             });
         }
 
-        // Send email via backend
-        async function sendConfirmationEmail(bookingData) {
+        // CALENDAR FUNCTIONS - WORKING IMPLEMENTATION
+        async function loadAvailability(date) {
             try {
-                const response = await fetch(config.backendUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        ...bookingData,
-                        services: selectedServices,
-                        subtotal: selectedServices.reduce((sum, service) => sum + service.price, 0),
-                        discount: selectedServices.reduce((sum, service) => sum + service.price, 0) * 0.1,
-                        total: selectedServices.reduce((sum, service) => sum + service.price, 0) * 0.9
-                    })
-                });
-
+                showCalendarLoading();
+                hideCalendarError();
+                clearTimeSlots();
+                
+                const response = await fetch(`${config.backendUrl}/api/availability?date=${date}`);
+                
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Failed to send confirmation email');
+                    throw new Error(`Failed to load availability: ${response.status}`);
                 }
-
-                return await response.json();
+                
+                const data = await response.json();
+                
+                // Validate response structure
+                if (!data.availability || !Array.isArray(data.availability)) {
+                    throw new Error('Invalid availability data format');
+                }
+                
+                renderTimeSlots(date, data.availability);
             } catch (error) {
-                console.error('Email error:', error);
-                throw error;
+                console.error('Availability error:', error);
+                showCalendarError(`Failed to load availability: ${error.message}`);
+            } finally {
+                hideCalendarLoading();
             }
+        }
+        
+        function renderTimeSlots(date, busySlots = []) {
+            const container = document.getElementById('time-slots-container');
+            const selectedDate = new Date(date);
+            const startHour = config.workingHours.start;
+            const endHour = config.workingHours.end;
+            const slotDuration = config.slotDuration;
+            
+            // Generate time slots
+            for (let hour = startHour; hour < endHour; hour += slotDuration / 60) {
+                const slotStart = new Date(selectedDate);
+                slotStart.setHours(hour, 0, 0, 0);
+                
+                const slotEnd = new Date(slotStart);
+                slotEnd.setHours(hour + (slotDuration / 60), 0, 0, 0);
+                
+                // Check if this slot is available
+                const isBooked = Array.isArray(busySlots) && busySlots.some(event => {
+                    try {
+                        const eventStart = new Date(event.start?.dateTime || event.start);
+                        const eventEnd = new Date(event.end?.dateTime || event.end);
+                        return (slotStart < eventEnd && slotEnd > eventStart);
+                    } catch (e) {
+                        console.error('Error processing event:', event, e);
+                        return false;
+                    }
+                });
+                
+                const slotElement = document.createElement('div');
+                slotElement.className = `time-slot ${isBooked ? 'booked' : 'available'}`;
+                slotElement.dataset.start = slotStart.toISOString();
+                slotElement.dataset.end = slotEnd.toISOString();
+                
+                slotElement.innerHTML = `
+                    <div class="slot-time">${formatTime(slotStart)} - ${formatTime(slotEnd)}</div>
+                    <div class="slot-status">${isBooked ? 'Booked' : 'Available'}</div>
+                `;
+                
+                if (!isBooked) {
+                    slotElement.addEventListener('click', () => {
+                        // Remove previous selection
+                        document.querySelectorAll('.time-slot').forEach(slot => {
+                            slot.classList.remove('selected-slot');
+                        });
+                        
+                        // Select this slot
+                        slotElement.classList.add('selected-slot');
+                        
+                        // Update duration field
+                        document.getElementById('event-duration').value = 
+                            (new Date(slotElement.dataset.end) - new Date(slotElement.dataset.start)) / (1000 * 60 * 60);
+                    });
+                }
+                
+                container.appendChild(slotElement);
+            }
+        }
+        
+        function formatTime(date) {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function showCalendarLoading() {
+            document.getElementById('calendar-loading').style.display = 'block';
+        }
+        
+        function hideCalendarLoading() {
+            document.getElementById('calendar-loading').style.display = 'none';
+        }
+        
+        function showCalendarError(message) {
+            const errorElement = document.getElementById('calendar-error');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+        
+        function hideCalendarError() {
+            document.getElementById('calendar-error').style.display = 'none';
+        }
+        
+        function clearTimeSlots() {
+            document.getElementById('time-slots-container').innerHTML = '';
         }
 
         // Handle booking submission
@@ -470,7 +663,14 @@
                 document.getElementById('event-details-form').reportValidity();
                 return;
             }
-
+            
+            // Check if a time slot is selected
+            const selectedSlot = document.querySelector('.selected-slot');
+            if (!selectedSlot) {
+                alert('Please select an available time slot');
+                return;
+            }
+            
             document.getElementById('stripe-payment-form').style.display = 'block';
             document.getElementById('submit-booking').style.display = 'none';
         }
@@ -486,7 +686,13 @@
             errorDisplay.textContent = '';
 
             try {
-                // Collect booking data
+                // 1. First validate a time slot is selected
+                const selectedSlot = document.querySelector('.selected-slot');
+                if (!selectedSlot) {
+                    throw new Error('Please select an available time slot');
+                }
+                
+                // 2. Collect booking data
                 const bookingData = {
                     eventName: document.getElementById('event-name').value,
                     eventType: document.getElementById('event-type').value,
@@ -497,10 +703,12 @@
                     notes: document.getElementById('special-requests').value,
                     contactName: document.getElementById('contact-name').value,
                     email: document.getElementById('contact-email').value,
-                    phone: document.getElementById('contact-phone').value
+                    phone: document.getElementById('contact-phone').value,
+                    startTime: selectedSlot.dataset.start,
+                    endTime: selectedSlot.dataset.end
                 };
 
-                // Process payment
+                // 3. Process Stripe payment
                 const { error } = await stripe.createPaymentMethod({
                     type: 'card',
                     card: cardElement,
@@ -512,10 +720,30 @@
                 });
                 if (error) throw error;
 
-                // Send confirmation email
-                await sendConfirmationEmail(bookingData);
+                // 4. Create calendar booking
+                const bookingResponse = await fetch(`${config.backendUrl}/api/bookings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        start: bookingData.startTime,
+                        end: bookingData.endTime,
+                        name: bookingData.contactName,
+                        email: bookingData.email,
+                        eventDetails: {
+                            eventName: bookingData.eventName,
+                            location: bookingData.location,
+                            guestCount: bookingData.guestCount,
+                            notes: bookingData.notes
+                        }
+                    })
+                });
                 
-                // Show success
+                if (!bookingResponse.ok) {
+                    const errorData = await bookingResponse.json();
+                    throw new Error(errorData.error || 'Booking failed');
+                }
+                
+                // 5. Show success
                 document.getElementById('stripe-payment-form').style.display = 'none';
                 document.getElementById('event-details-form').style.display = 'none';
                 document.getElementById('back-to-services').style.display = 'none';
