@@ -11,17 +11,18 @@
     "axios": "^1.6.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.1",
-    "express": "^4.18.2",
-    "express-session": "^1.17.3",
-    "passport": "^0.7.0",
-    "passport-microsoft": "^1.0.4"
+    "express": "^4.18.2"
   },
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=9.0.0"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "calendar",
+    "microsoft-graph",
+    "booking"
+  ],
+  "author": "Your Name",
   "license": "ISC",
-  "description": "BundleBooth Calendar API Backend"
+  "description": "BundleBooth Calendar API with Microsoft Graph integration"
 }
