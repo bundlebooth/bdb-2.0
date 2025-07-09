@@ -243,9 +243,27 @@
                 grid-template-columns: 1fr;
             }
         }
+        
+        /* Auth status indicator */
+        .auth-status {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            background-color: var(--error);
+            color: white;
+        }
+        
+        .auth-status.authenticated {
+            background-color: var(--success);
+        }
     </style>
 </head>
 <body>
+    <div class="auth-status" id="auth-status">Not Authenticated</div>
+    
     <div class="container">
         <div class="booking-header">
             <h1>Schedule an Appointment</h1>
@@ -299,11 +317,11 @@
         const config = {
             workingHours: {
                 start: 9, // 9am
-                end: 17   // 5pm
+                end: 21   // 9pm
             },
-            slotDuration: 30, // minutes
-            unavailableSlots: [], // Will be populated from Google Calendar
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            slotDuration: 180, // 3 hours in minutes
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            backendUrl: 'https://your-render-app.onrender.com' // Update with your Render URL
         };
 
         // DOM Elements
@@ -315,7 +333,8 @@
             selectedDate: document.getElementById('selected-date'),
             timeSlots: document.getElementById('time-slots'),
             timezone: document.getElementById('timezone'),
-            bookButton: document.getElementById('book-button')
+            bookButton: document.getElementById('book-button'),
+            authStatus: document.getElementById('auth-status')
         };
 
         // State
@@ -323,16 +342,50 @@
             currentDate: new Date(),
             selectedDate: null,
             selectedTime: null,
-            events: [] // Will store busy times from Google Calendar
+            events: [],
+            isAuthenticated: false
         };
 
         // Initialize
-        function init() {
+        async function init() {
             elements.timezone.textContent = config.timezone;
             renderCalendar();
             setupEventListeners();
-            // In a real app, you would fetch busy times from your calendar API here
-            simulateFetchBusyTimes();
+            await checkAuthStatus();
+        }
+
+        // Check authentication status
+        async function checkAuthStatus() {
+            try {
+                const response = await fetch(`${config.backendUrl}/api/auth/status`, {
+                    credentials: 'include' // Important for session cookies
+                });
+                
+                if (!response.ok) throw new Error('Auth check failed');
+                
+                const data = await response.json();
+                state.isAuthenticated = data.authenticated;
+                
+                updateAuthUI();
+                
+                if (!state.isAuthenticated) {
+                    // Redirect to Microsoft login
+                    window.location.href = `${config.backendUrl}/api/auth/microsoft`;
+                }
+            } catch (error) {
+                console.error("Auth check error:", error);
+                elements.authStatus.textContent = "Auth Error";
+            }
+        }
+
+        function updateAuthUI() {
+            if (state.isAuthenticated) {
+                elements.authStatus.textContent = "Authenticated";
+                elements.authStatus.classList.add('authenticated');
+            } else {
+                elements.authStatus.textContent = "Not Authenticated";
+                elements.authStatus.classList.remove('authenticated');
+            }
         }
 
         // Render the calendar
@@ -405,7 +458,7 @@
         }
 
         // Render time slots for selected date
-        function renderTimeSlots() {
+        async function renderTimeSlots() {
             elements.timeSlots.innerHTML = '';
             
             if (!state.selectedDate) {
@@ -421,42 +474,47 @@
                 year: 'numeric'
             });
             
-            // Generate time slots
+            // Fetch busy times for selected date
+            await fetchBusyTimes(state.selectedDate);
+            
+            // Generate time slots in 3-hour increments
             const startHour = config.workingHours.start;
             const endHour = config.workingHours.end;
-            const slotDuration = config.slotDuration;
             
-            for (let hour = startHour; hour < endHour; hour++) {
-                for (let minute = 0; minute < 60; minute += slotDuration) {
-                    const slotTime = new Date(state.selectedDate);
-                    slotTime.setHours(hour, minute, 0, 0);
-                    
-                    const slot = document.createElement('div');
-                    slot.classList.add('time-slot');
-                    
-                    // Format time
-                    const timeString = slotTime.toLocaleTimeString('en-US', {
-                        hour: 'numeric',
-                        minute: '2-digit',
-                        hour12: true
-                    });
-                    
-                    slot.textContent = timeString;
-                    slot.dataset.time = slotTime.getTime();
-                    
-                    // Check if time slot is available
-                    const isUnavailable = isTimeSlotUnavailable(slotTime);
-                    if (isUnavailable) {
-                        slot.classList.add('unavailable');
-                    } else {
-                        // Check if selected
-                        if (state.selectedTime && state.selectedTime.getTime() === slotTime.getTime()) {
-                            slot.classList.add('selected');
-                        }
+            for (let hour = startHour; hour <= endHour - 3; hour += 3) {
+                const slotTime = new Date(state.selectedDate);
+                slotTime.setHours(hour, 0, 0, 0);
+                
+                const slot = document.createElement('div');
+                slot.classList.add('time-slot');
+                
+                // Format time range (e.g., "9:00 AM - 12:00 PM")
+                const endTime = new Date(slotTime.getTime() + 3 * 60 * 60000);
+                const timeString = `${slotTime.toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
+                })} - ${endTime.toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
+                })}`;
+                
+                slot.textContent = timeString;
+                slot.dataset.time = slotTime.getTime();
+                
+                // Check if time slot is available
+                const isUnavailable = isTimeSlotUnavailable(slotTime);
+                if (isUnavailable) {
+                    slot.classList.add('unavailable');
+                } else {
+                    // Check if selected
+                    if (state.selectedTime && state.selectedTime.getTime() === slotTime.getTime()) {
+                        slot.classList.add('selected');
                     }
-                    
-                    elements.timeSlots.appendChild(slot);
                 }
+                
+                elements.timeSlots.appendChild(slot);
             }
         }
 
@@ -484,32 +542,26 @@
             return false;
         }
 
-        // Simulate fetching busy times from Google Calendar
-        function simulateFetchBusyTimes() {
-            // In a real app, you would make an API call to your backend
-            // which would then call the Google Calendar API
-            
-            // For demo purposes, we'll simulate some busy times
-            const today = new Date();
-            const tomorrow = new Date(today);
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            
-            state.events = [
-                {
-                    start: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 10, 0, 0),
-                    end: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 11, 30, 0)
-                },
-                {
-                    start: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 14, 0, 0),
-                    end: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 15, 0, 0)
-                },
-                {
-                    start: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 9, 0, 0),
-                    end: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 10, 0, 0)
-                }
-            ];
-            
-            console.log("Simulated busy times:", state.events);
+        // Fetch busy times from backend
+        async function fetchBusyTimes(date) {
+            try {
+                const dateStr = date.toISOString().split('T')[0];
+                const response = await fetch(`${config.backendUrl}/api/calendar/busy-times?date=${dateStr}`, {
+                    credentials: 'include' // Important for session cookies
+                });
+                
+                if (!response.ok) throw new Error('Failed to fetch busy times');
+                
+                const events = await response.json();
+                
+                state.events = events.map(event => ({
+                    start: new Date(event.start.dateTime || event.start.date),
+                    end: new Date(event.end.dateTime || event.end.date)
+                }));
+            } catch (error) {
+                console.error("Error fetching busy times:", error);
+                alert("Failed to load available times. Please refresh the page.");
+            }
         }
 
         // Setup event listeners
@@ -579,11 +631,37 @@
             });
             
             // Book button click
-            elements.bookButton.addEventListener('click', () => {
+            elements.bookButton.addEventListener('click', async () => {
                 if (state.selectedDate && state.selectedTime) {
-                    alert(`Booking confirmed for ${state.selectedTime.toLocaleString()}`);
-                    // In a real app, you would send this to your backend
-                    // to create the event in your calendar
+                    try {
+                        const endTime = new Date(state.selectedTime.getTime() + 3 * 60 * 60000);
+                        
+                        const response = await fetch(`${config.backendUrl}/api/calendar/book`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            credentials: 'include', // Important for session cookies
+                            body: JSON.stringify({
+                                subject: 'BundleBooth Booking',
+                                start: state.selectedTime.toISOString(),
+                                end: endTime.toISOString(),
+                                timeZone: config.timezone
+                            })
+                        });
+                        
+                        if (!response.ok) throw new Error('Booking failed');
+                        
+                        const result = await response.json();
+                        
+                        alert(`Booking confirmed for ${state.selectedTime.toLocaleString()}`);
+                        // Refresh available times
+                        await fetchBusyTimes(state.selectedDate);
+                        renderTimeSlots();
+                    } catch (error) {
+                        console.error("Booking error:", error);
+                        alert('Booking failed. Please try again or check your authentication.');
+                    }
                 }
             });
         }
