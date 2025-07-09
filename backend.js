@@ -1,74 +1,83 @@
 require('dotenv').config();
 const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
+const SibApiV3Sdk = require('sib-api-v3-sdk');
 const app = express();
 
-app.use(cors());
-app.use(bodyParser.json());
+// Configure Brevo
+const defaultClient = SibApiV3Sdk.ApiClient.instance;
+const apiKey = defaultClient.authentications['api-key'];
+apiKey.apiKey = process.env.BREVO_API_KEY; // Make sure this is set in Render.com environment variables
 
-app.post('/send-booking-email', async (req, res) => {
-    try {
-        const bookingData = req.body;
-        
-        const servicesList = bookingData.services.map(service => 
-            `${service.name} (${service.ServiceType}): C$${service.price.toFixed(2)}`
-        ).join('<br>');
+// Middleware
+app.use(express.json());
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
 
-        const emailData = {
-            sender: {
-                email: process.env.FROM_EMAIL || 'hello@bundlebooth.ca',
-                name: process.env.FROM_NAME || 'BundleBooth'
-            },
-            to: [{
-                email: bookingData.email,
-                name: bookingData.contactName
-            }],
-            subject: `Your BundleBooth Booking Confirmation - ${bookingData.eventName}`,
-            htmlContent: `
-                <h2>Thank you for your booking, ${bookingData.contactName}!</h2>
-                <p>Your event <strong>${bookingData.eventName}</strong> is confirmed for ${bookingData.eventDate}.</p>
-                
-                <h3>Event Details</h3>
-                <p><strong>Type:</strong> ${bookingData.eventType}</p>
-                <p><strong>Date:</strong> ${bookingData.eventDate}</p>
-                <p><strong>Duration:</strong> ${bookingData.duration} hours</p>
-                <p><strong>Location:</strong> ${bookingData.location}</p>
-                <p><strong>Guest Count:</strong> ${bookingData.guestCount}</p>
-                ${bookingData.notes ? `<p><strong>Special Requests:</strong> ${bookingData.notes}</p>` : ''}
-                
-                <h3>Your Services</h3>
-                ${servicesList}
-                
-                <h3>Pricing Summary</h3>
-                <p>Subtotal: C$${bookingData.subtotal.toFixed(2)}</p>
-                <p>Bundle Discount (10%): -C$${bookingData.discount.toFixed(2)}</p>
-                <p><strong>Total: C$${bookingData.total.toFixed(2)}</strong></p>
-                
-                <p>We'll be in touch soon to confirm final details.</p>
-                <p>Thank you for choosing BundleBooth!</p>
-            `
-        };
-
-        const response = await fetch('https://api.brevo.com/v3/smtp/email', {
-            method: 'POST',
-            headers: {
-                'accept': 'application/json',
-                'api-key': process.env.BREVO_API_KEY,
-                'content-type': 'application/json'
-            },
-            body: JSON.stringify(emailData)
-        });
-
-        const data = await response.json();
-        res.json({ success: true, data });
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ success: false, error: error.message });
+// Health check endpoint
+app.get('/', (req, res) => {
+  res.status(200).json({ 
+    status: 'Server is running',
+    timestamp: new Date(),
+    endpoints: {
+      email: 'POST /send-booking-email'
     }
+  });
+});
+
+// Email endpoint - THE MAIN ENDPOINT YOU NEED
+app.post('/send-booking-email', async (req, res) => {
+  try {
+    const { email, contactName, eventName, services = [] } = req.body;
+
+    // Basic validation
+    if (!email || !contactName || !eventName) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+    sendSmtpEmail.sender = {
+      email: process.env.FROM_EMAIL || 'hello@bundlebooth.ca',
+      name: process.env.FROM_NAME || 'BundleBooth'
+    };
+    sendSmtpEmail.to = [{ email, name: contactName }];
+    sendSmtpEmail.subject = `Booking Confirmation - ${eventName}`;
+    
+    // Format services list
+    const servicesList = services.map(s => 
+      `${s.name || 'Service'}: C$${(s.price || 0).toFixed(2)}`
+    ).join('<br>');
+
+    sendSmtpEmail.htmlContent = `
+      <h2>Thank you, ${contactName}!</h2>
+      <p>Your booking for <strong>${eventName}</strong> is confirmed.</p>
+      <h3>Services Booked:</h3>
+      ${servicesList}
+      <p>We'll contact you shortly at ${email}.</p>
+    `;
+
+    const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+    const response = await apiInstance.sendTransacEmail(sendSmtpEmail);
+
+    res.json({ 
+      success: true,
+      messageId: response.messageId,
+      timestamp: new Date()
+    });
+
+  } catch (error) {
+    console.error('Email error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: error.message,
+      details: error.response?.body || null
+    });
+  }
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
