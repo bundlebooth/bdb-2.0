@@ -425,6 +425,21 @@
             border-bottom: 1px solid #eee;
         }
         
+        /* Loading spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--bb-accent);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
         @media (max-width: 768px) {
             .form-row {
                 flex-direction: column;
@@ -498,7 +513,10 @@
             
             <div class="time-slot-panel">
                 <div class="time-slot-header" id="selected-date-header">Select a date</div>
-                <div id="calendar-loading" class="loading">Loading availability...</div>
+                <div id="calendar-loading" class="loading">
+                    <div class="spinner"></div>
+                    <div>Loading availability...</div>
+                </div>
                 <div id="calendar-error" class="calendar-error"></div>
                 <div id="time-slots-container" class="time-slots"></div>
                 <div class="timezone-note">All times are in Eastern Time Zone (EST)</div>
@@ -522,7 +540,7 @@
                     </div>
                     <div class="form-group">
                         <label for="contact-email">Email</label>
-                        <input type="email" id="contact-email" required value="your-email@example.com">
+                        <input type="email" id="contact-email" required placeholder="your-email@example.com">
                     </div>
                 </form>
             </div>
@@ -593,16 +611,32 @@
         const config = {
             backendUrl: 'https://bdb-2-0-calendar-api-backend.onrender.com',
             emailBackendUrl: 'https://bdb-2-0-brevo-email-backend.onrender.com/send-booking-email',
-            stripeKey: 'pk_test_51Rijz8FJtS8tRcsDMLlOODCVKyY0HupDrxiw7nSWUYQymKml5YM4Nwj9O7WrGyPUd9TAhchuL0MfEWbtTWUrlqlc00KSoZn1Th',
+            stripeBackendUrl: 'https://bdb-2-0-stripe-api-backend.onrender.com',
             workingHours: { start: 9, end: 21 }, // 9AM to 9PM
             slotDuration: 180 // 3 hours in minutes
         };
 
-        // Initialize Stripe
-        const stripe = Stripe(config.stripeKey);
-        const elements = stripe.elements();
-        const cardElement = elements.create('card');
-        cardElement.mount('#card-element');
+        let stripe;
+        let cardElement;
+
+        async function initializeStripe() {
+            try {
+                const response = await fetch(`${config.stripeBackendUrl}/api/config`);
+                const { stripePublicKey } = await response.json();
+                
+                stripe = Stripe(stripePublicKey);
+                const elements = stripe.elements();
+                cardElement = elements.create('card');
+                cardElement.mount('#card-element');
+                
+                return stripe;
+            } catch (error) {
+                console.error('Failed to initialize Stripe:', error);
+                document.getElementById('payment-errors').textContent = 
+                    'Payment system unavailable. Please try again later.';
+                throw error;
+            }
+        }
 
         // Sample services data
         const selectedServices = [
@@ -624,46 +658,51 @@
         let currentDisplayedDate = new Date();
 
         // Initialize page
-        document.addEventListener('DOMContentLoaded', () => {
-            updatePrices();
-            renderServices();
-            
-            // Set up phone number formatting
-            const phoneInput = document.getElementById('contact-phone');
-            phoneInput.addEventListener('input', formatPhoneNumber);
-            
-            // Initialize calendar with current month
-            renderCalendar(currentDisplayedDate);
-            
-            // Load availability for today if it's available
-            const today = new Date();
-            const todayFormatted = today.toISOString().split('T')[0];
-            if (isDateAvailable(today)) {
-                loadAvailability(todayFormatted);
-                document.getElementById('selected-date-header').textContent = 
-                    today.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' });
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await initializeStripe();
+                updatePrices();
+                renderServices();
+                
+                // Set up phone number formatting
+                const phoneInput = document.getElementById('contact-phone');
+                phoneInput.addEventListener('input', formatPhoneNumber);
+                
+                // Initialize calendar with current month
+                renderCalendar(currentDisplayedDate);
+                
+                // Load availability for today if it's available
+                const today = new Date();
+                const todayFormatted = today.toISOString().split('T')[0];
+                if (isDateAvailable(today)) {
+                    loadAvailability(todayFormatted);
+                    document.getElementById('selected-date-header').textContent = 
+                        today.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' });
+                }
+                
+                // Set up event listeners
+                document.getElementById('submit-booking').addEventListener('click', handleBookingSubmit);
+                document.getElementById('submit-payment').addEventListener('click', handlePaymentSubmit);
+                document.getElementById('back-to-services').addEventListener('click', () => {
+                    alert('Would go back to services selection');
+                });
+                document.getElementById('new-bundle-button').addEventListener('click', () => {
+                    window.location.reload();
+                });
+                
+                // Month navigation
+                document.getElementById('prev-month').addEventListener('click', () => {
+                    currentDisplayedDate.setMonth(currentDisplayedDate.getMonth() - 1);
+                    renderCalendar(currentDisplayedDate);
+                });
+                
+                document.getElementById('next-month').addEventListener('click', () => {
+                    currentDisplayedDate.setMonth(currentDisplayedDate.getMonth() + 1);
+                    renderCalendar(currentDisplayedDate);
+                });
+            } catch (error) {
+                console.error('Initialization failed:', error);
             }
-            
-            // Set up event listeners
-            document.getElementById('submit-booking').addEventListener('click', handleBookingSubmit);
-            document.getElementById('submit-payment').addEventListener('click', handlePaymentSubmit);
-            document.getElementById('back-to-services').addEventListener('click', () => {
-                alert('Would go back to services selection');
-            });
-            document.getElementById('new-bundle-button').addEventListener('click', () => {
-                window.location.reload();
-            });
-            
-            // Month navigation
-            document.getElementById('prev-month').addEventListener('click', () => {
-                currentDisplayedDate.setMonth(currentDisplayedDate.getMonth() - 1);
-                renderCalendar(currentDisplayedDate);
-            });
-            
-            document.getElementById('next-month').addEventListener('click', () => {
-                currentDisplayedDate.setMonth(currentDisplayedDate.getMonth() + 1);
-                renderCalendar(currentDisplayedDate);
-            });
         });
 
         // Check if date is available (not in past and within 2 weeks)
@@ -977,15 +1016,28 @@
                 };
 
                 // 3. Process Stripe payment
-                const { error } = await stripe.createPaymentMethod({
-                    type: 'card',
-                    card: cardElement,
-                    billing_details: {
-                        name: bookingData.contactName,
-                        email: bookingData.email,
-                        phone: bookingData.phone
+                const paymentResponse = await fetch(`${config.stripeBackendUrl}/api/payments/create-payment-intent`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount: 50, // $0.50 in cents
+                        currency: 'cad'
+                    })
+                });
+
+                if (!paymentResponse.ok) throw new Error('Payment setup failed');
+                const { clientSecret } = await paymentResponse.json();
+
+                const { error } = await stripe.confirmCardPayment(clientSecret, {
+                    payment_method: {
+                        card: cardElement,
+                        billing_details: {
+                            name: bookingData.contactName,
+                            email: bookingData.email
+                        }
                     }
                 });
+
                 if (error) throw error;
 
                 // 4. Create calendar booking
