@@ -9,6 +9,13 @@ app.use(cors());
 app.use(express.json());
 app.use(express.raw({ type: 'application/json' }));
 
+// New endpoint for frontend config
+app.get('/api/config', (req, res) => {
+  res.json({
+    stripePublicKey: process.env.STRIPE_PUBLIC_KEY
+  });
+});
+
 app.get('/api/availability', async (req, res) => {
   try {
     const { date } = req.query;
