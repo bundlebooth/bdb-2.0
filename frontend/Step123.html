@@ -20,7 +20,8 @@
       --bb-hover-grey: #4a5057;
       --bb-accent: #3498db;
       --bb-table-header: #e8ecef;
-      --bb-compare-button: #d3d3d3
+      --bb-compare-button: #d3d3d3;
+      --selected-date-color: #666;
     }
     * {
       box-sizing: border-box;
@@ -108,7 +109,7 @@
       font-weight: 400
     }
     .discount {
-      color: var(--bb-red);
+      color: var(--bb-green);
       font-weight: 600;
       font-size: .9rem;
       margin-left: 5px
@@ -133,7 +134,8 @@
       border: none;
       cursor: pointer;
       width: 100%;
-      text-align: center
+      text-align: center;
+      position: relative;
     }
     .book-now-button:focus,
     .book-now-button:hover {
@@ -569,7 +571,24 @@
     }
     
     .calendar-day.current {
+      color: var(--bb-dark);
+      font-weight: bold;
+    }
+    
+    .calendar-day.current::after {
+      content: '';
+      position: absolute;
+      bottom: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
       background-color: var(--bb-accent);
+    }
+    
+    .calendar-day.selected {
+      background-color: var(--selected-date-color);
       color: white;
       font-weight: bold;
     }
@@ -696,13 +715,15 @@
     
     /* Loading spinner */
     .spinner {
-      width: 40px;
-      height: 40px;
-      margin: 0 auto;
-      border: 4px solid rgba(0, 0, 0, 0.1);
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(0, 0, 0, 0.1);
       border-radius: 50%;
       border-top-color: var(--bb-accent);
       animation: spin 1s ease-in-out infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 8px;
     }
     
     @keyframes spin {
@@ -729,6 +750,22 @@
     #payment-errors {
       color: var(--bb-red);
       margin-bottom: 15px;
+    }
+    
+    .processing-message {
+      display: none;
+      text-align: center;
+      margin: 10px 0;
+      color: #666;
+      font-style: italic;
+    }
+    
+    /* Payment info in notes */
+    .payment-info {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #eee;
+      font-size: 0.9rem;
     }
     
     @media (max-width: 768px) {
@@ -776,7 +813,6 @@
         <div class="summary-card">
             <div class="summary-header">
                 <div class="summary-title">Your Custom Bundle</div>
-                <div class="summary-price" id="bundle-total-price">C$0</div>
             </div>
             <div id="selected-services-list"></div>
             <div class="total-row">
@@ -881,19 +917,22 @@
         <!-- Stripe Payment Form -->
         <div id="stripe-payment-form">
             <h3>Payment Information</h3>
-            <p>Test Payment Amount: <strong>$0.50</strong></p>
             <div id="payment-errors"></div>
             <div id="card-element"></div>
-            <button id="submit-payment" class="book-now-button">Pay $0.50 Now</button>
+            <button id="submit-payment" class="book-now-button">Pay <span id="payment-amount">$0.50</span> Now</button>
+            <div class="processing-message" id="processing-message">Hang tight! We're processing your booking — this may take a moment.</div>
         </div>
         
         <div class="package-notes">
             <p><strong>Important Notes:</strong></p>
             <ul>
                 <li>Your booking is not confirmed until payment is received</li>
-                <li>This is a test payment of $0.50</li>
                 <li>Final guest count and details must be confirmed 14 days before your event</li>
             </ul>
+            <div class="payment-info" id="payment-info" style="display:none;">
+                <p><strong>Payment Amount:</strong> <span id="payment-info-amount">$0.50</span></p>
+                <p>This is a test payment - your card will not be charged</p>
+            </div>
         </div>
         
         <div class="action-buttons">
@@ -904,7 +943,7 @@
         <div class="confirmation-message" id="confirmation-message">
             <div class="confirmation-icon">✓</div>
             <h3>Booking Confirmed!</h3>
-            <p>Thank you for your booking. Your payment of $0.50 was successful.</p>
+            <p>Thank you for your booking. Your payment of <span id="confirmed-amount">$0.50</span> was successful.</p>
             <p>A confirmation email has been sent to <span id="sent-email"></span> with your booking details.</p>
             <button class="book-now-button" id="new-bundle-button">Create Another Bundle</button>
         </div>
@@ -934,6 +973,7 @@
     let stripe;
     let cardElement;
     let currentDisplayedDate = new Date();
+    let selectedDateElement = null;
 
     // Initialize the builder when DOM is loaded
     document.addEventListener("DOMContentLoaded", async () => {
@@ -1152,7 +1192,11 @@
         document.getElementById('subtotal-price').textContent = `C$${subtotal.toFixed(2)}`;
         document.getElementById('discount-amount').textContent = `-C$${discount.toFixed(2)}`;
         document.getElementById('final-total-price').textContent = `C$${total.toFixed(2)}`;
-        document.getElementById('bundle-total-price').textContent = `C$${total.toFixed(2)}`;
+        
+        // Update payment amount displays
+        document.getElementById('payment-amount').textContent = `$${total.toFixed(2)}`;
+        document.getElementById('payment-info-amount').textContent = `$${total.toFixed(2)}`;
+        document.getElementById('confirmed-amount').textContent = `$${total.toFixed(2)}`;
         
         // Render selected services list
         const servicesList = document.getElementById('selected-services-list');
@@ -1451,15 +1495,24 @@
                 
                 // Add click handler for available days
                 dayElement.addEventListener('click', () => {
-                    // Update selected date
-                    const selectedDate = dayDate.toISOString().split('T')[0];
+                    // Remove previous selection
+                    if (selectedDateElement) {
+                        selectedDateElement.classList.remove('selected');
+                        if (selectedDateElement.classList.contains('current')) {
+                            selectedDateElement.classList.add('current');
+                        }
+                    }
+                    
+                    // Select this date
+                    dayElement.classList.add('selected');
+                    selectedDateElement = dayElement;
                     
                     // Update selected date header
                     document.getElementById('selected-date-header').textContent = 
                         dayDate.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' });
                     
                     // Load availability
-                    loadAvailability(selectedDate);
+                    loadAvailability(dayDate.toISOString().split('T')[0]);
                 });
             } else {
                 dayElement.classList.add('unavailable');
@@ -1623,6 +1676,7 @@
         }
         
         document.getElementById('stripe-payment-form').style.display = 'block';
+        document.getElementById('payment-info').style.display = 'block';
         document.getElementById('submit-booking').style.display = 'none';
     }
 
@@ -1631,10 +1685,12 @@
         e.preventDefault();
         const button = e.target;
         const errorDisplay = document.getElementById('payment-errors');
+        const processingMessage = document.getElementById('processing-message');
         
         button.disabled = true;
-        button.textContent = 'Processing...';
+        button.innerHTML = '<span class="spinner"></span> Processing...';
         errorDisplay.textContent = '';
+        processingMessage.style.display = 'block';
 
         try {
             // 1. First validate a time slot is selected
@@ -1644,6 +1700,7 @@
             }
             
             // 2. Collect booking data
+            const total = parseFloat(document.getElementById('final-total-price').textContent.replace('C$', ''));
             const bookingData = {
                 eventName: document.getElementById('event-name').value,
                 eventType: document.getElementById('event-type').value,
@@ -1663,7 +1720,7 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    amount: 50, // $0.50 in cents
+                    amount: Math.round(total * 100), // Convert to cents
                     currency: 'cad'
                 })
             });
@@ -1720,7 +1777,8 @@
             errorDisplay.textContent = error.message;
         } finally {
             button.disabled = false;
-            button.textContent = 'Pay $0.50 Now';
+            button.innerHTML = 'Pay $' + parseFloat(document.getElementById('final-total-price').textContent.replace('C$', '')) + ' Now';
+            processingMessage.style.display = 'none';
         }
     }
 </script>
