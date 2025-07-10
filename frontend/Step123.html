@@ -5,8 +5,8 @@
 <meta content="width=device-width,initial-scale=1,maximum-scale=0,user-scalable=no" name="viewport"/>
 <title>BundleBooth Custom Builder</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<script src="https://js.stripe.com/v3/"></script>
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-<script type="text/javascript">(function(e,t,n){let p=function(t,r){t.q.push(r)};let d=e.document;e.Cal=e.Cal||function(){let t=e.Cal;let r=arguments;if(!t.loaded){t.ns={};t.q=t.q||[];d.head.appendChild(d.createElement("script")).src=t;t.loaded=true}if(r[0]===n){const i=function(){p(i,arguments)};const s=r[1];i.q=i.q||[];typeof s==="string"?(t.ns[s]=t.ns[s]||i):p(t,r);p(t.ns[s],r);p(t,["initNamespace",s])}else p(t,r)})(window,"https://app.cal.com/embed/embed.js","init");</script>
 <style>
     :root {
       --bb-blue: #333;
@@ -431,18 +431,6 @@
       border-radius: 6px;
       font-size: 14px;
     }
-    @media (max-width: 768px) {
-      .form-row {
-        flex-direction: column;
-        gap: 0;
-      }
-      .action-buttons {
-        flex-direction: column;
-      }
-      .action-buttons button {
-        width: 100%;
-      }
-    }
     
     /* Progress Bar Styles */
     #progress-bar {
@@ -457,11 +445,16 @@
       border-bottom: 4px solid #ccc;
       color: #999;
       font-size: 14px;
+      cursor: pointer;
     }
     #progress-bar div.active {
       border-bottom-color: #3498db;
       color: #3498db;
       font-weight: bold;
+    }
+    #progress-bar div.completed:not(.active) {
+      border-bottom-color: #2ecc71;
+      color: #2ecc71;
     }
     
     /* Compare Warning */
@@ -495,6 +488,264 @@
       z-index: 1000;
       font-size: 14px;
     }
+    
+    /* CALENDAR STYLES */
+    .calendar-container {
+      margin: 20px 0;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    
+    .calendar-panel {
+      flex: 1;
+      min-width: 300px;
+    }
+    
+    .time-slot-panel {
+      flex: 1;
+      min-width: 300px;
+    }
+    
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .calendar-title {
+      font-weight: 600;
+      font-size: 1.2rem;
+    }
+    
+    .calendar-nav {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .calendar-nav-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: var(--bb-blue);
+      padding: 0 5px;
+    }
+    
+    .calendar-nav-button:disabled {
+      color: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+    }
+    
+    .calendar-day-header {
+      text-align: center;
+      font-weight: 600;
+      padding: 5px;
+      font-size: 0.9rem;
+    }
+    
+    .calendar-day {
+      text-align: center;
+      padding: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    
+    .calendar-day:hover {
+      background-color: #f0f0f0;
+    }
+    
+    .calendar-day.current {
+      background-color: var(--bb-accent);
+      color: white;
+      font-weight: bold;
+    }
+    
+    .calendar-day.available {
+      color: var(--bb-dark);
+    }
+    
+    .calendar-day.unavailable {
+      color: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .time-slots {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .time-slot {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      position: relative;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+    }
+    
+    .time-slot::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    
+    .time-slot.available {
+      background: #fff;
+      border-color: #ddd;
+      cursor: pointer;
+    }
+    
+    .time-slot.available::before {
+      background-color: var(--bb-green);
+    }
+    
+    .time-slot.available:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .time-slot.booked {
+      background: #f9f9f9;
+      border-color: #eee;
+      cursor: not-allowed;
+    }
+    
+    .time-slot.booked::before {
+      background-color: #ccc;
+    }
+    
+    .slot-time {
+      font-weight: 600;
+    }
+    
+    .slot-status {
+      margin-left: auto;
+      font-size: 0.8em;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: #f0f0f0;
+      color: #666;
+    }
+    
+    .selected-slot {
+      box-shadow: 0 0 0 2px var(--bb-accent);
+      border-color: var(--bb-accent);
+    }
+    
+    .time-slot-header {
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+    
+    .calendar-error {
+      color: #E74C3C;
+      background-color: #FDEDED;
+      padding: 10px;
+      border-radius: 4px;
+      margin: 10px 0;
+      text-align: center;
+      display: none;
+    }
+    
+    .timezone-note {
+      margin-top: 15px;
+      font-size: 0.9rem;
+      color: #666;
+      text-align: center;
+      font-style: italic;
+    }
+    
+    .form-section {
+      margin-bottom: 30px;
+    }
+    
+    .form-section-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--bb-blue);
+      margin-bottom: 15px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    /* Loading spinner */
+    .spinner {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto;
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top-color: var(--bb-accent);
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Stripe Payment Form */
+    #stripe-payment-form {
+      margin-top: 20px;
+      padding: 20px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      display: none;
+    }
+    
+    #card-element {
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: white;
+      margin-bottom: 20px;
+    }
+    
+    #payment-errors {
+      color: var(--bb-red);
+      margin-bottom: 15px;
+    }
+    
+    @media (max-width: 768px) {
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+      .action-buttons {
+        flex-direction: column;
+      }
+      .action-buttons button {
+        width: 100%;
+      }
+      .calendar-container {
+        flex-direction: column;
+      }
+    }
 </style>
 </head>
 <body>
@@ -521,6 +772,7 @@
     
     <div class="step" id="step-3" style="display:none;">
         <h2 style="margin-bottom:16px;">Step 3: Review & Book</h2>
+        
         <div class="summary-card">
             <div class="summary-header">
                 <div class="summary-title">Your Custom Bundle</div>
@@ -541,85 +793,119 @@
             </div>
         </div>
         
-        <div class="summary-card event-details-card">
-            <h3 style="margin-top:0;">Event Details</h3>
-            <form id="event-details-form">
+        <!-- Calendar Section -->
+        <div class="calendar-container">
+            <div class="calendar-panel">
+                <div class="calendar-header">
+                    <button class="calendar-nav-button" id="prev-month" disabled><</button>
+                    <div class="calendar-title" id="calendar-month-year">July 2025</div>
+                    <button class="calendar-nav-button" id="next-month">></button>
+                </div>
+                <div class="calendar-grid" id="calendar-days-header">
+                    <div class="calendar-day-header">SUN</div>
+                    <div class="calendar-day-header">MON</div>
+                    <div class="calendar-day-header">TUE</div>
+                    <div class="calendar-day-header">WED</div>
+                    <div class="calendar-day-header">THU</div>
+                    <div class="calendar-day-header">FRI</div>
+                    <div class="calendar-day-header">SAT</div>
+                </div>
+                <div class="calendar-grid" id="calendar-days">
+                    <!-- Calendar days will be dynamically inserted here -->
+                </div>
+            </div>
+            
+            <div class="time-slot-panel">
+                <div class="time-slot-header" id="selected-date-header">Select a date</div>
+                <div id="calendar-loading" class="loading">
+                    <div class="spinner"></div>
+                    <div>Loading availability...</div>
+                </div>
+                <div id="calendar-error" class="calendar-error"></div>
+                <div id="time-slots-container" class="time-slots"></div>
+                <div class="timezone-note">All times are in Eastern Time Zone (EST)</div>
+            </div>
+        </div>
+        
+        <!-- Event Details Form -->
+        <div class="summary-card">
+            <div class="form-section">
+                <h3 class="form-section-title">Contact Information</h3>
+                <form id="event-details-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contact-name">Your Name</label>
+                            <input type="text" id="contact-name" required value="Test User">
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-phone">Phone Number</label>
+                            <input type="tel" id="contact-phone" required placeholder="+1 (XXX) XXX-XXXX" value="555-123-4567">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-email">Email</label>
+                        <input type="email" id="contact-email" required placeholder="your-email@example.com">
+                    </div>
+                </form>
+            </div>
+            
+            <div class="form-section">
+                <h3 class="form-section-title">Event Details</h3>
                 <div class="form-row">
                     <div class="form-group">
                         <label for="event-name">Event Name</label>
-                        <input type="text" id="event-name" required>
+                        <input type="text" id="event-name" required value="Test Wedding Event">
                     </div>
                     <div class="form-group">
                         <label for="event-type">Event Type</label>
                         <select id="event-type" required>
                             <option value="">Select Event Type</option>
-                            <option value="Wedding">Wedding</option>
+                            <option value="Wedding" selected>Wedding</option>
                             <option value="Corporate">Corporate Event</option>
                             <option value="Birthday">Birthday Party</option>
                             <option value="Other">Other</option>
                         </select>
                     </div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="event-date">Event Date</label>
-                        <input type="date" id="event-date" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="event-duration">Duration (hours)</label>
-                        <input type="number" id="event-duration" min="1" max="12" value="4" required>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="guest-count">Estimated Guest Count</label>
-                        <input type="number" id="guest-count" min="10" max="500" value="100" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="event-location">Event Location</label>
-                        <input type="text" id="event-location" placeholder="Venue name or address" required>
-                    </div>
+                <div class="form-group">
+                    <label for="event-location">Event Location</label>
+                    <input type="text" id="event-location" placeholder="Venue name or address" required value="Grand Ballroom, Toronto">
                 </div>
                 <div class="form-group">
                     <label for="special-requests">Special Requests or Notes</label>
-                    <textarea id="special-requests" placeholder="Any additional requirements or notes for our team"></textarea>
+                    <textarea id="special-requests" placeholder="Any additional requirements or notes for our team">Test booking - please ignore</textarea>
                 </div>
-                <div class="form-group">
-                    <label for="contact-name">Your Name</label>
-                    <input type="text" id="contact-name" required>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="contact-email">Email</label>
-                        <input type="email" id="contact-email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="contact-phone">Phone Number</label>
-                        <input type="tel" id="contact-phone" required>
-                    </div>
-                </div>
-            </form>
+            </div>
+        </div>
+
+        <!-- Stripe Payment Form -->
+        <div id="stripe-payment-form">
+            <h3>Payment Information</h3>
+            <p>Test Payment Amount: <strong>$0.50</strong></p>
+            <div id="payment-errors"></div>
+            <div id="card-element"></div>
+            <button id="submit-payment" class="book-now-button">Pay $0.50 Now</button>
         </div>
         
         <div class="package-notes">
             <p><strong>Important Notes:</strong></p>
             <ul>
-                <li>Your booking is not confirmed until you receive a confirmation email from our team</li>
-                <li>A 50% deposit is required to secure your date</li>
+                <li>Your booking is not confirmed until payment is received</li>
+                <li>This is a test payment of $0.50</li>
                 <li>Final guest count and details must be confirmed 14 days before your event</li>
             </ul>
         </div>
         
         <div class="action-buttons">
             <button class="book-now-button back-button" id="back-to-services">Back to Services</button>
-            <button class="book-now-button" id="submit-booking" data-cal-link="bundleboothca/custom-bundle-booking" data-cal-namespace="custom-bundle-booking">Book Now</button>
+            <button class="book-now-button" id="submit-booking">Book Now</button>
         </div>
         
         <div class="confirmation-message" id="confirmation-message">
             <div class="confirmation-icon">✓</div>
-            <h3>Booking Request Submitted!</h3>
-            <p>Thank you for your custom bundle request. Our team will review your selections and contact you within 24 hours to confirm availability and finalize your booking.</p>
-            <p>A confirmation email has been sent to <span id="sent-email"></span> with your bundle details.</p>
+            <h3>Booking Confirmed!</h3>
+            <p>Thank you for your booking. Your payment of $0.50 was successful.</p>
+            <p>A confirmation email has been sent to <span id="sent-email"></span> with your booking details.</p>
             <button class="book-now-button" id="new-bundle-button">Create Another Bundle</button>
         </div>
     </div>
@@ -629,6 +915,15 @@
 <div id="toast-msg"></div>
 
 <script>
+    // Configuration
+    const config = {
+        backendUrl: 'https://bdb-2-0-calendar-api-backend.onrender.com',
+        emailBackendUrl: 'https://bdb-2-0-brevo-email-backend.onrender.com/send-booking-email',
+        stripeBackendUrl: 'https://bdb-2-0-stripe-api-backend.onrender.com',
+        workingHours: { start: 9, end: 21 }, // 9AM to 9PM
+        slotDuration: 180 // 3 hours in minutes
+    };
+
     // Global variables
     let servicesIncluded = {};
     let selectedBundle = null;
@@ -636,6 +931,9 @@
     let services = [];
     let selectedServices = [];
     const bundleDiscount = 0.1; // 10% discount for bundles
+    let stripe;
+    let cardElement;
+    let currentDisplayedDate = new Date();
 
     // Initialize the builder when DOM is loaded
     document.addEventListener("DOMContentLoaded", async () => {
@@ -650,12 +948,52 @@
         // Initialize the builder
         await fetchBundles();
         await fetchServices();
+        await initializeStripe();
         
-        // Initialize Cal.com
-        Cal('init', 'custom-bundle-booking', {
-            origin: 'https://app.cal.com'
-        });
+        // Set up progress bar navigation
+        setupProgressBarNavigation();
     });
+
+    // Set up progress bar navigation
+    function setupProgressBarNavigation() {
+        const progressSteps = document.querySelectorAll('#progress-bar div');
+        progressSteps.forEach((step, index) => {
+            step.addEventListener('click', () => {
+                const currentStep = getCurrentStep();
+                if (index < currentStep) {
+                    // Allow going back to completed steps
+                    showStep(index + 1);
+                }
+            });
+        });
+    }
+
+    // Get current step (1, 2, or 3)
+    function getCurrentStep() {
+        if (document.getElementById('step-3').style.display !== 'none') return 3;
+        if (document.getElementById('step-2').style.display !== 'none') return 2;
+        return 1;
+    }
+
+    // Initialize Stripe
+    async function initializeStripe() {
+        try {
+            const response = await fetch(`${config.stripeBackendUrl}/api/config`);
+            const { stripePublicKey } = await response.json();
+            
+            stripe = Stripe(stripePublicKey);
+            const elements = stripe.elements();
+            cardElement = elements.create('card');
+            cardElement.mount('#card-element');
+            
+            return stripe;
+        } catch (error) {
+            console.error('Failed to initialize Stripe:', error);
+            document.getElementById('payment-errors').textContent = 
+                'Payment system unavailable. Please try again later.';
+            throw error;
+        }
+    }
 
     // Fetch bundles data
     async function fetchBundles() {
@@ -797,10 +1135,100 @@
     // Show step 2 with services
     function renderStep2() {
         if (!selectedBundle) return;
-        document.getElementById('step-1').style.display = 'none';
-        document.getElementById('step-2').style.display = 'block';
-        updateProgressBar(1);
+        showStep(2);
         renderServices();
+    }
+
+    // Show step 3 with review and booking
+    function renderStep3() {
+        showStep(3);
+        
+        // Calculate prices
+        const subtotal = selectedServices.reduce((sum, service) => sum + (service.price || 0), 0);
+        const discount = subtotal * bundleDiscount;
+        const total = subtotal - discount;
+        
+        // Update price displays
+        document.getElementById('subtotal-price').textContent = `C$${subtotal.toFixed(2)}`;
+        document.getElementById('discount-amount').textContent = `-C$${discount.toFixed(2)}`;
+        document.getElementById('final-total-price').textContent = `C$${total.toFixed(2)}`;
+        document.getElementById('bundle-total-price').textContent = `C$${total.toFixed(2)}`;
+        
+        // Render selected services list
+        const servicesList = document.getElementById('selected-services-list');
+        servicesList.innerHTML = '';
+        
+        selectedServices.forEach(service => {
+            const serviceDiv = document.createElement('div');
+            serviceDiv.className = 'service-item';
+            
+            // Find features for this service
+            let featuresHtml = '';
+            const matchedService = servicesIncluded["services-included"]?.find(
+                s => s.name.toLowerCase() === service.name.toLowerCase()
+            );
+            
+            if (matchedService && matchedService.features?.length > 0) {
+                featuresHtml = `
+                    <div class="service-features">
+                        <strong>Includes:</strong>
+                        <ul>${matchedService.features.map(f => `<li>${f}</li>`).join('')}</ul>
+                    </div>
+                `;
+            }
+            
+            serviceDiv.innerHTML = `
+                <div>
+                    <div class="service-name">${service.name} <span class="service-category">${service.ServiceType}</span></div>
+                    ${featuresHtml}
+                </div>
+                <div class="service-price">C$${service.price.toFixed(2)}</div>
+            `;
+            servicesList.appendChild(serviceDiv);
+        });
+        
+        // Initialize calendar with current month
+        renderCalendar(currentDisplayedDate);
+        
+        // Set up event listeners
+        document.getElementById('back-to-services').addEventListener('click', () => {
+            showStep(2);
+        });
+        
+        document.getElementById('submit-booking').addEventListener('click', handleBookingSubmit);
+        document.getElementById('submit-payment').addEventListener('click', handlePaymentSubmit);
+        document.getElementById('new-bundle-button').addEventListener('click', () => {
+            window.location.reload();
+        });
+        
+        // Month navigation
+        document.getElementById('prev-month').addEventListener('click', () => {
+            currentDisplayedDate.setMonth(currentDisplayedDate.getMonth() - 1);
+            renderCalendar(currentDisplayedDate);
+        });
+        
+        document.getElementById('next-month').addEventListener('click', () => {
+            currentDisplayedDate.setMonth(currentDisplayedDate.getMonth() + 1);
+            renderCalendar(currentDisplayedDate);
+        });
+        
+        // Set up phone number formatting
+        const phoneInput = document.getElementById('contact-phone');
+        phoneInput.addEventListener('input', formatPhoneNumber);
+    }
+
+    // Show/hide steps
+    function showStep(stepNumber) {
+        // Hide all steps
+        document.getElementById('step-1').style.display = 'none';
+        document.getElementById('step-2').style.display = 'none';
+        document.getElementById('step-3').style.display = 'none';
+        
+        // Show the requested step
+        document.getElementById(`step-${stepNumber}`).style.display = 'block';
+        
+        // Update progress bar
+        updateProgressBar(stepNumber);
     }
 
     // Render services for selected bundle
@@ -922,170 +1350,22 @@
         document.getElementById("compare-warning").style.display = "none";
     }
 
-    // Show step 3 with review and booking
-    function renderStep3() {
-        document.getElementById('step-2').style.display = 'none';
-        document.getElementById('step-3').style.display = 'block';
-        updateProgressBar(2);
-        
-        // Calculate prices
-        const subtotal = selectedServices.reduce((sum, service) => sum + (service.price || 0), 0);
-        const discount = subtotal * bundleDiscount;
-        const total = subtotal - discount;
-        
-        // Update price displays
-        document.getElementById('subtotal-price').textContent = `C$${subtotal.toFixed(2)}`;
-        document.getElementById('discount-amount').textContent = `-C$${discount.toFixed(2)}`;
-        document.getElementById('final-total-price').textContent = `C$${total.toFixed(2)}`;
-        document.getElementById('bundle-total-price').textContent = `C$${total.toFixed(2)}`;
-        
-        // Render selected services list
-        const servicesList = document.getElementById('selected-services-list');
-        servicesList.innerHTML = '';
-        
-        selectedServices.forEach(service => {
-            const serviceDiv = document.createElement('div');
-            serviceDiv.className = 'service-item';
-            
-            // Find features for this service
-            let featuresHtml = '';
-            const matchedService = servicesIncluded["services-included"]?.find(
-                s => s.name.toLowerCase() === service.name.toLowerCase()
-            );
-            
-            if (matchedService && matchedService.features?.length > 0) {
-                featuresHtml = `
-                    <div class="service-features">
-                        <strong>Includes:</strong>
-                        <ul>${matchedService.features.map(f => `<li>${f}</li>`).join('')}</ul>
-                    </div>
-                `;
-            }
-            
-            serviceDiv.innerHTML = `
-                <div>
-                    <div class="service-name">${service.name} <span class="service-category">${service.ServiceType}</span></div>
-                    ${featuresHtml}
-                </div>
-                <div class="service-price">C$${service.price.toFixed(2)}</div>
-            `;
-            servicesList.appendChild(serviceDiv);
-        });
-        
-        // Set up event listeners
-        document.getElementById('back-to-services').addEventListener('click', () => {
-            document.getElementById('step-3').style.display = 'none';
-            document.getElementById('step-2').style.display = 'block';
-            updateProgressBar(1);
-        });
-        
-        document.getElementById('submit-booking').addEventListener('click', submitBooking);
-        document.getElementById('new-bundle-button').addEventListener('click', () => {
-            window.location.reload();
-        });
-    }
-
-    // Submit booking to Cal.com
-    function submitBooking(e) {
-        e.preventDefault();
-        
-        const form = document.getElementById('event-details-form');
-        if (!form.checkValidity()) {
-            form.reportValidity();
-            return;
-        }
-        
-        // Prepare form data
-        const formData = {
-            bundleName: selectedBundle.name,
-            services: selectedServices.map(s => ({
-                name: s.name,
-                type: s.ServiceType,
-                price: s.price
-            })),
-            subtotal: parseFloat(document.getElementById('subtotal-price').textContent.replace('C$', '')),
-            discount: parseFloat(document.getElementById('discount-amount').textContent.replace('-C$', '')),
-            total: parseFloat(document.getElementById('final-total-price').textContent.replace('C$', '')),
-            eventDetails: {
-                name: document.getElementById('event-name').value,
-                type: document.getElementById('event-type').value,
-                date: document.getElementById('event-date').value,
-                duration: document.getElementById('event-duration').value,
-                guests: document.getElementById('guest-count').value,
-                location: document.getElementById('event-location').value,
-                notes: document.getElementById('special-requests').value
-            },
-            contactInfo: {
-                name: document.getElementById('contact-name').value,
-                email: document.getElementById('contact-email').value,
-                phone: document.getElementById('contact-phone').value
-            }
-        };
-        
-        // Initialize Cal.com for custom booking
-        Cal('init', 'custom-bundle-booking', {
-            origin: 'https://app.cal.com'
-        });
-        
-        // Set up Cal.com UI configuration with prefilled data
-        Cal.ns['custom-bundle-booking']('ui', {
-            hideEventTypeDetails: false,
-            layout: 'month_view'
-        });
-        
-        // Prepare booking notes
-        const bookingNotes = `Custom Bundle Request\n\nSelected Services:\n${
-            formData.services.map(s => `- ${s.name} (${s.type}): C$${s.price.toFixed(2)}`).join('\n')
-        }\n\nEvent Details:\n- Name: ${formData.eventDetails.name}\n- Type: ${
-            formData.eventDetails.type
-        }\n- Date: ${formData.eventDetails.date}\n- Duration: ${
-            formData.eventDetails.duration
-        } hours\n- Guests: ${formData.eventDetails.guests}\n- Location: ${
-            formData.eventDetails.location
-        }\n\nSpecial Requests:\n${formData.eventDetails.notes}`;
-        
-        // Set up prefill data for Cal.com
-        const prefill = {
-            name: formData.contactInfo.name,
-            email: formData.contactInfo.email,
-            guests: [formData.contactInfo.email],
-            notes: bookingNotes,
-            customInputs: {
-                "Event-Type": formData.eventDetails.type,
-                "Event-Location": formData.eventDetails.location,
-                "Guest-Count": formData.eventDetails.guests,
-                "Duration": formData.eventDetails.duration,
-                "Bundle-Total": formData.total.toFixed(2),
-                "Selected-Services": formData.services.map(s => `${s.name} (${s.type})`).join(', '),
-                "Phone-Number": formData.contactInfo.phone
-            }
-        };
-        
-        // Open Cal.com booking modal with prefilled data
-        Cal.ns['custom-bundle-booking']('prefill', prefill);
-        Cal.ns['custom-bundle-booking']('open');
-        
-        // Show confirmation message
-        document.getElementById('event-details-form').style.display = 'none';
-        document.getElementById('back-to-services').style.display = 'none';
-        document.getElementById('submit-booking').style.display = 'none';
-        document.getElementById('sent-email').textContent = formData.contactInfo.email;
-        document.getElementById('confirmation-message').style.display = 'block';
-        
-        // Scroll to confirmation
-        document.getElementById('confirmation-message').scrollIntoView({
-            behavior: 'smooth'
-        });
-    }
-
     // Update progress bar to show current step
     function updateProgressBar(step) {
-        const progressBar = document.getElementById('progress-bar');
-        progressBar.innerHTML = `
-            <div class="${step >= 1 ? 'active' : ''}">Step 1: Choose a Bundle</div>
-            <div class="${step >= 2 ? 'active' : ''}">Step 2: Select Services</div>
-            <div class="${step >= 3 ? 'active' : ''}">Step 3: Review & Book</div>
-        `;
+        const progressSteps = document.querySelectorAll('#progress-bar div');
+        progressSteps.forEach((div, index) => {
+            if (index < step) {
+                div.classList.add('completed');
+            } else {
+                div.classList.remove('completed');
+            }
+            
+            if (index === step - 1) {
+                div.classList.add('active');
+            } else {
+                div.classList.remove('active');
+            }
+        });
     }
 
     // Show toast message
@@ -1096,6 +1376,352 @@
         setTimeout(() => {
             toast.style.display = 'none';
         }, 2500);
+    }
+
+    // Format phone number as +1 (XXX) XXX-XXXX
+    function formatPhoneNumber(e) {
+        let input = e.target.value.replace(/\D/g, '');
+        if (input.length > 0) {
+            input = input.match(/(\d{0,1})(\d{0,3})(\d{0,3})(\d{0,4})/);
+            e.target.value = '+1' + (input[2] ? ' (' + input[2] : '') + (input[3] ? ') ' + input[3] : '') + (input[4] ? '-' + input[4] : '');
+        }
+    }
+
+    // Check if date is available (not in past and within 2 weeks)
+    function isDateAvailable(date) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const twoWeeksLater = new Date(today);
+        twoWeeksLater.setDate(today.getDate() + 14);
+        
+        return date >= today && date <= twoWeeksLater;
+    }
+
+    // Render calendar
+    function renderCalendar(date) {
+        const month = date.getMonth();
+        const year = date.getFullYear();
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        // Set month/year title
+        document.getElementById('calendar-month-year').textContent = 
+            new Date(year, month).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        
+        // Update month navigation buttons
+        document.getElementById('prev-month').disabled = 
+            month <= today.getMonth() && year <= today.getFullYear();
+        
+        // Get first day of month and total days
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        
+        // Get days from previous month
+        const prevMonthDays = new Date(year, month, 0).getDate();
+        
+        // Clear calendar
+        const calendarDays = document.getElementById('calendar-days');
+        calendarDays.innerHTML = '';
+        
+        // Add days from previous month (disabled)
+        for (let i = 0; i < firstDay; i++) {
+            const dayElement = document.createElement('div');
+            dayElement.className = 'calendar-day unavailable';
+            dayElement.textContent = prevMonthDays - firstDay + i + 1;
+            calendarDays.appendChild(dayElement);
+        }
+        
+        // Add days of current month
+        for (let i = 1; i <= daysInMonth; i++) {
+            const dayDate = new Date(year, month, i);
+            dayDate.setHours(0, 0, 0, 0);
+            const dayElement = document.createElement('div');
+            dayElement.className = 'calendar-day';
+            dayElement.textContent = i;
+            
+            // Mark current day
+            if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                dayElement.classList.add('current');
+            }
+            
+            // Check if date is available
+            if (isDateAvailable(dayDate)) {
+                dayElement.classList.add('available');
+                
+                // Add click handler for available days
+                dayElement.addEventListener('click', () => {
+                    // Update selected date
+                    const selectedDate = dayDate.toISOString().split('T')[0];
+                    
+                    // Update selected date header
+                    document.getElementById('selected-date-header').textContent = 
+                        dayDate.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' });
+                    
+                    // Load availability
+                    loadAvailability(selectedDate);
+                });
+            } else {
+                dayElement.classList.add('unavailable');
+            }
+            
+            calendarDays.appendChild(dayElement);
+        }
+    }
+
+    // Load availability
+    async function loadAvailability(date) {
+        try {
+            showCalendarLoading();
+            hideCalendarError();
+            clearTimeSlots();
+            
+            const response = await fetch(`${config.backendUrl}/api/availability?date=${date}`);
+            
+            if (!response.ok) {
+                throw new Error(`Failed to load availability: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            // Validate response structure
+            if (!data.availability || !Array.isArray(data.availability)) {
+                throw new Error('Invalid availability data format');
+            }
+            
+            renderTimeSlots(date, data.availability);
+        } catch (error) {
+            console.error('Availability error:', error);
+            showCalendarError(`Failed to load availability: ${error.message}`);
+        } finally {
+            hideCalendarLoading();
+        }
+    }
+    
+    function renderTimeSlots(date, busySlots = []) {
+        const container = document.getElementById('time-slots-container');
+        const selectedDate = new Date(date);
+        const startHour = config.workingHours.start;
+        const endHour = config.workingHours.end;
+        const slotDuration = config.slotDuration;
+        
+        // Generate time slots
+        for (let hour = startHour; hour < endHour; hour += slotDuration / 60) {
+            const slotStart = new Date(selectedDate);
+            slotStart.setHours(hour, 0, 0, 0);
+            
+            const slotEnd = new Date(slotStart);
+            slotEnd.setHours(hour + (slotDuration / 60), 0, 0, 0);
+            
+            // Check if this slot is available
+            const isBooked = Array.isArray(busySlots) && busySlots.some(event => {
+                try {
+                    const eventStart = new Date(event.start?.dateTime || event.start);
+                    const eventEnd = new Date(event.end?.dateTime || event.end);
+                    return (slotStart < eventEnd && slotEnd > eventStart);
+                } catch (e) {
+                    console.error('Error processing event:', event, e);
+                    return false;
+                }
+            });
+            
+            const slotElement = document.createElement('div');
+            slotElement.className = `time-slot ${isBooked ? 'booked' : 'available'}`;
+            slotElement.dataset.start = slotStart.toISOString();
+            slotElement.dataset.end = slotEnd.toISOString();
+            
+            slotElement.innerHTML = `
+                <div class="slot-time">${formatTime(slotStart)} - ${formatTime(slotEnd)}</div>
+                <div class="slot-status">${isBooked ? 'Booked' : 'Available'}</div>
+            `;
+            
+            if (!isBooked) {
+                slotElement.addEventListener('click', () => {
+                    // Remove previous selection
+                    document.querySelectorAll('.time-slot').forEach(slot => {
+                        slot.classList.remove('selected-slot');
+                    });
+                    
+                    // Select this slot
+                    slotElement.classList.add('selected-slot');
+                });
+            }
+            
+            container.appendChild(slotElement);
+        }
+    }
+    
+    function formatTime(date) {
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function showCalendarLoading() {
+        document.getElementById('calendar-loading').style.display = 'block';
+    }
+    
+    function hideCalendarLoading() {
+        document.getElementById('calendar-loading').style.display = 'none';
+    }
+    
+    function showCalendarError(message) {
+        const errorElement = document.getElementById('calendar-error');
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+    }
+    
+    function hideCalendarError() {
+        document.getElementById('calendar-error').style.display = 'none';
+    }
+    
+    function clearTimeSlots() {
+        document.getElementById('time-slots-container').innerHTML = '';
+    }
+
+    // Send email via backend
+    async function sendConfirmationEmail(bookingData) {
+        try {
+            const response = await fetch(config.emailBackendUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    ...bookingData,
+                    services: selectedServices,
+                    subtotal: selectedServices.reduce((sum, service) => sum + service.price, 0),
+                    discount: selectedServices.reduce((sum, service) => sum + service.price, 0) * 0.1,
+                    total: selectedServices.reduce((sum, service) => sum + service.price, 0) * 0.9
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to send confirmation email');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Email error:', error);
+            throw error;
+        }
+    }
+
+    // Handle booking submission
+    async function handleBookingSubmit(e) {
+        e.preventDefault();
+        
+        if (!document.getElementById('event-details-form').checkValidity()) {
+            document.getElementById('event-details-form').reportValidity();
+            return;
+        }
+        
+        // Check if a time slot is selected
+        const selectedSlot = document.querySelector('.selected-slot');
+        if (!selectedSlot) {
+            alert('Please select an available time slot');
+            return;
+        }
+        
+        document.getElementById('stripe-payment-form').style.display = 'block';
+        document.getElementById('submit-booking').style.display = 'none';
+    }
+
+    // Handle payment submission
+    async function handlePaymentSubmit(e) {
+        e.preventDefault();
+        const button = e.target;
+        const errorDisplay = document.getElementById('payment-errors');
+        
+        button.disabled = true;
+        button.textContent = 'Processing...';
+        errorDisplay.textContent = '';
+
+        try {
+            // 1. First validate a time slot is selected
+            const selectedSlot = document.querySelector('.selected-slot');
+            if (!selectedSlot) {
+                throw new Error('Please select an available time slot');
+            }
+            
+            // 2. Collect booking data
+            const bookingData = {
+                eventName: document.getElementById('event-name').value,
+                eventType: document.getElementById('event-type').value,
+                eventDate: selectedSlot.dataset.start.split('T')[0],
+                duration: 3, // Fixed duration since we're using 3-hour slots
+                location: document.getElementById('event-location').value,
+                notes: document.getElementById('special-requests').value,
+                contactName: document.getElementById('contact-name').value,
+                email: document.getElementById('contact-email').value,
+                phone: document.getElementById('contact-phone').value,
+                startTime: selectedSlot.dataset.start,
+                endTime: selectedSlot.dataset.end
+            };
+
+            // 3. Process Stripe payment
+            const paymentResponse = await fetch(`${config.stripeBackendUrl}/api/payments/create-payment-intent`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    amount: 50, // $0.50 in cents
+                    currency: 'cad'
+                })
+            });
+
+            if (!paymentResponse.ok) throw new Error('Payment setup failed');
+            const { clientSecret } = await paymentResponse.json();
+
+            const { error } = await stripe.confirmCardPayment(clientSecret, {
+                payment_method: {
+                    card: cardElement,
+                    billing_details: {
+                        name: bookingData.contactName,
+                        email: bookingData.email
+                    }
+                }
+            });
+
+            if (error) throw error;
+
+            // 4. Create calendar booking
+            const bookingResponse = await fetch(`${config.backendUrl}/api/bookings`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    start: bookingData.startTime,
+                    end: bookingData.endTime,
+                    name: bookingData.contactName,
+                    email: bookingData.email,
+                    eventDetails: {
+                        eventName: bookingData.eventName,
+                        location: bookingData.location,
+                        notes: bookingData.notes
+                    }
+                })
+            });
+            
+            if (!bookingResponse.ok) {
+                const errorData = await bookingResponse.json();
+                throw new Error(errorData.error || 'Booking failed');
+            }
+
+            // 5. Send confirmation email
+            await sendConfirmationEmail(bookingData);
+            
+            // 6. Show success
+            document.getElementById('stripe-payment-form').style.display = 'none';
+            document.getElementById('event-details-form').style.display = 'none';
+            document.getElementById('back-to-services').style.display = 'none';
+            document.getElementById('sent-email').textContent = bookingData.email;
+            document.getElementById('confirmation-message').style.display = 'block';
+            
+        } catch (error) {
+            console.error('Payment error:', error);
+            errorDisplay.textContent = error.message;
+        } finally {
+            button.disabled = false;
+            button.textContent = 'Pay $0.50 Now';
+        }
     }
 </script>
 </body>
