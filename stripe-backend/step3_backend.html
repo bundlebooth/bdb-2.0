@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <title>BundleBooth - Review & Book</title>
     <script src="https://js.stripe.com/v3/"></script>
     <style>
@@ -219,8 +220,6 @@
             color: var(--bb-red);
             margin-bottom: 15px;
         }
-        
-        /* CALENDAR STYLES */
         .calendar-container {
             margin: 20px 0;
             padding: 20px;
@@ -231,34 +230,28 @@
             flex-wrap: wrap;
             gap: 20px;
         }
-        
         .calendar-panel {
             flex: 1;
             min-width: 300px;
         }
-        
         .time-slot-panel {
             flex: 1;
             min-width: 300px;
         }
-        
         .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
         }
-        
         .calendar-title {
             font-weight: 600;
             font-size: 1.2rem;
         }
-        
         .calendar-nav {
             display: flex;
             gap: 10px;
         }
-        
         .calendar-nav-button {
             background: none;
             border: none;
@@ -267,25 +260,21 @@
             color: var(--bb-blue);
             padding: 0 5px;
         }
-        
         .calendar-nav-button:disabled {
             color: #ccc;
             cursor: not-allowed;
         }
-        
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 5px;
         }
-        
         .calendar-day-header {
             text-align: center;
             font-weight: 600;
             padding: 5px;
             font-size: 0.9rem;
         }
-        
         .calendar-day {
             text-align: center;
             padding: 10px;
@@ -294,33 +283,27 @@
             transition: all 0.2s;
             position: relative;
         }
-        
         .calendar-day:hover {
             background-color: #f0f0f0;
         }
-        
         .calendar-day.current {
             background-color: var(--bb-accent);
             color: white;
             font-weight: bold;
         }
-        
         .calendar-day.available {
             color: var(--bb-dark);
         }
-        
         .calendar-day.unavailable {
             color: #ccc;
             cursor: not-allowed;
         }
-        
         .time-slots {
             display: flex;
             flex-direction: column;
             gap: 10px;
             margin-top: 20px;
         }
-        
         .time-slot {
             padding: 12px;
             border-radius: 8px;
@@ -330,7 +313,6 @@
             display: flex;
             align-items: center;
         }
-        
         .time-slot::before {
             content: '';
             display: inline-block;
@@ -339,36 +321,29 @@
             border-radius: 50%;
             margin-right: 10px;
         }
-        
         .time-slot.available {
             background: #fff;
             border-color: #ddd;
             cursor: pointer;
         }
-        
         .time-slot.available::before {
             background-color: var(--bb-green);
         }
-        
         .time-slot.available:hover {
             transform: translateY(-2px);
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        
         .time-slot.booked {
             background: #f9f9f9;
             border-color: #eee;
             cursor: not-allowed;
         }
-        
         .time-slot.booked::before {
             background-color: #ccc;
         }
-        
         .slot-time {
             font-weight: 600;
         }
-        
         .slot-status {
             margin-left: auto;
             font-size: 0.8em;
@@ -377,23 +352,19 @@
             background: #f0f0f0;
             color: #666;
         }
-        
         .selected-slot {
             box-shadow: 0 0 0 2px var(--bb-accent);
             border-color: var(--bb-accent);
         }
-        
         .time-slot-header {
             font-weight: 600;
             margin-bottom: 10px;
         }
-        
         .loading {
             text-align: center;
             padding: 20px;
             color: #666;
         }
-        
         .calendar-error {
             color: #E74C3C;
             background-color: #FDEDED;
@@ -403,7 +374,6 @@
             text-align: center;
             display: none;
         }
-        
         .timezone-note {
             margin-top: 15px;
             font-size: 0.9rem;
@@ -411,11 +381,9 @@
             text-align: center;
             font-style: italic;
         }
-        
         .form-section {
             margin-bottom: 30px;
         }
-        
         .form-section-title {
             font-size: 1.2rem;
             font-weight: 600;
@@ -424,7 +392,6 @@
             padding-bottom: 8px;
             border-bottom: 1px solid #eee;
         }
-        
         @media (max-width: 768px) {
             .form-row {
                 flex-direction: column;
@@ -458,23 +425,33 @@
                 <div class="summary-price" id="bundle-total-price">C$0</div>
             </div>
             <div id="selected-services-list">
-                <!-- Services will be dynamically inserted here -->
+                <div class="service-item">
+                    <div>
+                        <div class="service-name">Photo Booth <span class="service-category">Photo</span></div>
+                    </div>
+                    <div class="service-price">C$500.00</div>
+                </div>
+                <div class="service-item">
+                    <div>
+                        <div class="service-name">360 Video Booth <span class="service-category">Video</span></div>
+                    </div>
+                    <div class="service-price">C$800.00</div>
+                </div>
             </div>
             <div class="total-row">
                 <span>Subtotal:</span>
-                <span id="subtotal-price">C$0</span>
+                <span id="subtotal-price">C$1300.00</span>
             </div>
             <div class="discount-row">
                 <span>Bundle Discount (10%):</span>
-                <span id="discount-amount">-C$0</span>
+                <span id="discount-amount">-C$130.00</span>
             </div>
             <div class="final-total">
                 <span>Total:</span>
-                <span id="final-total-price">C$0</span>
+                <span id="final-total-price">C$1170.00</span>
             </div>
         </div>
 
-        <!-- CALENDAR SECTION - MOVED TO TOP -->
         <div class="calendar-container">
             <div class="calendar-panel">
                 <div class="calendar-header">
@@ -492,20 +469,66 @@
                     <div class="calendar-day-header">SAT</div>
                 </div>
                 <div class="calendar-grid" id="calendar-days">
-                    <!-- Calendar days will be dynamically inserted here -->
+                    <div class="calendar-day unavailable">30</div>
+                    <div class="calendar-day unavailable">1</div>
+                    <div class="calendar-day unavailable">2</div>
+                    <div class="calendar-day unavailable">3</div>
+                    <div class="calendar-day unavailable">4</div>
+                    <div class="calendar-day unavailable">5</div>
+                    <div class="calendar-day unavailable">6</div>
+                    <div class="calendar-day available">7</div>
+                    <div class="calendar-day available">8</div>
+                    <div class="calendar-day available">9</div>
+                    <div class="calendar-day available">10</div>
+                    <div class="calendar-day available">11</div>
+                    <div class="calendar-day available">12</div>
+                    <div class="calendar-day available">13</div>
+                    <div class="calendar-day available">14</div>
+                    <div class="calendar-day available">15</div>
+                    <div class="calendar-day available">16</div>
+                    <div class="calendar-day available">17</div>
+                    <div class="calendar-day available">18</div>
+                    <div class="calendar-day available">19</div>
+                    <div class="calendar-day available">20</div>
+                    <div class="calendar-day available">21</div>
+                    <div class="calendar-day available">22</div>
+                    <div class="calendar-day available">23</div>
+                    <div class="calendar-day available">24</div>
+                    <div class="calendar-day available">25</div>
+                    <div class="calendar-day available">26</div>
+                    <div class="calendar-day available">27</div>
+                    <div class="calendar-day available">28</div>
+                    <div class="calendar-day available">29</div>
+                    <div class="calendar-day available">30</div>
+                    <div class="calendar-day available">31</div>
+                    <div class="calendar-day unavailable">1</div>
+                    <div class="calendar-day unavailable">2</div>
+                    <div class="calendar-day unavailable">3</div>
                 </div>
             </div>
             
             <div class="time-slot-panel">
-                <div class="time-slot-header" id="selected-date-header">Select a date</div>
-                <div id="calendar-loading" class="loading">Loading availability...</div>
-                <div id="calendar-error" class="calendar-error"></div>
-                <div id="time-slots-container" class="time-slots"></div>
+                <div class="time-slot-header" id="selected-date-header">July 10, 2025</div>
+                <div id="calendar-loading" class="loading" style="display: none;">Loading availability...</div>
+                <div id="calendar-error" class="calendar-error" style="display: none;"></div>
+                <div id="time-slots-container" class="time-slots">
+                    <div class="time-slot available selected-slot">
+                        <div class="slot-time">09:00 AM - 12:00 PM</div>
+                        <div class="slot-status">Available</div>
+                    </div>
+                    <div class="time-slot available">
+                        <div class="slot-time">12:00 PM - 03:00 PM</div>
+                        <div class="slot-status">Available</div>
+                    </div>
+                    <div class="time-slot available">
+                        <div class="slot-time">03:00 PM - 06:00 PM</div>
+                        <div class="slot-status">Available</div>
+                    </div>
+                </div>
                 <div class="timezone-note">All times are in Eastern Time Zone (EST)</div>
             </div>
         </div>
         
-        <!-- FORM SECTIONS -->
         <div class="summary-card">
             <div class="form-section">
                 <h3 class="form-section-title">Contact Information</h3>
@@ -556,20 +579,19 @@
             </div>
         </div>
 
-        <!-- Stripe Payment Form -->
         <div id="stripe-payment-form">
             <h3>Payment Information</h3>
-            <p>Test Payment Amount: <strong>$0.50</strong></p>
+            <p>Test Payment Amount: <strong>$150</strong></p>
             <div id="payment-errors"></div>
             <div id="card-element"></div>
-            <button id="submit-payment" class="book-now-button">Pay $0.50 Now</button>
+            <button id="submit-payment" class="book-now-button">Pay $150 Now</button>
         </div>
         
         <div class="package-notes">
             <p><strong>Important Notes:</strong></p>
             <ul>
                 <li>Your booking is not confirmed until payment is received</li>
-                <li>This is a test payment of $0.50</li>
+                <li>This is a test payment of $150</li>
                 <li>Final guest count and details must be confirmed 14 days before your event</li>
             </ul>
         </div>
@@ -582,478 +604,98 @@
         <div class="confirmation-message" id="confirmation-message">
             <div class="confirmation-icon">✓</div>
             <h3>Booking Confirmed!</h3>
-            <p>Thank you for your booking. Your payment of $0.50 was successful.</p>
-            <p>A confirmation email has been sent to <span id="sent-email"></span> with your booking details.</p>
+            <p>Thank you for your booking. Your payment of $150 was successful.</p>
+            <p>A confirmation email has been sent to <span id="sent-email">your-email@example.com</span> with your booking details.</p>
             <button class="book-now-button" id="new-bundle-button">Create Another Bundle</button>
         </div>
     </div>
 
     <script>
-        // Configuration
         const config = {
-            backendUrl: 'https://bdb-2-0-calendar-api-backend.onrender.com',
-            emailBackendUrl: 'https://bdb-2-0-brevo-email-backend.onrender.com/send-booking-email',
-            stripeKey: 'pk_test_51Rijz8FJtS8tRcsDMLlOODCVKyY0HupDrxiw7nSWUYQymKml5YM4Nwj9O7WrGyPUd9TAhchuL0MfEWbtTWUrlqlc00KSoZn1Th',
-            workingHours: { start: 9, end: 21 }, // 9AM to 9PM
-            slotDuration: 180 // 3 hours in minutes
+            backendUrl: 'https://bdb-2-0-stripe-api-backend.onrender.com',
+            workingHours: { start: 9, end: 21 },
+            slotDuration: 180
         };
 
-        // Initialize Stripe
-        const stripe = Stripe(config.stripeKey);
-        const elements = stripe.elements();
-        const cardElement = elements.create('card');
-        cardElement.mount('#card-element');
+        let stripe;
+        let cardElement;
 
-        // Sample services data
-        const selectedServices = [
-            {
-                name: "Photo Booth",
-                ServiceType: "Photo",
-                price: 500,
-                description: "Professional photo booth with props"
-            },
-            {
-                name: "360 Video Booth",
-                ServiceType: "Video",
-                price: 800,
-                description: "360-degree video experience"
-            }
-        ];
-
-        // Current displayed month/year
-        let currentDisplayedDate = new Date();
-
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', () => {
-            updatePrices();
-            renderServices();
-            
-            // Set up phone number formatting
-            const phoneInput = document.getElementById('contact-phone');
-            phoneInput.addEventListener('input', formatPhoneNumber);
-            
-            // Initialize calendar with current month
-            renderCalendar(currentDisplayedDate);
-            
-            // Load availability for today if it's available
-            const today = new Date();
-            const todayFormatted = today.toISOString().split('T')[0];
-            if (isDateAvailable(today)) {
-                loadAvailability(todayFormatted);
-                document.getElementById('selected-date-header').textContent = 
-                    today.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' });
-            }
-            
-            // Set up event listeners
-            document.getElementById('submit-booking').addEventListener('click', handleBookingSubmit);
-            document.getElementById('submit-payment').addEventListener('click', handlePaymentSubmit);
-            document.getElementById('back-to-services').addEventListener('click', () => {
-                alert('Would go back to services selection');
-            });
-            document.getElementById('new-bundle-button').addEventListener('click', () => {
-                window.location.reload();
-            });
-            
-            // Month navigation
-            document.getElementById('prev-month').addEventListener('click', () => {
-                currentDisplayedDate.setMonth(currentDisplayedDate.getMonth() - 1);
-                renderCalendar(currentDisplayedDate);
-            });
-            
-            document.getElementById('next-month').addEventListener('click', () => {
-                currentDisplayedDate.setMonth(currentDisplayedDate.getMonth() + 1);
-                renderCalendar(currentDisplayedDate);
-            });
-        });
-
-        // Check if date is available (not in past and within 2 weeks)
-        function isDateAvailable(date) {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            
-            const twoWeeksLater = new Date(today);
-            twoWeeksLater.setDate(today.getDate() + 14);
-            
-            return date >= today && date <= twoWeeksLater;
-        }
-
-        // Format phone number as +1 (XXX) XXX-XXXX
-        function formatPhoneNumber(e) {
-            let input = e.target.value.replace(/\D/g, '');
-            if (input.length > 0) {
-                input = input.match(/(\d{0,1})(\d{0,3})(\d{0,3})(\d{0,4})/);
-                e.target.value = '+1' + (input[2] ? ' (' + input[2] : '') + (input[3] ? ') ' + input[3] : '') + (input[4] ? '-' + input[4] : '');
-            }
-        }
-
-        // Render calendar
-        function renderCalendar(date) {
-            const month = date.getMonth();
-            const year = date.getFullYear();
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            
-            // Set month/year title
-            document.getElementById('calendar-month-year').textContent = 
-                new Date(year, month).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-            
-            // Update month navigation buttons
-            document.getElementById('prev-month').disabled = 
-                month <= today.getMonth() && year <= today.getFullYear();
-            
-            // Get first day of month and total days
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            
-            // Get days from previous month
-            const prevMonthDays = new Date(year, month, 0).getDate();
-            
-            // Clear calendar
-            const calendarDays = document.getElementById('calendar-days');
-            calendarDays.innerHTML = '';
-            
-            // Add days from previous month (disabled)
-            for (let i = 0; i < firstDay; i++) {
-                const dayElement = document.createElement('div');
-                dayElement.className = 'calendar-day unavailable';
-                dayElement.textContent = prevMonthDays - firstDay + i + 1;
-                calendarDays.appendChild(dayElement);
-            }
-            
-            // Add days of current month
-            for (let i = 1; i <= daysInMonth; i++) {
-                const dayDate = new Date(year, month, i);
-                dayDate.setHours(0, 0, 0, 0);
-                const dayElement = document.createElement('div');
-                dayElement.className = 'calendar-day';
-                dayElement.textContent = i;
-                
-                // Mark current day
-                if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
-                    dayElement.classList.add('current');
-                }
-                
-                // Check if date is available
-                if (isDateAvailable(dayDate)) {
-                    dayElement.classList.add('available');
-                    
-                    // Add click handler for available days
-                    dayElement.addEventListener('click', () => {
-                        // Update selected date
-                        const selectedDate = dayDate.toISOString().split('T')[0];
-                        
-                        // Update selected date header
-                        document.getElementById('selected-date-header').textContent = 
-                            dayDate.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' });
-                        
-                        // Load availability
-                        loadAvailability(selectedDate);
-                    });
-                } else {
-                    dayElement.classList.add('unavailable');
-                }
-                
-                calendarDays.appendChild(dayElement);
-            }
-        }
-
-        // Price calculations
-        function updatePrices() {
-            const subtotal = selectedServices.reduce((sum, service) => sum + service.price, 0);
-            const discount = subtotal * 0.1;
-            const total = subtotal - discount;
-
-            document.getElementById('subtotal-price').textContent = `C$${subtotal.toFixed(2)}`;
-            document.getElementById('discount-amount').textContent = `-C$${discount.toFixed(2)}`;
-            document.getElementById('final-total-price').textContent = `C$${total.toFixed(2)}`;
-            document.getElementById('bundle-total-price').textContent = `C$${total.toFixed(2)}`;
-        }
-
-        // Render services
-        function renderServices() {
-            const servicesList = document.getElementById('selected-services-list');
-            servicesList.innerHTML = '';
-            
-            selectedServices.forEach(service => {
-                const serviceDiv = document.createElement('div');
-                serviceDiv.className = 'service-item';
-                serviceDiv.innerHTML = `
-                    <div>
-                        <div class="service-name">${service.name} <span class="service-category">${service.ServiceType}</span></div>
-                    </div>
-                    <div class="service-price">C$${service.price.toFixed(2)}</div>
-                `;
-                servicesList.appendChild(serviceDiv);
-            });
-        }
-
-        // Load availability
-        async function loadAvailability(date) {
+        async function initializeStripe() {
             try {
-                showCalendarLoading();
-                hideCalendarError();
-                clearTimeSlots();
+                const response = await fetch(`${config.backendUrl}/api/config`);
+                const { stripePublicKey } = await response.json();
                 
-                const response = await fetch(`${config.backendUrl}/api/availability?date=${date}`);
+                stripe = Stripe(stripePublicKey);
+                const elements = stripe.elements();
+                cardElement = elements.create('card');
+                cardElement.mount('#card-element');
                 
-                if (!response.ok) {
-                    throw new Error(`Failed to load availability: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                // Validate response structure
-                if (!data.availability || !Array.isArray(data.availability)) {
-                    throw new Error('Invalid availability data format');
-                }
-                
-                renderTimeSlots(date, data.availability);
+                return stripe;
             } catch (error) {
-                console.error('Availability error:', error);
-                showCalendarError(`Failed to load availability: ${error.message}`);
-            } finally {
-                hideCalendarLoading();
-            }
-        }
-        
-        function renderTimeSlots(date, busySlots = []) {
-            const container = document.getElementById('time-slots-container');
-            const selectedDate = new Date(date);
-            const startHour = config.workingHours.start;
-            const endHour = config.workingHours.end;
-            const slotDuration = config.slotDuration;
-            
-            // Generate time slots
-            for (let hour = startHour; hour < endHour; hour += slotDuration / 60) {
-                const slotStart = new Date(selectedDate);
-                slotStart.setHours(hour, 0, 0, 0);
-                
-                const slotEnd = new Date(slotStart);
-                slotEnd.setHours(hour + (slotDuration / 60), 0, 0, 0);
-                
-                // Check if this slot is available
-                const isBooked = Array.isArray(busySlots) && busySlots.some(event => {
-                    try {
-                        const eventStart = new Date(event.start?.dateTime || event.start);
-                        const eventEnd = new Date(event.end?.dateTime || event.end);
-                        return (slotStart < eventEnd && slotEnd > eventStart);
-                    } catch (e) {
-                        console.error('Error processing event:', event, e);
-                        return false;
-                    }
-                });
-                
-                const slotElement = document.createElement('div');
-                slotElement.className = `time-slot ${isBooked ? 'booked' : 'available'}`;
-                slotElement.dataset.start = slotStart.toISOString();
-                slotElement.dataset.end = slotEnd.toISOString();
-                
-                slotElement.innerHTML = `
-                    <div class="slot-time">${formatTime(slotStart)} - ${formatTime(slotEnd)}</div>
-                    <div class="slot-status">${isBooked ? 'Booked' : 'Available'}</div>
-                `;
-                
-                if (!isBooked) {
-                    slotElement.addEventListener('click', () => {
-                        // Remove previous selection
-                        document.querySelectorAll('.time-slot').forEach(slot => {
-                            slot.classList.remove('selected-slot');
-                        });
-                        
-                        // Select this slot
-                        slotElement.classList.add('selected-slot');
-                    });
-                }
-                
-                container.appendChild(slotElement);
-            }
-        }
-        
-        function formatTime(date) {
-            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        }
-
-        function showCalendarLoading() {
-            document.getElementById('calendar-loading').style.display = 'block';
-        }
-        
-        function hideCalendarLoading() {
-            document.getElementById('calendar-loading').style.display = 'none';
-        }
-        
-        function showCalendarError(message) {
-            const errorElement = document.getElementById('calendar-error');
-            errorElement.textContent = message;
-            errorElement.style.display = 'block';
-        }
-        
-        function hideCalendarError() {
-            document.getElementById('calendar-error').style.display = 'none';
-        }
-        
-        function clearTimeSlots() {
-            document.getElementById('time-slots-container').innerHTML = '';
-        }
-
-        // Send email via backend
-        async function sendConfirmationEmail(bookingData) {
-            try {
-                const response = await fetch(config.emailBackendUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        ...bookingData,
-                        services: selectedServices,
-                        subtotal: selectedServices.reduce((sum, service) => sum + service.price, 0),
-                        discount: selectedServices.reduce((sum, service) => sum + service.price, 0) * 0.1,
-                        total: selectedServices.reduce((sum, service) => sum + service.price, 0) * 0.9
-                    })
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Failed to send confirmation email');
-                }
-
-                return await response.json();
-            } catch (error) {
-                console.error('Email error:', error);
+                console.error('Failed to initialize Stripe:', error);
+                document.getElementById('payment-errors').textContent = 
+                    'Payment system unavailable. Please try again later.';
                 throw error;
             }
         }
 
-        // Handle booking submission
-        async function handleBookingSubmit(e) {
-            e.preventDefault();
-            
-            if (!document.getElementById('event-details-form').checkValidity()) {
-                document.getElementById('event-details-form').reportValidity();
-                return;
-            }
-            
-            // Check if a time slot is selected
-            const selectedSlot = document.querySelector('.selected-slot');
-            if (!selectedSlot) {
-                alert('Please select an available time slot');
-                return;
-            }
-            
-            document.getElementById('stripe-payment-form').style.display = 'block';
-            document.getElementById('submit-booking').style.display = 'none';
-        }
-
-        // Handle payment submission
-        async function handlePaymentSubmit(e) {
-            e.preventDefault();
-            const button = e.target;
-            const errorDisplay = document.getElementById('payment-errors');
-            
-            button.disabled = true;
-            button.textContent = 'Processing...';
-            errorDisplay.textContent = '';
-
+        document.addEventListener('DOMContentLoaded', async () => {
             try {
-                // 1. First validate a time slot is selected
-                const selectedSlot = document.querySelector('.selected-slot');
-                if (!selectedSlot) {
-                    throw new Error('Please select an available time slot');
-                }
+                await initializeStripe();
                 
-                // 2. Collect booking data
-                const bookingData = {
-                    eventName: document.getElementById('event-name').value,
-                    eventType: document.getElementById('event-type').value,
-                    eventDate: selectedSlot.dataset.start.split('T')[0],
-                    duration: 3, // Fixed duration since we're using 3-hour slots
-                    location: document.getElementById('event-location').value,
-                    notes: document.getElementById('special-requests').value,
-                    contactName: document.getElementById('contact-name').value,
-                    email: document.getElementById('contact-email').value,
-                    phone: document.getElementById('contact-phone').value,
-                    startTime: selectedSlot.dataset.start,
-                    endTime: selectedSlot.dataset.end
-                };
-
-                // 3. Create payment intent on backend
-                const paymentResponse = await fetch(`${config.backendUrl}/api/create-payment-intent`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        amount: 50, // $0.50 in cents
-                        currency: 'cad',
-                        metadata: {
-                            eventName: bookingData.eventName,
-                            contactEmail: bookingData.email
-                        }
-                    })
+                document.getElementById('submit-booking').addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.getElementById('stripe-payment-form').style.display = 'block';
+                    document.getElementById('submit-booking').style.display = 'none';
                 });
 
-                if (!paymentResponse.ok) {
-                    const errorData = await paymentResponse.json();
-                    throw new Error(errorData.error || 'Payment setup failed');
-                }
+                document.getElementById('submit-payment').addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    const button = e.target;
+                    const errorDisplay = document.getElementById('payment-errors');
+                    
+                    button.disabled = true;
+                    button.textContent = 'Processing...';
+                    errorDisplay.textContent = '';
 
-                const { clientSecret } = await paymentResponse.json();
+                    try {
+                        const paymentResponse = await fetch(`${config.backendUrl}/api/payments/create-payment-intent`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                amount: 50,
+                                currency: 'cad'
+                            })
+                        });
 
-                // 4. Confirm payment with Stripe
-                const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-                    payment_method: {
-                        card: cardElement,
-                        billing_details: {
-                            name: bookingData.contactName,
-                            email: bookingData.email,
-                            phone: bookingData.phone
-                        }
+                        if (!paymentResponse.ok) throw new Error('Payment setup failed');
+                        const { clientSecret } = await paymentResponse.json();
+
+                        const { error } = await stripe.confirmCardPayment(clientSecret, {
+                            payment_method: {
+                                card: cardElement,
+                                billing_details: {
+                                    name: document.getElementById('contact-name').value,
+                                    email: document.getElementById('contact-email').value
+                                }
+                            }
+                        });
+
+                        if (error) throw error;
+
+                        document.getElementById('stripe-payment-form').style.display = 'none';
+                        document.getElementById('confirmation-message').style.display = 'block';
+                    } catch (error) {
+                        errorDisplay.textContent = error.message;
+                    } finally {
+                        button.disabled = false;
+                        button.textContent = 'Pay $150 Now';
                     }
                 });
-
-                if (stripeError) {
-                    throw stripeError;
-                }
-
-                // 5. Create calendar booking
-                const bookingResponse = await fetch(`${config.backendUrl}/api/bookings`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        start: bookingData.startTime,
-                        end: bookingData.endTime,
-                        name: bookingData.contactName,
-                        email: bookingData.email,
-                        eventDetails: {
-                            eventName: bookingData.eventName,
-                            location: bookingData.location,
-                            notes: bookingData.notes,
-                            paymentIntentId: paymentIntent.id
-                        }
-                    })
-                });
-                
-                if (!bookingResponse.ok) {
-                    const errorData = await bookingResponse.json();
-                    throw new Error(errorData.error || 'Booking failed');
-                }
-
-                // 6. Send confirmation email
-                await sendConfirmationEmail(bookingData);
-                
-                // 7. Show success
-                document.getElementById('stripe-payment-form').style.display = 'none';
-                document.getElementById('event-details-form').style.display = 'none';
-                document.getElementById('back-to-services').style.display = 'none';
-                document.getElementById('sent-email').textContent = bookingData.email;
-                document.getElementById('confirmation-message').style.display = 'block';
-                
             } catch (error) {
-                console.error('Payment error:', error);
-                errorDisplay.textContent = error.message;
-            } finally {
-                button.disabled = false;
-                button.textContent = 'Pay $0.50 Now';
+                console.error('Initialization failed:', error);
             }
-        }
+        });
     </script>
 </body>
 </html>
