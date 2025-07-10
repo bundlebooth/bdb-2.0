@@ -8,7 +8,7 @@ const app = express();
 // CORS Configuration
 app.use(cors({
   origin: [
-    'https://your-godaddy-domain.com',
+    'https://bundlebooth.github.io',
     'http://localhost:8080',
     'http://127.0.0.1:8080'
   ],
