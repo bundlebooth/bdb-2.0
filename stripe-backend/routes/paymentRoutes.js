@@ -2,13 +2,12 @@ const express = require('express');
 const router = express.Router();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-// Create Payment Intent
 router.post('/create-payment-intent', async (req, res) => {
   try {
-    const { amount, currency = 'usd' } = req.body;
+    const { amount, currency = 'cad' } = req.body;
 
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount * 100), // Convert to cents
+      amount: Math.round(amount),
       currency,
       automatic_payment_methods: {
         enabled: true,
@@ -20,35 +19,11 @@ router.post('/create-payment-intent', async (req, res) => {
       paymentIntentId: paymentIntent.id
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ 
+      error: 'Payment processing failed',
+      details: err.message 
+    });
   }
-});
-
-// Webhook Handler
-router.post('/webhook', express.raw({type: 'application/json'}), (req, res) => {
-  const sig = req.headers['stripe-signature'];
-  let event;
-
-  try {
-    event = stripe.webhooks.constructEvent(
-      req.body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
-  } catch (err) {
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  // Handle events
-  switch (event.type) {
-    case 'payment_intent.succeeded':
-      console.log('Payment succeeded:', event.data.object.id);
-      break;
-    default:
-      console.log(`Unhandled event type ${event.type}`);
-  }
-
-  res.json({received: true});
 });
 
 module.exports = router;
