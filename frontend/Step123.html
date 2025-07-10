@@ -22,7 +22,8 @@
       --bb-accent: #3498db;
       --bb-table-header: #e8ecef;
       --bb-compare-button: #d3d3d3;
-      --selected-date-color: #666;
+      --selected-date-color: #f0f0f0;
+      --modern-green: #27ae60; /* Added modern green color */
     }
     * {
       box-sizing: border-box;
@@ -337,10 +338,10 @@
       justify-content: space-between;
       margin-top: 16px;
       padding-top: 16px;
-      border-top: 2px solid var(--bb-green);
+      border-top: 2px solid #eee;
       font-weight: 700;
       font-size: 1.3rem;
-      color: var(--bb-green);
+      color: var(--bb-dark); /* Changed from green to standard color */
     }
     .form-group {
       margin-bottom: 16px;
@@ -590,7 +591,7 @@
     
     .calendar-day.selected {
       background-color: var(--selected-date-color);
-      color: white;
+      color: var(--bb-dark);
       font-weight: bold;
     }
     
@@ -636,7 +637,7 @@
     }
     
     .time-slot.available::before {
-      background-color: var(--bb-green);
+      background-color: var(--modern-green); /* Changed to modern green */
     }
     
     .time-slot.available:hover {
@@ -720,7 +721,7 @@
       height: 20px;
       border: 3px solid rgba(0, 0, 0, 0.1);
       border-radius: 50%;
-      border-top-color: var(--bb-accent);
+      border-top-color: #666;
       animation: spin 1s ease-in-out infinite;
       display: inline-block;
       vertical-align: middle;
@@ -737,7 +738,7 @@
       padding: 20px;
       background: #f9f9f9;
       border-radius: 8px;
-      display: none;
+      border: 1px solid #e9ecef;
     }
     
     #card-element {
@@ -759,6 +760,7 @@
       margin: 10px 0;
       color: #666;
       font-style: italic;
+      font-size: 13px;
     }
     
     /* Payment info in notes */
@@ -915,8 +917,16 @@
             </div>
         </div>
 
-        <!-- Stripe Payment Form -->
-        <div id="stripe-payment-form">
+        <div class="package-notes">
+            <p><strong>Important Notes:</strong></p>
+            <ul>
+                <li>Your booking is not confirmed until payment is received</li>
+                <li>Final guest count and details must be confirmed 14 days before your event</li>
+            </ul>
+        </div>
+        
+        <!-- Payment Section (now separate from Important Notes) -->
+        <div id="stripe-payment-form" style="display:none;">
             <h3>Payment Information</h3>
             <div id="payment-errors"></div>
             <div id="card-element"></div>
@@ -924,16 +934,9 @@
             <div class="processing-message" id="processing-message">Hang tight! We're processing your booking — this may take a moment.</div>
         </div>
         
-        <div class="package-notes">
-            <p><strong>Important Notes:</strong></p>
-            <ul>
-                <li>Your booking is not confirmed until payment is received</li>
-                <li>Final guest count and details must be confirmed 14 days before your event</li>
-            </ul>
-            <div class="payment-info" id="payment-info" style="display:none;">
-                <p><strong>Payment Amount:</strong> <span id="payment-info-amount">$0.50</span></p>
-                <p>This is a test payment - your card will not be charged</p>
-            </div>
+        <div class="payment-info" id="payment-info" style="display:none;">
+            <p><strong>Payment Amount:</strong> <span id="payment-info-amount">$0.50</span></p>
+            <p>This is a test payment - your card will not be charged</p>
         </div>
         
         <div class="action-buttons">
@@ -1274,6 +1277,11 @@
         
         // Update progress bar
         updateProgressBar(stepNumber);
+        
+        // On mobile, scroll to top when changing steps
+        if (window.innerWidth <= 768) {
+            window.scrollTo(0, 0);
+        }
     }
 
     // Render services for selected bundle
@@ -1432,7 +1440,7 @@
         }
     }
 
-    // Check if date is available (not in past and within 2 weeks)
+    // Check if date is available (not in past and at least 2 weeks in advance)
     function isDateAvailable(date) {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -1440,7 +1448,7 @@
         const twoWeeksLater = new Date(today);
         twoWeeksLater.setDate(today.getDate() + 14);
         
-        return date >= today && date <= twoWeeksLater;
+        return date >= twoWeeksLater;
     }
 
     // Render calendar
