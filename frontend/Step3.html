@@ -5,18 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BundleBooth - Review & Book</title>
     <script src="https://js.stripe.com/v3/"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bb-blue: #333;
-            --bb-red: #e74c3c;
-            --bb-light: #f4f4f4;
-            --bb-dark: #343a40;
-            --bb-green: #2ecc71;
-            --bb-accent: #3498db;
+            --bb-blue: #111827;
+            --bb-red: #ef4444;
+            --bb-light: #f9fafb;
+            --bb-dark: #111827;
+            --bb-green: #10b981;
+            --bb-accent: #3b82f6;
+            --cal-brand: #111827;
+            --cal-brand-emphasis: #111827;
+            --cal-brand-text: white;
+            --cal-brand-subtle: #f3f4f6;
+            --cal-text: #111827;
+            --cal-text-muted: #6b7280;
+            --cal-text-emphasis: #374151;
+            --cal-border: #e5e7eb;
+            --cal-border-hover: #d1d5db;
+            --cal-border-active: #9ca3af;
+            --cal-bg: white;
+            --cal-bg-accent: #f9fafb;
+            --cal-bg-accent-subtle: #f3f4f6;
+            --cal-success: #10b981;
+            --cal-error: #ef4444;
         }
         * {
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Inter', sans-serif;
         }
         body {
             margin: 0;
@@ -129,7 +145,7 @@
         .form-group textarea {
             width: 100%;
             padding: 12px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--cal-border);
             border-radius: 6px;
             font-size: 14px;
         }
@@ -220,7 +236,7 @@
             margin-bottom: 15px;
         }
         
-        /* CALENDAR STYLES */
+        /* NEW CALENDAR STYLES (Cal.com inspired) */
         .calendar-container {
             margin: 20px 0;
             padding: 20px;
@@ -229,58 +245,146 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .calendar-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--cal-text-emphasis);
+        }
+        
+        .calendar-nav {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .calendar-nav button {
+            background: var(--cal-bg);
+            border: 1px solid var(--cal-border);
+            border-radius: 6px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--cal-text-muted);
+            font-weight: 500;
+        }
+        
+        .calendar-nav button:hover {
+            background: var(--cal-bg-accent);
+            border-color: var(--cal-border-hover);
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-bottom: 16px;
+        }
+        
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 500;
+            font-size: 13px;
+            color: var(--cal-text-muted);
+            padding: 8px 0;
+            text-transform: uppercase;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            font-size: 14px;
+            position: relative;
+        }
+        
+        .calendar-day:hover {
+            background-color: var(--cal-bg-accent);
+        }
+        
+        .calendar-day.selected {
+            background-color: var(--cal-brand);
+            color: var(--cal-brand-text);
+            font-weight: 600;
+        }
+        
+        .calendar-day.disabled {
+            color: var(--cal-border);
+            cursor: not-allowed;
+        }
+        
+        .calendar-day.today {
+            font-weight: 600;
+            color: var(--cal-brand);
+        }
+        
+        .calendar-day.today::after {
+            content: '';
+            position: absolute;
+            bottom: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background-color: var(--cal-brand);
+        }
+        
+        .calendar-day.selected.today::after {
+            background-color: var(--cal-brand-text);
+        }
+        
         .time-slots {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 12px;
-            margin-top: 20px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 16px;
         }
         
         .time-slot {
             padding: 12px;
+            border: 1px solid var(--cal-border);
             border-radius: 8px;
-            border: 1px solid #ddd;
-            position: relative;
-            transition: all 0.2s ease;
-        }
-        
-        .time-slot.available {
-            background: #e8f5e9;
-            border-color: #a5d6a7;
+            text-align: center;
             cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
         }
         
-        .time-slot.available:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        .time-slot:hover {
+            border-color: var(--cal-brand);
+            background-color: var(--cal-brand-subtle);
         }
         
-        .time-slot.booked {
-            background: #ffebee;
-            border-color: #ef9a9a;
-            opacity: 0.7;
+        .time-slot.selected {
+            background-color: var(--cal-brand);
+            color: var(--cal-brand-text);
+            border-color: var(--cal-brand);
         }
         
-        .slot-time {
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        
-        .slot-status {
-            font-size: 0.9em;
-            padding: 4px 8px;
-            border-radius: 4px;
-            display: inline-block;
-            color: white;
-        }
-        
-        .available .slot-status {
-            background: #2e7d32;
-        }
-        
-        .booked .slot-status {
-            background: #c62828;
+        .time-slot.unavailable {
+            background-color: var(--cal-bg-accent);
+            color: var(--cal-text-muted);
+            cursor: not-allowed;
             text-decoration: line-through;
+        }
+        
+        .timezone-info {
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--cal-text-muted);
+            text-align: center;
         }
         
         .loading {
@@ -290,17 +394,14 @@
         }
         
         .calendar-error {
-            color: #E74C3C;
-            background-color: #FDEDED;
+            color: var(--cal-error);
+            background-color: #fef2f2;
             padding: 10px;
-            border-radius: 4px;
+            border-radius: 8px;
             margin: 10px 0;
             text-align: center;
             display: none;
-        }
-        
-        .selected-slot {
-            box-shadow: 0 0 0 3px var(--bb-accent);
+            border: 1px solid #fee2e2;
         }
         
         @media (max-width: 768px) {
@@ -412,14 +513,40 @@
             </form>
         </div>
 
-        <!-- CALENDAR SECTION -->
+        <!-- NEW CALENDAR SECTION (Cal.com style) -->
         <div class="calendar-container">
             <h3>Available Time Slots</h3>
             <p>Select a 3-hour time slot for your event (9AM-9PM)</p>
             
+            <div class="calendar-header">
+                <h2 id="current-month">June 2023</h2>
+                <div class="calendar-nav">
+                    <button id="prev-month"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.5 14L5.5 8L11.5 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                    <button id="next-month"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.5 2L10.5 8L4.5 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                </div>
+            </div>
+            
+            <div class="calendar-grid" id="day-headers">
+                <div class="calendar-day-header">Sun</div>
+                <div class="calendar-day-header">Mon</div>
+                <div class="calendar-day-header">Tue</div>
+                <div class="calendar-day-header">Wed</div>
+                <div class="calendar-day-header">Thu</div>
+                <div class="calendar-day-header">Fri</div>
+                <div class="calendar-day-header">Sat</div>
+            </div>
+            
+            <div class="calendar-grid" id="calendar-days"></div>
+            
+            <p id="selected-date" style="margin-top: 20px;">Select a date to see available times</p>
+            
             <div id="calendar-loading" class="loading">Loading availability...</div>
             <div id="calendar-error" class="calendar-error"></div>
-            <div id="time-slots-container" class="time-slots"></div>
+            <div class="time-slots" id="time-slots-container"></div>
+            
+            <div class="timezone-info">
+                Times are shown in your local timezone: <span id="timezone">Detecting...</span>
+            </div>
         </div>
 
         <!-- Stripe Payment Form -->
@@ -486,17 +613,18 @@
             }
         ];
 
+        // Calendar state
+        let calendarState = {
+            currentDate: new Date(),
+            selectedDate: null,
+            selectedTime: null,
+            events: []
+        };
+
         // Initialize page
         document.addEventListener('DOMContentLoaded', () => {
             updatePrices();
             renderServices();
-            
-            // Set default date to today
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('event-date').value = today;
-            
-            // Load availability for today
-            loadAvailability(today);
             
             // Set up event listeners
             document.getElementById('submit-booking').addEventListener('click', handleBookingSubmit);
@@ -508,10 +636,16 @@
                 window.location.reload();
             });
             
-            // When date changes, reload availability
-            document.getElementById('event-date').addEventListener('change', (e) => {
-                loadAvailability(e.target.value);
-            });
+            // Initialize calendar
+            document.getElementById('timezone').textContent = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            renderCalendar();
+            setupCalendarEventListeners();
+            
+            // Set default date to today and load availability
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('event-date').value = today;
+            calendarState.selectedDate = new Date(today);
+            renderTimeSlots();
         });
 
         // Price calculations
@@ -544,14 +678,148 @@
             });
         }
 
-        // CALENDAR FUNCTIONS - WORKING IMPLEMENTATION
-        async function loadAvailability(date) {
-            try {
-                showCalendarLoading();
-                hideCalendarError();
-                clearTimeSlots();
+        // CALENDAR FUNCTIONS (Cal.com style)
+        function renderCalendar() {
+            const calendarDays = document.getElementById('calendar-days');
+            calendarDays.innerHTML = '';
+            
+            const year = calendarState.currentDate.getFullYear();
+            const month = calendarState.currentDate.getMonth();
+            
+            // Update month header
+            document.getElementById('current-month').textContent = new Date(year, month).toLocaleDateString('en-US', {
+                month: 'long',
+                year: 'numeric'
+            });
+            
+            // Get first day of month and total days
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            // Get days from previous month
+            const prevMonthDays = new Date(year, month, 0).getDate();
+            
+            // Render days
+            let day = 1;
+            let nextMonthDay = 1;
+            const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
+            
+            for (let i = 0; i < totalCells; i++) {
+                const date = new Date(year, month, day);
+                const cell = document.createElement('div');
                 
-                const response = await fetch(`${config.backendUrl}/api/availability?date=${date}`);
+                if (i < firstDay) {
+                    // Previous month
+                    const prevDay = prevMonthDays - (firstDay - i - 1);
+                    cell.textContent = prevDay;
+                    cell.classList.add('calendar-day', 'disabled');
+                } else if (day > daysInMonth) {
+                    // Next month
+                    cell.textContent = nextMonthDay++;
+                    cell.classList.add('calendar-day', 'disabled');
+                } else {
+                    // Current month
+                    cell.textContent = day;
+                    cell.classList.add('calendar-day');
+                    
+                    // Check if today
+                    const today = new Date();
+                    if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                        cell.classList.add('today');
+                    }
+                    
+                    // Check if selected
+                    if (calendarState.selectedDate && 
+                        day === calendarState.selectedDate.getDate() && 
+                        month === calendarState.selectedDate.getMonth() && 
+                        year === calendarState.selectedDate.getFullYear()) {
+                        cell.classList.add('selected');
+                    }
+                    
+                    // Check if date is in the past
+                    if (date < new Date(new Date().setHours(0, 0, 0, 0))) {
+                        cell.classList.add('disabled');
+                    }
+                    
+                    day++;
+                }
+                
+                calendarDays.appendChild(cell);
+            }
+        }
+
+        function setupCalendarEventListeners() {
+            // Previous month button
+            document.getElementById('prev-month').addEventListener('click', () => {
+                calendarState.currentDate.setMonth(calendarState.currentDate.getMonth() - 1);
+                renderCalendar();
+            });
+            
+            // Next month button
+            document.getElementById('next-month').addEventListener('click', () => {
+                calendarState.currentDate.setMonth(calendarState.currentDate.getMonth() + 1);
+                renderCalendar();
+            });
+            
+            // Calendar day click
+            document.getElementById('calendar-days').addEventListener('click', (e) => {
+                if (e.target.classList.contains('calendar-day') && 
+                    !e.target.classList.contains('disabled')) {
+                    
+                    const day = parseInt(e.target.textContent);
+                    const year = calendarState.currentDate.getFullYear();
+                    const month = calendarState.currentDate.getMonth();
+                    
+                    // Find if this is a previous/next month day
+                    const cellIndex = Array.from(document.getElementById('calendar-days').children).indexOf(e.target);
+                    const firstDay = new Date(year, month, 1).getDay();
+                    
+                    if (cellIndex < firstDay) {
+                        // Previous month
+                        calendarState.currentDate.setMonth(month - 1);
+                        calendarState.currentDate.setDate(day);
+                        renderCalendar();
+                    } else if (day > new Date(year, month + 1, 0).getDate()) {
+                        // Next month
+                        calendarState.currentDate.setMonth(month + 1);
+                        calendarState.currentDate.setDate(day);
+                        renderCalendar();
+                    } else {
+                        // Current month
+                        calendarState.selectedDate = new Date(year, month, day);
+                        calendarState.selectedTime = null;
+                        document.getElementById('event-date').value = calendarState.selectedDate.toISOString().split('T')[0];
+                        renderCalendar();
+                        renderTimeSlots();
+                    }
+                }
+            });
+        }
+
+        // Render time slots for selected date
+        async function renderTimeSlots() {
+            const timeSlotsContainer = document.getElementById('time-slots-container');
+            timeSlotsContainer.innerHTML = '';
+            document.getElementById('calendar-error').style.display = 'none';
+            document.getElementById('calendar-loading').style.display = 'block';
+            
+            if (!calendarState.selectedDate) {
+                document.getElementById('selected-date').textContent = 'Select a date to see available times';
+                return;
+            }
+            
+            // Format selected date
+            document.getElementById('selected-date').textContent = calendarState.selectedDate.toLocaleDateString('en-US', {
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric'
+            });
+            
+            try {
+                // Fetch busy times for selected date
+                const dateStr = calendarState.selectedDate.toISOString().split('T')[0];
+                const response = await fetch(`${config.backendUrl}/api/availability?date=${dateStr}`);
                 
                 if (!response.ok) {
                     throw new Error(`Failed to load availability: ${response.status}`);
@@ -564,96 +832,79 @@
                     throw new Error('Invalid availability data format');
                 }
                 
-                renderTimeSlots(date, data.availability);
+                // Generate time slots in 3-hour increments from 9AM to 9PM
+                const timeSlots = [
+                    { start: 9, end: 12, label: "9:00 AM - 12:00 PM" },
+                    { start: 12, end: 15, label: "12:00 PM - 3:00 PM" },
+                    { start: 15, end: 18, label: "3:00 PM - 6:00 PM" },
+                    { start: 18, end: 21, label: "6:00 PM - 9:00 PM" }
+                ];
+                
+                for (const slot of timeSlots) {
+                    const slotTime = new Date(calendarState.selectedDate);
+                    slotTime.setHours(slot.start, 0, 0, 0);
+                    
+                    const slotElement = document.createElement('div');
+                    slotElement.classList.add('time-slot');
+                    slotElement.textContent = slot.label;
+                    slotElement.dataset.start = slotTime.toISOString();
+                    slotElement.dataset.end = new Date(slotTime.getTime() + 3 * 60 * 60000).toISOString();
+                    
+                    // Check if time slot is unavailable
+                    const isUnavailable = isTimeSlotUnavailable(slotTime, data.availability);
+                    if (isUnavailable) {
+                        slotElement.classList.add('unavailable');
+                    } else {
+                        // Check if selected
+                        if (calendarState.selectedTime && calendarState.selectedTime.getTime() === slotTime.getTime()) {
+                            slotElement.classList.add('selected');
+                        }
+                        
+                        slotElement.addEventListener('click', () => {
+                            // Remove previous selection
+                            document.querySelectorAll('.time-slot').forEach(slot => {
+                                slot.classList.remove('selected');
+                            });
+                            
+                            // Set new selection
+                            slotElement.classList.add('selected');
+                            calendarState.selectedTime = new Date(slotTime);
+                            
+                            // Update duration field
+                            document.getElementById('event-duration').value = 3;
+                        });
+                    }
+                    
+                    timeSlotsContainer.appendChild(slotElement);
+                }
             } catch (error) {
                 console.error('Availability error:', error);
-                showCalendarError(`Failed to load availability: ${error.message}`);
+                document.getElementById('calendar-error').textContent = `Failed to load availability: ${error.message}`;
+                document.getElementById('calendar-error').style.display = 'block';
             } finally {
-                hideCalendarLoading();
+                document.getElementById('calendar-loading').style.display = 'none';
             }
-        }
-        
-        function renderTimeSlots(date, busySlots = []) {
-            const container = document.getElementById('time-slots-container');
-            const selectedDate = new Date(date);
-            const startHour = config.workingHours.start;
-            const endHour = config.workingHours.end;
-            const slotDuration = config.slotDuration;
-            
-            // Generate time slots
-            for (let hour = startHour; hour < endHour; hour += slotDuration / 60) {
-                const slotStart = new Date(selectedDate);
-                slotStart.setHours(hour, 0, 0, 0);
-                
-                const slotEnd = new Date(slotStart);
-                slotEnd.setHours(hour + (slotDuration / 60), 0, 0, 0);
-                
-                // Check if this slot is available
-                const isBooked = Array.isArray(busySlots) && busySlots.some(event => {
-                    try {
-                        const eventStart = new Date(event.start?.dateTime || event.start);
-                        const eventEnd = new Date(event.end?.dateTime || event.end);
-                        return (slotStart < eventEnd && slotEnd > eventStart);
-                    } catch (e) {
-                        console.error('Error processing event:', event, e);
-                        return false;
-                    }
-                });
-                
-                const slotElement = document.createElement('div');
-                slotElement.className = `time-slot ${isBooked ? 'booked' : 'available'}`;
-                slotElement.dataset.start = slotStart.toISOString();
-                slotElement.dataset.end = slotEnd.toISOString();
-                
-                slotElement.innerHTML = `
-                    <div class="slot-time">${formatTime(slotStart)} - ${formatTime(slotEnd)}</div>
-                    <div class="slot-status">${isBooked ? 'Booked' : 'Available'}</div>
-                `;
-                
-                if (!isBooked) {
-                    slotElement.addEventListener('click', () => {
-                        // Remove previous selection
-                        document.querySelectorAll('.time-slot').forEach(slot => {
-                            slot.classList.remove('selected-slot');
-                        });
-                        
-                        // Select this slot
-                        slotElement.classList.add('selected-slot');
-                        
-                        // Update duration field
-                        document.getElementById('event-duration').value = 
-                            (new Date(slotElement.dataset.end) - new Date(slotElement.dataset.start)) / (1000 * 60 * 60);
-                    });
-                }
-                
-                container.appendChild(slotElement);
-            }
-        }
-        
-        function formatTime(date) {
-            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
-        function showCalendarLoading() {
-            document.getElementById('calendar-loading').style.display = 'block';
-        }
-        
-        function hideCalendarLoading() {
-            document.getElementById('calendar-loading').style.display = 'none';
-        }
-        
-        function showCalendarError(message) {
-            const errorElement = document.getElementById('calendar-error');
-            errorElement.textContent = message;
-            errorElement.style.display = 'block';
-        }
-        
-        function hideCalendarError() {
-            document.getElementById('calendar-error').style.display = 'none';
-        }
-        
-        function clearTimeSlots() {
-            document.getElementById('time-slots-container').innerHTML = '';
+        function isTimeSlotUnavailable(slotTime, busySlots) {
+            const endTime = new Date(slotTime.getTime() + 3 * 60 * 60000);
+            
+            // Check if in the past
+            if (slotTime < new Date()) {
+                return true;
+            }
+            
+            // Check against busy events
+            return busySlots.some(event => {
+                try {
+                    const eventStart = new Date(event.start?.dateTime || event.start);
+                    const eventEnd = new Date(event.end?.dateTime || event.end);
+                    return (slotTime < eventEnd && endTime > eventStart);
+                } catch (e) {
+                    console.error('Error processing event:', event, e);
+                    return false;
+                }
+            });
         }
 
         // Send email via backend
@@ -695,8 +946,7 @@
             }
             
             // Check if a time slot is selected
-            const selectedSlot = document.querySelector('.selected-slot');
-            if (!selectedSlot) {
+            if (!calendarState.selectedTime) {
                 alert('Please select an available time slot');
                 return;
             }
@@ -717,8 +967,7 @@
 
             try {
                 // 1. First validate a time slot is selected
-                const selectedSlot = document.querySelector('.selected-slot');
-                if (!selectedSlot) {
+                if (!calendarState.selectedTime) {
                     throw new Error('Please select an available time slot');
                 }
                 
@@ -734,8 +983,8 @@
                     contactName: document.getElementById('contact-name').value,
                     email: document.getElementById('contact-email').value,
                     phone: document.getElementById('contact-phone').value,
-                    startTime: selectedSlot.dataset.start,
-                    endTime: selectedSlot.dataset.end
+                    startTime: calendarState.selectedTime.toISOString(),
+                    endTime: new Date(calendarState.selectedTime.getTime() + 3 * 60 * 60000).toISOString()
                 };
 
                 // 3. Process Stripe payment
