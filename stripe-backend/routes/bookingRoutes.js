@@ -1,16 +1,15 @@
 const express = require('express');
 const router = express.Router();
 
-// Temporary in-memory storage (replace with database in production)
+// Temporary in-memory storage
 const bookings = [];
 
-// Create booking
-router.post('/', async (req, res) => {
+// Create Booking
+router.post('/', (req, res) => {
   try {
-    const { start, end, name, email, eventDetails, paymentIntentId } = req.body;
+    const { start, end, customerName, customerEmail } = req.body;
     
-    // Validate input
-    if (!start || !end || !name || !email) {
+    if (!start || !end || !customerEmail) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -18,29 +17,22 @@ router.post('/', async (req, res) => {
       id: `booking_${Date.now()}`,
       start,
       end,
-      customer: { name, email },
-      eventDetails,
-      paymentIntentId,
-      status: 'pending',
+      customerName,
+      customerEmail,
+      status: 'confirmed',
       createdAt: new Date().toISOString()
     };
 
     bookings.push(newBooking);
-    
     res.status(201).json(newBooking);
-  } catch (error) {
-    console.error('Booking error:', error);
-    res.status(500).json({ error: 'Failed to create booking' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
-// Get booking by ID
-router.get('/:id', (req, res) => {
-  const booking = bookings.find(b => b.id === req.params.id);
-  if (!booking) {
-    return res.status(404).json({ error: 'Booking not found' });
-  }
-  res.json(booking);
+// Get All Bookings
+router.get('/', (req, res) => {
+  res.json(bookings);
 });
 
 module.exports = router;
