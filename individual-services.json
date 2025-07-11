@@ -3,18 +3,18 @@
     "name": "\ud83d\udcf8 Photo Booth",
     "slug": "photo-booth",
     "ServiceType": "Interactive Booths",
-    "price": 1,
+    "price": 500,
     "basePrice": 0,
     "pricingTiers": [
       {
         "label": "Digital Only",
         "value": "digital",
-        "price": 1
+        "price": 500
       },
       {
         "label": "Unlimited Prints",
         "value": "print",
-        "price": 1
+        "price": 600
       }
     ],
     "locations": [
@@ -108,8 +108,8 @@
     "name": "\ud83c\udfa5 360 Video Booth",
     "slug": "360-video-booth",
     "ServiceType": "Interactive Booths",
-    "price": 1,
-    "basePrice": 1,
+    "price": 600,
+    "basePrice": 600,
     "locations": [
       {
         "location": "Client will provide the address",
@@ -201,8 +201,8 @@
     "name": "\ud83c\udfa4 Audio Guest Book",
     "slug": "audio-guest-book",
     "ServiceType": "Interactive Booths",
-    "price": 1,
-    "basePrice": 1,
+    "price": 350,
+    "basePrice": 350,
     "locations": [
       {
         "location": "Client will provide the address",
@@ -294,8 +294,8 @@
     "name": "\ud83d\udcf0 Magazine Photo Booth",
     "slug": "magazine-photo-booth",
     "ServiceType": "Interactive Booths",
-    "price": 1,
-    "basePrice": 1,
+    "price": 600,
+    "basePrice": 600,
     "locations": [
       {
         "location": "Client will provide the address",
@@ -387,28 +387,28 @@
     "name": "\u2615 Espresso Booth",
     "slug": "espresso-booth",
     "ServiceType": "Sweets and Brews",
-    "price": 1,
+    "price": 700,
     "basePrice": 0,
     "pricingTiers": [
       {
         "label": "50 Guests",
         "value": 50,
-        "price": 1
+        "price": 700
       },
       {
         "label": "100 Guests",
         "value": 100,
-        "price": 1
+        "price": 1100
       },
       {
         "label": "150 Guests",
         "value": 150,
-        "price": 1
+        "price": 1500
       },
       {
         "label": "200 Guests",
         "value": 200,
-        "price": 1
+        "price": 1900
       }
     ],
     "locations": [
@@ -502,28 +502,28 @@
     "name": "\ud83e\uddc7 Waffle Booth",
     "slug": "waffle-booth",
     "ServiceType": "Sweets and Brews",
-    "price": 1,
+    "price": 800,
     "basePrice": 0,
     "pricingTiers": [
       {
         "label": "50 Guests",
         "value": 50,
-        "price": 1
+        "price": 800
       },
       {
         "label": "100 Guests",
         "value": 100,
-        "price": 1
+        "price": 1200
       },
       {
         "label": "150 Guests",
         "value": 150,
-        "price": 1
+        "price": 1600
       },
       {
         "label": "200 Guests",
         "value": 200,
-        "price": 1
+        "price": 2000
       }
     ],
     "locations": [
@@ -617,28 +617,28 @@
     "name": "\ud83c\udf79 Smoothie Booth",
     "slug": "smoothie-booth",
     "ServiceType": "Sweets and Brews",
-    "price": 1,
+    "price": 900,
     "basePrice": 0,
     "pricingTiers": [
       {
         "label": "50 Guests",
         "value": 50,
-        "price": 1
+        "price": 900
       },
       {
         "label": "100 Guests",
         "value": 100,
-        "price": 1
+        "price": 1300
       },
       {
         "label": "150 Guests",
         "value": 150,
-        "price": 1
+        "price": 1700
       },
       {
         "label": "200 Guests",
         "value": 200,
-        "price": 1
+        "price": 2100
       }
     ],
     "locations": [
@@ -738,17 +738,17 @@
       {
         "label": "2 Sparklers",
         "value": 2,
-        "price": 1
+        "price": 400
       },
       {
         "label": "4 Sparklers",
         "value": 4,
-        "price": 1
+        "price": 600
       },
       {
         "label": "6 Sparklers",
         "value": 6,
-        "price": 1
+        "price": 800
       }
     ],
     "locations": [
@@ -842,8 +842,8 @@
     "name": "\u2744\ufe0f Dry Ice Fog",
     "slug": "dry-ice-fog",
     "ServiceType": "Scene Setters",
-    "price": 1,
-    "basePrice": 1,
+    "price": 400,
+    "basePrice": 400,
     "locations": [
       {
         "location": "Client will provide the address",
@@ -935,8 +935,8 @@
     "name": "\ud83d\udc83 Laser First Dance",
     "slug": "laser-first-dance",
     "ServiceType": "Scene Setters",
-    "price": 1,
-    "basePrice": 1,
+    "price": 900,
+    "basePrice": 900,
     "locations": [
       {
         "location": "Client will provide the address",
