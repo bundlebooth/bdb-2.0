@@ -732,7 +732,7 @@
     "name": "\u2728 Sparklers Box",
     "slug": "sparklers-box",
     "ServiceType": "Scene Setters",
-    "price": 0,
+    "price": 400,
     "basePrice": 0,
     "pricingTiers": [
       {
