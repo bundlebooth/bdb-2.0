@@ -1366,21 +1366,22 @@
                 {
                     "name": "Premium Photo Booth",
                     "description": "High-quality photo booth with unlimited prints",
-                    "ServiceType": "Scene Setters",
+                    "ServiceType": "Interactive Booths",
+                    "slug": "photo-booth",
                     "price": 1200,
                     "duration": "4 hours",
                     "pricingTiers": [
                         {
-                            "label": "Standard (3 hours)",
-                            "value": "standard",
+                            "label": "Digital Only",
+                            "value": "digital",
                             "price": 1200,
                             "duration": "3 hours"
                         },
                         {
-                            "label": "Extended (6 hours)",
-                            "value": "extended",
-                            "price": 2000,
-                            "duration": "6 hours"
+                            "label": "Unlimited Prints",
+                            "value": "unlimited",
+                            "price": 1500,
+                            "duration": "3 hours"
                         }
                     ]
                 },
@@ -1595,8 +1596,10 @@
             if (service.selectedTier) {
                 detailsHtml = `
                     <div class="service-details">
-                        <span>Guests: ${service.selectedTier.guests || service.selectedTier.value}</span>
-                        <span>Duration: ${service.selectedTier.duration}</span>
+                        ${service.ServiceType === "Sweets & Brews" ? 
+                            `<span>Guests: ${service.selectedTier.value}</span>` : 
+                            `<span>Option: ${service.selectedTier.label}</span>`}
+                        ${service.selectedTier.duration ? `<span>Duration: ${service.selectedTier.duration}</span>` : ''}
                     </div>
                 `;
             } else if (service.duration) {
@@ -1607,21 +1610,12 @@
                 `;
             }
             
-            // Add selected option for photo booth
-            if (service.selectedOption) {
-                detailsHtml += `
-                    <div class="service-details">
-                        <span>Option: ${service.selectedOption === 'unlimited' ? 'Unlimited Prints' : 'Digital Only'}</span>
-                    </div>
-                `;
-            }
-            
-            const categoryClass = service.ServiceType.includes('Scene') ? 'scene-setters' : 
-                                service.ServiceType.includes('Sweets') ? 'sweets-brews' :
-                                service.ServiceType.includes('Special Effects') ? 'special-effects' :
-                                service.ServiceType.includes('Guest Book') ? 'guest-book' :
-                                service.ServiceType.includes('Digital') ? 'digital' :
-                                service.ServiceType.includes('Interactive') ? 'interactive' : '';
+            const categoryClass = service.ServiceType === "Scene Setters" ? 'scene-setters' : 
+                                service.ServiceType === "Sweets & Brews" ? 'sweets-brews' :
+                                service.ServiceType === "Special Effects" ? 'special-effects' :
+                                service.ServiceType === "Guest Book" ? 'guest-book' :
+                                service.ServiceType === "Digital" ? 'digital' :
+                                service.ServiceType === "Interactive Booths" ? 'interactive' : '';
             
             serviceDiv.innerHTML = `
                 <div>
@@ -1641,26 +1635,33 @@
         const photoBoothAdjustment = document.getElementById('photo-booth-adjustment');
         const sweetsBrewsAdjustment = document.getElementById('sweets-brews-adjustment');
         
-        // Check for Photo Booth services with pricingTiers
+        // Reset adjustments
+        adjustmentsSection.style.display = 'none';
+        photoBoothAdjustment.style.display = 'none';
+        sweetsBrewsAdjustment.style.display = 'none';
+
+        // Check for Photo Booth (Interactive Booths with slug photo-booth)
         const hasPhotoBooth = selectedServices.some(service => 
-            service.ServiceType.includes('Photo Booth') && 
+            service.ServiceType === "Interactive Booths" && 
+            service.slug === "photo-booth" &&
             service.pricingTiers
         );
         
-        // Check for Sweets & Brews services
+        // Check for Sweets & Brews
         const hasSweetsBrews = selectedServices.some(service => 
-            service.ServiceType.includes('Sweets') || 
-            service.ServiceType.includes('Brews')
+            service.ServiceType === "Sweets & Brews" && 
+            service.pricingTiers
         );
         
         if (hasPhotoBooth || hasSweetsBrews) {
             adjustmentsSection.style.display = 'block';
             
-            // Set up Photo Booth options
+            // Set up Photo Booth options (Digital Only/Unlimited Prints)
             if (hasPhotoBooth) {
                 photoBoothAdjustment.style.display = 'block';
                 const photoBoothService = selectedServices.find(service => 
-                    service.ServiceType.includes('Photo Booth') && 
+                    service.ServiceType === "Interactive Booths" && 
+                    service.slug === "photo-booth" &&
                     service.pricingTiers
                 );
                 
@@ -1668,10 +1669,17 @@
                 optionsContainer.innerHTML = '';
                 
                 if (photoBoothService.pricingTiers) {
+                    // Default to Digital Only (first option)
+                    if (!photoBoothService.selectedTier) {
+                        photoBoothService.selectedTier = photoBoothService.pricingTiers[0];
+                        photoBoothService.selectedPrice = photoBoothService.pricingTiers[0].price;
+                    }
+                    
+                    // Create both options
                     photoBoothService.pricingTiers.forEach(tier => {
                         const optionElement = document.createElement('div');
                         optionElement.className = 'adjustment-option';
-                        if (photoBoothService.selectedTier?.value === tier.value) {
+                        if (photoBoothService.selectedTier.value === tier.value) {
                             optionElement.classList.add('selected');
                         }
                         optionElement.dataset.value = tier.value;
@@ -1685,34 +1693,40 @@
                                 .forEach(opt => opt.classList.remove('selected'));
                             optionElement.classList.add('selected');
                             
-                            photoBoothService.selectedPrice = tier.price;
                             photoBoothService.selectedTier = tier;
+                            photoBoothService.selectedPrice = tier.price;
                             updateReviewButton();
                         });
                         
                         optionsContainer.appendChild(optionElement);
                     });
                 }
-            } else {
-                photoBoothAdjustment.style.display = 'none';
             }
             
             // Set up Sweets & Brews guest size
             if (hasSweetsBrews) {
                 sweetsBrewsAdjustment.style.display = 'block';
-                updateSweetsBrewsPrices(); // Initialize prices
-            } else {
-                sweetsBrewsAdjustment.style.display = 'none';
+                // Initialize with first (lowest) tier value
+                const firstServiceWithTiers = selectedServices.find(service => 
+                    service.ServiceType === "Sweets & Brews" &&
+                    service.pricingTiers
+                );
+                if (firstServiceWithTiers?.pricingTiers?.[0]?.value) {
+                    globalGuestSize = firstServiceWithTiers.pricingTiers[0].value;
+                    document.getElementById('guest-size-value').textContent = globalGuestSize;
+                    // Set initial price
+                    firstServiceWithTiers.selectedPrice = firstServiceWithTiers.pricingTiers[0].price;
+                    firstServiceWithTiers.selectedTier = firstServiceWithTiers.pricingTiers[0];
+                }
+                updateSweetsBrewsPrices();
             }
-        } else {
-            adjustmentsSection.style.display = 'none';
         }
     }
 
     // Update prices for sweets & brews services based on guest size
     function updateSweetsBrewsPrices() {
         selectedServices.forEach(service => {
-            if ((service.ServiceType.includes('Sweets') || service.ServiceType.includes('Brews')) && 
+            if (service.ServiceType === "Sweets & Brews" && 
                 service.pricingTiers) {
                 
                 // Find the closest tier that covers our guest size
@@ -1943,11 +1957,6 @@
             if (service.pricingTiers && service.pricingTiers.length > 0) {
                 service.selectedPrice = service.pricingTiers[0].price;
                 service.selectedTier = service.pricingTiers[0];
-                
-                // For photo booth services
-                if (service.ServiceType.includes('Photo Booth')) {
-                    service.selectedOption = 'digital'; // Default option
-                }
             }
             
             selectedServices.push(service);
