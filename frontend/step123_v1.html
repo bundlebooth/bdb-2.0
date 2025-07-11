@@ -1043,6 +1043,19 @@
                     </div>
                 </div>
             </div>
+            
+            <div id="sparklers-adjustment" class="adjustment-group" style="display:none;">
+                <div class="adjustment-group-title">
+                    Sparklers Quantity
+                </div>
+                <div class="adjustment-controls">
+                    <div class="guest-size-adjuster">
+                        <button class="adjustment-button" id="decrease-sparklers">-</button>
+                        <div class="guest-size-value" id="sparklers-value">50</div>
+                        <button class="adjustment-button" id="increase-sparklers">+</button>
+                    </div>
+                </div>
+            </div>
         </div>
         
         <button id="review-selection" style="display:none;margin-top:20px;" class="book-now-button">Review Selection</button>
@@ -1227,6 +1240,7 @@
     let selectedDateElement = null;
     let serviceFeatures = {}; // To store features data
     let globalGuestSize = 100; // Default guest size
+    let globalSparklersCount = 50; // Default sparklers count
     let { jsPDF } = window.jspdf;
 
     // Initialize the builder when DOM is loaded
@@ -1282,6 +1296,37 @@
                 if (currentIndex > 0) {
                     globalGuestSize = firstSweetsService.pricingTiers[currentIndex - 1].value;
                     updateSweetsBrewsPrices();
+                }
+            }
+        });
+        
+        // Set up sparklers adjusters
+        document.getElementById('increase-sparklers').addEventListener('click', () => {
+            const sparklersService = selectedServices.find(s => 
+                s.ServiceType === "Scene Setters" && s.slug === "sparklers-box" && s.pricingTiers
+            );
+            if (sparklersService) {
+                const currentIndex = sparklersService.pricingTiers.findIndex(
+                    t => t.value === globalSparklersCount
+                );
+                if (currentIndex < sparklersService.pricingTiers.length - 1) {
+                    globalSparklersCount = sparklersService.pricingTiers[currentIndex + 1].value;
+                    updateSparklersPrices();
+                }
+            }
+        });
+        
+        document.getElementById('decrease-sparklers').addEventListener('click', () => {
+            const sparklersService = selectedServices.find(s => 
+                s.ServiceType === "Scene Setters" && s.slug === "sparklers-box" && s.pricingTiers
+            );
+            if (sparklersService) {
+                const currentIndex = sparklersService.pricingTiers.findIndex(
+                    t => t.value === globalSparklersCount
+                );
+                if (currentIndex > 0) {
+                    globalSparklersCount = sparklersService.pricingTiers[currentIndex - 1].value;
+                    updateSparklersPrices();
                 }
             }
         });
@@ -1616,6 +1661,8 @@
                     <div class="service-details">
                         ${service.ServiceType === "Sweets and Brews" ? 
                             `<span>Guests: ${service.selectedTier.value}</span>` : 
+                            service.ServiceType === "Scene Setters" && service.slug === "sparklers-box" ?
+                            `<span>Quantity: ${service.selectedTier.value} sparklers</span>` :
                             `<span>Option: ${service.selectedTier.label}</span>`}
                         ${service.selectedTier.duration ? `<span>Duration: ${service.selectedTier.duration}</span>` : ''}
                     </div>
@@ -1652,11 +1699,13 @@
         const adjustmentsSection = document.getElementById('adjustments-section');
         const photoBoothAdjustment = document.getElementById('photo-booth-adjustment');
         const sweetsBrewsAdjustment = document.getElementById('sweets-brews-adjustment');
+        const sparklersAdjustment = document.getElementById('sparklers-adjustment');
         
         // Reset adjustments
         adjustmentsSection.style.display = 'none';
         photoBoothAdjustment.style.display = 'none';
         sweetsBrewsAdjustment.style.display = 'none';
+        sparklersAdjustment.style.display = 'none';
 
         // Check for Photo Booth (Interactive Booths with slug photo-booth)
         const hasPhotoBooth = selectedServices.some(service => 
@@ -1671,7 +1720,14 @@
             service.pricingTiers
         );
         
-        if (hasPhotoBooth || hasSweetsBrews) {
+        // Check for Sparklers (Scene Setters with slug sparklers-box)
+        const hasSparklers = selectedServices.some(service => 
+            service.ServiceType === "Scene Setters" && 
+            service.slug === "sparklers-box" &&
+            service.pricingTiers
+        );
+        
+        if (hasPhotoBooth || hasSweetsBrews || hasSparklers) {
             adjustmentsSection.style.display = 'block';
             
             // Set up Photo Booth options (Digital Only/Unlimited Prints)
@@ -1738,6 +1794,24 @@
                 }
                 updateSweetsBrewsPrices();
             }
+            
+            // Set up Sparklers quantity
+            if (hasSparklers) {
+                sparklersAdjustment.style.display = 'block';
+                const sparklersService = selectedServices.find(service => 
+                    service.ServiceType === "Scene Setters" && 
+                    service.slug === "sparklers-box" &&
+                    service.pricingTiers
+                );
+                if (sparklersService?.pricingTiers?.[0]?.value) {
+                    globalSparklersCount = sparklersService.pricingTiers[0].value;
+                    document.getElementById('sparklers-value').textContent = globalSparklersCount;
+                    // Set initial price
+                    sparklersService.selectedPrice = sparklersService.pricingTiers[0].price;
+                    sparklersService.selectedTier = sparklersService.pricingTiers[0];
+                }
+                updateSparklersPrices();
+            }
         }
     }
 
@@ -1769,6 +1843,39 @@
         );
         if (firstSweetsService?.selectedTier) {
             document.getElementById('guest-size-value').textContent = firstSweetsService.selectedTier.value;
+        }
+        
+        updateReviewButton();
+    }
+    
+    // Update prices for sparklers based on quantity
+    function updateSparklersPrices() {
+        selectedServices.forEach(service => {
+            if (service.ServiceType === "Scene Setters" && service.slug === "sparklers-box" && service.pricingTiers) {
+                // Find the tier that matches our sparklers count
+                let selectedTier = null;
+                
+                // First try to find exact match
+                selectedTier = service.pricingTiers.find(tier => tier.value >= globalSparklersCount);
+                
+                // If no exact match, use the highest tier
+                if (!selectedTier) {
+                    selectedTier = service.pricingTiers[service.pricingTiers.length - 1];
+                }
+                
+                if (selectedTier) {
+                    service.selectedPrice = selectedTier.price;
+                    service.selectedTier = selectedTier;
+                }
+            }
+        });
+        
+        // Update the sparklers count display to show the actual selected tier value
+        const sparklersService = selectedServices.find(s => 
+            s.ServiceType === "Scene Setters" && s.slug === "sparklers-box" && s.pricingTiers
+        );
+        if (sparklersService?.selectedTier) {
+            document.getElementById('sparklers-value').textContent = sparklersService.selectedTier.value;
         }
         
         updateReviewButton();
