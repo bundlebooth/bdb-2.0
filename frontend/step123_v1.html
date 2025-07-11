@@ -1257,14 +1257,32 @@
         
         // Set up guest size adjusters
         document.getElementById('increase-guests').addEventListener('click', () => {
-            globalGuestSize += 25;
-            updateSweetsBrewsPrices();
+            const firstSweetsService = selectedServices.find(s => 
+                s.ServiceType === "Sweets and Brews" && s.pricingTiers
+            );
+            if (firstSweetsService) {
+                const currentIndex = firstSweetsService.pricingTiers.findIndex(
+                    t => t.value === globalGuestSize
+                );
+                if (currentIndex < firstSweetsService.pricingTiers.length - 1) {
+                    globalGuestSize = firstSweetsService.pricingTiers[currentIndex + 1].value;
+                    updateSweetsBrewsPrices();
+                }
+            }
         });
         
         document.getElementById('decrease-guests').addEventListener('click', () => {
-            if (globalGuestSize > 25) {
-                globalGuestSize -= 25;
-                updateSweetsBrewsPrices();
+            const firstSweetsService = selectedServices.find(s => 
+                s.ServiceType === "Sweets and Brews" && s.pricingTiers
+            );
+            if (firstSweetsService) {
+                const currentIndex = firstSweetsService.pricingTiers.findIndex(
+                    t => t.value === globalGuestSize
+                );
+                if (currentIndex > 0) {
+                    globalGuestSize = firstSweetsService.pricingTiers[currentIndex - 1].value;
+                    updateSweetsBrewsPrices();
+                }
             }
         });
     });
@@ -1326,7 +1344,7 @@
                     "description": "Perfect package for weddings with all the must-have services",
                     "categories": {
                         "Scene Setters": 2,
-                        "Sweets & Brews": 1,
+                        "Sweets and Brews": 1,
                         "Guest Book": 1
                     }
                 },
@@ -1388,7 +1406,7 @@
                 {
                     "name": "Candy Buffet",
                     "description": "Beautifully arranged candy station with 10 varieties",
-                    "ServiceType": "Sweets & Brews",
+                    "ServiceType": "Sweets and Brews",
                     "price": 900,
                     "duration": "Full event",
                     "pricingTiers": [
@@ -1596,7 +1614,7 @@
             if (service.selectedTier) {
                 detailsHtml = `
                     <div class="service-details">
-                        ${service.ServiceType === "Sweets & Brews" ? 
+                        ${service.ServiceType === "Sweets and Brews" ? 
                             `<span>Guests: ${service.selectedTier.value}</span>` : 
                             `<span>Option: ${service.selectedTier.label}</span>`}
                         ${service.selectedTier.duration ? `<span>Duration: ${service.selectedTier.duration}</span>` : ''}
@@ -1611,7 +1629,7 @@
             }
             
             const categoryClass = service.ServiceType === "Scene Setters" ? 'scene-setters' : 
-                                service.ServiceType === "Sweets & Brews" ? 'sweets-brews' :
+                                service.ServiceType === "Sweets and Brews" ? 'sweets-brews' :
                                 service.ServiceType === "Special Effects" ? 'special-effects' :
                                 service.ServiceType === "Guest Book" ? 'guest-book' :
                                 service.ServiceType === "Digital" ? 'digital' :
@@ -1649,7 +1667,7 @@
         
         // Check for Sweets & Brews
         const hasSweetsBrews = selectedServices.some(service => 
-            service.ServiceType === "Sweets & Brews" && 
+            service.ServiceType === "Sweets and Brews" && 
             service.pricingTiers
         );
         
@@ -1708,7 +1726,7 @@
                 sweetsBrewsAdjustment.style.display = 'block';
                 // Initialize with first (lowest) tier value
                 const firstServiceWithTiers = selectedServices.find(service => 
-                    service.ServiceType === "Sweets & Brews" &&
+                    service.ServiceType === "Sweets and Brews" &&
                     service.pricingTiers
                 );
                 if (firstServiceWithTiers?.pricingTiers?.[0]?.value) {
@@ -1726,29 +1744,32 @@
     // Update prices for sweets & brews services based on guest size
     function updateSweetsBrewsPrices() {
         selectedServices.forEach(service => {
-            if (service.ServiceType === "Sweets & Brews" && 
-                service.pricingTiers) {
-                
-                // Find the closest tier that covers our guest size
+            if (service.ServiceType === "Sweets and Brews" && service.pricingTiers) {
+                // Find the tier that matches our guest size
                 let selectedTier = null;
-                let smallestDifference = Infinity;
                 
-                service.pricingTiers.forEach(tier => {
-                    const difference = Math.abs(globalGuestSize - tier.value);
-                    if (difference < smallestDifference) {
-                        smallestDifference = difference;
-                        selectedTier = tier;
-                    }
-                });
+                // First try to find exact match
+                selectedTier = service.pricingTiers.find(tier => tier.value >= globalGuestSize);
+                
+                // If no exact match, use the highest tier
+                if (!selectedTier) {
+                    selectedTier = service.pricingTiers[service.pricingTiers.length - 1];
+                }
                 
                 if (selectedTier) {
                     service.selectedPrice = selectedTier.price;
                     service.selectedTier = selectedTier;
-                    globalGuestSize = selectedTier.value; // Snap to actual tier value
-                    document.getElementById('guest-size-value').textContent = globalGuestSize;
                 }
             }
         });
+        
+        // Update the guest size display to show the actual selected tier value
+        const firstSweetsService = selectedServices.find(s => 
+            s.ServiceType === "Sweets and Brews" && s.pricingTiers
+        );
+        if (firstSweetsService?.selectedTier) {
+            document.getElementById('guest-size-value').textContent = firstSweetsService.selectedTier.value;
+        }
         
         updateReviewButton();
     }
