@@ -981,8 +981,8 @@
     .toggle-switch {
       position: relative;
       display: inline-block;
-      width: 120px;
-      height: 34px;
+      width: 80px;
+      height: 26px;
     }
     
     .toggle-switch input {
@@ -1006,8 +1006,8 @@
     .toggle-slider:before {
       position: absolute;
       content: "";
-      height: 26px;
-      width: 26px;
+      height: 18px;
+      width: 18px;
       left: 4px;
       bottom: 4px;
       background-color: white;
@@ -1020,19 +1020,19 @@
     }
     
     input:checked + .toggle-slider:before {
-      transform: translateX(86px);
+      transform: translateX(54px);
     }
     
     .toggle-labels {
       position: absolute;
       width: 100%;
       height: 100%;
-      font-size: 12px;
+      font-size: 10px;
       font-weight: 500;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 10px;
+      padding: 0 8px;
       box-sizing: border-box;
       pointer-events: none;
     }
@@ -1080,6 +1080,20 @@
     .package-type-tag.interactive {
       background: #f3e8ff;
       color: var(--tag-interactive);
+    }
+    
+    /* Requirements Warning */
+    .requirements-warning {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff3cd;
+      border: 1px solid #ffecb5;
+      color: #856404;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-size: 14px;
     }
     
     @media (max-width: 768px) {
@@ -1132,14 +1146,18 @@
                         Photo Booth Options
                     </div>
                     <div class="option-controls">
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="photo-booth-toggle">
-                            <span class="toggle-slider"></span>
-                            <div class="toggle-labels">
-                                <span>Digital Only</span>
-                                <span>Unlimited Prints</span>
-                            </div>
-                        </label>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 12px;">Digital Only</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="photo-booth-toggle">
+                                <span class="toggle-slider"></span>
+                                <div class="toggle-labels">
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </label>
+                            <span style="font-size: 12px;">Unlimited Prints</span>
+                        </div>
                     </div>
                 </div>
                 
@@ -1169,6 +1187,13 @@
                     </div>
                 </div>
             </div>
+        </div>
+        
+        <div id="requirements-warning" class="requirements-warning" style="display:none;">
+            <svg viewBox="0 0 24 24" width="16" height="16" style="vertical-align:middle;margin-right:8px;">
+                <path fill="#856404" d="M12 2L1 21h22L12 2zm0 4l7.5 13h-15L12 6zm-1 3v6h2V9h-2zm0 8v2h2v-2h-2z"/>
+            </svg>
+            You have not selected all the required services for this bundle. Please select the remaining services to proceed.
         </div>
         
         <button id="review-selection" style="display:none;margin-top:20px;" class="book-now-button">Review Selection</button>
@@ -1453,11 +1478,12 @@
                 if (e.target.checked) {
                     // Unlimited Prints selected
                     photoBoothService.selectedTier = photoBoothService.pricingTiers.find(t => t.value === "unlimited");
+                    photoBoothService.selectedPrice = photoBoothService.pricingTiers.find(t => t.value === "unlimited").price;
                 } else {
                     // Digital Only selected
                     photoBoothService.selectedTier = photoBoothService.pricingTiers.find(t => t.value === "digital");
+                    photoBoothService.selectedPrice = photoBoothService.pricingTiers.find(t => t.value === "digital").price;
                 }
-                photoBoothService.selectedPrice = photoBoothService.selectedTier.price;
                 updateReviewButton();
             }
         });
@@ -1771,21 +1797,6 @@
             const serviceDiv = document.createElement('div');
             serviceDiv.className = 'service-item';
             
-            // Find features for this service
-            let featuresHtml = '';
-            const matchedService = servicesIncluded.find(
-                s => s.name.toLowerCase() === service.name.toLowerCase()
-            );
-            
-            if (matchedService && matchedService.features?.length > 0) {
-                featuresHtml = `
-                    <div class="service-features">
-                        <strong>Includes:</strong>
-                        <ul>${matchedService.features.map(f => `<li>${f}</li>`).join('')}</ul>
-                    </div>
-                `;
-            }
-            
             // Add service details
             let detailsHtml = '';
             if (service.selectedTier) {
@@ -1818,7 +1829,6 @@
                 <div>
                     <div class="service-name">${service.name} <span class="service-category ${categoryClass}">${service.ServiceType}</span></div>
                     ${detailsHtml}
-                    ${featuresHtml}
                 </div>
                 <div class="service-price">C$${(service.selectedPrice || service.price || 0).toFixed(2)}</div>
             `;
@@ -2020,10 +2030,15 @@
         // Check if all required services are selected
         const canProceed = checkBundleRequirements();
         document.getElementById('review-selection').disabled = !canProceed;
+        
+        // Show/hide requirements warning
+        const warningElement = document.getElementById('requirements-warning');
         if (!canProceed) {
+            warningElement.style.display = 'flex';
             document.getElementById('review-selection').style.backgroundColor = '#f0f0f0';
             document.getElementById('review-selection').style.cursor = 'not-allowed';
         } else {
+            warningElement.style.display = 'none';
             document.getElementById('review-selection').style.backgroundColor = '';
             document.getElementById('review-selection').style.cursor = '';
         }
@@ -2490,12 +2505,20 @@
         const slotDuration = config.slotDuration;
         
         // Generate time slots
+        const uniqueSlots = new Set(); // To track unique time slots
+        
         for (let hour = startHour; hour < endHour; hour += slotDuration / 60) {
             const slotStart = new Date(selectedDate);
             slotStart.setHours(hour, 0, 0, 0);
             
             const slotEnd = new Date(slotStart);
             slotEnd.setHours(hour + (slotDuration / 60), 0, 0, 0);
+            
+            const slotKey = `${formatTime(slotStart)}-${formatTime(slotEnd)}`;
+            
+            // Skip if we've already added this time slot
+            if (uniqueSlots.has(slotKey)) continue;
+            uniqueSlots.add(slotKey);
             
             // Check if this slot is available
             const isBooked = Array.isArray(busySlots) && busySlots.some(event => {
