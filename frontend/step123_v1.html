@@ -25,8 +25,12 @@
       --bb-compare-button: #d3d3d3;
       --selected-date-color: #f0f0f0;
       --modern-green: #27ae60;
-      --tag-scene: #3498db; /* Blue for Scene Setters */
-      --tag-sweets: #e67e22; /* Orange for Sweets and Brews */
+      --tag-scene: #1e3a8a;
+      --tag-sweets: #5c4033;
+      --tag-special-effects: #5a4a00;
+      --tag-guest-book: #831843;
+      --tag-digital: #495057;
+      --tag-interactive: #6b21a8;
     }
     * {
       box-sizing: border-box;
@@ -154,104 +158,11 @@
       color: #fff;
       transform: translateY(0)
     }
-    .package-type-tag {
-      display: inline-block;
-      background: #e8f4fc;
-      color: var(--bb-blue);
-      padding: 4px 10px;
-      border-radius: 4px;
-      margin-right: 6px;
-      margin-bottom: 6px;
-      font-size: .8em;
-      font-weight: 500
-    }
-    .package-type-tag.scene-setters {
-      background: #e8f4fc;
-      color: var(--tag-scene);
-    }
-    .package-type-tag.sweets-brews {
-      background: #fdf0e6;
-      color: var(--tag-sweets);
-    }
-    .equipment-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin: 0
-    }
-    .package-note {
-      font-size: .85rem;
-      color: #666;
-      margin: 0;
-      font-style: normal
-    }
-    .sale-tag {
-      font-size: .6rem;
-      color: var(--bb-red);
-      vertical-align: super;
-      font-weight: 600;
-      margin-left: 4px;
-      text-transform: uppercase
-    }
-    .new-tag {
-      font-size: .6rem;
-      color: var(--bb-red);
-      vertical-align: super;
-      font-weight: 600;
-      margin-left: 4px;
-      text-transform: uppercase
-    }
-    .bundled-tag {
-      background: #e8fce8;
-      color: #2e7d32;
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-size: .8em;
-      font-weight: 500;
-      display: inline-block;
-      margin-right: 5px
-    }
-    
-    /* Update Message Styles */
-    .update-message {
-      background: #f8f9fa;
-      padding: 16px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      border-left: 4px solid var(--bb-accent);
-      font-size: 14px;
-    }
-    
-    .update-message h4 {
-      margin: 0 0 8px 0;
-      color: var(--bb-blue);
-      font-size: 1rem;
-    }
-    
-    .update-message ul {
-      padding-left: 20px;
-      margin: 8px 0;
-    }
-    
-    .update-message li {
-      margin-bottom: 4px;
-    }
-    
-    .update-message .pagination {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 12px;
-      font-size: 12px;
-      color: #666;
-    }
     
     /* Category Tags */
     .category-tag {
       display: inline-flex;
       align-items: center;
-      background: #e8f4fc;
-      color: var(--bb-blue);
       padding: 4px 10px;
       border-radius: 4px;
       margin-right: 6px;
@@ -261,13 +172,33 @@
     }
     
     .category-tag.scene-setters {
-      background: #e8f4fc;
+      background: #e6f0fa;
       color: var(--tag-scene);
     }
     
     .category-tag.sweets-brews {
-      background: #fdf0e6;
+      background: #e6d9cb;
       color: var(--tag-sweets);
+    }
+    
+    .category-tag.special-effects {
+      background: #fff7e0;
+      color: var(--tag-special-effects);
+    }
+    
+    .category-tag.guest-book {
+      background: #fce7f3;
+      color: var(--tag-guest-book);
+    }
+    
+    .category-tag.digital {
+      background: #e8ecef;
+      color: var(--tag-digital);
+    }
+    
+    .category-tag.interactive {
+      background: #f3e8ff;
+      color: var(--tag-interactive);
     }
     
     .category-count {
@@ -276,19 +207,11 @@
       justify-content: center;
       width: 18px;
       height: 18px;
-      background: var(--bb-blue);
+      background: var(--bb-dark);
       color: white;
-      border-radius: 4px;
-      margin-left: 4px;
+      border-radius: 50%;
+      margin-right: 4px;
       font-size: 0.65rem;
-    }
-    
-    .category-tag.scene-setters .category-count {
-      background: var(--tag-scene);
-    }
-    
-    .category-tag.sweets-brews .category-count {
-      background: var(--tag-sweets);
     }
     
     .categories-label {
@@ -517,20 +440,34 @@
     }
     .service-category {
       display: inline-block;
-      background: #f0f0f0;
       padding: 2px 8px;
       border-radius: 4px;
       font-size: 12px;
       margin-left: 8px;
-      color: #666;
     }
     .service-category.scene-setters {
-      background: #e8f4fc;
+      background: #e6f0fa;
       color: var(--tag-scene);
     }
     .service-category.sweets-brews {
-      background: #fdf0e6;
+      background: #e6d9cb;
       color: var(--tag-sweets);
+    }
+    .service-category.special-effects {
+      background: #fff7e0;
+      color: var(--tag-special-effects);
+    }
+    .service-category.guest-book {
+      background: #fce7f3;
+      color: var(--tag-guest-book);
+    }
+    .service-category.digital {
+      background: #e8ecef;
+      color: var(--tag-digital);
+    }
+    .service-category.interactive {
+      background: #f3e8ff;
+      color: var(--tag-interactive);
     }
     .event-details-card {
       margin-top: 24px;
@@ -954,6 +891,91 @@
       margin-bottom: 4px;
     }
     
+    /* Adjustments section */
+    .adjustments-section {
+      margin: 20px 0;
+      padding: 16px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border: 1px solid #e9ecef;
+    }
+    
+    .adjustments-section h4 {
+      margin-top: 0;
+      margin-bottom: 12px;
+    }
+    
+    .adjustment-group {
+      margin-bottom: 16px;
+    }
+    
+    .adjustment-group-title {
+      font-weight: 500;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .adjustment-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .adjustment-options {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .adjustment-option {
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex: 1;
+      text-align: center;
+    }
+    
+    .adjustment-option:hover {
+      background: #e9ecef;
+    }
+    
+    .adjustment-option.selected {
+      background: var(--bb-accent);
+      color: white;
+      border-color: var(--bb-accent);
+    }
+    
+    .guest-size-adjuster {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .guest-size-value {
+      min-width: 40px;
+      text-align: center;
+    }
+    
+    .adjustment-button {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid #ddd;
+      background: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    
+    .adjustment-button:hover {
+      background: #e9ecef;
+    }
+    
     @media (max-width: 768px) {
       .form-row {
         flex-direction: column;
@@ -966,6 +988,9 @@
         width: 100%;
       }
       .calendar-container {
+        flex-direction: column;
+      }
+      .adjustment-options {
         flex-direction: column;
       }
     }
@@ -983,19 +1008,6 @@
     <div class="step" id="step-1">
         <h2 style="margin-bottom:16px;">Step 1: Choose a Bundle</h2>
         
-        <!-- Updated Welcome Message -->
-        <div class="update-message">
-            <h4>New Features Update (v2.01):</h4>
-            <ul>
-                <li>Compare Packages — select 2 or more to view them side by side</li>
-                <li>Share Button — send packages via WhatsApp, SMS, or Email (mobile & desktop friendly)</li>
-            </ul>
-            <div class="pagination">
-                <span>Page 1 of 8</span>
-                <span>></span>
-            </div>
-        </div>
-        
         <div id="bundle-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">Loading bundles...</div>
     </div>
     
@@ -1004,6 +1016,35 @@
         <div id="progress-bars-container" style="margin-bottom:20px;"></div>
         <div id="compare-warning" class="compare-message" style="display:none;"></div>
         <div id="services-container" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">Loading services...</div>
+        
+        <!-- Adjustments Section in Step 2 -->
+        <div class="adjustments-section" id="adjustments-section" style="display:none;">
+            <h4>Adjustments</h4>
+            <div id="photo-booth-adjustment" class="adjustment-group" style="display:none;">
+                <div class="adjustment-group-title">
+                    Photo Booth Options
+                </div>
+                <div class="adjustment-controls">
+                    <div class="adjustment-options" id="photo-booth-options">
+                        <!-- Options will be populated dynamically -->
+                    </div>
+                </div>
+            </div>
+            
+            <div id="sweets-brews-adjustment" class="adjustment-group" style="display:none;">
+                <div class="adjustment-group-title">
+                    Sweets & Brews Guest Size
+                </div>
+                <div class="adjustment-controls">
+                    <div class="guest-size-adjuster">
+                        <button class="adjustment-button" id="decrease-guests">-</button>
+                        <div class="guest-size-value" id="guest-size-value">100</div>
+                        <button class="adjustment-button" id="increase-guests">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <button id="review-selection" style="display:none;margin-top:20px;" class="book-now-button">Review Selection</button>
     </div>
     
@@ -1161,69 +1202,6 @@
 </main>
 </div>
 
-<!-- Greeting Popup Message -->
-<style>
-    #greeting-popup {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #fefefe;
-      color: #333;
-      padding: 16px 24px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      z-index: 1001;
-      font-size: 15px;
-      max-width: 90%;
-      width: auto;
-      min-width: 280px;
-      text-align: left;
-      opacity: 0;
-      transition: opacity 0.5s ease;
-      line-height: 1.6;
-      word-wrap: break-word;
-    }
-    @media (max-width: 600px) {
-      #greeting-popup {
-        max-width: 95%;
-        width: 95%;
-        left: 2.5%;
-        transform: none;
-      }
-    }
-    #greeting-popup.show {
-      opacity: 1;
-    }
-    #greeting-popup .close-btn {
-      position: absolute;
-      top: 6px;
-      right: 10px;
-      background: none;
-      border: none;
-      font-size: 16px;
-      color: #888;
-      cursor: pointer;
-    }
-    .inline-icon {
-      width: 18px;
-      height: 18px;
-      margin-right: 6px;
-      vertical-align: middle;
-      display: inline-block;
-    }
-    .inline-icon svg {
-      width: 100%;
-      height: 100%;
-    }
-</style>
-<div id="greeting-popup">
-    <button class="close-btn" onclick="document.getElementById('greeting-popup').style.display='none';">×</button>
-    ✨<strong>New Features Update (v2.01)</strong>:<br/>
-    • ⚖️ <strong>Compare Packages</strong> — select 2 or more to view them side by side<br/>
-    • <span class="inline-icon"><svg fill="black" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7a3.18 3.18 0 000-1.39l7.13-4.15A3.004 3.004 0 1014 4a3 3 0 002.88 2.06c.31 0 .62-.05.91-.14l.02.01L9.66 11.2a3 3 0 100 1.6l7.14 4.17c-.3.09-.61.13-.93.13A3 3 0 1018 16.08z"></path></svg></span><strong>Share Button</strong> — send packages via WhatsApp, SMS, or Email (mobile &amp; desktop friendly)
-</div>
-
 <div id="toast-msg"></div>
 
 <script>
@@ -1253,13 +1231,6 @@
 
     // Initialize the builder when DOM is loaded
     document.addEventListener("DOMContentLoaded", async () => {
-        // Show greeting popup
-        const popup = document.getElementById('greeting-popup');
-        popup.classList.add('show');
-        setTimeout(() => {
-            popup.style.opacity = '0';
-        }, 10000);
-
         // Load services included data
         try {
             const res = await fetch("https://bundlebooth.github.io/bdb-1.0/services-included.json");
@@ -1283,6 +1254,19 @@
         
         // Set up progress bar navigation
         setupProgressBarNavigation();
+        
+        // Set up guest size adjusters
+        document.getElementById('increase-guests').addEventListener('click', () => {
+            globalGuestSize += 25;
+            updateSweetsBrewsPrices();
+        });
+        
+        document.getElementById('decrease-guests').addEventListener('click', () => {
+            if (globalGuestSize > 25) {
+                globalGuestSize -= 25;
+                updateSweetsBrewsPrices();
+            }
+        });
     });
 
     // Set up progress bar navigation
@@ -1329,39 +1313,39 @@
     // Fetch bundles data
     async function fetchBundles() {
         try {
-            const res = await fetch('https://raw.githubusercontent.com/bundlebooth/bdb-2.0/refs/heads/main/bundles.json');
+            const res = await fetch('https://raw.githubusercontent.com/bundlebooth/bdb-2.0/main/bundles.json');
+            if (!res.ok) throw new Error('Failed to fetch bundles');
             bundles = await res.json();
             renderBundles();
         } catch (error) {
             console.error("Error loading bundles:", error);
-            // Fallback data if fetch fails
+            // Fallback to test bundles if fetch fails
             bundles = [
                 {
-                    "name": "Essential Celebration Bundle",
-                    "description": "Perfect for weddings and large celebrations with photo and guest book services",
+                    "name": "Wedding Essentials",
+                    "description": "Perfect package for weddings with all the must-have services",
                     "categories": {
-                        "Scene Setters": 1,
+                        "Scene Setters": 2,
                         "Sweets & Brews": 1,
-                        "Special Effects": 1
+                        "Guest Book": 1
                     }
                 },
                 {
-                    "name": "Corporate Event Bundle",
-                    "description": "Ideal for corporate events with branding opportunities",
+                    "name": "Corporate Package",
+                    "description": "Professional services for corporate events and galas",
                     "categories": {
                         "Scene Setters": 1,
-                        "Digital": 1,
-                        "Sweets & Brews": 1
+                        "Digital": 2,
+                        "Interactive": 1
                     }
                 },
                 {
-                    "name": "Premium Wedding Bundle",
-                    "description": "Everything you need for a spectacular wedding celebration",
+                    "name": "Birthday Bash",
+                    "description": "Everything you need for an unforgettable birthday party",
                     "categories": {
                         "Scene Setters": 1,
-                        "Guest Book": 1,
-                        "Special Effects": 2,
-                        "Sweets & Brews": 1
+                        "Special Effects": 1,
+                        "Interactive": 1
                     }
                 }
             ];
@@ -1373,90 +1357,68 @@
     async function fetchServices() {
         try {
             const res = await fetch('https://raw.githubusercontent.com/bundlebooth/bdb-2.0/main/individual-services.json');
+            if (!res.ok) throw new Error('Failed to fetch services');
             services = await res.json();
-            
-            // Add pricing tiers and guest size options to services
-            services.forEach(service => {
-                if (service.name.includes("Photo Booth")) {
-                    service.pricingTiers = [
-                        { guests: "0-100", price: service.price, duration: "4 hours" },
-                        { guests: "101-200", price: service.price * 1.2, duration: "4 hours" },
-                        { guests: "201-300", price: service.price * 1.4, duration: "4 hours" }
-                    ];
-                    service.hasGuestSize = true;
-                }
-                
-                if (service.name.includes("360 Video Booth")) {
-                    service.pricingTiers = [
-                        { guests: "0-100", price: service.price, duration: "4 hours" },
-                        { guests: "101-200", price: service.price * 1.3, duration: "4 hours" },
-                        { guests: "201-300", price: service.price * 1.6, duration: "4 hours" }
-                    ];
-                    service.hasGuestSize = true;
-                }
-                
-                if (service.name.includes("Espresso & Coffee Booth")) {
-                    service.pricingTiers = [
-                        { guests: "0-100", price: service.price, duration: "4 hours" },
-                        { guests: "101-200", price: service.price * 1.5, duration: "4 hours" },
-                        { guests: "201-300", price: service.price * 2, duration: "4 hours" }
-                    ];
-                    service.hasGuestSize = true;
-                }
-            });
         } catch (error) {
             console.error("Error loading services:", error);
             // Fallback data if fetch fails
             services = [
                 {
                     "name": "Premium Photo Booth",
-                    "description": "High-quality photo booth with custom branding",
-                    "price": 500,
+                    "description": "High-quality photo booth with unlimited prints",
                     "ServiceType": "Scene Setters",
+                    "price": 1200,
+                    "duration": "4 hours",
                     "pricingTiers": [
-                        { guests: "0-100", price: 500, duration: "4 hours" },
-                        { guests: "101-200", price: 600, duration: "4 hours" },
-                        { guests: "201-300", price: 700, duration: "4 hours" }
-                    ],
-                    "hasGuestSize": true
+                        {
+                            "label": "Standard (3 hours)",
+                            "value": "standard",
+                            "price": 1200,
+                            "duration": "3 hours"
+                        },
+                        {
+                            "label": "Extended (6 hours)",
+                            "value": "extended",
+                            "price": 2000,
+                            "duration": "6 hours"
+                        }
+                    ]
                 },
                 {
-                    "name": "360 Video Booth",
-                    "description": "Immersive 360-degree video experience",
-                    "price": 800,
-                    "ServiceType": "Scene Setters",
-                    "pricingTiers": [
-                        { guests: "0-100", price: 800, duration: "4 hours" },
-                        { guests: "101-200", price: 1040, duration: "4 hours" },
-                        { guests: "201-300", price: 1280, duration: "4 hours" }
-                    ],
-                    "hasGuestSize": true
-                },
-                {
-                    "name": "Audio Guest Book",
-                    "description": "Record voice messages from your guests",
-                    "price": 300,
-                    "ServiceType": "Guest Book",
-                    "duration": "Unlimited"
-                },
-                {
-                    "name": "Sparkler Boxes",
-                    "description": "Sparkler send-off for your special exit",
-                    "price": 200,
-                    "ServiceType": "Special Effects",
-                    "duration": "One-time use"
-                },
-                {
-                    "name": "Espresso & Coffee Booth",
-                    "description": "Barista-crafted coffee drinks for your guests",
-                    "price": 450,
+                    "name": "Candy Buffet",
+                    "description": "Beautifully arranged candy station with 10 varieties",
                     "ServiceType": "Sweets & Brews",
+                    "price": 900,
+                    "duration": "Full event",
                     "pricingTiers": [
-                        { guests: "0-100", price: 450, duration: "4 hours" },
-                        { guests: "101-200", price: 675, duration: "4 hours" },
-                        { guests: "201-300", price: 900, duration: "4 hours" }
-                    ],
-                    "hasGuestSize": true
+                        {
+                            "label": "50 Guests",
+                            "value": 50,
+                            "price": 900
+                        },
+                        {
+                            "label": "100 Guests",
+                            "value": 100,
+                            "price": 1300
+                        },
+                        {
+                            "label": "150 Guests",
+                            "value": 150,
+                            "price": 1700
+                        },
+                        {
+                            "label": "200 Guests",
+                            "value": 200,
+                            "price": 2100
+                        }
+                    ]
+                },
+                {
+                    "name": "Digital Guest Book",
+                    "description": "Modern alternative to traditional guest books",
+                    "ServiceType": "Guest Book",
+                    "price": 400,
+                    "duration": "Full event"
                 }
             ];
         }
@@ -1467,17 +1429,31 @@
         const list = document.getElementById('bundle-list');
         list.innerHTML = '';
         
+        if (bundles.length === 0) {
+            list.innerHTML = '<p>No bundles available at this time.</p>';
+            return;
+        }
+        
         bundles.forEach((bundle, index) => {
             const div = document.createElement('div');
             div.className = 'package';
             
-            // Generate category tags
+            // Generate category tags with separate count badges
             const categoryTags = Object.entries(bundle.categories).map(([category, count]) => {
                 let tagClass = 'category-tag';
                 if (category.includes('Scene')) tagClass += ' scene-setters';
                 if (category.includes('Sweets')) tagClass += ' sweets-brews';
+                if (category.includes('Special Effects')) tagClass += ' special-effects';
+                if (category.includes('Guest Book')) tagClass += ' guest-book';
+                if (category.includes('Digital')) tagClass += ' digital';
+                if (category.includes('Interactive')) tagClass += ' interactive';
                 
-                return `<span class="${tagClass}">${category} <span class="category-count">${count}</span></span>`;
+                return `
+                    <div style="display: inline-flex; align-items: center; margin-right: 8px; margin-bottom: 6px;">
+                        <span class="category-count">${count}</span>
+                        <span class="${tagClass}">${category}</span>
+                    </div>
+                `;
             }).join('');
             
             div.innerHTML = `
@@ -1491,7 +1467,7 @@
             
             div.addEventListener('click', () => {
                 selectBundle(index);
-                showStep(2); // Explicitly navigate to step 2
+                showStep(2);
             });
             list.appendChild(div);
         });
@@ -1555,59 +1531,7 @@
         document.getElementById('confirmed-amount').textContent = `$${total.toFixed(2)}`;
         
         // Render selected services list
-        const servicesList = document.getElementById('selected-services-list');
-        servicesList.innerHTML = '';
-        
-        selectedServices.forEach(service => {
-            const serviceDiv = document.createElement('div');
-            serviceDiv.className = 'service-item';
-            
-            // Find features for this service
-            let featuresHtml = '';
-            const matchedService = servicesIncluded["services-included"]?.find(
-                s => s.name.toLowerCase() === service.name.toLowerCase()
-            );
-            
-            if (matchedService && matchedService.features?.length > 0) {
-                featuresHtml = `
-                    <div class="service-features">
-                        <strong>Includes:</strong>
-                        <ul>${matchedService.features.map(f => `<li>${f}</li>`).join('')}</ul>
-                    </div>
-                `;
-            }
-            
-            // Add service details
-            let detailsHtml = '';
-            if (service.selectedTier) {
-                detailsHtml = `
-                    <div class="service-details">
-                        <span>Guests: ${service.selectedTier.guests}</span>
-                        <span>Duration: ${service.selectedTier.duration}</span>
-                        ${service.name.includes('Photo Booth') ? '<span>Prints: Unlimited</span>' : ''}
-                    </div>
-                `;
-            } else if (service.duration) {
-                detailsHtml = `
-                    <div class="service-details">
-                        <span>Duration: ${service.duration}</span>
-                    </div>
-                `;
-            }
-            
-            const categoryClass = service.ServiceType.includes('Scene') ? 'scene-setters' : 
-                                service.ServiceType.includes('Sweets') ? 'sweets-brews' : '';
-            
-            serviceDiv.innerHTML = `
-                <div>
-                    <div class="service-name">${service.name} <span class="service-category ${categoryClass}">${service.ServiceType}</span></div>
-                    ${detailsHtml}
-                    ${featuresHtml}
-                </div>
-                <div class="service-price">C$${(service.selectedPrice || service.price || 0).toFixed(2)}</div>
-            `;
-            servicesList.appendChild(serviceDiv);
-        });
+        renderSelectedServicesList();
         
         // Initialize calendar with current month
         renderCalendar(currentDisplayedDate);
@@ -1640,6 +1564,188 @@
         // Set up phone number formatting
         const phoneInput = document.getElementById('contact-phone');
         phoneInput.addEventListener('input', formatPhoneNumber);
+    }
+
+    // Render the selected services list
+    function renderSelectedServicesList() {
+        const servicesList = document.getElementById('selected-services-list');
+        servicesList.innerHTML = '';
+        
+        selectedServices.forEach(service => {
+            const serviceDiv = document.createElement('div');
+            serviceDiv.className = 'service-item';
+            
+            // Find features for this service
+            let featuresHtml = '';
+            const matchedService = servicesIncluded["services-included"]?.find(
+                s => s.name.toLowerCase() === service.name.toLowerCase()
+            );
+            
+            if (matchedService && matchedService.features?.length > 0) {
+                featuresHtml = `
+                    <div class="service-features">
+                        <strong>Includes:</strong>
+                        <ul>${matchedService.features.map(f => `<li>${f}</li>`).join('')}</ul>
+                    </div>
+                `;
+            }
+            
+            // Add service details
+            let detailsHtml = '';
+            if (service.selectedTier) {
+                detailsHtml = `
+                    <div class="service-details">
+                        <span>Guests: ${service.selectedTier.guests || service.selectedTier.value}</span>
+                        <span>Duration: ${service.selectedTier.duration}</span>
+                    </div>
+                `;
+            } else if (service.duration) {
+                detailsHtml = `
+                    <div class="service-details">
+                        <span>Duration: ${service.duration}</span>
+                    </div>
+                `;
+            }
+            
+            // Add selected option for photo booth
+            if (service.selectedOption) {
+                detailsHtml += `
+                    <div class="service-details">
+                        <span>Option: ${service.selectedOption === 'unlimited' ? 'Unlimited Prints' : 'Digital Only'}</span>
+                    </div>
+                `;
+            }
+            
+            const categoryClass = service.ServiceType.includes('Scene') ? 'scene-setters' : 
+                                service.ServiceType.includes('Sweets') ? 'sweets-brews' :
+                                service.ServiceType.includes('Special Effects') ? 'special-effects' :
+                                service.ServiceType.includes('Guest Book') ? 'guest-book' :
+                                service.ServiceType.includes('Digital') ? 'digital' :
+                                service.ServiceType.includes('Interactive') ? 'interactive' : '';
+            
+            serviceDiv.innerHTML = `
+                <div>
+                    <div class="service-name">${service.name} <span class="service-category ${categoryClass}">${service.ServiceType}</span></div>
+                    ${detailsHtml}
+                    ${featuresHtml}
+                </div>
+                <div class="service-price">C$${(service.selectedPrice || service.price || 0).toFixed(2)}</div>
+            `;
+            servicesList.appendChild(serviceDiv);
+        });
+    }
+
+    // Set up adjustments section in step 2
+    function setupAdjustmentsSection() {
+        const adjustmentsSection = document.getElementById('adjustments-section');
+        const photoBoothAdjustment = document.getElementById('photo-booth-adjustment');
+        const sweetsBrewsAdjustment = document.getElementById('sweets-brews-adjustment');
+        
+        // Check for Photo Booth services with pricingTiers
+        const hasPhotoBooth = selectedServices.some(service => 
+            service.ServiceType.includes('Photo Booth') && 
+            service.pricingTiers
+        );
+        
+        // Check for Sweets & Brews services
+        const hasSweetsBrews = selectedServices.some(service => 
+            service.ServiceType.includes('Sweets') || 
+            service.ServiceType.includes('Brews')
+        );
+        
+        if (hasPhotoBooth || hasSweetsBrews) {
+            adjustmentsSection.style.display = 'block';
+            
+            // Set up Photo Booth options
+            if (hasPhotoBooth) {
+                photoBoothAdjustment.style.display = 'block';
+                const photoBoothService = selectedServices.find(service => 
+                    service.ServiceType.includes('Photo Booth') && 
+                    service.pricingTiers
+                );
+                
+                const optionsContainer = document.getElementById('photo-booth-options');
+                optionsContainer.innerHTML = '';
+                
+                if (photoBoothService.pricingTiers) {
+                    photoBoothService.pricingTiers.forEach(tier => {
+                        const optionElement = document.createElement('div');
+                        optionElement.className = 'adjustment-option';
+                        if (photoBoothService.selectedTier?.value === tier.value) {
+                            optionElement.classList.add('selected');
+                        }
+                        optionElement.dataset.value = tier.value;
+                        optionElement.innerHTML = `
+                            <div>${tier.label}</div>
+                            <div>C$${tier.price}</div>
+                        `;
+                        
+                        optionElement.addEventListener('click', () => {
+                            document.querySelectorAll('#photo-booth-options .adjustment-option')
+                                .forEach(opt => opt.classList.remove('selected'));
+                            optionElement.classList.add('selected');
+                            
+                            photoBoothService.selectedPrice = tier.price;
+                            photoBoothService.selectedTier = tier;
+                            updateReviewButton();
+                        });
+                        
+                        optionsContainer.appendChild(optionElement);
+                    });
+                }
+            } else {
+                photoBoothAdjustment.style.display = 'none';
+            }
+            
+            // Set up Sweets & Brews guest size
+            if (hasSweetsBrews) {
+                sweetsBrewsAdjustment.style.display = 'block';
+                updateSweetsBrewsPrices(); // Initialize prices
+            } else {
+                sweetsBrewsAdjustment.style.display = 'none';
+            }
+        } else {
+            adjustmentsSection.style.display = 'none';
+        }
+    }
+
+    // Update prices for sweets & brews services based on guest size
+    function updateSweetsBrewsPrices() {
+        selectedServices.forEach(service => {
+            if ((service.ServiceType.includes('Sweets') || service.ServiceType.includes('Brews')) && 
+                service.pricingTiers) {
+                
+                // Find the closest tier that covers our guest size
+                let selectedTier = null;
+                let smallestDifference = Infinity;
+                
+                service.pricingTiers.forEach(tier => {
+                    const difference = Math.abs(globalGuestSize - tier.value);
+                    if (difference < smallestDifference) {
+                        smallestDifference = difference;
+                        selectedTier = tier;
+                    }
+                });
+                
+                if (selectedTier) {
+                    service.selectedPrice = selectedTier.price;
+                    service.selectedTier = selectedTier;
+                    globalGuestSize = selectedTier.value; // Snap to actual tier value
+                    document.getElementById('guest-size-value').textContent = globalGuestSize;
+                }
+            }
+        });
+        
+        updateReviewButton();
+    }
+
+    // Update review button with current total
+    function updateReviewButton() {
+        const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
+        const discount = subtotal * bundleDiscount;
+        const total = subtotal - discount;
+        
+        document.getElementById('review-selection').textContent = `Review Selection (C$${total.toFixed(2)})`;
     }
 
     // Download summary as PDF
@@ -1733,6 +1839,10 @@
             let tagClass = 'package-type-tag';
             if (service.ServiceType.includes('Scene')) tagClass += ' scene-setters';
             if (service.ServiceType.includes('Sweets')) tagClass += ' sweets-brews';
+            if (service.ServiceType.includes('Special Effects')) tagClass += ' special-effects';
+            if (service.ServiceType.includes('Guest Book')) tagClass += ' guest-book';
+            if (service.ServiceType.includes('Digital')) tagClass += ' digital';
+            if (service.ServiceType.includes('Interactive')) tagClass += ' interactive';
             
             // Get features for this service
             const features = serviceFeatures?.features?.find(f => 
@@ -1766,23 +1876,6 @@
                 detailsHtml += `<p><strong>Price:</strong> C$${service.price.toFixed(2)}</p>`;
             }
             
-            // Add pricing tier options if they exist
-            let pricingOptions = '';
-            if (service.pricingTiers && service.pricingTiers.length > 0) {
-                pricingOptions = `
-                    <div class="service-options">
-                        <div class="option-group">
-                            <label for="guest-size-${service.name.replace(/\s+/g, '-')}">Guest Size</label>
-                            <select id="guest-size-${service.name.replace(/\s+/g, '-')}" class="guest-size-select">
-                                ${service.pricingTiers.map(tier => 
-                                    `<option value="${tier.guests}" data-price="${tier.price}">${tier.guests} guests (C$${tier.price.toFixed(2)})</option>`
-                                ).join('')}
-                            </select>
-                        </div>
-                    </div>
-                `;
-            }
-            
             div.innerHTML = `
                 <div class="package-content">
                     <h3>${service.name}</h3>
@@ -1791,41 +1884,16 @@
                     ${detailsHtml}
                     ${whatsIncludedLink}
                     ${featuresOverlay}
-                    ${pricingOptions}
                 </div>
             `;
             
             // Add click handler for service selection
             div.addEventListener('click', (e) => {
-                // Don't toggle selection if clicking on features link or options
-                if (!e.target.classList.contains('show-features-toggle') && 
-                    !e.target.classList.contains('guest-size-select') && 
-                    e.target.tagName !== 'OPTION') {
+                // Don't toggle selection if clicking on features link
+                if (!e.target.classList.contains('show-features-toggle')) {
                     toggleService(div, service);
                 }
             });
-            
-            // Add change handler for guest size selection
-            if (service.pricingTiers && service.pricingTiers.length > 0) {
-                const select = div.querySelector('.guest-size-select');
-                select.addEventListener('change', (e) => {
-                    const selectedOption = e.target.options[e.target.selectedIndex];
-                    const selectedPrice = parseFloat(selectedOption.dataset.price);
-                    const selectedTier = service.pricingTiers.find(t => 
-                        t.guests === selectedOption.value
-                    );
-                    
-                    // Update service with selected price and tier
-                    service.selectedPrice = selectedPrice;
-                    service.selectedTier = selectedTier;
-                    
-                    // Update the displayed price in the package
-                    const priceElement = div.querySelector('p strong:contains("Price")')?.parentNode;
-                    if (priceElement) {
-                        priceElement.innerHTML = `<strong>Price:</strong> C$${selectedPrice.toFixed(2)}`;
-                    }
-                });
-            }
             
             // Add click handler for features overlay
             const featuresToggle = div.querySelector('.show-features-toggle');
@@ -1864,10 +1932,6 @@
             // Deselect service
             selectedServices.splice(idx, 1);
             el.classList.remove("selected");
-            
-            // Hide options if they exist
-            const options = el.querySelector('.service-options');
-            if (options) options.classList.remove('active');
         } else {
             // Check if we can select more of this type
             if (currentCount >= limit) {
@@ -1880,9 +1944,10 @@
                 service.selectedPrice = service.pricingTiers[0].price;
                 service.selectedTier = service.pricingTiers[0];
                 
-                // Show options
-                const options = el.querySelector('.service-options');
-                if (options) options.classList.add('active');
+                // For photo booth services
+                if (service.ServiceType.includes('Photo Booth')) {
+                    service.selectedOption = 'digital'; // Default option
+                }
             }
             
             selectedServices.push(service);
@@ -1894,7 +1959,15 @@
         
         // Show/hide review button based on selections
         const reviewBtn = document.getElementById('review-selection');
-        reviewBtn.style.display = selectedServices.length > 0 ? 'block' : 'none';
+        if (selectedServices.length > 0) {
+            reviewBtn.style.display = 'block';
+            updateReviewButton();
+            setupAdjustmentsSection();
+        } else {
+            reviewBtn.style.display = 'none';
+            document.getElementById('adjustments-section').style.display = 'none';
+        }
+        
         reviewBtn.addEventListener('click', renderStep3);
     }
 
@@ -1996,12 +2069,16 @@
         return date >= twoWeeksLater;
     }
 
-    // Render calendar
+   // Render calendar
     function renderCalendar(date) {
         const month = date.getMonth();
         const year = date.getFullYear();
         const today = new Date();
         today.setHours(0, 0, 0, 0);
+        
+        // Calculate date two weeks from today
+        const twoWeeksLater = new Date(today);
+        twoWeeksLater.setDate(today.getDate() + 14);
         
         // Set month/year title
         document.getElementById('calendar-month-year').textContent = 
@@ -2021,6 +2098,7 @@
         // Clear calendar
         const calendarDays = document.getElementById('calendar-days');
         calendarDays.innerHTML = '';
+        
         // Add days from previous month (disabled)
         for (let i = 0; i < firstDay; i++) {
             const dayElement = document.createElement('div');
@@ -2042,9 +2120,22 @@
                 dayElement.classList.add('current');
             }
             
-            // Check if date is available
-            if (isDateAvailable(dayDate)) {
+            // Check if date is available or is exactly two weeks from today
+            if (isDateAvailable(dayDate) || 
+                (dayDate.getDate() === twoWeeksLater.getDate() && 
+                 dayDate.getMonth() === twoWeeksLater.getMonth() && 
+                 dayDate.getFullYear() === twoWeeksLater.getFullYear())) {
                 dayElement.classList.add('available');
+                
+                // Auto-select two weeks later date
+                if (dayDate.getDate() === twoWeeksLater.getDate() && 
+                    dayDate.getMonth() === twoWeeksLater.getMonth() && 
+                    dayDate.getFullYear() === twoWeeksLater.getFullYear()) {
+                    dayElement.classList.add('selected');
+                    selectedDateElement = dayElement;
+                    // Load availability for this date
+                    loadAvailability(dayDate.toISOString().split('T')[0]);
+                }
                 
                 // Add click handler for available days
                 dayElement.addEventListener('click', () => {
