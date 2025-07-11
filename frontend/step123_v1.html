@@ -260,6 +260,7 @@
       text-align: left;
       margin-top: 10px;
       padding: 0;
+      font-size: 0.85rem;
     }
     .show-features-toggle:hover {
       text-decoration: underline;
@@ -891,8 +892,8 @@
       margin-bottom: 4px;
     }
     
-    /* Adjustments section */
-    .adjustments-section {
+    /* Options section */
+    .options-section {
       margin: 20px 0;
       padding: 16px;
       background: #f8f9fa;
@@ -900,35 +901,35 @@
       border: 1px solid #e9ecef;
     }
     
-    .adjustments-section h4 {
+    .options-section h4 {
       margin-top: 0;
       margin-bottom: 12px;
     }
     
-    .adjustment-group {
+    .option-group {
       margin-bottom: 16px;
     }
     
-    .adjustment-group-title {
+    .option-group-title {
       font-weight: 500;
       margin-bottom: 8px;
       display: flex;
       align-items: center;
     }
     
-    .adjustment-controls {
+    .option-controls {
       display: flex;
       align-items: center;
       gap: 10px;
     }
     
-    .adjustment-options {
+    .option-options {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
     }
     
-    .adjustment-option {
+    .option-option {
       padding: 10px 12px;
       border: 1px solid #ddd;
       border-radius: 6px;
@@ -938,11 +939,11 @@
       text-align: center;
     }
     
-    .adjustment-option:hover {
+    .option-option:hover {
       background: #e9ecef;
     }
     
-    .adjustment-option.selected {
+    .option-option.selected {
       background: var(--bb-accent);
       color: white;
       border-color: var(--bb-accent);
@@ -959,7 +960,7 @@
       text-align: center;
     }
     
-    .adjustment-button {
+    .option-button {
       width: 32px;
       height: 32px;
       border-radius: 50%;
@@ -972,8 +973,113 @@
       font-size: 16px;
     }
     
-    .adjustment-button:hover {
+    .option-button:hover {
       background: #e9ecef;
+    }
+    
+    /* Toggle switch for Photo Booth options */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 120px;
+      height: 34px;
+    }
+    
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
+    }
+    
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    
+    input:checked + .toggle-slider {
+      background-color: var(--bb-accent);
+    }
+    
+    input:checked + .toggle-slider:before {
+      transform: translateX(86px);
+    }
+    
+    .toggle-labels {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      font-size: 12px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      box-sizing: border-box;
+      pointer-events: none;
+    }
+    
+    .toggle-labels span {
+      color: white;
+      z-index: 1;
+    }
+    
+    /* Service Type Tags */
+    .package-type-tag {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      margin-top: 8px;
+    }
+    
+    .package-type-tag.scene-setters {
+      background: #e6f0fa;
+      color: var(--tag-scene);
+    }
+    
+    .package-type-tag.sweets-brews {
+      background: #e6d9cb;
+      color: var(--tag-sweets);
+    }
+    
+    .package-type-tag.special-effects {
+      background: #fff7e0;
+      color: var(--tag-special-effects);
+    }
+    
+    .package-type-tag.guest-book {
+      background: #fce7f3;
+      color: var(--tag-guest-book);
+    }
+    
+    .package-type-tag.digital {
+      background: #e8ecef;
+      color: var(--tag-digital);
+    }
+    
+    .package-type-tag.interactive {
+      background: #f3e8ff;
+      color: var(--tag-interactive);
     }
     
     @media (max-width: 768px) {
@@ -990,7 +1096,7 @@
       .calendar-container {
         flex-direction: column;
       }
-      .adjustment-options {
+      .option-options {
         flex-direction: column;
       }
     }
@@ -1017,42 +1123,49 @@
         <div id="compare-warning" class="compare-message" style="display:none;"></div>
         <div id="services-container" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">Loading services...</div>
         
-        <!-- Adjustments Section in Step 2 -->
-        <div class="adjustments-section" id="adjustments-section" style="display:none;">
-            <h4>Adjustments</h4>
-            <div id="photo-booth-adjustment" class="adjustment-group" style="display:none;">
-                <div class="adjustment-group-title">
-                    Photo Booth Options
-                </div>
-                <div class="adjustment-controls">
-                    <div class="adjustment-options" id="photo-booth-options">
-                        <!-- Options will be populated dynamically -->
+        <!-- Options Section in Step 2 -->
+        <div class="options-section" id="options-section" style="display:none;">
+            <h4>Options</h4>
+            <div class="form-row">
+                <div id="photo-booth-option" class="option-group" style="display:none;flex:1;">
+                    <div class="option-group-title">
+                        Photo Booth Options
+                    </div>
+                    <div class="option-controls">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="photo-booth-toggle">
+                            <span class="toggle-slider"></span>
+                            <div class="toggle-labels">
+                                <span>Digital Only</span>
+                                <span>Unlimited Prints</span>
+                            </div>
+                        </label>
                     </div>
                 </div>
-            </div>
-            
-            <div id="sweets-brews-adjustment" class="adjustment-group" style="display:none;">
-                <div class="adjustment-group-title">
-                    Sweets & Brews Guest Size
-                </div>
-                <div class="adjustment-controls">
-                    <div class="guest-size-adjuster">
-                        <button class="adjustment-button" id="decrease-guests">-</button>
-                        <div class="guest-size-value" id="guest-size-value">100</div>
-                        <button class="adjustment-button" id="increase-guests">+</button>
+                
+                <div id="sweets-brews-option" class="option-group" style="display:none;flex:1;">
+                    <div class="option-group-title">
+                        Sweets & Brews Guest Size
+                    </div>
+                    <div class="option-controls">
+                        <div class="guest-size-adjuster">
+                            <button class="option-button" id="decrease-guests">-</button>
+                            <div class="guest-size-value" id="guest-size-value">100</div>
+                            <button class="option-button" id="increase-guests">+</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <div id="sparklers-adjustment" class="adjustment-group" style="display:none;">
-                <div class="adjustment-group-title">
-                    Sparklers Quantity
-                </div>
-                <div class="adjustment-controls">
-                    <div class="guest-size-adjuster">
-                        <button class="adjustment-button" id="decrease-sparklers">-</button>
-                        <div class="guest-size-value" id="sparklers-value">50</div>
-                        <button class="adjustment-button" id="increase-sparklers">+</button>
+                
+                <div id="sparklers-option" class="option-group" style="display:none;flex:1;">
+                    <div class="option-group-title">
+                        Sparklers Quantity
+                    </div>
+                    <div class="option-controls">
+                        <div class="guest-size-adjuster">
+                            <button class="option-button" id="decrease-sparklers">-</button>
+                            <div class="guest-size-value" id="sparklers-value">50</div>
+                            <button class="option-button" id="increase-sparklers">+</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1247,10 +1360,10 @@
     document.addEventListener("DOMContentLoaded", async () => {
         // Load services included data
         try {
-            const res = await fetch("https://bundlebooth.github.io/bdb-1.0/services-included.json");
+            const res = await fetch("https://bundlebooth.github.io/bdb-2.0/data/individual-services.json");
             servicesIncluded = await res.json();
         } catch (err) {
-            console.error("Failed to load services-included.json", err);
+            console.error("Failed to load individual-services.json", err);
         }
 
         // Load service features data
@@ -1328,6 +1441,24 @@
                     globalSparklersCount = sparklersService.pricingTiers[currentIndex - 1].value;
                     updateSparklersPrices();
                 }
+            }
+        });
+        
+        // Set up photo booth toggle
+        document.getElementById('photo-booth-toggle').addEventListener('change', (e) => {
+            const photoBoothService = selectedServices.find(s => 
+                s.ServiceType === "Interactive Booths" && s.slug === "photo-booth" && s.pricingTiers
+            );
+            if (photoBoothService) {
+                if (e.target.checked) {
+                    // Unlimited Prints selected
+                    photoBoothService.selectedTier = photoBoothService.pricingTiers.find(t => t.value === "unlimited");
+                } else {
+                    // Digital Only selected
+                    photoBoothService.selectedTier = photoBoothService.pricingTiers.find(t => t.value === "digital");
+                }
+                photoBoothService.selectedPrice = photoBoothService.selectedTier.price;
+                updateReviewButton();
             }
         });
     });
@@ -1419,9 +1550,10 @@
     // Fetch services data
     async function fetchServices() {
         try {
-            const res = await fetch('https://raw.githubusercontent.com/bundlebooth/bdb-2.0/main/individual-services.json');
+            const res = await fetch('https://bundlebooth.github.io/bdb-2.0/data/individual-services.json');
             if (!res.ok) throw new Error('Failed to fetch services');
-            services = await res.json();
+            const data = await res.json();
+            services = Array.isArray(data) ? data : []; // Ensure services is always an array
         } catch (error) {
             console.error("Error loading services:", error);
             // Fallback data if fetch fails
@@ -1641,7 +1773,7 @@
             
             // Find features for this service
             let featuresHtml = '';
-            const matchedService = servicesIncluded["services-included"]?.find(
+            const matchedService = servicesIncluded.find(
                 s => s.name.toLowerCase() === service.name.toLowerCase()
             );
             
@@ -1664,13 +1796,13 @@
                             service.ServiceType === "Scene Setters" && service.slug === "sparklers-box" ?
                             `<span>Quantity: ${service.selectedTier.value} sparklers</span>` :
                             `<span>Option: ${service.selectedTier.label}</span>`}
-                        ${service.selectedTier.duration ? `<span>Duration: ${service.selectedTier.duration}</span>` : ''}
+                        ${service.selectedTier.duration ? `<span>Duration: ${formatDuration(service.selectedTier.duration)}</span>` : ''}
                     </div>
                 `;
             } else if (service.duration) {
                 detailsHtml = `
                     <div class="service-details">
-                        <span>Duration: ${service.duration}</span>
+                        <span>Duration: ${formatDuration(service.duration)}</span>
                     </div>
                 `;
             }
@@ -1694,18 +1826,39 @@
         });
     }
 
-    // Set up adjustments section in step 2
-    function setupAdjustmentsSection() {
-        const adjustmentsSection = document.getElementById('adjustments-section');
-        const photoBoothAdjustment = document.getElementById('photo-booth-adjustment');
-        const sweetsBrewsAdjustment = document.getElementById('sweets-brews-adjustment');
-        const sparklersAdjustment = document.getElementById('sparklers-adjustment');
+    // Format duration text (X hour or X hours)
+    function formatDuration(durationText) {
+        if (!durationText) return '';
         
-        // Reset adjustments
-        adjustmentsSection.style.display = 'none';
-        photoBoothAdjustment.style.display = 'none';
-        sweetsBrewsAdjustment.style.display = 'none';
-        sparklersAdjustment.style.display = 'none';
+        // If it's already a number, format it directly
+        if (typeof durationText === 'number') {
+            return durationText === 1 ? '1 hour' : `${durationText} hours`;
+        }
+        
+        // Extract number from duration text
+        const hoursMatch = durationText.toString().match(/(\d+)\s*hours?/i) || 
+                          durationText.toString().match(/(\d+)\s*h/i);
+        
+        if (hoursMatch) {
+            const hours = parseInt(hoursMatch[1]);
+            return hours === 1 ? '1 hour' : `${hours} hours`;
+        }
+        
+        return durationText; // Return original if we can't parse
+    }
+
+    // Set up options section in step 2
+    function setupOptionsSection() {
+        const optionsSection = document.getElementById('options-section');
+        const photoBoothOption = document.getElementById('photo-booth-option');
+        const sweetsBrewsOption = document.getElementById('sweets-brews-option');
+        const sparklersOption = document.getElementById('sparklers-option');
+        
+        // Reset options
+        optionsSection.style.display = 'none';
+        photoBoothOption.style.display = 'none';
+        sweetsBrewsOption.style.display = 'none';
+        sparklersOption.style.display = 'none';
 
         // Check for Photo Booth (Interactive Booths with slug photo-booth)
         const hasPhotoBooth = selectedServices.some(service => 
@@ -1728,19 +1881,16 @@
         );
         
         if (hasPhotoBooth || hasSweetsBrews || hasSparklers) {
-            adjustmentsSection.style.display = 'block';
+            optionsSection.style.display = 'block';
             
             // Set up Photo Booth options (Digital Only/Unlimited Prints)
             if (hasPhotoBooth) {
-                photoBoothAdjustment.style.display = 'block';
+                photoBoothOption.style.display = 'block';
                 const photoBoothService = selectedServices.find(service => 
                     service.ServiceType === "Interactive Booths" && 
                     service.slug === "photo-booth" &&
                     service.pricingTiers
                 );
-                
-                const optionsContainer = document.getElementById('photo-booth-options');
-                optionsContainer.innerHTML = '';
                 
                 if (photoBoothService.pricingTiers) {
                     // Default to Digital Only (first option)
@@ -1749,37 +1899,15 @@
                         photoBoothService.selectedPrice = photoBoothService.pricingTiers[0].price;
                     }
                     
-                    // Create both options
-                    photoBoothService.pricingTiers.forEach(tier => {
-                        const optionElement = document.createElement('div');
-                        optionElement.className = 'adjustment-option';
-                        if (photoBoothService.selectedTier.value === tier.value) {
-                            optionElement.classList.add('selected');
-                        }
-                        optionElement.dataset.value = tier.value;
-                        optionElement.innerHTML = `
-                            <div>${tier.label}</div>
-                            <div>C$${tier.price}</div>
-                        `;
-                        
-                        optionElement.addEventListener('click', () => {
-                            document.querySelectorAll('#photo-booth-options .adjustment-option')
-                                .forEach(opt => opt.classList.remove('selected'));
-                            optionElement.classList.add('selected');
-                            
-                            photoBoothService.selectedTier = tier;
-                            photoBoothService.selectedPrice = tier.price;
-                            updateReviewButton();
-                        });
-                        
-                        optionsContainer.appendChild(optionElement);
-                    });
+                    // Set toggle initial state
+                    const toggle = document.getElementById('photo-booth-toggle');
+                    toggle.checked = photoBoothService.selectedTier.value === "unlimited";
                 }
             }
             
             // Set up Sweets & Brews guest size
             if (hasSweetsBrews) {
-                sweetsBrewsAdjustment.style.display = 'block';
+                sweetsBrewsOption.style.display = 'block';
                 // Initialize with first (lowest) tier value
                 const firstServiceWithTiers = selectedServices.find(service => 
                     service.ServiceType === "Sweets and Brews" &&
@@ -1797,7 +1925,7 @@
             
             // Set up Sparklers quantity
             if (hasSparklers) {
-                sparklersAdjustment.style.display = 'block';
+                sparklersOption.style.display = 'block';
                 const sparklersService = selectedServices.find(service => 
                     service.ServiceType === "Scene Setters" && 
                     service.slug === "sparklers-box" &&
@@ -1888,6 +2016,32 @@
         const total = subtotal - discount;
         
         document.getElementById('review-selection').textContent = `Review Selection (C$${total.toFixed(2)})`;
+        
+        // Check if all required services are selected
+        const canProceed = checkBundleRequirements();
+        document.getElementById('review-selection').disabled = !canProceed;
+        if (!canProceed) {
+            document.getElementById('review-selection').style.backgroundColor = '#f0f0f0';
+            document.getElementById('review-selection').style.cursor = 'not-allowed';
+        } else {
+            document.getElementById('review-selection').style.backgroundColor = '';
+            document.getElementById('review-selection').style.cursor = '';
+        }
+    }
+    
+    // Check if all bundle requirements are met
+    function checkBundleRequirements() {
+        if (!selectedBundle) return false;
+        
+        // Check each category has required number of services
+        for (const [category, requiredCount] of Object.entries(selectedBundle.categories)) {
+            const selectedCount = selectedServices.filter(s => s.ServiceType === category).length;
+            if (selectedCount < requiredCount) {
+                return false;
+            }
+        }
+        
+        return true;
     }
 
     // Download summary as PDF
@@ -1952,7 +2106,7 @@
         }
     }
 
-    // Render services for selected bundle
+     // Render services for selected bundle
     function renderServices() {
         const container = document.getElementById('services-container');
         container.innerHTML = '';
@@ -1986,45 +2140,35 @@
             if (service.ServiceType.includes('Digital')) tagClass += ' digital';
             if (service.ServiceType.includes('Interactive')) tagClass += ' interactive';
             
-            // Get features for this service
-            const features = serviceFeatures?.features?.find(f => 
-                f.serviceName.toLowerCase() === service.name.toLowerCase()
-            );
+            // Format duration text
+            const durationText = service.duration ? formatDuration(service.duration) : '';
             
             // Create features overlay if features exist
-            const featuresOverlay = features ? `
+            const featuresOverlay = service.features ? `
                 <div class="features-overlay" id="features-${service.name.replace(/\s+/g, '-').toLowerCase()}">
                     <button class="close-overlay">&times;</button>
                     <h4>${service.name} Features</h4>
                     <ul>
-                        ${features.items.map(item => `<li>${item}</li>`).join('')}
+                        ${service.features.map(item => `<li>${item}</li>`).join('')}
                     </ul>
                 </div>
             ` : '';
             
-            // Add "What's Included" link if features exist
-            const whatsIncludedLink = features ? `
+            // Add "Features Included" link if features exist
+            const featuresLink = service.features ? `
                 <button class="show-features-toggle" data-service="${service.name.replace(/\s+/g, '-').toLowerCase()}">
-                    What's Included
+                    Features Included
                 </button>
             ` : '';
-            
-            // Add service details
-            let detailsHtml = '';
-            if (service.duration) {
-                detailsHtml += `<p><strong>Duration:</strong> ${service.duration}</p>`;
-            }
-            if (service.price) {
-                detailsHtml += `<p><strong>Price:</strong> C$${service.price.toFixed(2)}</p>`;
-            }
             
             div.innerHTML = `
                 <div class="package-content">
                     <h3>${service.name}</h3>
                     <span class="${tagClass}">${service.ServiceType}</span>
                     <p class="description">${service.description || "No description available."}</p>
-                    ${detailsHtml}
-                    ${whatsIncludedLink}
+                    ${durationText ? `<p><strong>Duration:</strong> ${durationText}</p>` : ''}
+                    ${service.price ? `<p><strong>Price:</strong> C$${service.price.toFixed(2)}</p>` : ''}
+                    ${featuresLink}
                     ${featuresOverlay}
                 </div>
             `;
@@ -2099,13 +2243,19 @@
         if (selectedServices.length > 0) {
             reviewBtn.style.display = 'block';
             updateReviewButton();
-            setupAdjustmentsSection();
+            setupOptionsSection();
         } else {
             reviewBtn.style.display = 'none';
-            document.getElementById('adjustments-section').style.display = 'none';
+            document.getElementById('options-section').style.display = 'none';
         }
         
-        reviewBtn.addEventListener('click', renderStep3);
+        reviewBtn.addEventListener('click', () => {
+            if (checkBundleRequirements()) {
+                renderStep3();
+            } else {
+                showToast('Please select all required services for your bundle');
+            }
+        });
     }
 
     // Get count of selected services in a category
