@@ -15,7 +15,7 @@
       },
       {
         "label": "Unlimited Prints",
-        "value": "print",
+        "value": "unlimited-prints",
         "price": 600
       }
     ],
