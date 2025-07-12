@@ -261,6 +261,8 @@
       margin-top: 10px;
       padding: 0;
       font-size: 0.85rem;
+      display: flex;
+      align-items: center;
     }
     .show-features-toggle:hover {
       text-decoration: underline;
@@ -1173,6 +1175,39 @@
       height: 100%;
     }
     
+    /* Category Services Container */
+    .category-services-container {
+      margin-bottom: 30px;
+    }
+    
+    .category-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: var(--bb-blue);
+      padding-bottom: 8px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    
+    .chevron-icon {
+      margin-left: 5px;
+      transition: transform 0.2s;
+    }
+    
+    .chevron-icon.down {
+      transform: rotate(0deg);
+    }
+    
+    .chevron-icon.up {
+      transform: rotate(180deg);
+    }
+    
     @media (max-width: 768px) {
       .form-row {
         flex-direction: column;
@@ -1219,7 +1254,7 @@
         <h2 style="margin-bottom:16px;">Step 2: Select Your Services</h2>
         <div id="progress-bars-container" style="margin-bottom:20px;"></div>
         <div id="compare-warning" class="compare-message" style="display:none;"></div>
-        <div id="services-container" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">Loading services...</div>
+        <div id="services-container"></div>
         
         <!-- Options Section in Step 2 -->
         <div class="options-section" id="options-section" style="display:none;">
@@ -2242,81 +2277,129 @@
             return;
         }
 
-        filteredServices.forEach(service => {
-            const div = document.createElement('div');
-            div.className = 'package';
+        // Group services by category
+        const servicesByCategory = {};
+        allowedCategories.forEach(category => {
+            servicesByCategory[category] = filteredServices.filter(
+                service => service.ServiceType === category
+            );
+        });
+
+        // Render each category with its services
+        Object.entries(servicesByCategory).forEach(([category, categoryServices]) => {
+            if (categoryServices.length === 0) return;
+
+            const categoryContainer = document.createElement('div');
+            categoryContainer.className = 'category-services-container';
             
-            // Determine tag class based on service type
-            let tagClass = 'package-type-tag';
-            if (service.ServiceType.includes('Scene')) tagClass += ' scene-setters';
-            if (service.ServiceType.includes('Sweets')) tagClass += ' sweets-brews';
-            if (service.ServiceType.includes('Special Effects')) tagClass += ' special-effects';
-            if (service.ServiceType.includes('Guest Book')) tagClass += ' guest-book';
-            if (service.ServiceType.includes('Digital')) tagClass += ' digital';
-            if (service.ServiceType.includes('Interactive')) tagClass += ' interactive';
+            const categoryId = category.toLowerCase().replace(/\s+/g, '-');
+            const limit = selectedBundle.categories[category];
             
-            // Format duration text
-            const durationText = service.duration ? formatDuration(service.duration) : '';
-            
-            // Create features overlay if features exist
-            const featuresOverlay = service.features ? `
-                <div class="features-overlay" id="features-${service.name.replace(/\s+/g, '-').toLowerCase()}">
-                    <button class="close-overlay">&times;</button>
-                    <h4>${service.name} Features</h4>
-                    <ul>
-                        ${service.features.map(item => `<li>${item}</li>`).join('')}
-                    </ul>
+            categoryContainer.innerHTML = `
+                <div class="category-title">
+                    ${category} (${limit} required)
                 </div>
-            ` : '';
-            
-            // Add "Features Included" link if features exist
-            const featuresLink = service.features ? `
-                <button class="show-features-toggle" data-service="${service.name.replace(/\s+/g, '-').toLowerCase()}">
-                    Features Included
-                </button>
-            ` : '';
-            
-            div.innerHTML = `
-                <div class="package-content">
-                    <h3>${service.name}</h3>
-                    <span class="${tagClass}">${service.ServiceType}</span>
-                    <p class="description">${service.description || "No description available."}</p>
-                    ${durationText ? `<p><strong>Duration:</strong> ${durationText}</p>` : ''}
-                    ${service.price ? `<p><strong>Price:</strong> C$${service.price.toFixed(2)}</p>` : ''}
-                    ${featuresLink}
-                    ${featuresOverlay}
+                <div class="services-grid" id="services-${categoryId}">
+                    <!-- Services will be inserted here -->
                 </div>
             `;
             
-            // Add click handler for service selection
-            div.addEventListener('click', (e) => {
-                // Don't toggle selection if clicking on features link
-                if (!e.target.classList.contains('show-features-toggle')) {
-                    toggleService(div, service);
+            container.appendChild(categoryContainer);
+            
+            const servicesGrid = document.getElementById(`services-${categoryId}`);
+            
+            categoryServices.forEach(service => {
+                const div = document.createElement('div');
+                div.className = 'package';
+                
+                // Determine tag class based on service type
+                let tagClass = 'package-type-tag';
+                if (service.ServiceType.includes('Scene')) tagClass += ' scene-setters';
+                if (service.ServiceType.includes('Sweets')) tagClass += ' sweets-brews';
+                if (service.ServiceType.includes('Special Effects')) tagClass += ' special-effects';
+                if (service.ServiceType.includes('Guest Book')) tagClass += ' guest-book';
+                if (service.ServiceType.includes('Digital')) tagClass += ' digital';
+                if (service.ServiceType.includes('Interactive')) tagClass += ' interactive';
+                
+                // Format duration text
+                const durationText = service.duration ? formatDuration(service.duration) : '';
+                
+                // Create features overlay if features exist
+                const featuresOverlay = service.features ? `
+                    <div class="features-overlay" id="features-${service.name.replace(/\s+/g, '-').toLowerCase()}">
+                        <button class="close-overlay">&times;</button>
+                        <h4>${service.name} Features</h4>
+                        <ul>
+                            ${service.features.map(item => `<li>${item}</li>`).join('')}
+                        </ul>
+                    </div>
+                ` : '';
+                
+                // Add "Display Features" link if features exist
+                const featuresLink = service.features ? `
+                    <button class="show-features-toggle" data-service="${service.name.replace(/\s+/g, '-').toLowerCase()}">
+                        Display Features <span class="chevron-icon down">▼</span>
+                    </button>
+                ` : '';
+                
+                div.innerHTML = `
+                    <div class="package-content">
+                        <h3>${service.name}</h3>
+                        <span class="${tagClass}">${service.ServiceType}</span>
+                        <p class="description">${service.description || "No description available."}</p>
+                        ${durationText ? `<p><strong>Duration:</strong> ${durationText}</p>` : ''}
+                        ${service.price ? `<p><strong>Price:</strong> C$${service.price.toFixed(2)}</p>` : ''}
+                        ${featuresLink}
+                        ${featuresOverlay}
+                    </div>
+                `;
+                
+                // Add click handler for service selection
+                div.addEventListener('click', (e) => {
+                    // Don't toggle selection if clicking on features link
+                    if (!e.target.classList.contains('show-features-toggle')) {
+                        toggleService(div, service);
+                    }
+                });
+                
+                // Add click handler for features overlay
+                const featuresToggle = div.querySelector('.show-features-toggle');
+                if (featuresToggle) {
+                    featuresToggle.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const serviceId = featuresToggle.dataset.service;
+                        const overlay = div.querySelector(`#features-${serviceId}`);
+                        const chevron = featuresToggle.querySelector('.chevron-icon');
+                        
+                        if (overlay.style.display === 'block') {
+                            overlay.style.display = 'none';
+                            chevron.classList.remove('up');
+                            chevron.classList.add('down');
+                        } else {
+                            overlay.style.display = 'block';
+                            chevron.classList.remove('down');
+                            chevron.classList.add('up');
+                        }
+                    });
                 }
+                
+                // Add click handler for closing overlay
+                const closeOverlay = div.querySelector('.close-overlay');
+                if (closeOverlay) {
+                    closeOverlay.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        closeOverlay.parentElement.style.display = 'none';
+                        const featuresToggle = div.querySelector('.show-features-toggle');
+                        if (featuresToggle) {
+                            const chevron = featuresToggle.querySelector('.chevron-icon');
+                            chevron.classList.remove('up');
+                            chevron.classList.add('down');
+                        }
+                    });
+                }
+                
+                servicesGrid.appendChild(div);
             });
-            
-            // Add click handler for features overlay
-            const featuresToggle = div.querySelector('.show-features-toggle');
-            if (featuresToggle) {
-                featuresToggle.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const serviceId = featuresToggle.dataset.service;
-                    const overlay = div.querySelector(`#features-${serviceId}`);
-                    if (overlay) overlay.style.display = 'block';
-                });
-            }
-            
-            // Add click handler for closing overlay
-            const closeOverlay = div.querySelector('.close-overlay');
-            if (closeOverlay) {
-                closeOverlay.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    closeOverlay.parentElement.style.display = 'none';
-                });
-            }
-            
-            container.appendChild(div);
         });
         
         updateAllProgressBars();
@@ -2604,21 +2687,19 @@
         const endHour = config.workingHours.end;
         const slotDuration = config.slotDuration;
         
-        // Generate time slots
-        const uniqueSlots = new Set(); // To track unique time slots
+        // Generate time slots (only 4 slots per day)
+        const slots = [];
+        const slotCount = 4;
+        const slotInterval = Math.floor((endHour - startHour) / slotCount);
         
-        for (let hour = startHour; hour < endHour; hour += slotDuration / 60) {
+        for (let i = 0; i < slotCount; i++) {
             const slotStart = new Date(selectedDate);
-            slotStart.setHours(hour, 0, 0, 0);
+            slotStart.setHours(startHour + (i * slotInterval), 0, 0, 0);
             
             const slotEnd = new Date(slotStart);
-            slotEnd.setHours(hour + (slotDuration / 60), 0, 0, 0);
+            slotEnd.setHours(slotStart.getHours() + (slotDuration / 60), 0, 0, 0);
             
             const slotKey = `${formatTime(slotStart)}-${formatTime(slotEnd)}`;
-            
-            // Skip if we've already added this time slot
-            if (uniqueSlots.has(slotKey)) continue;
-            uniqueSlots.add(slotKey);
             
             // Check if this slot is available
             const isBooked = Array.isArray(busySlots) && busySlots.some(event => {
