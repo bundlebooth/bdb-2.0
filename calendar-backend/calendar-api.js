@@ -65,7 +65,38 @@ const getAccessToken = async () => {
   }
 };
 
-// Calendar Availability Endpoint
+// Helper: Merge overlapping time slots
+const mergeTimeSlots = (slots) => {
+  if (slots.length === 0) return [];
+
+  // Sort by start time
+  const sortedSlots = [...slots].sort((a, b) => 
+    new Date(a.start.dateTime) - new Date(b.start.dateTime)
+  );
+
+  const merged = [];
+  let currentSlot = { ...sortedSlots[0] };
+
+  for (let i = 1; i < sortedSlots.length; i++) {
+    const nextSlot = sortedSlots[i];
+    const currentEnd = new Date(currentSlot.end.dateTime);
+    const nextStart = new Date(nextSlot.start.dateTime);
+
+    // Merge if overlapping or adjacent
+    if (nextStart <= currentEnd) {
+      currentSlot.end.dateTime = new Date(
+        Math.max(currentEnd, new Date(nextSlot.end.dateTime))
+      ).toISOString();
+    } else {
+      merged.push(currentSlot);
+      currentSlot = { ...nextSlot };
+    }
+  }
+  merged.push(currentSlot); // Add the last slot
+  return merged;
+};
+
+// Calendar Availability Endpoint (Final Optimized Version)
 app.get('/api/availability', async (req, res) => {
   try {
     const date = req.query.date;
@@ -74,19 +105,17 @@ app.get('/api/availability', async (req, res) => {
     }
 
     const accessToken = await getAccessToken();
-    
-    const response = await axios.post(
-      `https://graph.microsoft.com/v1.0/users/${process.env.CALENDAR_OWNER_UPN}/calendar/getSchedule`,
+    const calendarOwner = process.env.CALENDAR_OWNER_UPN;
+    const startTime = `${date}T00:00:00`;
+    const endTime = `${date}T23:59:59`;
+
+    // Fetch schedule (free/busy) data
+    const scheduleResponse = await axios.post(
+      `https://graph.microsoft.com/v1.0/users/${calendarOwner}/calendar/getSchedule`,
       {
-        schedules: [process.env.CALENDAR_OWNER_UPN],
-        startTime: { 
-          dateTime: `${date}T00:00:00`,
-          timeZone: 'UTC'
-        },
-        endTime: { 
-          dateTime: `${date}T23:59:59`, 
-          timeZone: 'UTC'
-        },
+        schedules: [calendarOwner],
+        startTime: { dateTime: startTime, timeZone: 'UTC' },
+        endTime: { dateTime: endTime, timeZone: 'UTC' },
         availabilityViewInterval: 60
       },
       { 
@@ -97,14 +126,54 @@ app.get('/api/availability', async (req, res) => {
       }
     );
 
-    if (!response.data.value || response.data.value.length === 0) {
+    if (!scheduleResponse.data.value || scheduleResponse.data.value.length === 0) {
       return res.status(404).json({ error: 'No calendar data found' });
     }
 
-    res.json({
-      date: date,
-      availability: response.data.value[0].scheduleItems || []
+    // Merge overlapping slots
+    const mergedSlots = mergeTimeSlots(scheduleResponse.data.value[0].scheduleItems || []);
+
+    // Fetch actual events
+    const eventsResponse = await axios.get(
+      `https://graph.microsoft.com/v1.0/users/${calendarOwner}/calendar/events`,
+      {
+        params: {
+          startDateTime: startTime,
+          endDateTime: endTime,
+          $select: 'subject,start,end'
+        },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    const events = eventsResponse.data.value || [];
+
+    // Map to final availability (with booked status)
+    const availability = mergedSlots.map(slot => {
+      const slotStart = new Date(slot.start.dateTime);
+      const slotEnd = new Date(slot.end.dateTime);
+      const isBooked = events.some(event => {
+        const eventStart = new Date(event.start.dateTime);
+        const eventEnd = new Date(event.end.dateTime);
+        return (eventStart < slotEnd && eventEnd > slotStart);
+      });
+
+      return {
+        start: slot.start.dateTime,
+        end: slot.end.dateTime,
+        status: slot.status || 'busy', // Default to 'busy' if undefined
+        booked: isBooked
+      };
     });
+
+    res.json({ 
+      date: date,
+      availability: availability 
+    });
+
   } catch (error) {
     console.error('Availability Error:', error.response?.data || error.message);
     res.status(500).json({ 
@@ -114,7 +183,7 @@ app.get('/api/availability', async (req, res) => {
   }
 });
 
-// Booking Endpoint
+// Booking Endpoint (Unchanged)
 app.post('/api/bookings', async (req, res) => {
   try {
     const { start, end, name, email, eventDetails } = req.body;
@@ -174,5 +243,4 @@ app.post('/api/bookings', async (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  console.log('Configured for calendar owner:', process.env.CALENDAR_OWNER_UPN);
 });
