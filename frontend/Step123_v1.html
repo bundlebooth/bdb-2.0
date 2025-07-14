@@ -2732,7 +2732,7 @@ function renderTimeSlots(date, availability = []) {
     const container = document.getElementById('time-slots-container');
     container.innerHTML = '';
 
-    // Your exact desired time slots in EST
+    // Time slots in EST (what user sees)
     const timeSlots = [
         { start: 9, end: 12 },   // 9AM-12PM EST
         { start: 12, end: 15 },  // 12PM-3PM EST
@@ -2741,13 +2741,17 @@ function renderTimeSlots(date, availability = []) {
     ];
 
     timeSlots.forEach(slot => {
-        // Create local EST dates (what user sees)
+        // Create Date objects in local time (EST)
         const slotStartLocal = new Date(`${date}T${padTime(slot.start)}:00:00`);
         const slotEndLocal = new Date(`${date}T${padTime(slot.end)}:00:00`);
 
-        // Convert to UTC for API comparison
-        const slotStartUTC = new Date(slotStartLocal.getTime() - (slotStartLocal.getTimezoneOffset() * 60000));
-        const slotEndUTC = new Date(slotEndLocal.getTime() - (slotEndLocal.getTimezoneOffset() * 60000));
+        // Convert local EST to UTC for API comparison
+        // During daylight time (March-November), EST is UTC-4
+        const slotStartUTC = new Date(slotStartLocal);
+        slotStartUTC.setHours(slotStartUTC.getHours() + 4);
+        
+        const slotEndUTC = new Date(slotEndLocal);
+        slotEndUTC.setHours(slotEndUTC.getHours() + 4);
 
         // Check against API availability
         const isBooked = availability.some(apiSlot => {
@@ -2755,7 +2759,11 @@ function renderTimeSlots(date, availability = []) {
             const apiEnd = new Date(apiSlot.end);
             
             // Check if this slot overlaps with a booked slot (in UTC)
-            return slotStartUTC < apiEnd && slotEndUTC > apiStart;
+            return (
+                (slotStartUTC >= apiStart && slotStartUTC < apiEnd) || // Our start is within booked slot
+                (slotEndUTC > apiStart && slotEndUTC <= apiEnd) ||     // Our end is within booked slot
+                (slotStartUTC <= apiStart && slotEndUTC >= apiEnd)      // Our slot completely contains booked slot
+            );
         });
 
         // Create the time slot element
@@ -2770,7 +2778,8 @@ function renderTimeSlots(date, availability = []) {
         `;
 
         if (!isBooked) {
-            slotElement.addEventListener('click', () => {
+            slotElement.addEventListener('click', (e) => {
+                e.stopPropagation();
                 document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected-slot'));
                 slotElement.classList.add('selected-slot');
             });
@@ -2779,7 +2788,6 @@ function renderTimeSlots(date, availability = []) {
         container.appendChild(slotElement);
     });
 }
-
 // Helper function to pad time (9 -> "09")
 function padTime(num) {
     return num.toString().padStart(2, '0');
