@@ -257,12 +257,15 @@
       font-weight: 500;
       border: none;
       cursor: pointer;
-      text-align: left;
-      margin-top: 10px;
+      text-align: center;
+      margin-top: auto;
       padding: 0;
       font-size: 0.85rem;
       display: flex;
       align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding-top: 10px;
     }
     .show-features-toggle:hover {
       text-decoration: underline;
@@ -513,15 +516,15 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      background: #f9f9f9;
-      border: 1px solid #ddd;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      background: #fff3cd;
+      border: 1px solid #ffecb5;
+      color: #856404;
       padding: 12px 16px;
       border-radius: 8px;
-      white-space: nowrap;
-      font-size: 12px;
-      overflow-x: auto;
       margin-bottom: 16px;
+      white-space: nowrap;
+      font-size: 14px;
+      overflow-x: auto;
     }
     
     /* Mobile-only warning */
@@ -1178,6 +1181,10 @@
     /* Category Services Container */
     .category-services-container {
       margin-bottom: 30px;
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      padding: 16px;
+      background: #fff;
     }
     
     .category-title {
@@ -1187,12 +1194,15 @@
       color: var(--bb-blue);
       padding-bottom: 8px;
       border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
     }
     
     .services-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 16px;
+      margin-top: 16px;
     }
     
     .chevron-icon {
@@ -1206,6 +1216,37 @@
     
     .chevron-icon.up {
       transform: rotate(180deg);
+    }
+
+    /* Shake animation for warning */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+
+    .shake-warning {
+      animation: shake 0.5s ease-in-out;
+    }
+
+    /* Back to bundle button */
+    #back-to-bundle {
+      margin-top: 24px;
+      width: 100%;
+      background: rgba(44, 62, 80, .1);
+      color: var(--bb-blue);
+    }
+
+    #back-to-bundle:hover {
+      background: var(--bb-hover-grey);
+      color: #fff;
+    }
+
+    /* Button container */
+    .button-container {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
     }
     
     @media (max-width: 768px) {
@@ -1232,6 +1273,10 @@
         left: 2.5%;
         transform: none;
       }
+
+      .button-container {
+        flex-direction: column;
+      }
     }
 </style>
 </head>
@@ -1252,13 +1297,12 @@
     
     <div class="step" id="step-2" style="display:none;">
         <h2 style="margin-bottom:16px;">Step 2: Select Your Services</h2>
-        <div id="progress-bars-container" style="margin-bottom:20px;"></div>
         <div id="compare-warning" class="compare-message" style="display:none;"></div>
         <div id="services-container"></div>
         
         <!-- Options Section in Step 2 -->
-        <div class="options-section" id="options-section" style="display:none;">
-            <h4>Options</h4>
+        <div class="options-section" id="options-section">
+            <h4>Options & Add-ons</h4>
             <div class="form-row">
                 <div id="photo-booth-option" class="option-group" style="display:none;flex:1;">
                     <div class="option-group-title">
@@ -1315,7 +1359,10 @@
             You have not selected all the required services for this bundle. Please select the remaining services to proceed.
         </div>
         
-        <button id="review-selection" style="display:none;margin-top:20px;" class="book-now-button">Review Selection</button>
+        <div class="button-container">
+            <button id="back-to-bundle" class="book-now-button">&lt; Review Bundle</button>
+            <button id="review-selection" class="book-now-button">Review Selection</button>
+        </div>
     </div>
     
     <div class="step" id="step-3" style="display:none;">
@@ -1621,6 +1668,11 @@
                 updateReviewButton();
             }
         });
+
+        // Set up back to bundle button
+        document.getElementById('back-to-bundle').addEventListener('click', () => {
+            showStep(1);
+        });
     });
 
     // Set up progress bar navigation
@@ -1816,7 +1868,7 @@
                 <div class="package-content">
                     <h3>${bundle.name}</h3>
                     <p class="description">${bundle.description || "No description provided."}</p>
-                    <div class="categories-label">Categories included:</div>
+                    <div class="categories-label">Services included:</div>
                     <div>${categoryTags}</div>
                 </div>
             `;
@@ -1836,24 +1888,6 @@
             el.classList.toggle('selected', i === index);
         });
         
-        // Create progress bars for each category
-        const progressContainer = document.getElementById('progress-bars-container');
-        progressContainer.innerHTML = '';
-        
-        Object.entries(selectedBundle.categories).forEach(([category, limit]) => {
-            const categoryId = category.toLowerCase().replace(/\s+/g, '-');
-            progressContainer.innerHTML += `
-                <div class="category-progress-block" style="margin: 20px 0;">
-                    <div class="selection-label" id="label-${categoryId}">
-                        ${category}: <span class="count">0</span> of ${limit} selected
-                    </div>
-                    <div class="progress-wrapper" id="progress-${categoryId}">
-                        <div class="progress-bar" style="width: 0%"></div>
-                    </div>
-                </div>
-            `;
-        });
-        
         renderStep2();
     }
 
@@ -1867,6 +1901,7 @@
     // Show step 3 with review and booking
     function renderStep3() {
         showStep(3);
+        window.scrollTo(0, 0); // Scroll to top when step 3 loads
         
         // Update bundle title
         document.getElementById('bundle-title').textContent = selectedBundle.name;
@@ -2000,7 +2035,6 @@
         const sparklersOption = document.getElementById('sparklers-option');
         
         // Reset options
-        optionsSection.style.display = 'none';
         photoBoothOption.style.display = 'none';
         sweetsBrewsOption.style.display = 'none';
         sparklersOption.style.display = 'none';
@@ -2085,6 +2119,8 @@
                 }
                 updateSparklersPrices();
             }
+        } else {
+            optionsSection.style.display = 'none';
         }
     }
 
@@ -2294,10 +2330,16 @@
             
             const categoryId = category.toLowerCase().replace(/\s+/g, '-');
             const limit = selectedBundle.categories[category];
+            const selectedCount = selectedServices.filter(s => s.ServiceType === category).length;
+            const percent = Math.min((selectedCount / limit) * 100, 100);
             
             categoryContainer.innerHTML = `
                 <div class="category-title">
-                    ${category} (${limit} required)
+                    ${category}
+                    <span>${selectedCount} of ${limit} selected</span>
+                </div>
+                <div class="progress-wrapper" id="progress-${categoryId}">
+                    <div class="progress-bar" style="width: ${percent}%"></div>
                 </div>
                 <div class="services-grid" id="services-${categoryId}">
                     <!-- Services will be inserted here -->
@@ -2350,8 +2392,8 @@
                         ${durationText ? `<p><strong>Duration:</strong> ${durationText}</p>` : ''}
                         ${service.price ? `<p><strong>Price:</strong> C$${service.price.toFixed(2)}</p>` : ''}
                         ${featuresLink}
-                        ${featuresOverlay}
                     </div>
+                    ${featuresOverlay}
                 `;
                 
                 // Add click handler for service selection
@@ -2402,7 +2444,25 @@
             });
         });
         
-        updateAllProgressBars();
+        // Show review button
+        document.getElementById('review-selection').style.display = 'block';
+        document.getElementById('back-to-bundle').style.display = 'block';
+        
+        // Set up review button click handler
+        document.getElementById('review-selection').addEventListener('click', () => {
+            if (checkBundleRequirements()) {
+                renderStep3();
+            } else {
+                const warningElement = document.getElementById('requirements-warning');
+                warningElement.style.display = 'flex';
+                warningElement.classList.add('shake-warning');
+                setTimeout(() => {
+                    warningElement.classList.remove('shake-warning');
+                }, 500);
+            }
+        });
+        
+        setupOptionsSection();
     }
 
     // Toggle service selection
@@ -2436,24 +2496,8 @@
         updateAllProgressBars();
         hideCompareWarning();
         
-        // Show/hide review button based on selections
-        const reviewBtn = document.getElementById('review-selection');
-        if (selectedServices.length > 0) {
-            reviewBtn.style.display = 'block';
-            updateReviewButton();
-            setupOptionsSection();
-        } else {
-            reviewBtn.style.display = 'none';
-            document.getElementById('options-section').style.display = 'none';
-        }
-        
-        reviewBtn.addEventListener('click', () => {
-            if (checkBundleRequirements()) {
-                renderStep3();
-            } else {
-                showToast('Please select all required services for your bundle');
-            }
-        });
+        // Show/hide options section based on selections
+        setupOptionsSection();
     }
 
     // Get count of selected services in a category
@@ -2471,7 +2515,8 @@
             const percent = Math.min((selectedCount / limit) * 100, 100);
             
             const progressBar = document.querySelector(`#progress-${categoryId} .progress-bar`);
-            const countSpan = document.querySelector(`#label-${categoryId} .count`);
+            const categoryTitle = document.querySelector(`#services-${categoryId}`).closest('.category-services-container').querySelector('.category-title');
+            const countSpan = categoryTitle.querySelector('span');
             
             if (progressBar) {
                 progressBar.style.width = `${percent}%`;
@@ -2480,9 +2525,7 @@
             }
             
             if (countSpan) {
-                countSpan.textContent = selectedCount;
-                countSpan.style.color = percent === 100 ? '#2ecc71' : '#3498db';
-                countSpan.style.fontWeight = 'bold';
+                countSpan.textContent = `${selectedCount} of ${limit} selected`;
             }
         });
     }
@@ -2492,13 +2535,15 @@
         const warn = document.getElementById("compare-warning");
         warn.innerHTML = `
             <svg viewBox="0 0 24 24" width="16" height="16" style="vertical-align:middle;margin-right:8px;">
-                <path fill="#e74c3c" d="M12 2L1 21h22L12 2zm0 4l7.5 13h-15L12 6zm-1 3v6h2V9h-2zm0 8v2h2v-2h-2z"/>
+                <path fill="#856404" d="M12 2L1 21h22L12 2zm0 4l7.5 13h-15L12 6zm-1 3v6h2V9h-2zm0 8v2h2v-2h-2z"/>
             </svg>
             You can only select ${limit} service${limit !== 1 ? 's' : ''} from "${category}"
         `;
         warn.style.display = "flex";
-        warn.style.alignItems = "center";
-        setTimeout(hideCompareWarning, 3000);
+        warn.classList.add('shake-warning');
+        setTimeout(() => {
+            warn.classList.remove('shake-warning');
+        }, 500);
     }
 
     // Hide the warning message
