@@ -1535,8 +1535,10 @@
         backendUrl: 'https://bdb-2-0-calendar-api-backend.onrender.com',
         emailBackendUrl: 'https://bdb-2-0-brevo-email-backend.onrender.com/send-booking-email',
         stripeBackendUrl: 'https://bdb-2-0-stripe-api-backend.onrender.com',
-        workingHours: { start: 9, end: 21 }, // 9AM to 9PM
-        slotDuration: 180 // 3 hours in minutes
+           workingHours: { 
+        start: 13, // 9 AM EST = 13 UTC (during daylight time)
+        end: 25    // 9 PM EST = 1 AM next day UTC},
+		slotDuration: 180
     };
 
     // Global variables
@@ -2725,64 +2727,63 @@
         }
     }
     
-    function renderTimeSlots(date, busySlots = []) {
-        const container = document.getElementById('time-slots-container');
-        const selectedDate = new Date(date);
-        const startHour = config.workingHours.start;
-        const endHour = config.workingHours.end;
-        const slotDuration = config.slotDuration;
+function renderTimeSlots(date, availability = []) {
+    const container = document.getElementById('time-slots-container');
+    container.innerHTML = '';
+
+    // Your exact desired time slots in EST
+    const timeSlots = [
+        { start: 9, end: 12 },   // 9AM-12PM EST
+        { start: 12, end: 15 },  // 12PM-3PM EST
+        { start: 15, end: 18 },  // 3PM-6PM EST
+        { start: 18, end: 21 }   // 6PM-9PM EST
+    ];
+
+    timeSlots.forEach(slot => {
+        // Create local EST dates (what user sees)
+        const slotStartLocal = new Date(`${date}T${padTime(slot.start)}:00:00`);
+        const slotEndLocal = new Date(`${date}T${padTime(slot.end)}:00:00`);
+
+        // Convert to UTC for API comparison
+        const slotStartUTC = new Date(slotStartLocal.getTime() - (slotStartLocal.getTimezoneOffset() * 60000));
+        const slotEndUTC = new Date(slotEndLocal.getTime() - (slotEndLocal.getTimezoneOffset() * 60000));
+
+        // Check against API availability
+        const isBooked = availability.some(apiSlot => {
+            const apiStart = new Date(apiSlot.start);
+            const apiEnd = new Date(apiSlot.end);
+            
+            // Check if this slot overlaps with a booked slot (in UTC)
+            return slotStartUTC < apiEnd && slotEndUTC > apiStart;
+        });
+
+        // Create the time slot element
+        const slotElement = document.createElement('div');
+        slotElement.className = `time-slot ${isBooked ? 'booked' : 'available'}`;
+        slotElement.dataset.start = slotStartUTC.toISOString();
+        slotElement.dataset.end = slotEndUTC.toISOString();
         
-        // Generate time slots (only 4 slots per day)
-        const slots = [];
-        const slotCount = 4;
-        const slotInterval = Math.floor((endHour - startHour) / slotCount);
-        
-        for (let i = 0; i < slotCount; i++) {
-            const slotStart = new Date(selectedDate);
-            slotStart.setHours(startHour + (i * slotInterval), 0, 0, 0);
-            
-            const slotEnd = new Date(slotStart);
-            slotEnd.setHours(slotStart.getHours() + (slotDuration / 60), 0, 0, 0);
-            
-            const slotKey = `${formatTime(slotStart)}-${formatTime(slotEnd)}`;
-            
-            // Check if this slot is available
-            const isBooked = Array.isArray(busySlots) && busySlots.some(event => {
-                try {
-                    const eventStart = new Date(event.start?.dateTime || event.start);
-                    const eventEnd = new Date(event.end?.dateTime || event.end);
-                    return (slotStart < eventEnd && slotEnd > eventStart);
-                } catch (e) {
-                    console.error('Error processing event:', event, e);
-                    return false;
-                }
+        slotElement.innerHTML = `
+            <div class="slot-time">${formatTime(slotStartLocal)} - ${formatTime(slotEndLocal)}</div>
+            <div class="slot-status">${isBooked ? 'Booked' : 'Available'}</div>
+        `;
+
+        if (!isBooked) {
+            slotElement.addEventListener('click', () => {
+                document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected-slot'));
+                slotElement.classList.add('selected-slot');
             });
-            
-            const slotElement = document.createElement('div');
-            slotElement.className = `time-slot ${isBooked ? 'booked' : 'available'}`;
-            slotElement.dataset.start = slotStart.toISOString();
-            slotElement.dataset.end = slotEnd.toISOString();
-            
-            slotElement.innerHTML = `
-                <div class="slot-time">${formatTime(slotStart)} - ${formatTime(slotEnd)}</div>
-                <div class="slot-status">${isBooked ? 'Booked' : 'Available'}</div>
-            `;
-            
-            if (!isBooked) {
-                slotElement.addEventListener('click', () => {
-                    // Remove previous selection
-                    document.querySelectorAll('.time-slot').forEach(slot => {
-                        slot.classList.remove('selected-slot');
-                    });
-                    
-                    // Select this slot
-                    slotElement.classList.add('selected-slot');
-                });
-            }
-            
-            container.appendChild(slotElement);
         }
-    }
+
+        container.appendChild(slotElement);
+    });
+}
+
+// Helper function to pad time (9 -> "09")
+function padTime(num) {
+    return num.toString().padStart(2, '0');
+}
+    
     
     function formatTime(date) {
         return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
