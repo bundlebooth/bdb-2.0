@@ -44,7 +44,7 @@
   {
     "name": "Test Individual",
     "description": "Perfect for milestone birthdays and celebrations.",
-    "Special": false,
+    "Special": true,
     "discountPercentage": 12,
     "categories": {
       "Interactive Booths": 1,
