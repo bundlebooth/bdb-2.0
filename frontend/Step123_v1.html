@@ -1722,7 +1722,7 @@
     // Fetch bundles data
     async function fetchBundles() {
         try {
-            const res = await fetch('https://raw.githubusercontent.com/bundlebooth/bdb-2.0/main/bundles.json');
+            const res = await fetch('https://raw.githubusercontent.com/bundlebooth/bdb-2.0/main/data/bundles.json');
             if (!res.ok) throw new Error('Failed to fetch bundles');
             bundles = await res.json();
             renderBundles();
