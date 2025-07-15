@@ -6,9 +6,162 @@
 <meta http-equiv="Permissions-Policy" content="payment=(self 'https://bundlebooth.ca')">
 <title>BundleBooth Custom Builder</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
-<script src="https://js.stripe.com/v3/"></script>
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://js.stripe.com/v3/">
+// Add custom bundle to bundles list after fetchBundles
+const originalFetchBundles = fetchBundles;
+fetchBundles = async function() {
+    await originalFetchBundles();
+    bundles.push({
+        name: "✨ Build Your Own Bundle ✨",
+        description: "Create a fully custom package with as many services as you like",
+        categories: {},
+        discountPercentage: 0,
+        isCustom: true
+    });
+    renderBundles();
+};
+
+// Modify createBundleDiv to apply custom-bundle class and special behavior
+const originalCreateBundleDiv = createBundleDiv;
+createBundleDiv = function(bundle, index, isSpecial) {
+    const div = originalCreateBundleDiv(bundle, index, isSpecial);
+    if (bundle.isCustom) {
+        div.classList.add('custom-bundle');
+        div.addEventListener('click', () => {
+            selectedBundle = {
+                name: "Custom Bundle",
+                description: "Fully custom bundle",
+                categories: {},
+                discountPercentage: 0
+            };
+            showStep(2);
+        });
+    }
+    return div;
+};
+
+
+// Patch renderServices filtering to allow all services for custom bundle
+const originalRenderServices = renderServices;
+renderServices = function() {
+    const originalCategories = selectedBundle.categories;
+    if (selectedBundle && selectedBundle.isCustom) {
+        // Temporarily inject all categories as unlimited
+        selectedBundle.categories = {};
+        services.forEach(s => selectedBundle.categories[s.ServiceType] = 999);
+    }
+    originalRenderServices();
+    if (selectedBundle && selectedBundle.isCustom) {
+        // Restore original empty categories (or keep as is)
+        selectedBundle.categories = originalCategories;
+    }
+};
+
+</script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js">
+// Add custom bundle to bundles list after fetchBundles
+const originalFetchBundles = fetchBundles;
+fetchBundles = async function() {
+    await originalFetchBundles();
+    bundles.push({
+        name: "✨ Build Your Own Bundle ✨",
+        description: "Create a fully custom package with as many services as you like",
+        categories: {},
+        discountPercentage: 0,
+        isCustom: true
+    });
+    renderBundles();
+};
+
+// Modify createBundleDiv to apply custom-bundle class and special behavior
+const originalCreateBundleDiv = createBundleDiv;
+createBundleDiv = function(bundle, index, isSpecial) {
+    const div = originalCreateBundleDiv(bundle, index, isSpecial);
+    if (bundle.isCustom) {
+        div.classList.add('custom-bundle');
+        div.addEventListener('click', () => {
+            selectedBundle = {
+                name: "Custom Bundle",
+                description: "Fully custom bundle",
+                categories: {},
+                discountPercentage: 0
+            };
+            showStep(2);
+        });
+    }
+    return div;
+};
+
+
+// Patch renderServices filtering to allow all services for custom bundle
+const originalRenderServices = renderServices;
+renderServices = function() {
+    const originalCategories = selectedBundle.categories;
+    if (selectedBundle && selectedBundle.isCustom) {
+        // Temporarily inject all categories as unlimited
+        selectedBundle.categories = {};
+        services.forEach(s => selectedBundle.categories[s.ServiceType] = 999);
+    }
+    originalRenderServices();
+    if (selectedBundle && selectedBundle.isCustom) {
+        // Restore original empty categories (or keep as is)
+        selectedBundle.categories = originalCategories;
+    }
+};
+
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+// Add custom bundle to bundles list after fetchBundles
+const originalFetchBundles = fetchBundles;
+fetchBundles = async function() {
+    await originalFetchBundles();
+    bundles.push({
+        name: "✨ Build Your Own Bundle ✨",
+        description: "Create a fully custom package with as many services as you like",
+        categories: {},
+        discountPercentage: 0,
+        isCustom: true
+    });
+    renderBundles();
+};
+
+// Modify createBundleDiv to apply custom-bundle class and special behavior
+const originalCreateBundleDiv = createBundleDiv;
+createBundleDiv = function(bundle, index, isSpecial) {
+    const div = originalCreateBundleDiv(bundle, index, isSpecial);
+    if (bundle.isCustom) {
+        div.classList.add('custom-bundle');
+        div.addEventListener('click', () => {
+            selectedBundle = {
+                name: "Custom Bundle",
+                description: "Fully custom bundle",
+                categories: {},
+                discountPercentage: 0
+            };
+            showStep(2);
+        });
+    }
+    return div;
+};
+
+
+// Patch renderServices filtering to allow all services for custom bundle
+const originalRenderServices = renderServices;
+renderServices = function() {
+    const originalCategories = selectedBundle.categories;
+    if (selectedBundle && selectedBundle.isCustom) {
+        // Temporarily inject all categories as unlimited
+        selectedBundle.categories = {};
+        services.forEach(s => selectedBundle.categories[s.ServiceType] = 999);
+    }
+    originalRenderServices();
+    if (selectedBundle && selectedBundle.isCustom) {
+        // Restore original empty categories (or keep as is)
+        selectedBundle.categories = originalCategories;
+    }
+};
+
+</script>
 <style>
     :root {
       --bb-blue: #333;
@@ -1340,6 +1493,20 @@
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 .package.special-bundle:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+
+.package.custom-bundle {
+    border: 2px dotted var(--bb-accent);
+    background: #fff;
+    text-align: center;
+    padding: 20px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.package.custom-bundle:hover {
     transform: translateY(-4px) scale(1.02);
     box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
@@ -3159,6 +3326,57 @@ function padTime(num) {
             processingMessage.style.display = 'none';
         }
     }
+
+// Add custom bundle to bundles list after fetchBundles
+const originalFetchBundles = fetchBundles;
+fetchBundles = async function() {
+    await originalFetchBundles();
+    bundles.push({
+        name: "✨ Build Your Own Bundle ✨",
+        description: "Create a fully custom package with as many services as you like",
+        categories: {},
+        discountPercentage: 0,
+        isCustom: true
+    });
+    renderBundles();
+};
+
+// Modify createBundleDiv to apply custom-bundle class and special behavior
+const originalCreateBundleDiv = createBundleDiv;
+createBundleDiv = function(bundle, index, isSpecial) {
+    const div = originalCreateBundleDiv(bundle, index, isSpecial);
+    if (bundle.isCustom) {
+        div.classList.add('custom-bundle');
+        div.addEventListener('click', () => {
+            selectedBundle = {
+                name: "Custom Bundle",
+                description: "Fully custom bundle",
+                categories: {},
+                discountPercentage: 0
+            };
+            showStep(2);
+        });
+    }
+    return div;
+};
+
+
+// Patch renderServices filtering to allow all services for custom bundle
+const originalRenderServices = renderServices;
+renderServices = function() {
+    const originalCategories = selectedBundle.categories;
+    if (selectedBundle && selectedBundle.isCustom) {
+        // Temporarily inject all categories as unlimited
+        selectedBundle.categories = {};
+        services.forEach(s => selectedBundle.categories[s.ServiceType] = 999);
+    }
+    originalRenderServices();
+    if (selectedBundle && selectedBundle.isCustom) {
+        // Restore original empty categories (or keep as is)
+        selectedBundle.categories = originalCategories;
+    }
+};
+
 </script>
 </body>
 </html>
