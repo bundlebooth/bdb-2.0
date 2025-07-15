@@ -1248,11 +1248,7 @@
     
 
     /* Bundle Sections */
-    .bundles-section {
-        margin-bottom: 24px;
-        position: relative;
-        padding-top: 20px;
-    }
+    
 
     .bundles-section::before {
         content: attr(data-title);
@@ -1265,10 +1261,7 @@
         color: var(--bb-blue);
     }
 
-    .special-bundles-section::before {
-        color: var(--bb-red);
-        content: "✨ Special Offers ✨";
-    }
+    
 
     .bundles-grid {
         display: grid;
@@ -1307,11 +1300,29 @@
       }
     }
 
+.bundles-section {
+    margin-bottom: 24px;
+    position: relative;
+    padding: 20px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.bundles-section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--bb-blue);
+    border-bottom: 2px solid #eee;
+    padding-bottom: 8px;
+}
+
+
 .package.special-bundle {
     background: linear-gradient(135deg, #fffbea, #fff5d1);
     border: 2px solid gold;
     position: relative;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 .package.special-bundle::before {
@@ -1970,7 +1981,7 @@ function renderBundles() {
     if (specialBundles.length > 0) {
         const specialSection = document.createElement('div');
         specialSection.className = 'bundles-section special-bundles-section';
-        specialSection.setAttribute('data-title', '✨ Special Offers ✨');
+        specialSection.innerHTML = '<div class="bundles-section-title">✨ Special Offers ✨</div>' + specialSection.innerHTML;
         
         const specialGrid = document.createElement('div');
         specialGrid.className = 'bundles-grid';
@@ -1987,7 +1998,7 @@ function renderBundles() {
     // Create classic bundles section
     const classicSection = document.createElement('div');
     classicSection.className = 'bundles-section classic-bundles-section';
-    classicSection.setAttribute('data-title', 'Classic Bundles');
+    classicSection.innerHTML = '<div class="bundles-section-title">Classic Bundles</div>' + classicSection.innerHTML;
     
     const classicGrid = document.createElement('div');
     classicGrid.className = 'bundles-grid';
