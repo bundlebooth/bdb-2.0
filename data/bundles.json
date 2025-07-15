@@ -25,14 +25,13 @@
   {
     "name": "Luxury Wedding Experience",
     "slug": "luxury-wedding-experience",
-    "description": "High-end wedding atmosphere with special effects.",
-    "discount": 20,
+    "description": "High-end wedding atmosphere with double booths and sweets.",
+    "discount": 18,
     "packageType": "Bundle",
     "categories": {
       "Interactive Booths": 2,
       "Scene Setters": 1,
-      "Sweets and Brews": 1,
-      "Special Effects": 1
+      "Sweets and Brews": 1
     }
   },
   {
@@ -43,20 +42,18 @@
     "packageType": "Bundle",
     "categories": {
       "Interactive Booths": 1,
-      "Sweets and Brews": 1,
-      "Special Effects": 1
+      "Sweets and Brews": 1
     }
   },
   {
     "name": "Corporate Prestige Package",
     "slug": "corporate-prestige-package",
-    "description": "Elevate your brand with an unforgettable corporate event.",
-    "discount": 18,
+    "description": "Elevate your brand with interactive booths and scenic backdrops.",
+    "discount": 15,
     "packageType": "Bundle",
     "categories": {
       "Interactive Booths": 2,
-      "Scene Setters": 1,
-      "Special Effects": 1
+      "Scene Setters": 1
     }
   },
   {
