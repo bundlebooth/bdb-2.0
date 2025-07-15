@@ -2,8 +2,8 @@
   {
     "name": "Deluxe Wedding Bundle",
     "slug": "deluxe-wedding-bundle",
-    "description": "TEST1 For weddings with glam and customization",
-    "price": 2200,
+    "description": "For weddings with glam and customization",
+    "discount": 15,
     "packageType": "Bundle",
     "categories": {
       "Interactive Booths": 2,
@@ -14,12 +14,61 @@
   {
     "name": "Corporate Essentials",
     "slug": "corporate-essentials",
-    "description": "TEST2 Professional-grade booths and effects for corporate events.",
-    "price": 1600,
+    "description": "Professional-grade booths and effects for corporate events.",
+    "discount": 10,
     "packageType": "Bundle",
     "categories": {
       "Interactive Booths": 1,
       "Scene Setters": 1
+    }
+  },
+  {
+    "name": "Luxury Wedding Experience",
+    "slug": "luxury-wedding-experience",
+    "description": "High-end wedding atmosphere with special effects.",
+    "discount": 20,
+    "packageType": "Bundle",
+    "categories": {
+      "Interactive Booths": 2,
+      "Scene Setters": 1,
+      "Sweets and Brews": 1,
+      "Special Effects": 1
+    }
+  },
+  {
+    "name": "Birthday Bash Bundle",
+    "slug": "birthday-bash-bundle",
+    "description": "Perfect for milestone birthdays and celebrations.",
+    "discount": 12,
+    "packageType": "Bundle",
+    "categories": {
+      "Interactive Booths": 1,
+      "Sweets and Brews": 1,
+      "Special Effects": 1
+    }
+  },
+  {
+    "name": "Corporate Prestige Package",
+    "slug": "corporate-prestige-package",
+    "description": "Elevate your brand with an unforgettable corporate event.",
+    "discount": 18,
+    "packageType": "Bundle",
+    "categories": {
+      "Interactive Booths": 2,
+      "Scene Setters": 1,
+      "Special Effects": 1
+    }
+  },
+  {
+    "name": "Elegant Engagement Bundle",
+    "slug": "elegant-engagement-bundle",
+    "description": "Celebrate love in style, perfect for engagements or bridal showers.",
+    "discount": 12,
+    "packageType": "Bundle",
+    "categories": {
+      "Interactive Booths": 1,
+      "Scene Setters": 1,
+      "Sweets and Brews": 1
     }
   }
 ]
