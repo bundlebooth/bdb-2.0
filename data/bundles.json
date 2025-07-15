@@ -5,9 +5,8 @@
     "Special": true,
     "discountPercentage": 15,
     "categories": {
-      "Interactive Booths": 2,
-      "Scene Setters": 1,
-      "Sweets and Brews": 1
+      "Interactive Booths": 1,
+      "Scene Setters": 1
     }
   },
   {
@@ -38,27 +37,6 @@
     "discountPercentage": 12,
     "categories": {
       "Interactive Booths": 1,
-      "Sweets and Brews": 1
-    }
-  },
-  {
-    "name": "Corporate Prestige Package",
-    "description": "Elevate your brand with interactive booths and scenic backdrops.",
-    "Special": true,
-    "discountPercentage": 15,
-    "categories": {
-      "Interactive Booths": 2,
-      "Scene Setters": 1
-    }
-  },
-  {
-    "name": "Elegant Engagement Bundle",
-    "description": "Celebrate love in style, perfect for engagements or bridal showers.",
-    "Special": true,
-    "discountPercentage": 12,
-    "categories": {
-      "Interactive Booths": 1,
-      "Scene Setters": 1,
       "Sweets and Brews": 1
     }
   }
