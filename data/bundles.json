@@ -1,10 +1,9 @@
 [
   {
     "name": "Deluxe Wedding Bundle",
-    "slug": "deluxe-wedding-bundle",
     "description": "For weddings with glam and customization",
-    "discount": 15,
-    "packageType": "Bundle",
+    "Special": true,
+    "discountPercentage": 15,
     "categories": {
       "Interactive Booths": 2,
       "Scene Setters": 1,
@@ -13,10 +12,9 @@
   },
   {
     "name": "Corporate Essentials",
-    "slug": "corporate-essentials",
     "description": "Professional-grade booths and effects for corporate events.",
-    "discount": 10,
-    "packageType": "Bundle",
+    "Special": true,
+    "discountPercentage": 10,
     "categories": {
       "Interactive Booths": 1,
       "Scene Setters": 1
@@ -24,10 +22,9 @@
   },
   {
     "name": "Luxury Wedding Experience",
-    "slug": "luxury-wedding-experience",
     "description": "High-end wedding atmosphere with double booths and sweets.",
-    "discount": 18,
-    "packageType": "Bundle",
+    "Special": true,
+    "discountPercentage": 18,
     "categories": {
       "Interactive Booths": 2,
       "Scene Setters": 1,
@@ -36,10 +33,9 @@
   },
   {
     "name": "Birthday Bash Bundle",
-    "slug": "birthday-bash-bundle",
     "description": "Perfect for milestone birthdays and celebrations.",
-    "discount": 12,
-    "packageType": "Bundle",
+    "Special": true,
+    "discountPercentage": 12,
     "categories": {
       "Interactive Booths": 1,
       "Sweets and Brews": 1
@@ -47,10 +43,9 @@
   },
   {
     "name": "Corporate Prestige Package",
-    "slug": "corporate-prestige-package",
     "description": "Elevate your brand with interactive booths and scenic backdrops.",
-    "discount": 15,
-    "packageType": "Bundle",
+    "Special": true,
+    "discountPercentage": 15,
     "categories": {
       "Interactive Booths": 2,
       "Scene Setters": 1
@@ -58,10 +53,9 @@
   },
   {
     "name": "Elegant Engagement Bundle",
-    "slug": "elegant-engagement-bundle",
     "description": "Celebrate love in style, perfect for engagements or bridal showers.",
-    "discount": 12,
-    "packageType": "Bundle",
+    "Special": true,
+    "discountPercentage": 12,
     "categories": {
       "Interactive Booths": 1,
       "Scene Setters": 1,
