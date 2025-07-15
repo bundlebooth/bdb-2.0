@@ -39,5 +39,16 @@
       "Interactive Booths": 1,
       "Sweets and Brews": 1
     }
+  },
+  ,
+  {
+    "name": "Test Individual",
+    "description": "Perfect for milestone birthdays and celebrations.",
+    "Special": false,
+    "discountPercentage": 12,
+    "categories": {
+      "Interactive Booths": 1,
+      "Sweets and Brews": 1
+    }
   }
 ]
