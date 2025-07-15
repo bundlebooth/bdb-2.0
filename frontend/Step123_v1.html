@@ -1325,33 +1325,6 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-
-.package.special-bundle:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-}
-
-
-
-@keyframes pulse {
-    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
-    70% { transform: scale(1.1); box-shadow: 0 0 10px 10px rgba(231, 76, 60, 0); }
-    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
-}
-
-
-.discount-message {
-    background: #e74c3c;
-    color: #fff;
-    font-weight: 600;
-    font-size: 0.75rem;
-    padding: 4px 8px;
-    border-radius: 12px;
-    display: inline-block;
-    margin: 6px 0;
-}
-
-
 .package.special-bundle::before {
     content: "🌟 SPECIAL";
     position: absolute;
@@ -1366,36 +1339,9 @@
     transform: rotate(10deg);
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
-
-
-#services-container {
-    display: flex;
-    overflow-x: auto;
-    gap: 16px;
-    padding-bottom: 10px;
-    scroll-snap-type: x mandatory;
-}
-#services-container .service-card {
-    flex: 0 0 auto;
-    min-width: 280px;
-    max-width: 300px;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    scroll-snap-align: start;
-}
-#services-container::-webkit-scrollbar {
-    height: 8px;
-}
-#services-container::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 4px;
-}
-@media (max-width: 768px) {
-    #services-container {
-        flex-wrap: wrap;
-        overflow-x: visible;
-    }
+.package.special-bundle:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
 
 </style>
@@ -1415,7 +1361,7 @@
             <div class="bundles-section special-bundles-section" data-title="✨ Special Offers ✨">
                 <div class="bundles-grid">
                     <div class="package special-bundle">
-                        
+                        <div class="special-tag">SPECIAL</div>
                         <h3>Wedding Special</h3>
                         <p class="description">Limited time wedding package with discount</p>
                         <div class="discount-message">15% OFF!</div>
@@ -2094,7 +2040,7 @@ function renderBundles() {
         }).join('');
         
         // Add special tag if applicable
-        const specialTag = isSpecial ? `` : '';
+        const specialTag = isSpecial ? `<div class="special-tag">SPECIAL</div>` : '';
         
         // Add discount message if applicable
         const discountMessage = isSpecial && bundle.discountPercentage ? 
