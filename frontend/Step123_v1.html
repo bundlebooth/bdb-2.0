@@ -57,7 +57,6 @@
     }
     .package {
       position: relative;
-      position: relative;
       background: #fff;
       border: 1px solid #ddd;
       border-radius: 12px;
@@ -528,15 +527,7 @@
     }
     
     /* Mobile-only warning */
-    @media (max-width: 768px) {
-      .compare-message {
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 1000;
-        animation: slideUp 0.3s ease-out;
-      }
+    
       
       @keyframes slideUp {
         from { transform: translateX(-50%) translateY(100%); }
@@ -1249,11 +1240,63 @@
       margin-top: 24px;
     }
     
+    /* Special Bundle Styles */
+    .special-bundle {
+        border: 2px solid var(--bb-red) !important;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .special-tag {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: var(--bb-red);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .discount-message {
+        color: var(--bb-red);
+        font-weight: 600;
+        margin: 8px 0;
+        font-size: 0.9rem;
+    }
+
+    /* Bundle Sections */
+    .bundles-section {
+        margin-bottom: 24px;
+        position: relative;
+        padding-top: 20px;
+    }
+
+    .bundles-section::before {
+        content: attr(data-title);
+        position: absolute;
+        top: -12px;
+        left: 20px;
+        background: white;
+        padding: 0 10px;
+        font-weight: 600;
+        color: var(--bb-blue);
+    }
+
+    .special-bundles-section::before {
+        color: var(--bb-red);
+        content: "✨ Special Offers ✨";
+    }
+
+    .bundles-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 16px;
+    }
+
+    /* Responsive adjustments */
     @media (max-width: 768px) {
-      .form-row {
-        flex-direction: column;
-        gap: 0;
-      }
       .action-buttons {
         flex-direction: column;
       }
@@ -1277,6 +1320,10 @@
       .button-container {
         flex-direction: column;
       }
+      
+      .bundles-grid {
+          grid-template-columns: 1fr;
+      }
     }
 </style>
 </head>
@@ -1291,10 +1338,76 @@
     
     <div class="step" id="step-1">
         <h2 style="margin-bottom:16px;">Step 1: Choose a Bundle</h2>
-        
-        <div id="bundle-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">Loading bundles...</div>
+        <div id="bundle-list">
+            <div class="bundles-section special-bundles-section" data-title="✨ Special Offers ✨">
+                <div class="bundles-grid">
+                    <div class="package special-bundle">
+                        <div class="special-tag">SPECIAL</div>
+                        <h3>Wedding Special</h3>
+                        <p class="description">Limited time wedding package with discount</p>
+                        <div class="discount-message">15% OFF!</div>
+                        <div class="categories-label">Services included:</div>
+                        <div>
+                            <div style="display:inline-flex;align-items:center;margin-right:8px;margin-bottom:6px;">
+                                <span class="category-count">2</span>
+                                <span class="category-tag scene-setters">Scene Setters</span>
+                            </div>
+                            <div style="display:inline-flex;align-items:center;margin-right:8px;margin-bottom:6px;">
+                                <span class="category-count">1</span>
+                                <span class="category-tag sweets-brews">Sweets and Brews</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bundles-section classic-bundles-section" data-title="Classic Bundles">
+                <div class="bundles-grid">
+                    <div class="package">
+                        <h3>Corporate Package</h3>
+                        <p class="description">Professional services for corporate events and galas</p>
+                        <div class="categories-label">Services included:</div>
+                        <div>
+                            <div style="display:inline-flex;align-items:center;margin-right:8px;margin-bottom:6px;">
+                                <span class="category-count">1</span>
+                                <span class="category-tag scene-setters">Scene Setters</span>
+                            </div>
+                            <div style="display:inline-flex;align-items:center;margin-right:8px;margin-bottom:6px;">
+                                <span class="category-count">2</span>
+                                <span class="category-tag digital">Digital</span>
+                            </div>
+                            <div style="display:inline-flex;align-items:center;margin-right:8px;margin-bottom:6px;">
+                                <span class="category-count">1</span>
+                                <span class="category-tag interactive">Interactive</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="package">
+                        <h3>Birthday Bash</h3>
+                        <p class="description">Everything you need for an unforgettable birthday party</p>
+                        <div class="categories-label">Services included:</div>
+                        <div>
+                            <div style="display:inline-flex;align-items:center;margin-right:8px;margin-bottom:6px;">
+                                <span class="category-count">1</span>
+                                <span class="category-tag scene-setters">Scene Setters</span>
+                            </div>
+                            <div style="display:inline-flex;align-items:center;margin-right:8px;margin-bottom:6px;">
+                                <span class="category-count">1</span>
+                                <span class="category-tag special-effects">Special Effects</span>
+                            </div>
+                            <div style="display:inline-flex;align-items:center;margin-right:8px;margin-bottom:6px;">
+                                <span class="category-count">1</span>
+                                <span class="category-tag interactive">Interactive</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     
+    <!-- Rest of your HTML remains the same -->
     <div class="step" id="step-2" style="display:none;">
         <h2 style="margin-bottom:16px;">Step 2: Select Your Services</h2>
         <div id="compare-warning" class="compare-message" style="display:none;"></div>
@@ -1836,52 +1949,101 @@
     }
 
     // Render bundles list
-    function renderBundles() {
-        const list = document.getElementById('bundle-list');
-        list.innerHTML = '';
+    // Updated renderBundles function
+function renderBundles() {
+    const list = document.getElementById('bundle-list');
+    list.innerHTML = '';
+    
+    // Separate special and regular bundles
+    const specialBundles = bundles.filter(b => b.Special);
+    const classicBundles = bundles.filter(b => !b.Special);
+
+    // Create special bundles section if any exist
+    if (specialBundles.length > 0) {
+        const specialSection = document.createElement('div');
+        specialSection.className = 'bundles-section special-bundles-section';
+        specialSection.setAttribute('data-title', '✨ Special Offers ✨');
         
-        if (bundles.length === 0) {
-            list.innerHTML = '<p>No bundles available at this time.</p>';
-            return;
-        }
+        const specialGrid = document.createElement('div');
+        specialGrid.className = 'bundles-grid';
         
-        bundles.forEach((bundle, index) => {
-            const div = document.createElement('div');
-            div.className = 'package';
+        specialBundles.forEach((bundle, index) => {
+            const originalIndex = bundles.findIndex(b => b.name === bundle.name);
+            const div = createBundleDiv(bundle, originalIndex, true);
+            specialGrid.appendChild(div);
+        });
+        specialSection.appendChild(specialGrid);
+        list.appendChild(specialSection);
+    }
+
+    // Create classic bundles section
+    const classicSection = document.createElement('div');
+    classicSection.className = 'bundles-section classic-bundles-section';
+    classicSection.setAttribute('data-title', 'Classic Bundles');
+    
+    const classicGrid = document.createElement('div');
+    classicGrid.className = 'bundles-grid';
+    
+    classicBundles.forEach((bundle, index) => {
+        const originalIndex = bundles.findIndex(b => b.name === bundle.name);
+        const div = createBundleDiv(bundle, originalIndex, false);
+        classicGrid.appendChild(div);
+    });
+    classicSection.appendChild(classicGrid);
+    list.appendChild(classicSection);
+
+    if (bundles.length === 0) {
+        list.innerHTML = '<p>No bundles available at this time.</p>';
+    }
+}
+
+/// Helper function to create bundle divs
+    function createBundleDiv(bundle, index, isSpecial) {
+        const div = document.createElement('div');
+        div.className = `package ${isSpecial ? 'special-bundle' : ''}`;
+        
+        // Generate category tags with separate count badges
+        const categoryTags = Object.entries(bundle.categories).map(([category, count]) => {
+            let tagClass = 'category-tag';
+            if (category.includes('Scene')) tagClass += ' scene-setters';
+            if (category.includes('Sweets')) tagClass += ' sweets-brews';
+            if (category.includes('Special Effects')) tagClass += ' special-effects';
+            if (category.includes('Guest Book')) tagClass += ' guest-book';
+            if (category.includes('Digital')) tagClass += ' digital';
+            if (category.includes('Interactive')) tagClass += ' interactive';
             
-            // Generate category tags with separate count badges
-            const categoryTags = Object.entries(bundle.categories).map(([category, count]) => {
-                let tagClass = 'category-tag';
-                if (category.includes('Scene')) tagClass += ' scene-setters';
-                if (category.includes('Sweets')) tagClass += ' sweets-brews';
-                if (category.includes('Special Effects')) tagClass += ' special-effects';
-                if (category.includes('Guest Book')) tagClass += ' guest-book';
-                if (category.includes('Digital')) tagClass += ' digital';
-                if (category.includes('Interactive')) tagClass += ' interactive';
-                
-                return `
-                    <div style="display: inline-flex; align-items: center; margin-right: 8px; margin-bottom: 6px;">
-                        <span class="category-count">${count}</span>
-                        <span class="${tagClass}">${category}</span>
-                    </div>
-                `;
-            }).join('');
-            
-            div.innerHTML = `
-                <div class="package-content">
-                    <h3>${bundle.name}</h3>
-                    <p class="description">${bundle.description || "No description provided."}</p>
-                    <div class="categories-label">Services included:</div>
-                    <div>${categoryTags}</div>
+            return `
+                <div style="display: inline-flex; align-items: center; margin-right: 8px; margin-bottom: 6px;">
+                    <span class="category-count">${count}</span>
+                    <span class="${tagClass}">${category}</span>
                 </div>
             `;
-            
-            div.addEventListener('click', () => {
-                selectBundle(index);
-                showStep(2);
-            });
-            list.appendChild(div);
+        }).join('');
+        
+        // Add special tag if applicable
+        const specialTag = isSpecial ? `<div class="special-tag">SPECIAL</div>` : '';
+        
+        // Add discount message if applicable
+        const discountMessage = isSpecial && bundle.discountPercentage ? 
+            `<div class="discount-message">${bundle.discountPercentage}% OFF!</div>` : '';
+        
+        div.innerHTML = `
+            ${specialTag}
+            <div class="package-content">
+                <h3>${bundle.name}</h3>
+                <p class="description">${bundle.description || "No description provided."}</p>
+                ${discountMessage}
+                <div class="categories-label">Services included:</div>
+                <div>${categoryTags}</div>
+            </div>
+        `;
+        
+        div.addEventListener('click', () => {
+            selectBundle(index);
+            showStep(2);
         });
+        
+        return div;
     }
 
     // Handle bundle selection
@@ -1901,64 +2063,71 @@
         renderServices();
     }
 
-    // Show step 3 with review and booking
-    function renderStep3() {
-        showStep(3);
-        window.scrollTo(0, 0); // Scroll to top when step 3 loads
-        
-        // Update bundle title
-        document.getElementById('bundle-title').textContent = selectedBundle.name;
-        
-        // Calculate prices
-        const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
-        const discount = subtotal * bundleDiscount;
-        const total = subtotal - discount;
-        
-        // Update price displays
-        document.getElementById('subtotal-price').textContent = `C$${subtotal.toFixed(2)}`;
-        document.getElementById('discount-amount').textContent = `-C$${discount.toFixed(2)}`;
-        document.getElementById('final-total-price').textContent = `C$${total.toFixed(2)}`;
-        
-        // Update payment amount displays
-        document.getElementById('payment-amount').textContent = `$${total.toFixed(2)}`;
-        document.getElementById('payment-info-amount').textContent = `$${total.toFixed(2)}`;
-        document.getElementById('confirmed-amount').textContent = `$${total.toFixed(2)}`;
-        
-        // Render selected services list
-        renderSelectedServicesList();
-        
-        // Initialize calendar with current month
+    // Updated renderStep3 function to handle dynamic discounts
+function renderStep3() {
+    showStep(3);
+    window.scrollTo(0, 0);
+    
+    // Update bundle title
+    document.getElementById('bundle-title').textContent = selectedBundle.name;
+    
+    // Calculate prices with dynamic discount
+    const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
+    const discountPercentage = selectedBundle.discountPercentage ? selectedBundle.discountPercentage/100 : bundleDiscount;
+    const discount = subtotal * discountPercentage;
+    const total = subtotal - discount;
+    
+    // Update price displays
+    document.getElementById('subtotal-price').textContent = `C$${subtotal.toFixed(2)}`;
+    document.getElementById('discount-amount').textContent = `-C$${discount.toFixed(2)}`;
+    document.getElementById('final-total-price').textContent = `C$${total.toFixed(2)}`;
+    
+    // Update discount text to show dynamic percentage
+    const discountText = selectedBundle.discountPercentage ? 
+        `Bundle Discount (${selectedBundle.discountPercentage}%):` : 
+        `Bundle Discount (10%):`;
+    document.querySelector('.discount-row span:first-child').textContent = discountText;
+    
+    // Update payment amount displays
+    document.getElementById('payment-amount').textContent = `$${total.toFixed(2)}`;
+    document.getElementById('payment-info-amount').textContent = `$${total.toFixed(2)}`;
+    document.getElementById('confirmed-amount').textContent = `$${total.toFixed(2)}`;
+    
+    // Render selected services list
+    renderSelectedServicesList();
+    
+    // Initialize calendar with current month
+    renderCalendar(currentDisplayedDate);
+    
+    // Set up event listeners
+    document.getElementById('back-to-services').addEventListener('click', () => {
+        showStep(2);
+    });
+    
+    document.getElementById('submit-booking').addEventListener('click', handleBookingSubmit);
+    document.getElementById('submit-payment').addEventListener('click', handlePaymentSubmit);
+    document.getElementById('new-bundle-button').addEventListener('click', () => {
+        window.location.reload();
+    });
+    
+    // Set up PDF download button
+    document.querySelector('.pdf-download').addEventListener('click', downloadSummaryAsPDF);
+    
+    // Month navigation
+    document.getElementById('prev-month').addEventListener('click', () => {
+        currentDisplayedDate.setMonth(currentDisplayedDate.getMonth() - 1);
         renderCalendar(currentDisplayedDate);
-        
-        // Set up event listeners
-        document.getElementById('back-to-services').addEventListener('click', () => {
-            showStep(2);
-        });
-        
-        document.getElementById('submit-booking').addEventListener('click', handleBookingSubmit);
-        document.getElementById('submit-payment').addEventListener('click', handlePaymentSubmit);
-        document.getElementById('new-bundle-button').addEventListener('click', () => {
-            window.location.reload();
-        });
-        
-        // Set up PDF download button
-        document.querySelector('.pdf-download').addEventListener('click', downloadSummaryAsPDF);
-        
-        // Month navigation
-        document.getElementById('prev-month').addEventListener('click', () => {
-            currentDisplayedDate.setMonth(currentDisplayedDate.getMonth() - 1);
-            renderCalendar(currentDisplayedDate);
-        });
-        
-        document.getElementById('next-month').addEventListener('click', () => {
-            currentDisplayedDate.setMonth(currentDisplayedDate.getMonth() + 1);
-            renderCalendar(currentDisplayedDate);
-        });
-        
-        // Set up phone number formatting
-        const phoneInput = document.getElementById('contact-phone');
-        phoneInput.addEventListener('input', formatPhoneNumber);
-    }
+    });
+    
+    document.getElementById('next-month').addEventListener('click', () => {
+        currentDisplayedDate.setMonth(currentDisplayedDate.getMonth() + 1);
+        renderCalendar(currentDisplayedDate);
+    });
+    
+    // Set up phone number formatting
+    const phoneInput = document.getElementById('contact-phone');
+    phoneInput.addEventListener('input', formatPhoneNumber);
+}
 
     // Render the selected services list with durations and options
     function renderSelectedServicesList() {
