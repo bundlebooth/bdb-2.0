@@ -208,6 +208,133 @@ renderServices = function() {
       background: var(--bb-light);
       position: relative
     }
+    
+    /* UPDATED STEP 1 STYLES */
+    .step-1-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    
+    .custom-bundle-banner {
+      text-align: center;
+      border: 2px dotted var(--bb-accent);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 30px;
+      background: #fff;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .custom-bundle-banner:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    
+    .custom-bundle-banner h3 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: var(--bb-blue);
+    }
+    
+    .custom-bundle-banner p {
+      margin: 8px 0 16px;
+      font-size: 0.95rem;
+      color: #555;
+    }
+    
+    .bundles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      width: 100%;
+    }
+    
+    .bundle-card {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .bundle-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+    }
+    
+    .bundle-card h3 {
+      margin-top: 0;
+      font-size: 1.2rem;
+      color: var(--bb-blue);
+    }
+    
+    .bundle-card p {
+      font-size: 0.9rem;
+      color: #666;
+      margin: 8px 0;
+    }
+    
+    .tag-list {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .tag {
+      background: #f0f4f8;
+      color: var(--bb-accent);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      display: inline-flex;
+      align-items: center;
+    }
+    
+    .tag-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      background: var(--bb-dark);
+      color: white;
+      border-radius: 50%;
+      margin-right: 4px;
+      font-size: 0.65rem;
+    }
+    
+    .corner-ribbon {
+      position: absolute;
+      top: 10px;
+      right: -10px;
+      background: gold;
+      color: white;
+      padding: 4px 8px;
+      font-size: 0.7rem;
+      font-weight: bold;
+      transform: rotate(10deg);
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    /* Special bundle styling */
+    .special-bundle {
+      background: linear-gradient(135deg, #fffbea, #fff5d1);
+      border: 2px solid gold;
+    }
+    
+    /* END OF UPDATED STEP 1 STYLES */
+    
+    /* Rest of the original styles (Steps 2 and 3) remain unchanged */
     .package {
       position: relative;
       background: #fff;
@@ -1399,35 +1526,6 @@ renderServices = function() {
       margin-top: 24px;
     }
     
-    /* Special Bundle Styles */
-    
-
-    
-
-    
-
-    /* Bundle Sections */
-    
-
-    .bundles-section::before {
-        content: attr(data-title);
-        position: absolute;
-        top: -12px;
-        left: 20px;
-        background: white;
-        padding: 0 10px;
-        font-weight: 600;
-        color: var(--bb-blue);
-    }
-
-    
-
-    .bundles-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 16px;
-    }
-
     /* Responsive adjustments */
     @media (max-width: 768px) {
       .action-buttons {
@@ -1459,64 +1557,6 @@ renderServices = function() {
       }
     }
 
-.bundles-section {
-    margin-bottom: 24px;
-    position: relative;
-    padding: 20px;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-.bundles-section-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 16px;
-    color: var(--bb-blue);
-    border-bottom: 2px solid #eee;
-    padding-bottom: 8px;
-}
-
-
-.package.special-bundle {
-    background: linear-gradient(135deg, #fffbea, #fff5d1);
-    border: 2px solid gold;
-    position: relative;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.package.special-bundle::before {
-    content: "🌟 SPECIAL";
-    position: absolute;
-    top: 10px;
-    right: -10px;
-    background: gold;
-    color: white;
-    padding: 4px 8px;
-    font-size: 0.7rem;
-    font-weight: bold;
-    border-radius: 4px;
-    transform: rotate(10deg);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-.package.special-bundle:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-}
-
-
-.package.custom-bundle {
-    border: 2px dotted var(--bb-accent);
-    background: #fff;
-    text-align: center;
-    padding: 20px;
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.package.custom-bundle:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-}
-
 </style>
 </head>
 <body>
@@ -1529,85 +1569,22 @@ renderServices = function() {
     </div>
     
     <div class="step" id="step-1">
-        <h2 style="margin-bottom:16px;">Step 1: Choose a Bundle</h2>
-        <div id="bundle-list">
-            <!-- Custom bundle at the top -->
-            <div style="text-align: center; margin-bottom: 30px;">
-                <div class="package custom-bundle" style="max-width: 400px; margin: 0 auto;">
-                    <h3>✨ Build Your Own Bundle ✨</h3>
-                    <p class="description">Create a fully custom package with as many services as you like</p>
-                </div>
+        <div class="step-1-container">
+            <h2 style="margin-bottom:16px;">Step 1: Choose a Bundle</h2>
+            
+            <!-- Custom bundle banner at the top -->
+            <div class="custom-bundle-banner" onclick="selectCustomBundle()">
+                <h3>✨ Build Your Own Bundle ✨</h3>
+                <p>Create a fully custom package with as many services as you like</p>
             </div>
             
-            <!-- Combined bundles section without title -->
-            <div class="bundles-section">
-                <div class="bundles-grid">
-                    <!-- Corporate Package -->
-                    <div class="package">
-                        <h3>Corporate Package</h3>
-                        <p class="description">Professional services for corporate events and galas</p>
-                        <div class="categories-label">Services included:</div>
-                        <div>
-                            <div style="display:inline-flex;align-items:center;margin-right:8px;margin-bottom:6px;">
-                                <span class="category-count">1</span>
-                                <span class="category-tag scene-setters">Scene Setters</span>
-                            </div>
-                            <div style="display:inline-flex;align-items:center;margin-right:8px;margin-bottom:6px;">
-                                <span class="category-count">2</span>
-                                <span class="category-tag digital">Digital</span>
-                            </div>
-                            <div style="display:inline-flex;align-items:center;margin-right:8px;margin-bottom:6px;">
-                                <span class="category-count">1</span>
-                                <span class="category-tag interactive">Interactive</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Birthday Bash -->
-                    <div class="package">
-                        <h3>Birthday Bash</h3>
-                        <p class="description">Everything you need for an unforgettable birthday party</p>
-                        <div class="categories-label">Services included:</div>
-                        <div>
-                            <div style="display:inline-flex;align-items:center;margin-right:8px;margin-bottom:6px;">
-                                <span class="category-count">1</span>
-                                <span class="category-tag scene-setters">Scene Setters</span>
-                            </div>
-                            <div style="display:inline-flex;align-items:center;margin-right:8px;margin-bottom:6px;">
-                                <span class="category-count">1</span>
-                                <span class="category-tag special-effects">Special Effects</span>
-                            </div>
-                            <div style="display:inline-flex;align-items:center;margin-right:8px;margin-bottom:6px;">
-                                <span class="category-count">1</span>
-                                <span class="category-tag interactive">Interactive</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Wedding Special -->
-                    <div class="package special-bundle">
-                        <div class="special-tag">SPECIAL</div>
-                        <h3>Wedding Special</h3>
-                        <p class="description">Limited time wedding package with discount</p>
-                        <div class="discount-message">15% OFF!</div>
-                        <div class="categories-label">Services included:</div>
-                        <div>
-                            <div style="display:inline-flex;align-items:center;margin-right:8px;margin-bottom:6px;">
-                                <span class="category-count">2</span>
-                                <span class="category-tag scene-setters">Scene Setters</span>
-                            </div>
-                            <div style="display:inline-flex;align-items:center;margin-right:8px;margin-bottom:6px;">
-                                <span class="category-count">1</span>
-                                <span class="category-tag sweets-brews">Sweets and Brews</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <!-- Bundles grid -->
+            <div class="bundles-grid" id="bundle-list">
+                <!-- Bundles will be inserted here by JavaScript -->
             </div>
         </div>
     </div>
     
-    <!-- Rest of your HTML remains the same -->
     <div class="step" id="step-2" style="display:none;">
         <h2 style="margin-bottom:16px;">Step 2: Select Your Services</h2>
         <div id="compare-warning" class="compare-message" style="display:none;"></div>
@@ -2148,70 +2125,31 @@ renderServices = function() {
         }
     }
 
-    // Updated renderBundles function to combine all bundles
+    // Updated renderBundles function to match new layout
     function renderBundles() {
         const list = document.getElementById('bundle-list');
         list.innerHTML = '';
         
-        // Create custom bundle at the top
-        const customBundleDiv = document.createElement('div');
-        customBundleDiv.style.textAlign = 'center';
-        customBundleDiv.style.marginBottom = '30px';
-        
-        const customBundle = document.createElement('div');
-        customBundle.className = 'package custom-bundle';
-        customBundle.style.maxWidth = '400px';
-        customBundle.style.margin = '0 auto';
-        
-        customBundle.innerHTML = `
-            <h3>✨ Build Your Own Bundle ✨</h3>
-            <p class="description">Create a fully custom package with as many services as you like</p>
-        `;
-        
-        customBundle.addEventListener('click', () => {
-            selectedBundle = {
-                name: "Custom Bundle",
-                description: "Fully custom bundle",
-                categories: {},
-                discountPercentage: 0,
-                isCustom: true
-            };
-            showStep(2);
-        });
-        
-        customBundleDiv.appendChild(customBundle);
-        list.appendChild(customBundleDiv);
-        
-        // Create combined bundles section
-        const combinedSection = document.createElement('div');
-        combinedSection.className = 'bundles-section';
-        
-        const combinedGrid = document.createElement('div');
-        combinedGrid.className = 'bundles-grid';
-        
         // Add all bundles (both special and classic)
         bundles.forEach((bundle, index) => {
-            const isSpecial = bundle.Special;
+            const isSpecial = bundle.Special || bundle.discountPercentage > 0;
             const div = createBundleDiv(bundle, index, isSpecial);
-            combinedGrid.appendChild(div);
+            list.appendChild(div);
         });
-        
-        combinedSection.appendChild(combinedGrid);
-        list.appendChild(combinedSection);
 
         if (bundles.length === 0) {
             list.innerHTML = '<p>No bundles available at this time.</p>';
         }
     }
 
-    // Helper function to create bundle divs
+    // Helper function to create bundle divs with new styling
     function createBundleDiv(bundle, index, isSpecial) {
         const div = document.createElement('div');
-        div.className = `package ${isSpecial ? 'special-bundle' : ''}`;
+        div.className = `bundle-card ${isSpecial ? 'special-bundle' : ''}`;
         
-        // Generate category tags with separate count badges
+        // Generate category tags with count badges
         const categoryTags = Object.entries(bundle.categories).map(([category, count]) => {
-            let tagClass = 'category-tag';
+            let tagClass = 'tag';
             if (category.includes('Scene')) tagClass += ' scene-setters';
             if (category.includes('Sweets')) tagClass += ' sweets-brews';
             if (category.includes('Special Effects')) tagClass += ' special-effects';
@@ -2220,29 +2158,22 @@ renderServices = function() {
             if (category.includes('Interactive')) tagClass += ' interactive';
             
             return `
-                <div style="display: inline-flex; align-items: center; margin-right: 8px; margin-bottom: 6px;">
-                    <span class="category-count">${count}</span>
-                    <span class="${tagClass}">${category}</span>
+                <div class="${tagClass}">
+                    <span class="tag-count">${count}</span>
+                    ${category}
                 </div>
             `;
         }).join('');
         
-        // Add special tag if applicable
-        const specialTag = isSpecial ? `<div class="special-tag">SPECIAL</div>` : '';
-        
-        // Add discount message if applicable
-        const discountMessage = isSpecial && bundle.discountPercentage ? 
-            `<div class="discount-message">${bundle.discountPercentage}% OFF!</div>` : '';
+        // Add special ribbon if applicable
+        const ribbon = isSpecial && bundle.discountPercentage ? 
+            `<div class="corner-ribbon">${bundle.discountPercentage}% OFF</div>` : '';
         
         div.innerHTML = `
-            ${specialTag}
-            <div class="package-content">
-                <h3>${bundle.name}</h3>
-                <p class="description">${bundle.description || "No description provided."}</p>
-                ${discountMessage}
-                <div class="categories-label">Services included:</div>
-                <div>${categoryTags}</div>
-            </div>
+            ${ribbon}
+            <h3>${bundle.name}</h3>
+            <p>${bundle.description || "No description provided."}</p>
+            <div class="tag-list">${categoryTags}</div>
         `;
         
         div.addEventListener('click', () => {
@@ -2256,11 +2187,23 @@ renderServices = function() {
     // Handle bundle selection
     function selectBundle(index) {
         selectedBundle = bundles[index];
-        document.querySelectorAll('#bundle-list .package').forEach((el, i) => {
+        document.querySelectorAll('#bundle-list .bundle-card').forEach((el, i) => {
             el.classList.toggle('selected', i === index);
         });
         
         renderStep2();
+    }
+
+    // Handle custom bundle selection
+    function selectCustomBundle() {
+        selectedBundle = {
+            name: "Custom Bundle",
+            description: "Fully custom bundle",
+            categories: {},
+            discountPercentage: 0,
+            isCustom: true
+        };
+        showStep(2);
     }
 
     // Show step 2 with services
