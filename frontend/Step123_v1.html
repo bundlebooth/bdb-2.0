@@ -607,26 +607,32 @@ renderServices = function() {
       background: #e6f0fa;
       color: var(--tag-scene);
     }
+    
     .service-category.sweets-brews {
       background: #e6d9cb;
       color: var(--tag-sweets);
     }
+    
     .service-category.special-effects {
       background: #fff7e0;
       color: var(--tag-special-effects);
     }
+    
     .service-category.guest-book {
       background: #fce7f3;
       color: var(--tag-guest-book);
     }
+    
     .service-category.digital {
       background: #e8ecef;
       color: var(--tag-digital);
     }
+    
     .service-category.interactive {
       background: #f3e8ff;
       color: var(--tag-interactive);
     }
+    
     .event-details-card {
       margin-top: 24px;
     }
@@ -1525,30 +1531,18 @@ renderServices = function() {
     <div class="step" id="step-1">
         <h2 style="margin-bottom:16px;">Step 1: Choose a Bundle</h2>
         <div id="bundle-list">
-            <div class="bundles-section special-bundles-section" data-title="✨ Special Offers ✨">
-                <div class="bundles-grid">
-                    <div class="package special-bundle">
-                        <div class="special-tag">SPECIAL</div>
-                        <h3>Wedding Special</h3>
-                        <p class="description">Limited time wedding package with discount</p>
-                        <div class="discount-message">15% OFF!</div>
-                        <div class="categories-label">Services included:</div>
-                        <div>
-                            <div style="display:inline-flex;align-items:center;margin-right:8px;margin-bottom:6px;">
-                                <span class="category-count">2</span>
-                                <span class="category-tag scene-setters">Scene Setters</span>
-                            </div>
-                            <div style="display:inline-flex;align-items:center;margin-right:8px;margin-bottom:6px;">
-                                <span class="category-count">1</span>
-                                <span class="category-tag sweets-brews">Sweets and Brews</span>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Custom bundle at the top -->
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div class="package custom-bundle" style="max-width: 400px; margin: 0 auto;">
+                    <h3>✨ Build Your Own Bundle ✨</h3>
+                    <p class="description">Create a fully custom package with as many services as you like</p>
                 </div>
             </div>
             
-            <div class="bundles-section classic-bundles-section" data-title="Classic Bundles">
+            <!-- Combined bundles section without title -->
+            <div class="bundles-section">
                 <div class="bundles-grid">
+                    <!-- Corporate Package -->
                     <div class="package">
                         <h3>Corporate Package</h3>
                         <p class="description">Professional services for corporate events and galas</p>
@@ -1569,6 +1563,7 @@ renderServices = function() {
                         </div>
                     </div>
                     
+                    <!-- Birthday Bash -->
                     <div class="package">
                         <h3>Birthday Bash</h3>
                         <p class="description">Everything you need for an unforgettable birthday party</p>
@@ -1585,6 +1580,25 @@ renderServices = function() {
                             <div style="display:inline-flex;align-items:center;margin-right:8px;margin-bottom:6px;">
                                 <span class="category-count">1</span>
                                 <span class="category-tag interactive">Interactive</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Wedding Special -->
+                    <div class="package special-bundle">
+                        <div class="special-tag">SPECIAL</div>
+                        <h3>Wedding Special</h3>
+                        <p class="description">Limited time wedding package with discount</p>
+                        <div class="discount-message">15% OFF!</div>
+                        <div class="categories-label">Services included:</div>
+                        <div>
+                            <div style="display:inline-flex;align-items:center;margin-right:8px;margin-bottom:6px;">
+                                <span class="category-count">2</span>
+                                <span class="category-tag scene-setters">Scene Setters</span>
+                            </div>
+                            <div style="display:inline-flex;align-items:center;margin-right:8px;margin-bottom:6px;">
+                                <span class="category-count">1</span>
+                                <span class="category-tag sweets-brews">Sweets and Brews</span>
                             </div>
                         </div>
                     </div>
@@ -2134,56 +2148,63 @@ renderServices = function() {
         }
     }
 
-    // Render bundles list
-    // Updated renderBundles function
-function renderBundles() {
-    const list = document.getElementById('bundle-list');
-    list.innerHTML = '';
-    
-    // Separate special and regular bundles
-    const specialBundles = bundles.filter(b => b.Special);
-    const classicBundles = bundles.filter(b => !b.Special);
-
-    // Create special bundles section if any exist
-    if (specialBundles.length > 0) {
-        const specialSection = document.createElement('div');
-        specialSection.className = 'bundles-section special-bundles-section';
-        specialSection.innerHTML = '<div class="bundles-section-title">✨ Special Offers ✨</div>' + specialSection.innerHTML;
+    // Updated renderBundles function to combine all bundles
+    function renderBundles() {
+        const list = document.getElementById('bundle-list');
+        list.innerHTML = '';
         
-        const specialGrid = document.createElement('div');
-        specialGrid.className = 'bundles-grid';
+        // Create custom bundle at the top
+        const customBundleDiv = document.createElement('div');
+        customBundleDiv.style.textAlign = 'center';
+        customBundleDiv.style.marginBottom = '30px';
         
-        specialBundles.forEach((bundle, index) => {
-            const originalIndex = bundles.findIndex(b => b.name === bundle.name);
-            const div = createBundleDiv(bundle, originalIndex, true);
-            specialGrid.appendChild(div);
+        const customBundle = document.createElement('div');
+        customBundle.className = 'package custom-bundle';
+        customBundle.style.maxWidth = '400px';
+        customBundle.style.margin = '0 auto';
+        
+        customBundle.innerHTML = `
+            <h3>✨ Build Your Own Bundle ✨</h3>
+            <p class="description">Create a fully custom package with as many services as you like</p>
+        `;
+        
+        customBundle.addEventListener('click', () => {
+            selectedBundle = {
+                name: "Custom Bundle",
+                description: "Fully custom bundle",
+                categories: {},
+                discountPercentage: 0,
+                isCustom: true
+            };
+            showStep(2);
         });
-        specialSection.appendChild(specialGrid);
-        list.appendChild(specialSection);
+        
+        customBundleDiv.appendChild(customBundle);
+        list.appendChild(customBundleDiv);
+        
+        // Create combined bundles section
+        const combinedSection = document.createElement('div');
+        combinedSection.className = 'bundles-section';
+        
+        const combinedGrid = document.createElement('div');
+        combinedGrid.className = 'bundles-grid';
+        
+        // Add all bundles (both special and classic)
+        bundles.forEach((bundle, index) => {
+            const isSpecial = bundle.Special;
+            const div = createBundleDiv(bundle, index, isSpecial);
+            combinedGrid.appendChild(div);
+        });
+        
+        combinedSection.appendChild(combinedGrid);
+        list.appendChild(combinedSection);
+
+        if (bundles.length === 0) {
+            list.innerHTML = '<p>No bundles available at this time.</p>';
+        }
     }
 
-    // Create classic bundles section
-    const classicSection = document.createElement('div');
-    classicSection.className = 'bundles-section classic-bundles-section';
-    classicSection.innerHTML = '<div class="bundles-section-title">Classic Bundles</div>' + classicSection.innerHTML;
-    
-    const classicGrid = document.createElement('div');
-    classicGrid.className = 'bundles-grid';
-    
-    classicBundles.forEach((bundle, index) => {
-        const originalIndex = bundles.findIndex(b => b.name === bundle.name);
-        const div = createBundleDiv(bundle, originalIndex, false);
-        classicGrid.appendChild(div);
-    });
-    classicSection.appendChild(classicGrid);
-    list.appendChild(classicSection);
-
-    if (bundles.length === 0) {
-        list.innerHTML = '<p>No bundles available at this time.</p>';
-    }
-}
-
-/// Helper function to create bundle divs
+    // Helper function to create bundle divs
     function createBundleDiv(bundle, index, isSpecial) {
         const div = document.createElement('div');
         div.className = `package ${isSpecial ? 'special-bundle' : ''}`;
