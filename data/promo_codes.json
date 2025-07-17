@@ -7,7 +7,7 @@
   "validTo": "2025-10-15T23:59:59Z",
   "usageLimit": 100,            
   "minimumOrderValue": 50,     
-  "applicableCategories": ["Interactive Booths", "Sweets and Brews"],  // optional, or leave [] for all
+  "applicableCategories": ["Interactive Booths", "Sweets and Brews"], 
   "isActive": true
 }
 
