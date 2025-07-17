@@ -6,162 +6,9 @@
 <meta http-equiv="Permissions-Policy" content="payment=(self 'https://bundlebooth.ca')">
 <title>BundleBooth Custom Builder</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
-<script src="https://js.stripe.com/v3/">
-// Add custom bundle to bundles list after fetchBundles
-const originalFetchBundles = fetchBundles;
-fetchBundles = async function() {
-    await originalFetchBundles();
-    bundles.push({
-        name: "✨ Build Your Own Bundle ✨",
-        description: "Create a fully custom package with as many services as you like",
-        categories: {},
-        discountPercentage: 0,
-        isCustom: true
-    });
-    renderBundles();
-};
-
-// Modify createBundleDiv to apply custom-bundle class and special behavior
-const originalCreateBundleDiv = createBundleDiv;
-createBundleDiv = function(bundle, index, isSpecial) {
-    const div = originalCreateBundleDiv(bundle, index, isSpecial);
-    if (bundle.isCustom) {
-        div.classList.add('custom-bundle');
-        div.addEventListener('click', () => {
-            selectedBundle = {
-                name: "Custom Bundle",
-                description: "Fully custom bundle",
-                categories: {},
-                discountPercentage: 0
-            };
-            showStep(2);
-        });
-    }
-    return div;
-};
-
-
-// Patch renderServices filtering to allow all services for custom bundle
-const originalRenderServices = renderServices;
-renderServices = function() {
-    const originalCategories = selectedBundle.categories;
-    if (selectedBundle && selectedBundle.isCustom) {
-        // Temporarily inject all categories as unlimited
-        selectedBundle.categories = {};
-        services.forEach(s => selectedBundle.categories[s.ServiceType] = 999);
-    }
-    originalRenderServices();
-    if (selectedBundle && selectedBundle.isCustom) {
-        // Restore original empty categories (or keep as is)
-        selectedBundle.categories = originalCategories;
-    }
-};
-
-</script>
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js">
-// Add custom bundle to bundles list after fetchBundles
-const originalFetchBundles = fetchBundles;
-fetchBundles = async function() {
-    await originalFetchBundles();
-    bundles.push({
-        name: "✨ Build Your Own Bundle ✨",
-        description: "Create a fully custom package with as many services as you like",
-        categories: {},
-        discountPercentage: 0,
-        isCustom: true
-    });
-    renderBundles();
-};
-
-// Modify createBundleDiv to apply custom-bundle class and special behavior
-const originalCreateBundleDiv = createBundleDiv;
-createBundleDiv = function(bundle, index, isSpecial) {
-    const div = originalCreateBundleDiv(bundle, index, isSpecial);
-    if (bundle.isCustom) {
-        div.classList.add('custom-bundle');
-        div.addEventListener('click', () => {
-            selectedBundle = {
-                name: "Custom Bundle",
-                description: "Fully custom bundle",
-                categories: {},
-                discountPercentage: 0
-            };
-            showStep(2);
-        });
-    }
-    return div;
-};
-
-
-// Patch renderServices filtering to allow all services for custom bundle
-const originalRenderServices = renderServices;
-renderServices = function() {
-    const originalCategories = selectedBundle.categories;
-    if (selectedBundle && selectedBundle.isCustom) {
-        // Temporarily inject all categories as unlimited
-        selectedBundle.categories = {};
-        services.forEach(s => selectedBundle.categories[s.ServiceType] = 999);
-    }
-    originalRenderServices();
-    if (selectedBundle && selectedBundle.isCustom) {
-        // Restore original empty categories (or keep as is)
-        selectedBundle.categories = originalCategories;
-    }
-};
-
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
-// Add custom bundle to bundles list after fetchBundles
-const originalFetchBundles = fetchBundles;
-fetchBundles = async function() {
-    await originalFetchBundles();
-    bundles.push({
-        name: "✨ Build Your Own Bundle ✨",
-        description: "Create a fully custom package with as many services as you like",
-        categories: {},
-        discountPercentage: 0,
-        isCustom: true
-    });
-    renderBundles();
-};
-
-// Modify createBundleDiv to apply custom-bundle class and special behavior
-const originalCreateBundleDiv = createBundleDiv;
-createBundleDiv = function(bundle, index, isSpecial) {
-    const div = originalCreateBundleDiv(bundle, index, isSpecial);
-    if (bundle.isCustom) {
-        div.classList.add('custom-bundle');
-        div.addEventListener('click', () => {
-            selectedBundle = {
-                name: "Custom Bundle",
-                description: "Fully custom bundle",
-                categories: {},
-                discountPercentage: 0
-            };
-            showStep(2);
-        });
-    }
-    return div;
-};
-
-
-// Patch renderServices filtering to allow all services for custom bundle
-const originalRenderServices = renderServices;
-renderServices = function() {
-    const originalCategories = selectedBundle.categories;
-    if (selectedBundle && selectedBundle.isCustom) {
-        // Temporarily inject all categories as unlimited
-        selectedBundle.categories = {};
-        services.forEach(s => selectedBundle.categories[s.ServiceType] = 999);
-    }
-    originalRenderServices();
-    if (selectedBundle && selectedBundle.isCustom) {
-        // Restore original empty categories (or keep as is)
-        selectedBundle.categories = originalCategories;
-    }
-};
-
-</script>
+<script src="https://js.stripe.com/v3/"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
     :root {
       --bb-blue: #333;
@@ -214,6 +61,20 @@ renderServices = function() {
       max-width: 1200px;
       margin: 0 auto;
       width: 100%;
+    }
+    
+    .section-title {
+      font-size: 1.5rem;
+      color: var(--bb-blue);
+      margin: 30px 0 15px 0;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--bb-accent);
+    }
+    
+    .step-description {
+      color: #666;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
     }
     
     .custom-bundle-banner {
@@ -283,6 +144,18 @@ renderServices = function() {
       margin: 8px 0;
     }
     
+    .bundle-duration {
+      font-weight: 500;
+      color: var(--bb-accent);
+      margin: 8px 0;
+    }
+    
+    .services-included {
+      font-size: 0.85rem;
+      color: #666;
+      margin: 10px 0 5px 0;
+    }
+    
     .tag-list {
       margin-top: 12px;
       display: flex;
@@ -317,7 +190,7 @@ renderServices = function() {
       position: absolute;
       top: 10px;
       right: -10px;
-      background: gold;
+      background: var(--bb-red);
       color: white;
       padding: 4px 8px;
       font-size: 0.7rem;
@@ -339,6 +212,11 @@ renderServices = function() {
       border: 2px solid var(--bb-accent);
     }
     
+    .infinity-symbol {
+      font-size: 1.5rem;
+      margin: 10px 0;
+    }
+    
     /* END OF UPDATED STEP 1 STYLES */
     
     /* Rest of the original styles (Steps 2 and 3) remain unchanged */
@@ -356,7 +234,8 @@ renderServices = function() {
       transition: transform .2s, box-shadow .2s, background-color .2s, border-color .2s;
       display: flex;
       flex-direction: column;
-      min-height: 100%
+      min-height: 100%;
+      height: 100%;
     }
     .package.selected {
       background-color: rgba(52, 152, 219, .1);
@@ -552,6 +431,10 @@ renderServices = function() {
       justify-content: center;
       width: 100%;
       padding-top: 10px;
+      position: absolute;
+      bottom: 15px;
+      left: 0;
+      padding: 0 18px;
     }
     .show-features-toggle:hover {
       text-decoration: underline;
@@ -842,22 +725,6 @@ renderServices = function() {
       opacity: 0.9;
       z-index: 1000;
       font-size: 14px;
-    }
-    
-    /* PDF Download Button */
-    .pdf-download {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #666;
-      transition: color 0.2s;
-    }
-    
-    .pdf-download:hover {
-      color: var(--bb-red);
     }
     
     /* CALENDAR STYLES */
@@ -1487,6 +1354,8 @@ renderServices = function() {
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 16px;
       margin-top: 16px;
+      overflow-x: auto;
+      padding-bottom: 10px;
     }
     
     .chevron-icon {
@@ -1578,12 +1447,15 @@ renderServices = function() {
     <div class="step" id="step-1">
         <div class="step-1-container">
             <h2 style="margin-bottom:16px;">Step 1: Choose a Bundle</h2>
+            <p class="step-description">Select from our pre-designed bundles or create your own custom package</p>
             
             <!-- Custom bundle banner at the top -->
             <div class="custom-bundle-banner" onclick="selectCustomBundle()">
                 <h3>✨ Build Your Own Bundle ✨</h3>
                 <p>Create a fully custom package with as many services as you like</p>
             </div>
+            
+            <h3 class="section-title">Promotions</h3>
             
             <!-- Bundles grid -->
             <div class="bundles-grid" id="bundle-list">
@@ -1594,6 +1466,7 @@ renderServices = function() {
     
     <div class="step" id="step-2" style="display:none;">
         <h2 style="margin-bottom:16px;">Step 2: Select Your Services</h2>
+        <p class="step-description">Choose the services you want to include in your bundle</p>
         <div id="compare-warning" class="compare-message" style="display:none;"></div>
         <div id="services-container"></div>
         
@@ -1664,17 +1537,9 @@ renderServices = function() {
     
     <div class="step" id="step-3" style="display:none;">
         <h2 style="margin-bottom:16px;">Step 3: Review & Book</h2>
+        <p class="step-description">Review your selections and complete your booking</p>
         
         <div class="summary-card">
-            <button class="pdf-download" title="Download Summary as PDF">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                    <line x1="16" y1="17" x2="8" y2="17"></line>
-                    <polyline points="10 9 9 9 8 9"></polyline>
-                </svg>
-            </button>
             <div class="summary-header">
                 <div class="summary-title" id="bundle-title">Your Custom Bundle</div>
             </div>
@@ -1683,7 +1548,7 @@ renderServices = function() {
                 <span>Subtotal:</span>
                 <span id="subtotal-price">C$0</span>
             </div>
-            <div class="discount-row">
+            <div class="discount-row" id="discount-row" style="display: none;">
                 <span>Bundle Discount (10%):</span>
                 <span id="discount-amount">-C$0</span>
             </div>
@@ -1972,6 +1837,7 @@ renderServices = function() {
         // Set up back to bundle button
         document.getElementById('back-to-bundle').addEventListener('click', () => {
             showStep(1);
+            window.scrollTo(0, 0);
         });
     });
 
@@ -1984,6 +1850,7 @@ renderServices = function() {
                 if (index < currentStep) {
                     // Allow going back to completed steps
                     showStep(index + 1);
+                    window.scrollTo(0, 0);
                 }
             });
         });
@@ -2030,6 +1897,7 @@ renderServices = function() {
                 {
                     "name": "Wedding Essentials",
                     "description": "Perfect package for weddings with all the must-have services",
+                    "duration": "3 hours",
                     "categories": {
                         "Scene Setters": 2,
                         "Sweets and Brews": 1,
@@ -2039,6 +1907,7 @@ renderServices = function() {
                 {
                     "name": "Corporate Package",
                     "description": "Professional services for corporate events and galas",
+                    "duration": "4 hours",
                     "categories": {
                         "Scene Setters": 1,
                         "Digital": 2,
@@ -2048,6 +1917,7 @@ renderServices = function() {
                 {
                     "name": "Birthday Bash",
                     "description": "Everything you need for an unforgettable birthday party",
+                    "duration": "3 hours",
                     "categories": {
                         "Scene Setters": 1,
                         "Special Effects": 1,
@@ -2183,12 +2053,15 @@ renderServices = function() {
             ${ribbon}
             <h3>${bundle.name}</h3>
             <p>${bundle.description || "No description provided."}</p>
+            ${bundle.duration ? `<p class="bundle-duration">Duration: ${bundle.duration}</p>` : ''}
+            <p class="services-included">Services included:</p>
             <div class="tag-list">${categoryTags}</div>
         `;
         
         div.addEventListener('click', () => {
             selectBundle(index);
             showStep(2);
+            window.scrollTo(0, 0);
         });
         
         return div;
@@ -2212,21 +2085,25 @@ function selectCustomBundle() {
             selectedBundle = {
                 name: "Custom Bundle",
                 description: "Fully custom bundle",
+                duration: "3 hours",
                 categories: {},
                 discountPercentage: 0,
                 isCustom: true
             };
             renderStep2();
+            window.scrollTo(0, 0);
         });
     } else {
         selectedBundle = {
             name: "Custom Bundle",
             description: "Fully custom bundle",
+            duration: "3 hours",
             categories: {},
             discountPercentage: 0,
             isCustom: true
         };
         renderStep2();
+        window.scrollTo(0, 0);
     }
 }
 
@@ -2256,11 +2133,17 @@ function renderStep3() {
     document.getElementById('discount-amount').textContent = `-C$${discount.toFixed(2)}`;
     document.getElementById('final-total-price').textContent = `C$${total.toFixed(2)}`;
     
-    // Update discount text to show dynamic percentage
-    const discountText = selectedBundle.discountPercentage ? 
-        `Bundle Discount (${selectedBundle.discountPercentage}%):` : 
-        `Bundle Discount (10%):`;
-    document.querySelector('.discount-row span:first-child').textContent = discountText;
+    // Show/hide discount row based on bundle type
+    const discountRow = document.getElementById('discount-row');
+    if (selectedBundle.isCustom) {
+        discountRow.style.display = 'none';
+    } else {
+        discountRow.style.display = 'flex';
+        const discountText = selectedBundle.discountPercentage ? 
+            `Bundle Discount (${selectedBundle.discountPercentage}%):` : 
+            `Bundle Discount (10%):`;
+        document.querySelector('.discount-row span:first-child').textContent = discountText;
+    }
     
     // Update payment amount displays
     document.getElementById('payment-amount').textContent = `$${total.toFixed(2)}`;
@@ -2276,6 +2159,7 @@ function renderStep3() {
     // Set up event listeners
     document.getElementById('back-to-services').addEventListener('click', () => {
         showStep(2);
+        window.scrollTo(0, 0);
     });
     
     document.getElementById('submit-booking').addEventListener('click', handleBookingSubmit);
@@ -2283,9 +2167,6 @@ function renderStep3() {
     document.getElementById('new-bundle-button').addEventListener('click', () => {
         window.location.reload();
     });
-    
-    // Set up PDF download button
-    document.querySelector('.pdf-download').addEventListener('click', downloadSummaryAsPDF);
     
     // Month navigation
     document.getElementById('prev-month').addEventListener('click', () => {
@@ -2579,49 +2460,6 @@ function renderStep3() {
         return true;
     }
 
-    // Download summary as PDF
-    async function downloadSummaryAsPDF() {
-        const summaryCard = document.querySelector('.summary-card');
-        const button = document.querySelector('.pdf-download');
-        
-        try {
-            button.innerHTML = '<span class="spinner"></span>';
-            
-            // Use html2canvas to capture the summary card
-            const canvas = await html2canvas(summaryCard, {
-                scale: 2,
-                logging: false,
-                useCORS: true,
-                allowTaint: true
-            });
-            
-            // Convert canvas to PDF
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-            
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save('BundleBooth-Summary.pdf');
-            
-            showToast('Summary downloaded successfully!');
-        } catch (error) {
-            console.error('Error generating PDF:', error);
-            showToast('Failed to download summary. Please try again.');
-        } finally {
-            button.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                    <line x1="16" y1="17" x2="8" y2="17"></line>
-                    <polyline points="10 9 9 9 8 9"></polyline>
-                </svg>
-            `;
-        }
-    }
-
     // Show/hide steps
     function showStep(stepNumber) {
         // Hide all steps
@@ -2750,7 +2588,7 @@ function renderServices() {
             ` : '';
             
             div.innerHTML = `
-                <div class="package-content">
+                <div class="package-content" style="padding-bottom: 30px;">
                     <h3>${service.name}</h3>
                     <span class="${tagClass}">${service.ServiceType}</span>
                     <p class="description">${service.description || "No description available."}</p>
@@ -2769,6 +2607,25 @@ function renderServices() {
                 }
             });
             
+            // Add click handler for features toggle
+            if (service.features) {
+                const featuresButton = div.querySelector('.show-features-toggle');
+                featuresButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const overlay = div.querySelector('.features-overlay');
+                    overlay.style.display = 'block';
+                });
+                
+                const closeButton = div.querySelector('.close-overlay');
+                if (closeButton) {
+                    closeButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const overlay = div.querySelector('.features-overlay');
+                        overlay.style.display = 'none';
+                    });
+                }
+            }
+            
             servicesGrid.appendChild(div);
         });
     });
@@ -2781,6 +2638,7 @@ function renderServices() {
     document.getElementById('review-selection').addEventListener('click', () => {
         if (checkBundleRequirements()) {
             renderStep3();
+            window.scrollTo(0, 0);
         } else {
             const warningElement = document.getElementById('requirements-warning');
             warningElement.style.display = 'flex';
@@ -3315,6 +3173,7 @@ function padTime(num) {
         bundles.push({
             name: "✨ Build Your Own Bundle ✨",
             description: "Create a fully custom package with as many services as you like",
+            duration: "3 hours",
             categories: {},
             discountPercentage: 0,
             isCustom: true
@@ -3328,15 +3187,24 @@ function padTime(num) {
         const div = originalCreateBundleDiv(bundle, index, isSpecial);
         if (bundle.isCustom) {
             div.classList.add('custom-bundle');
+            div.innerHTML = `
+                <h3>${bundle.name}</h3>
+                <p>${bundle.description || "No description provided."}</p>
+                ${bundle.duration ? `<p class="bundle-duration">Duration: ${bundle.duration}</p>` : ''}
+                <p class="services-included">Services included:</p>
+                <div class="infinity-symbol">∞</div>
+            `;
             div.addEventListener('click', () => {
                 selectedBundle = {
                     name: "Custom Bundle",
                     description: "Fully custom bundle",
+                    duration: "3 hours",
                     categories: {},
                     discountPercentage: 0,
                     isCustom: true  // Make sure this flag is set
                 };
                 showStep(2);
+                window.scrollTo(0, 0);
             });
         }
         return div;
