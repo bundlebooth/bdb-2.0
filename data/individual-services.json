@@ -58,7 +58,7 @@
     "New": "N"
   },
   {
-    "name": "🎤 Audio Guest Book",
+    "name": "☎️ Audio Guest Book",
     "slug": "audio-guest-book",
     "ServiceType": "Interactive Booths",
     "description": "The Audio Guest Book offers a timeless and personal way to capture heartfelt moments. Guests simply pick up the vintage-style phone and leave a message.",
@@ -79,7 +79,7 @@
     "New": "N"
   },
   {
-    "name": "📰 Magazine Photo Booth",
+    "name": "⭐️ Magazine Photo Booth",
     "slug": "magazine-photo-booth",
     "ServiceType": "Interactive Booths",
     "description": "Bring the allure of a fashion magazine cover to your next event with our Magazine Photo Booth Box. Guests pose inside a life-sized, custom-branded magazine frame.",
@@ -103,7 +103,7 @@
     "New": "N"
   },
   {
-    "name": "☕ Espresso Booth",
+    "name": "☕️ Espresso Booth",
     "slug": "espresso-booth",
     "ServiceType": "Sweets and Brews",
     "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
@@ -258,7 +258,7 @@
     "New": "N"
   },
   {
-    "name": "❄️ Dry Ice Fog",
+    "name": "☁️ Dry Ice Fog",
     "slug": "dry-ice-fog",
     "ServiceType": "Scene Setters",
     "description": "Create a stunning, cinematic atmosphere with our Dry Ice Fog Effect! This low-lying fog adds a magical touch to first dances, stage entrances, or any moment you want to make unforgettable.",
@@ -279,7 +279,7 @@
     "New": "N"
   },
   {
-    "name": "💃 Laser First Dance",
+    "name": "🪩 Laser First Dance",
     "slug": "laser-first-dance",
     "ServiceType": "Scene Setters",
     "description": "Make your first dance truly unforgettable with our Laser First Dance Experience! Set beneath a canopy of synchronized laser lights and dreamy effects.",
