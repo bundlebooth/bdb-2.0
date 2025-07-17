@@ -30,7 +30,7 @@
       "Sweets and Brews": 1
     }
   },
-    {
+  {
     "name": "Luxury Wedding Experience",
     "description": "High-end wedding atmosphere with double booths and sweets.",
     "Special": true,
@@ -40,4 +40,5 @@
       "Scene Setters": 1,
       "Sweets and Brews": 1
     }
+  }
 ]
