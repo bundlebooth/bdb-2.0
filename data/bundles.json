@@ -29,5 +29,15 @@
       "Scene Setters": 1,
       "Sweets and Brews": 1
     }
-  }
+  },
+    {
+    "name": "Luxury Wedding Experience",
+    "description": "High-end wedding atmosphere with double booths and sweets.",
+    "Special": true,
+    "discountPercentage": 18,
+    "categories": {
+      "Interactive Booths": 2,
+      "Scene Setters": 1,
+      "Sweets and Brews": 1
+    }
 ]
