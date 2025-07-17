@@ -1,1 +1,13 @@
+{
+  "promoCode": "SUMMER25",
+  "description": "Get 25% off your order during our Summer Sale!",
+  "discountType": "percentage",   // or "fixed"
+  "discountValue": 25,           // if percentage, 25%; if fixed, use amount like 20
+  "validFrom": "2025-07-20T00:00:00Z",
+  "validTo": "2025-08-15T23:59:59Z",
+  "usageLimit": 100,             // maximum number of times this code can be used
+  "minimumOrderValue": 50,       // optional, minimum cart/order total to apply promo
+  "applicableCategories": ["Interactive Booths", "Sweets and Brews"],  // optional, or leave [] for all
+  "isActive": true
+}
 
