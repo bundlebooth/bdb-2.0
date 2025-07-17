@@ -1,6 +1,6 @@
 [
   {
-    "name": "Deluxe Wedding Bundle",
+    "name": "💍 Deluxe Wedding Bundle",
     "description": "For weddings with glam and customization",
     "Special": true,
     "discountPercentage": 15,
@@ -10,7 +10,7 @@
     }
   },
   {
-    "name": "Corporate Essentials",
+    "name": "🏢 Corporate Essentials",
     "description": "Professional-grade booths and effects for corporate events.",
     "Special": true,
     "discountPercentage": 10,
@@ -20,7 +20,7 @@
     }
   },
   {
-    "name": "Luxury Wedding Experience",
+    "name": "💖 Luxury Wedding Experience",
     "description": "High-end wedding atmosphere with double booths and sweets.",
     "Special": true,
     "discountPercentage": 18,
@@ -31,7 +31,7 @@
     }
   },
   {
-    "name": "Luxury Wedding Experience",
+    "name": "💫 Luxury Wedding Experience",
     "description": "High-end wedding atmosphere with double booths and sweets.",
     "Special": true,
     "discountPercentage": 18,
