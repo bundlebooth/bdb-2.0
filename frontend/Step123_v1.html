@@ -226,6 +226,7 @@ renderServices = function() {
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
       cursor: pointer;
       transition: all 0.3s ease;
+      width: 100%;
     }
     
     .custom-bundle-banner:hover {
@@ -330,6 +331,12 @@ renderServices = function() {
     .special-bundle {
       background: linear-gradient(135deg, #fffbea, #fff5d1);
       border: 2px solid gold;
+    }
+    
+    /* Custom bundle styling */
+    .custom-bundle {
+      background: linear-gradient(135deg, #f0f8ff, #e6f0fa);
+      border: 2px solid var(--bb-accent);
     }
     
     /* END OF UPDATED STEP 1 STYLES */
@@ -2130,6 +2137,9 @@ renderServices = function() {
         const list = document.getElementById('bundle-list');
         list.innerHTML = '';
         
+        // Filter out any duplicate custom bundles
+        bundles = bundles.filter(bundle => !bundle.isCustom);
+        
         // Add all bundles (both special and classic)
         bundles.forEach((bundle, index) => {
             const isSpecial = bundle.Special || bundle.discountPercentage > 0;
@@ -2195,7 +2205,20 @@ renderServices = function() {
     }
 
     // Handle custom bundle selection
-    function selectCustomBundle() {
+function selectCustomBundle() {
+    // Wait for services to load if they haven't yet
+    if (services.length === 0) {
+        fetchServices().then(() => {
+            selectedBundle = {
+                name: "Custom Bundle",
+                description: "Fully custom bundle",
+                categories: {},
+                discountPercentage: 0,
+                isCustom: true
+            };
+            renderStep2();
+        });
+    } else {
         selectedBundle = {
             name: "Custom Bundle",
             description: "Fully custom bundle",
@@ -2203,8 +2226,9 @@ renderServices = function() {
             discountPercentage: 0,
             isCustom: true
         };
-        showStep(2);
+        renderStep2();
     }
+}
 
     // Show step 2 with services
     function renderStep2() {
@@ -2541,6 +2565,9 @@ function renderStep3() {
     function checkBundleRequirements() {
         if (!selectedBundle) return false;
         
+        // For custom bundles, always allow proceeding
+        if (selectedBundle.isCustom) return true;
+        
         // Check each category has required number of services
         for (const [category, requiredCount] of Object.entries(selectedBundle.categories)) {
             const selectedCount = selectedServices.filter(s => s.ServiceType === category).length;
@@ -2614,178 +2641,158 @@ function renderStep3() {
         }
     }
 
-     // Render services for selected bundle
-    function renderServices() {
-        const container = document.getElementById('services-container');
-        container.innerHTML = '';
-        selectedServices = [];
-        
-        if (!services.length) {
-            container.innerHTML = '<p>Loading services...</p>';
-            return;
-        }
+// Render services for selected bundle
+function renderServices() {
+    const container = document.getElementById('services-container');
+    container.innerHTML = '';
+    selectedServices = [];
+    
+    if (!services.length) {
+        container.innerHTML = '<p>Loading services...</p>';
+        return;
+    }
 
-        const allowedCategories = Object.keys(selectedBundle.categories);
-        const filteredServices = services.filter(service =>
-            allowedCategories.includes(service.ServiceType)
-        );
-
-        if (filteredServices.length === 0) {
-            container.innerHTML = '<p>No services available for this bundle.</p>';
-            return;
-        }
-
-        // Group services by category
-        const servicesByCategory = {};
-        allowedCategories.forEach(category => {
-            servicesByCategory[category] = filteredServices.filter(
-                service => service.ServiceType === category
-            );
-        });
-
-        // Render each category with its services
-        Object.entries(servicesByCategory).forEach(([category, categoryServices]) => {
-            if (categoryServices.length === 0) return;
-
-            const categoryContainer = document.createElement('div');
-            categoryContainer.className = 'category-services-container';
-            
-            const categoryId = category.toLowerCase().replace(/\s+/g, '-');
-            const limit = selectedBundle.categories[category];
-            const selectedCount = selectedServices.filter(s => s.ServiceType === category).length;
-            const percent = Math.min((selectedCount / limit) * 100, 100);
-            
-            categoryContainer.innerHTML = `
-                <div class="category-title">
-                    ${category}
-                    <span>${selectedCount} of ${limit} selected</span>
-                </div>
-                <div class="progress-wrapper" id="progress-${categoryId}">
-                    <div class="progress-bar" style="width: ${percent}%"></div>
-                </div>
-                <div class="services-grid" id="services-${categoryId}">
-                    <!-- Services will be inserted here -->
-                </div>
-            `;
-            
-            container.appendChild(categoryContainer);
-            
-            const servicesGrid = document.getElementById(`services-${categoryId}`);
-            
-            categoryServices.forEach(service => {
-                const div = document.createElement('div');
-                div.className = 'package';
-                
-                // Determine tag class based on service type
-                let tagClass = 'package-type-tag';
-                if (service.ServiceType.includes('Scene')) tagClass += ' scene-setters';
-                if (service.ServiceType.includes('Sweets')) tagClass += ' sweets-brews';
-                if (service.ServiceType.includes('Special Effects')) tagClass += ' special-effects';
-                if (service.ServiceType.includes('Guest Book')) tagClass += ' guest-book';
-                if (service.ServiceType.includes('Digital')) tagClass += ' digital';
-                if (service.ServiceType.includes('Interactive')) tagClass += ' interactive';
-                
-                // Format duration text
-                const durationText = service.duration ? formatDuration(service.duration) : '';
-                
-                // Create features overlay if features exist
-                const featuresOverlay = service.features ? `
-                    <div class="features-overlay" id="features-${service.name.replace(/\s+/g, '-').toLowerCase()}">
-                        <button class="close-overlay">&times;</button>
-                        <h4>${service.name} Features</h4>
-                        <ul>
-                            ${service.features.map(item => `<li>${item}</li>`).join('')}
-                        </ul>
-                    </div>
-                ` : '';
-                
-                // Add "Display Features" link if features exist
-                const featuresLink = service.features ? `
-                    <button class="show-features-toggle" data-service="${service.name.replace(/\s+/g, '-').toLowerCase()}">
-                        Display Features <span class="chevron-icon down">▼</span>
-                    </button>
-                ` : '';
-                
-                div.innerHTML = `
-                    <div class="package-content">
-                        <h3>${service.name}</h3>
-                        <span class="${tagClass}">${service.ServiceType}</span>
-                        <p class="description">${service.description || "No description available."}</p>
-                        ${durationText ? `<p><strong>Duration:</strong> ${durationText}</p>` : ''}
-                        ${service.price ? `<p><strong>Price:</strong> C$${service.price.toFixed(2)}</p>` : ''}
-                        ${featuresLink}
-                    </div>
-                    ${featuresOverlay}
-                `;
-                
-                // Add click handler for service selection
-                div.addEventListener('click', (e) => {
-                    // Don't toggle selection if clicking on features link
-                    if (!e.target.classList.contains('show-features-toggle')) {
-                        toggleService(div, service);
-                    }
-                });
-                
-                // Add click handler for features overlay
-                const featuresToggle = div.querySelector('.show-features-toggle');
-                if (featuresToggle) {
-                    featuresToggle.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const serviceId = featuresToggle.dataset.service;
-                        const overlay = div.querySelector(`#features-${serviceId}`);
-                        const chevron = featuresToggle.querySelector('.chevron-icon');
-                        
-                        if (overlay.style.display === 'block') {
-                            overlay.style.display = 'none';
-                            chevron.classList.remove('up');
-                            chevron.classList.add('down');
-                        } else {
-                            overlay.style.display = 'block';
-                            chevron.classList.remove('down');
-                            chevron.classList.add('up');
-                        }
-                    });
-                }
-                
-                // Add click handler for closing overlay
-                const closeOverlay = div.querySelector('.close-overlay');
-                if (closeOverlay) {
-                    closeOverlay.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        closeOverlay.parentElement.style.display = 'none';
-                        const featuresToggle = div.querySelector('.show-features-toggle');
-                        if (featuresToggle) {
-                            const chevron = featuresToggle.querySelector('.chevron-icon');
-                            chevron.classList.remove('up');
-                            chevron.classList.add('down');
-                        }
-                    });
-                }
-                
-                servicesGrid.appendChild(div);
-            });
-        });
-        
-        // Show review button
-        document.getElementById('review-selection').style.display = 'block';
-        document.getElementById('back-to-bundle').style.display = 'block';
-        
-        // Set up review button click handler
-        document.getElementById('review-selection').addEventListener('click', () => {
-            if (checkBundleRequirements()) {
-                renderStep3();
-            } else {
-                const warningElement = document.getElementById('requirements-warning');
-                warningElement.style.display = 'flex';
-                warningElement.classList.add('shake-warning');
-                setTimeout(() => {
-                    warningElement.classList.remove('shake-warning');
-                }, 500);
+    // For custom bundle, populate categories with all service types
+    if (selectedBundle.isCustom) {
+        selectedBundle.categories = {};
+        services.forEach(service => {
+            if (!selectedBundle.categories[service.ServiceType]) {
+                selectedBundle.categories[service.ServiceType] = 999; // Unlimited
             }
         });
-        
-        setupOptionsSection();
     }
+
+    // Get all unique service types in the selected bundle
+    const allowedCategories = Object.keys(selectedBundle.categories);
+    const filteredServices = services.filter(service =>
+        allowedCategories.includes(service.ServiceType)
+    );
+
+    if (filteredServices.length === 0) {
+        container.innerHTML = '<p>No services available for this bundle.</p>';
+        return;
+    }
+
+    // Group services by category
+    const servicesByCategory = {};
+    allowedCategories.forEach(category => {
+        servicesByCategory[category] = filteredServices.filter(
+            service => service.ServiceType === category
+        );
+    });
+
+    // Render each category with its services
+    Object.entries(servicesByCategory).forEach(([category, categoryServices]) => {
+        if (categoryServices.length === 0) return;
+
+        const categoryContainer = document.createElement('div');
+        categoryContainer.className = 'category-services-container';
+        
+        const categoryId = category.toLowerCase().replace(/\s+/g, '-');
+        const selectedCount = selectedServices.filter(s => s.ServiceType === category).length;
+        
+        // For custom bundles, just show count without limit
+        const countText = selectedBundle.isCustom ? 
+            `${selectedCount} selected` : 
+            `${selectedCount} of ${selectedBundle.categories[category]} selected`;
+        
+        categoryContainer.innerHTML = `
+            <div class="category-title">
+                ${category}
+                <span>${countText}</span>
+            </div>
+            ${selectedBundle.isCustom ? '' : `
+            <div class="progress-wrapper" id="progress-${categoryId}">
+                <div class="progress-bar" style="width: ${Math.min((selectedCount / selectedBundle.categories[category]) * 100, 100)}%"></div>
+            </div>
+            `}
+            <div class="services-grid" id="services-${categoryId}">
+                <!-- Services will be inserted here -->
+            </div>
+        `;
+        
+        container.appendChild(categoryContainer);
+        
+        const servicesGrid = document.getElementById(`services-${categoryId}`);
+        
+        categoryServices.forEach(service => {
+            const div = document.createElement('div');
+            div.className = 'package';
+            
+            // Determine tag class based on service type
+            let tagClass = 'package-type-tag';
+            if (service.ServiceType.includes('Scene')) tagClass += ' scene-setters';
+            if (service.ServiceType.includes('Sweets')) tagClass += ' sweets-brews';
+            if (service.ServiceType.includes('Special Effects')) tagClass += ' special-effects';
+            if (service.ServiceType.includes('Guest Book')) tagClass += ' guest-book';
+            if (service.ServiceType.includes('Digital')) tagClass += ' digital';
+            if (service.ServiceType.includes('Interactive')) tagClass += ' interactive';
+            
+            // Format duration text
+            const durationText = service.duration ? formatDuration(service.duration) : '';
+            
+            // Create features overlay if features exist
+            const featuresOverlay = service.features ? `
+                <div class="features-overlay" id="features-${service.name.replace(/\s+/g, '-').toLowerCase()}">
+                    <button class="close-overlay">&times;</button>
+                    <h4>${service.name} Features</h4>
+                    <ul>
+                        ${service.features.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+            ` : '';
+            
+            // Add "Display Features" link if features exist
+            const featuresLink = service.features ? `
+                <button class="show-features-toggle" data-service="${service.name.replace(/\s+/g, '-').toLowerCase()}">
+                    Display Features <span class="chevron-icon down">▼</span>
+                </button>
+            ` : '';
+            
+            div.innerHTML = `
+                <div class="package-content">
+                    <h3>${service.name}</h3>
+                    <span class="${tagClass}">${service.ServiceType}</span>
+                    <p class="description">${service.description || "No description available."}</p>
+                    ${durationText ? `<p><strong>Duration:</strong> ${durationText}</p>` : ''}
+                    ${service.price ? `<p><strong>Price:</strong> C$${service.price.toFixed(2)}</p>` : ''}
+                    ${featuresLink}
+                </div>
+                ${featuresOverlay}
+            `;
+            
+            // Add click handler for service selection
+            div.addEventListener('click', (e) => {
+                // Don't toggle selection if clicking on features link
+                if (!e.target.classList.contains('show-features-toggle')) {
+                    toggleService(div, service);
+                }
+            });
+            
+            servicesGrid.appendChild(div);
+        });
+    });
+    
+    // Show review button
+    document.getElementById('review-selection').style.display = 'block';
+    document.getElementById('back-to-bundle').style.display = 'block';
+    
+    // Set up review button click handler
+    document.getElementById('review-selection').addEventListener('click', () => {
+        if (checkBundleRequirements()) {
+            renderStep3();
+        } else {
+            const warningElement = document.getElementById('requirements-warning');
+            warningElement.style.display = 'flex';
+            warningElement.classList.add('shake-warning');
+            setTimeout(() => {
+                warningElement.classList.remove('shake-warning');
+            }, 500);
+        }
+    });
+    
+    setupOptionsSection();
+}
 
     // Toggle service selection
     function toggleService(el, service) {
@@ -2799,8 +2806,8 @@ function renderStep3() {
             selectedServices.splice(idx, 1);
             el.classList.remove("selected");
         } else {
-            // Check if we can select more of this type
-            if (currentCount >= limit) {
+            // For custom bundles, don't enforce limits
+            if (!selectedBundle.isCustom && currentCount >= limit) {
                 showCompareWarning(serviceType, limit);
                 return;
             }
@@ -2834,6 +2841,16 @@ function renderStep3() {
         Object.entries(selectedBundle.categories).forEach(([category, limit]) => {
             const categoryId = category.toLowerCase().replace(/\s+/g, '-');
             const selectedCount = getSelectedCount(category);
+            
+            // For custom bundles, just update the count text
+            if (selectedBundle.isCustom) {
+                const countSpan = document.querySelector(`#services-${categoryId}`)?.closest('.category-services-container')?.querySelector('.category-title span');
+                if (countSpan) {
+                    countSpan.textContent = `${selectedCount} selected`;
+                }
+                return;
+            }
+            
             const percent = Math.min((selectedCount / limit) * 100, 100);
             
             const progressBar = document.querySelector(`#progress-${categoryId} .progress-bar`);
@@ -3292,55 +3309,64 @@ function padTime(num) {
     }
 
 // Add custom bundle to bundles list after fetchBundles
-const originalFetchBundles = fetchBundles;
-fetchBundles = async function() {
-    await originalFetchBundles();
-    bundles.push({
-        name: "✨ Build Your Own Bundle ✨",
-        description: "Create a fully custom package with as many services as you like",
-        categories: {},
-        discountPercentage: 0,
-        isCustom: true
-    });
-    renderBundles();
-};
+   const originalFetchBundles = fetchBundles;
+    fetchBundles = async function() {
+        await originalFetchBundles();
+        bundles.push({
+            name: "✨ Build Your Own Bundle ✨",
+            description: "Create a fully custom package with as many services as you like",
+            categories: {},
+            discountPercentage: 0,
+            isCustom: true
+        });
+        renderBundles();
+    };
 
 // Modify createBundleDiv to apply custom-bundle class and special behavior
-const originalCreateBundleDiv = createBundleDiv;
-createBundleDiv = function(bundle, index, isSpecial) {
-    const div = originalCreateBundleDiv(bundle, index, isSpecial);
-    if (bundle.isCustom) {
-        div.classList.add('custom-bundle');
-        div.addEventListener('click', () => {
-            selectedBundle = {
-                name: "Custom Bundle",
-                description: "Fully custom bundle",
-                categories: {},
-                discountPercentage: 0
-            };
-            showStep(2);
-        });
-    }
-    return div;
-};
+    const originalCreateBundleDiv = createBundleDiv;
+    createBundleDiv = function(bundle, index, isSpecial) {
+        const div = originalCreateBundleDiv(bundle, index, isSpecial);
+        if (bundle.isCustom) {
+            div.classList.add('custom-bundle');
+            div.addEventListener('click', () => {
+                selectedBundle = {
+                    name: "Custom Bundle",
+                    description: "Fully custom bundle",
+                    categories: {},
+                    discountPercentage: 0,
+                    isCustom: true  // Make sure this flag is set
+                };
+                showStep(2);
+            });
+        }
+        return div;
+    };
 
 
 // Patch renderServices filtering to allow all services for custom bundle
-const originalRenderServices = renderServices;
-renderServices = function() {
-    const originalCategories = selectedBundle.categories;
-    if (selectedBundle && selectedBundle.isCustom) {
-        // Temporarily inject all categories as unlimited
-        selectedBundle.categories = {};
-        services.forEach(s => selectedBundle.categories[s.ServiceType] = 999);
-    }
-    originalRenderServices();
-    if (selectedBundle && selectedBundle.isCustom) {
-        // Restore original empty categories (or keep as is)
-        selectedBundle.categories = originalCategories;
-    }
-};
+   const originalRenderServices = renderServices;
+    renderServices = function() {
+        const originalCategories = selectedBundle ? {...selectedBundle.categories} : {};
+        if (selectedBundle && selectedBundle.isCustom) {
+            // Temporarily inject all categories as unlimited
+            selectedBundle.categories = {};
+            services.forEach(s => {
+                if (!selectedBundle.categories[s.ServiceType]) {
+                    selectedBundle.categories[s.ServiceType] = 999;
+                }
+            });
+        }
+        originalRenderServices();
+        if (selectedBundle && selectedBundle.isCustom) {
+            // Restore original empty categories
+            selectedBundle.categories = originalCategories;
+        }
+    };
 
+    // Then your DOMContentLoaded event listener...
+    document.addEventListener("DOMContentLoaded", async () => {
+        // [Rest of your code...]
+    });
 </script>
 </body>
 </html>
