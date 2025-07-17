@@ -88,7 +88,7 @@
       color: #666;
       margin-bottom: 20px;
       font-size: 0.95rem;
-      text-align: center;
+      text-align: left;
     }
     
     .custom-bundle-banner {
@@ -576,6 +576,12 @@
       color: var(--bb-red);
       font-size: 0.8rem;
       margin-top: 4px;
+    }
+    .promo-discount-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      color: var(--bb-green);
     }
     .final-total {
       display: flex;
@@ -1494,6 +1500,12 @@
           background-color: #ccc;
           border-radius: 3px;
       }
+      
+      /* Mobile-only form adjustments */
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
     }
 
 </style>
@@ -1516,6 +1528,9 @@
             <div class="custom-bundle-banner" onclick="selectCustomBundle()">
                 <h3>✨ Build Your Own Bundle ✨</h3>
                 <p>Create a fully custom package with as many services as you like</p>
+                <p class="bundle-duration">Duration: 3 hours</p>
+                <p class="services-included">Services included:</p>
+                <div class="infinity-symbol">∞</div>
             </div>
             
             <h3 class="section-title">Promotions</h3>
@@ -1611,16 +1626,20 @@
                 <span>Subtotal:</span>
                 <span id="subtotal-price">C$0</span>
             </div>
+            <div class="discount-row" id="discount-row" style="display: none;">
+                <span>Bundle Discount (10%):</span>
+                <span id="discount-amount">-C$0</span>
+            </div>
+            <div class="promo-discount-row" id="promo-discount-row" style="display: none;">
+                <span>Promo Discount:</span>
+                <span id="promo-discount-amount">-C$0</span>
+            </div>
             <div class="promo-row" id="promo-row">
                 <div class="promo-input">
                     <input type="text" id="promo-code" placeholder="Enter promo code">
                     <button id="apply-promo">Apply</button>
                 </div>
                 <div class="promo-error" id="promo-error"></div>
-            </div>
-            <div class="discount-row" id="discount-row" style="display: none;">
-                <span>Bundle Discount (10%):</span>
-                <span id="discount-amount">-C$0</span>
             </div>
             <div class="final-total">
                 <span>Total:</span>
@@ -1691,7 +1710,7 @@
                         <label for="event-name">Event Name</label>
                         <input type="text" id="event-name" required value="Test Wedding Event">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group mobile-event-type">
                         <label for="event-type">Event Type</label>
                         <select id="event-type" required>
                             <option value="">Select Event Type</option>
@@ -2013,6 +2032,17 @@
             const res = await fetch('https://raw.githubusercontent.com/bundlebooth/bdb-2.0/main/data/bundles.json');
             if (!res.ok) throw new Error('Failed to fetch bundles');
             bundles = await res.json();
+            
+            // Add custom bundle
+            bundles.push({
+                name: "✨ Build Your Own Bundle ✨",
+                description: "Create a fully custom package with as many services as you like",
+                duration: "3 hours",
+                categories: {},
+                discountPercentage: 0,
+                isCustom: true
+            });
+            
             renderBundles();
         } catch (error) {
             console.error("Error loading bundles:", error);
@@ -2047,6 +2077,14 @@
                         "Special Effects": 1,
                         "Interactive": 1
                     }
+                },
+                {
+                    "name": "✨ Build Your Own Bundle ✨",
+                    "description": "Create a fully custom package with as many services as you like",
+                    "duration": "3 hours",
+                    "categories": {},
+                    "discountPercentage": 0,
+                    "isCustom": true
                 }
             ];
             renderBundles();
@@ -2131,10 +2169,6 @@
         const list = document.getElementById('bundle-list');
         list.innerHTML = '';
         
-        // Filter out any duplicate custom bundles
-        bundles = bundles.filter(bundle => !bundle.isCustom);
-        
-        // Add all bundles (both special and classic)
         bundles.forEach((bundle, index) => {
             const isSpecial = bundle.Special || bundle.discountPercentage > 0;
             const div = createBundleDiv(bundle, index, isSpecial);
@@ -2149,7 +2183,7 @@
     // Helper function to create bundle divs with new styling
     function createBundleDiv(bundle, index, isSpecial) {
         const div = document.createElement('div');
-        div.className = `bundle-card ${isSpecial ? 'special-bundle' : ''}`;
+        div.className = `bundle-card ${isSpecial ? 'special-bundle' : ''} ${bundle.isCustom ? 'custom-bundle' : ''}`;
         
         // Generate category tags with count badges
         const categoryTags = Object.entries(bundle.categories).map(([category, count]) => {
@@ -2172,6 +2206,11 @@
         // Add special ribbon if applicable
         const ribbon = isSpecial && bundle.discountPercentage ? 
             `<div class="corner-ribbon">${bundle.discountPercentage}% OFF</div>` : '';
+            
+        // Add infinity symbol for custom bundle
+        const servicesIncludedContent = bundle.isCustom ? 
+            `<div class="infinity-symbol">∞</div>` : 
+            `<div class="tag-list">${categoryTags}</div>`;
         
         div.innerHTML = `
             ${ribbon}
@@ -2179,11 +2218,15 @@
             <p>${bundle.description || "No description provided."}</p>
             ${bundle.duration ? `<p class="bundle-duration">Duration: ${bundle.duration}</p>` : ''}
             <p class="services-included">Services included:</p>
-            <div class="tag-list">${categoryTags}</div>
+            ${servicesIncludedContent}
         `;
         
         div.addEventListener('click', () => {
-            selectBundle(index);
+            if (bundle.isCustom) {
+                selectCustomBundle();
+            } else {
+                selectBundle(index);
+            }
             showStep(2);
             window.scrollTo(0, 0);
         });
@@ -2203,32 +2246,16 @@
 
     // Handle custom bundle selection
     function selectCustomBundle() {
-        // Wait for services to load if they haven't yet
-        if (services.length === 0) {
-            fetchServices().then(() => {
-                selectedBundle = {
-                    name: "Custom Bundle",
-                    description: "Fully custom bundle",
-                    duration: "3 hours",
-                    categories: {},
-                    discountPercentage: 0,
-                    isCustom: true
-                };
-                renderStep2();
-                window.scrollTo(0, 0);
-            });
-        } else {
-            selectedBundle = {
-                name: "Custom Bundle",
-                description: "Fully custom bundle",
-                duration: "3 hours",
-                categories: {},
-                discountPercentage: 0,
-                isCustom: true
-            };
-            renderStep2();
-            window.scrollTo(0, 0);
-        }
+        selectedBundle = {
+            name: "Custom Bundle",
+            description: "Fully custom bundle",
+            duration: "3 hours",
+            categories: {},
+            discountPercentage: 0,
+            isCustom: true
+        };
+        renderStep2();
+        window.scrollTo(0, 0);
     }
 
     // Show step 2 with services
@@ -2306,8 +2333,12 @@
         }
         
         if (promoDiscount > 0) {
+            document.getElementById('promo-discount-row').style.display = 'flex';
+            document.getElementById('promo-discount-amount').textContent = `-C$${promoDiscount.toFixed(2)}`;
             document.getElementById('promo-error').textContent = `Promo code applied: $${promoDiscount} off`;
             document.getElementById('promo-error').style.color = 'var(--bb-green)';
+        } else {
+            document.getElementById('promo-discount-row').style.display = 'none';
         }
         
         document.getElementById('final-total-price').textContent = `C$${total.toFixed(2)}`;
@@ -2358,8 +2389,7 @@
             
             serviceDiv.innerHTML = `
                 <div>
-                    <div class="service-name">${service.name}</div>
-                    <span class="service-category ${categoryClass}">${service.ServiceType}</span>
+                    <div class="service-name">${service.name} <span class="service-category ${categoryClass}">${service.ServiceType}</span></div>
                     ${detailsHtml}
                 </div>
                 <div class="service-price">C$${(service.selectedPrice || service.price || 0).toFixed(2)}</div>
@@ -3304,66 +3334,6 @@
             processingMessage.style.display = 'none';
         }
     }
-
-// Add custom bundle to bundles list after fetchBundles
-   const originalFetchBundles = fetchBundles;
-    fetchBundles = async function() {
-        await originalFetchBundles();
-        bundles.push({
-            name: "✨ Build Your Own Bundle ✨",
-            description: "Create a fully custom package with as many services as you like",
-            categories: {},
-            discountPercentage: 0,
-            isCustom: true
-        });
-        renderBundles();
-    };
-
-// Modify createBundleDiv to apply custom-bundle class and special behavior
-    const originalCreateBundleDiv = createBundleDiv;
-    createBundleDiv = function(bundle, index, isSpecial) {
-        const div = originalCreateBundleDiv(bundle, index, isSpecial);
-        if (bundle.isCustom) {
-            div.classList.add('custom-bundle');
-            div.addEventListener('click', () => {
-                selectedBundle = {
-                    name: "Custom Bundle",
-                    description: "Fully custom bundle",
-                    categories: {},
-                    discountPercentage: 0,
-                    isCustom: true  // Make sure this flag is set
-                };
-                showStep(2);
-            });
-        }
-        return div;
-    };
-
-
-// Patch renderServices filtering to allow all services for custom bundle
-   const originalRenderServices = renderServices;
-    renderServices = function() {
-        const originalCategories = selectedBundle ? {...selectedBundle.categories} : {};
-        if (selectedBundle && selectedBundle.isCustom) {
-            // Temporarily inject all categories as unlimited
-            selectedBundle.categories = {};
-            services.forEach(s => {
-                if (!selectedBundle.categories[s.ServiceType]) {
-                    selectedBundle.categories[s.ServiceType] = 999;
-                }
-            });
-        }
-        originalRenderServices();
-        if (selectedBundle && selectedBundle.isCustom) {
-            // Restore original empty categories
-            selectedBundle.categories = originalCategories;
-        }
-    };
-
-    // Then your DOMContentLoaded event listener...
-    document.addEventListener("DOMContentLoaded", async () => {
-        // [Rest of your code...]
-    });
 </script>
 </body>
 </html>
