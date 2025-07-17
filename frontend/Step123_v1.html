@@ -69,12 +69,26 @@
       margin: 30px 0 15px 0;
       padding-bottom: 8px;
       border-bottom: 2px solid var(--bb-accent);
+      text-align: center;
+      position: relative;
+    }
+    
+    .section-title:after {
+      content: "";
+      position: absolute;
+      bottom: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 3px;
+      background: var(--bb-accent);
     }
     
     .step-description {
       color: #666;
       margin-bottom: 20px;
       font-size: 0.95rem;
+      text-align: center;
     }
     
     .custom-bundle-banner {
@@ -215,6 +229,7 @@
     .infinity-symbol {
       font-size: 1.5rem;
       margin: 10px 0;
+      text-align: center;
     }
     
     /* END OF UPDATED STEP 1 STYLES */
@@ -529,6 +544,36 @@
       justify-content: space-between;
       margin-top: 8px;
       color: var(--bb-green);
+    }
+    .promo-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      color: var(--bb-green);
+    }
+    .promo-input {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .promo-input input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .promo-input button {
+      padding: 8px 12px;
+      background: var(--bb-accent);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .promo-error {
+      color: var(--bb-red);
+      font-size: 0.8rem;
+      margin-top: 4px;
     }
     .final-total {
       display: flex;
@@ -1431,6 +1476,22 @@
       .bundles-grid {
           grid-template-columns: 1fr;
       }
+      
+      .services-grid {
+          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: thin;
+      }
+      
+      .services-grid::-webkit-scrollbar {
+          height: 6px;
+      }
+      
+      .services-grid::-webkit-scrollbar-thumb {
+          background-color: #ccc;
+          border-radius: 3px;
+      }
     }
 
 </style>
@@ -1526,7 +1587,7 @@
             <svg viewBox="0 0 24 24" width="16" height="16" style="vertical-align:middle;margin-right:8px;">
                 <path fill="#856404" d="M12 2L1 21h22L12 2zm0 4l7.5 13h-15L12 6zm-1 3v6h2V9h-2zm0 8v2h2v-2h-2z"/>
             </svg>
-            You have not selected all the required services for this bundle. Please select the remaining services to proceed.
+            <span id="warning-message">You have not selected all the required services for this bundle. Please select the remaining services to proceed.</span>
         </div>
         
         <div class="button-container">
@@ -1547,6 +1608,13 @@
             <div class="total-row">
                 <span>Subtotal:</span>
                 <span id="subtotal-price">C$0</span>
+            </div>
+            <div class="promo-row" id="promo-row">
+                <div class="promo-input">
+                    <input type="text" id="promo-code" placeholder="Enter promo code">
+                    <button id="apply-promo">Apply</button>
+                </div>
+                <div class="promo-error" id="promo-error"></div>
             </div>
             <div class="discount-row" id="discount-row" style="display: none;">
                 <span>Bundle Discount (10%):</span>
@@ -1718,6 +1786,9 @@
     let serviceFeatures = {}; // To store features data
     let globalGuestSize = 100; // Default guest size
     let globalSparklersCount = 50; // Default sparklers count
+    let promoCodeApplied = null;
+    let promoDiscount = 0;
+    let validPromoCodes = [];
     let { jsPDF } = window.jspdf;
 
     // Initialize the builder when DOM is loaded
@@ -1743,6 +1814,21 @@
             serviceFeatures = await featuresRes.json();
         } catch (err) {
             console.error("Failed to load features-included.json", err);
+        }
+
+        // Load promo codes
+        try {
+            const promoRes = await fetch("https://bundlebooth.github.io/bdb-2.0/data/promo_codes.json");
+            validPromoCodes = await promoRes.json();
+        } catch (err) {
+            console.error("Failed to load promo_codes.json", err);
+            validPromoCodes = [
+                {
+                    "code": "TEST25",
+                    "discountValue": 25,
+                    "description": "Test promo code - $25 off"
+                }
+            ];
         }
 
         // Initialize the builder
@@ -1839,7 +1925,43 @@
             showStep(1);
             window.scrollTo(0, 0);
         });
+
+        // Set up promo code application
+        document.getElementById('apply-promo').addEventListener('click', applyPromoCode);
+        document.getElementById('promo-code').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                applyPromoCode();
+            }
+        });
     });
+
+    // Apply promo code
+    function applyPromoCode() {
+        const promoCode = document.getElementById('promo-code').value.trim().toUpperCase();
+        const errorElement = document.getElementById('promo-error');
+        
+        if (!promoCode) {
+            errorElement.textContent = 'Please enter a promo code';
+            return;
+        }
+        
+        const validCode = validPromoCodes.find(code => code.code === promoCode);
+        
+        if (validCode) {
+            promoCodeApplied = validCode;
+            promoDiscount = validCode.discountValue;
+            errorElement.textContent = '';
+            errorElement.style.color = 'var(--bb-green)';
+            errorElement.textContent = `Promo code applied: $${promoDiscount} off`;
+            updatePrices();
+        } else {
+            errorElement.style.color = 'var(--bb-red)';
+            errorElement.textContent = 'Invalid promo code';
+            promoCodeApplied = null;
+            promoDiscount = 0;
+            updatePrices();
+        }
+    }
 
     // Set up progress bar navigation
     function setupProgressBarNavigation() {
@@ -2078,10 +2200,22 @@
     }
 
     // Handle custom bundle selection
-function selectCustomBundle() {
-    // Wait for services to load if they haven't yet
-    if (services.length === 0) {
-        fetchServices().then(() => {
+    function selectCustomBundle() {
+        // Wait for services to load if they haven't yet
+        if (services.length === 0) {
+            fetchServices().then(() => {
+                selectedBundle = {
+                    name: "Custom Bundle",
+                    description: "Fully custom bundle",
+                    duration: "3 hours",
+                    categories: {},
+                    discountPercentage: 0,
+                    isCustom: true
+                };
+                renderStep2();
+                window.scrollTo(0, 0);
+            });
+        } else {
             selectedBundle = {
                 name: "Custom Bundle",
                 description: "Fully custom bundle",
@@ -2092,20 +2226,8 @@ function selectCustomBundle() {
             };
             renderStep2();
             window.scrollTo(0, 0);
-        });
-    } else {
-        selectedBundle = {
-            name: "Custom Bundle",
-            description: "Fully custom bundle",
-            duration: "3 hours",
-            categories: {},
-            discountPercentage: 0,
-            isCustom: true
-        };
-        renderStep2();
-        window.scrollTo(0, 0);
+        }
     }
-}
 
     // Show step 2 with services
     function renderStep2() {
@@ -2115,74 +2237,84 @@ function selectCustomBundle() {
     }
 
     // Updated renderStep3 function to handle dynamic discounts
-function renderStep3() {
-    showStep(3);
-    window.scrollTo(0, 0);
-    
-    // Update bundle title
-    document.getElementById('bundle-title').textContent = selectedBundle.name;
-    
-    // Calculate prices with dynamic discount
-    const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
-    const discountPercentage = selectedBundle.discountPercentage ? selectedBundle.discountPercentage/100 : bundleDiscount;
-    const discount = subtotal * discountPercentage;
-    const total = subtotal - discount;
-    
-    // Update price displays
-    document.getElementById('subtotal-price').textContent = `C$${subtotal.toFixed(2)}`;
-    document.getElementById('discount-amount').textContent = `-C$${discount.toFixed(2)}`;
-    document.getElementById('final-total-price').textContent = `C$${total.toFixed(2)}`;
-    
-    // Show/hide discount row based on bundle type
-    const discountRow = document.getElementById('discount-row');
-    if (selectedBundle.isCustom) {
-        discountRow.style.display = 'none';
-    } else {
-        discountRow.style.display = 'flex';
-        const discountText = selectedBundle.discountPercentage ? 
-            `Bundle Discount (${selectedBundle.discountPercentage}%):` : 
-            `Bundle Discount (10%):`;
-        document.querySelector('.discount-row span:first-child').textContent = discountText;
-    }
-    
-    // Update payment amount displays
-    document.getElementById('payment-amount').textContent = `$${total.toFixed(2)}`;
-    document.getElementById('payment-info-amount').textContent = `$${total.toFixed(2)}`;
-    document.getElementById('confirmed-amount').textContent = `$${total.toFixed(2)}`;
-    
-    // Render selected services list
-    renderSelectedServicesList();
-    
-    // Initialize calendar with current month
-    renderCalendar(currentDisplayedDate);
-    
-    // Set up event listeners
-    document.getElementById('back-to-services').addEventListener('click', () => {
-        showStep(2);
+    function renderStep3() {
+        showStep(3);
         window.scrollTo(0, 0);
-    });
-    
-    document.getElementById('submit-booking').addEventListener('click', handleBookingSubmit);
-    document.getElementById('submit-payment').addEventListener('click', handlePaymentSubmit);
-    document.getElementById('new-bundle-button').addEventListener('click', () => {
-        window.location.reload();
-    });
-    
-    // Month navigation
-    document.getElementById('prev-month').addEventListener('click', () => {
-        currentDisplayedDate.setMonth(currentDisplayedDate.getMonth() - 1);
+        
+        // Update bundle title
+        document.getElementById('bundle-title').textContent = selectedBundle.name;
+        
+        // Render selected services list
+        renderSelectedServicesList();
+        
+        // Initialize calendar with current month
         renderCalendar(currentDisplayedDate);
-    });
-    
-    document.getElementById('next-month').addEventListener('click', () => {
-        currentDisplayedDate.setMonth(currentDisplayedDate.getMonth() + 1);
-        renderCalendar(currentDisplayedDate);
-    });
-    
-    // Set up phone number formatting
-    const phoneInput = document.getElementById('contact-phone');
-    phoneInput.addEventListener('input', formatPhoneNumber);
-}
+        
+        // Set up event listeners
+        document.getElementById('back-to-services').addEventListener('click', () => {
+            showStep(2);
+            window.scrollTo(0, 0);
+        });
+        
+        document.getElementById('submit-booking').addEventListener('click', handleBookingSubmit);
+        document.getElementById('submit-payment').addEventListener('click', handlePaymentSubmit);
+        document.getElementById('new-bundle-button').addEventListener('click', () => {
+            window.location.reload();
+        });
+        
+        // Month navigation
+        document.getElementById('prev-month').addEventListener('click', () => {
+            currentDisplayedDate.setMonth(currentDisplayedDate.getMonth() - 1);
+            renderCalendar(currentDisplayedDate);
+        });
+        
+        document.getElementById('next-month').addEventListener('click', () => {
+            currentDisplayedDate.setMonth(currentDisplayedDate.getMonth() + 1);
+            renderCalendar(currentDisplayedDate);
+        });
+        
+        // Set up phone number formatting
+        const phoneInput = document.getElementById('contact-phone');
+        phoneInput.addEventListener('input', formatPhoneNumber);
+        
+        // Update prices
+        updatePrices();
+    }
+
+    // Update prices with discounts
+    function updatePrices() {
+        const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
+        const discountPercentage = selectedBundle.isCustom ? 0 : (selectedBundle.discountPercentage ? selectedBundle.discountPercentage/100 : bundleDiscount);
+        const discount = subtotal * discountPercentage;
+        const totalBeforePromo = subtotal - discount;
+        const total = Math.max(0, totalBeforePromo - promoDiscount);
+        
+        // Update price displays
+        document.getElementById('subtotal-price').textContent = `C$${subtotal.toFixed(2)}`;
+        
+        if (discount > 0) {
+            document.getElementById('discount-row').style.display = 'flex';
+            const discountText = selectedBundle.discountPercentage ? 
+                `Bundle Discount (${selectedBundle.discountPercentage}%):` : 
+                `Bundle Discount (10%):`;
+            document.querySelector('.discount-row span:first-child').textContent = discountText;
+            document.getElementById('discount-amount').textContent = `-C$${discount.toFixed(2)}`;
+        } else {
+            document.getElementById('discount-row').style.display = 'none';
+        }
+        
+        if (promoDiscount > 0) {
+            document.getElementById('promo-error').textContent = `Promo code applied: $${promoDiscount} off`;
+            document.getElementById('promo-error').style.color = 'var(--bb-green)';
+        }
+        
+        document.getElementById('final-total-price').textContent = `C$${total.toFixed(2)}`;
+        
+        // Update payment amount displays
+        document.getElementById('payment-amount').textContent = `$${total.toFixed(2)}`;
+        document.getElementById('payment-info-amount').textContent = `$${total.toFixed(2)}`;
+        document.getElementById('confirmed-amount').textContent = `$${total.toFixed(2)}`;
+    }
 
     // Render the selected services list with durations and options
     function renderSelectedServicesList() {
@@ -2224,7 +2356,8 @@ function renderStep3() {
             
             serviceDiv.innerHTML = `
                 <div>
-                    <div class="service-name">${service.name} <span class="service-category ${categoryClass}">${service.ServiceType}</span></div>
+                    <div class="service-name">${service.name}</div>
+                    <span class="service-category ${categoryClass}">${service.ServiceType}</span>
                     ${detailsHtml}
                 </div>
                 <div class="service-price">C$${(service.selectedPrice || service.price || 0).toFixed(2)}</div>
@@ -2420,7 +2553,7 @@ function renderStep3() {
     // Update review button with current total
     function updateReviewButton() {
         const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
-        const discount = subtotal * bundleDiscount;
+        const discount = selectedBundle.isCustom ? 0 : subtotal * bundleDiscount;
         const total = subtotal - discount;
         
         document.getElementById('review-selection').textContent = `Review Selection (C$${total.toFixed(2)})`;
@@ -2446,8 +2579,17 @@ function renderStep3() {
     function checkBundleRequirements() {
         if (!selectedBundle) return false;
         
-        // For custom bundles, always allow proceeding
-        if (selectedBundle.isCustom) return true;
+        // For custom bundles, require at least one service
+        if (selectedBundle.isCustom) {
+            const warningElement = document.getElementById('requirements-warning');
+            const warningMessage = document.getElementById('warning-message');
+            
+            if (selectedServices.length === 0) {
+                warningMessage.textContent = 'You need to select at least one service';
+                return false;
+            }
+            return true;
+        }
         
         // Check each category has required number of services
         for (const [category, requiredCount] of Object.entries(selectedBundle.categories)) {
@@ -2479,178 +2621,178 @@ function renderStep3() {
         }
     }
 
-// Render services for selected bundle
-function renderServices() {
-    const container = document.getElementById('services-container');
-    container.innerHTML = '';
-    selectedServices = [];
-    
-    if (!services.length) {
-        container.innerHTML = '<p>Loading services...</p>';
-        return;
-    }
-
-    // For custom bundle, populate categories with all service types
-    if (selectedBundle.isCustom) {
-        selectedBundle.categories = {};
-        services.forEach(service => {
-            if (!selectedBundle.categories[service.ServiceType]) {
-                selectedBundle.categories[service.ServiceType] = 999; // Unlimited
-            }
-        });
-    }
-
-    // Get all unique service types in the selected bundle
-    const allowedCategories = Object.keys(selectedBundle.categories);
-    const filteredServices = services.filter(service =>
-        allowedCategories.includes(service.ServiceType)
-    );
-
-    if (filteredServices.length === 0) {
-        container.innerHTML = '<p>No services available for this bundle.</p>';
-        return;
-    }
-
-    // Group services by category
-    const servicesByCategory = {};
-    allowedCategories.forEach(category => {
-        servicesByCategory[category] = filteredServices.filter(
-            service => service.ServiceType === category
-        );
-    });
-
-    // Render each category with its services
-    Object.entries(servicesByCategory).forEach(([category, categoryServices]) => {
-        if (categoryServices.length === 0) return;
-
-        const categoryContainer = document.createElement('div');
-        categoryContainer.className = 'category-services-container';
+    // Render services for selected bundle
+    function renderServices() {
+        const container = document.getElementById('services-container');
+        container.innerHTML = '';
+        selectedServices = [];
         
-        const categoryId = category.toLowerCase().replace(/\s+/g, '-');
-        const selectedCount = selectedServices.filter(s => s.ServiceType === category).length;
-        
-        // For custom bundles, just show count without limit
-        const countText = selectedBundle.isCustom ? 
-            `${selectedCount} selected` : 
-            `${selectedCount} of ${selectedBundle.categories[category]} selected`;
-        
-        categoryContainer.innerHTML = `
-            <div class="category-title">
-                ${category}
-                <span>${countText}</span>
-            </div>
-            ${selectedBundle.isCustom ? '' : `
-            <div class="progress-wrapper" id="progress-${categoryId}">
-                <div class="progress-bar" style="width: ${Math.min((selectedCount / selectedBundle.categories[category]) * 100, 100)}%"></div>
-            </div>
-            `}
-            <div class="services-grid" id="services-${categoryId}">
-                <!-- Services will be inserted here -->
-            </div>
-        `;
-        
-        container.appendChild(categoryContainer);
-        
-        const servicesGrid = document.getElementById(`services-${categoryId}`);
-        
-        categoryServices.forEach(service => {
-            const div = document.createElement('div');
-            div.className = 'package';
-            
-            // Determine tag class based on service type
-            let tagClass = 'package-type-tag';
-            if (service.ServiceType.includes('Scene')) tagClass += ' scene-setters';
-            if (service.ServiceType.includes('Sweets')) tagClass += ' sweets-brews';
-            if (service.ServiceType.includes('Special Effects')) tagClass += ' special-effects';
-            if (service.ServiceType.includes('Guest Book')) tagClass += ' guest-book';
-            if (service.ServiceType.includes('Digital')) tagClass += ' digital';
-            if (service.ServiceType.includes('Interactive')) tagClass += ' interactive';
-            
-            // Format duration text
-            const durationText = service.duration ? formatDuration(service.duration) : '';
-            
-            // Create features overlay if features exist
-            const featuresOverlay = service.features ? `
-                <div class="features-overlay" id="features-${service.name.replace(/\s+/g, '-').toLowerCase()}">
-                    <button class="close-overlay">&times;</button>
-                    <h4>${service.name} Features</h4>
-                    <ul>
-                        ${service.features.map(item => `<li>${item}</li>`).join('')}
-                    </ul>
-                </div>
-            ` : '';
-            
-            // Add "Display Features" link if features exist
-            const featuresLink = service.features ? `
-                <button class="show-features-toggle" data-service="${service.name.replace(/\s+/g, '-').toLowerCase()}">
-                    Display Features <span class="chevron-icon down">▼</span>
-                </button>
-            ` : '';
-            
-            div.innerHTML = `
-                <div class="package-content" style="padding-bottom: 30px;">
-                    <h3>${service.name}</h3>
-                    <span class="${tagClass}">${service.ServiceType}</span>
-                    <p class="description">${service.description || "No description available."}</p>
-                    ${durationText ? `<p><strong>Duration:</strong> ${durationText}</p>` : ''}
-                    ${service.price ? `<p><strong>Price:</strong> C$${service.price.toFixed(2)}</p>` : ''}
-                    ${featuresLink}
-                </div>
-                ${featuresOverlay}
-            `;
-            
-            // Add click handler for service selection
-            div.addEventListener('click', (e) => {
-                // Don't toggle selection if clicking on features link
-                if (!e.target.classList.contains('show-features-toggle')) {
-                    toggleService(div, service);
+        if (!services.length) {
+            container.innerHTML = '<p>Loading services...</p>';
+            return;
+        }
+
+        // For custom bundle, populate categories with all service types
+        if (selectedBundle.isCustom) {
+            selectedBundle.categories = {};
+            services.forEach(service => {
+                if (!selectedBundle.categories[service.ServiceType]) {
+                    selectedBundle.categories[service.ServiceType] = 999; // Unlimited
                 }
             });
+        }
+
+        // Get all unique service types in the selected bundle
+        const allowedCategories = Object.keys(selectedBundle.categories);
+        const filteredServices = services.filter(service =>
+            allowedCategories.includes(service.ServiceType)
+        );
+
+        if (filteredServices.length === 0) {
+            container.innerHTML = '<p>No services available for this bundle.</p>';
+            return;
+        }
+
+        // Group services by category
+        const servicesByCategory = {};
+        allowedCategories.forEach(category => {
+            servicesByCategory[category] = filteredServices.filter(
+                service => service.ServiceType === category
+            );
+        });
+
+        // Render each category with its services
+        Object.entries(servicesByCategory).forEach(([category, categoryServices]) => {
+            if (categoryServices.length === 0) return;
+
+            const categoryContainer = document.createElement('div');
+            categoryContainer.className = 'category-services-container';
             
-            // Add click handler for features toggle
-            if (service.features) {
-                const featuresButton = div.querySelector('.show-features-toggle');
-                featuresButton.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const overlay = div.querySelector('.features-overlay');
-                    overlay.style.display = 'block';
+            const categoryId = category.toLowerCase().replace(/\s+/g, '-');
+            const selectedCount = selectedServices.filter(s => s.ServiceType === category).length;
+            
+            // For custom bundles, just show count without limit
+            const countText = selectedBundle.isCustom ? 
+                `${selectedCount} selected` : 
+                `${selectedCount} of ${selectedBundle.categories[category]} selected`;
+            
+            categoryContainer.innerHTML = `
+                <div class="category-title">
+                    ${category}
+                    <span>${countText}</span>
+                </div>
+                ${selectedBundle.isCustom ? '' : `
+                <div class="progress-wrapper" id="progress-${categoryId}">
+                    <div class="progress-bar" style="width: ${Math.min((selectedCount / selectedBundle.categories[category]) * 100, 100)}%"></div>
+                </div>
+                `}
+                <div class="services-grid" id="services-${categoryId}">
+                    <!-- Services will be inserted here -->
+                </div>
+            `;
+            
+            container.appendChild(categoryContainer);
+            
+            const servicesGrid = document.getElementById(`services-${categoryId}`);
+            
+            categoryServices.forEach(service => {
+                const div = document.createElement('div');
+                div.className = 'package';
+                
+                // Determine tag class based on service type
+                let tagClass = 'package-type-tag';
+                if (service.ServiceType.includes('Scene')) tagClass += ' scene-setters';
+                if (service.ServiceType.includes('Sweets')) tagClass += ' sweets-brews';
+                if (service.ServiceType.includes('Special Effects')) tagClass += ' special-effects';
+                if (service.ServiceType.includes('Guest Book')) tagClass += ' guest-book';
+                if (service.ServiceType.includes('Digital')) tagClass += ' digital';
+                if (service.ServiceType.includes('Interactive')) tagClass += ' interactive';
+                
+                // Format duration text
+                const durationText = service.duration ? formatDuration(service.duration) : '';
+                
+                // Create features overlay if features exist
+                const featuresOverlay = service.features ? `
+                    <div class="features-overlay" id="features-${service.name.replace(/\s+/g, '-').toLowerCase()}">
+                        <button class="close-overlay">&times;</button>
+                        <h4>${service.name} Features</h4>
+                        <ul>
+                            ${service.features.map(item => `<li>${item}</li>`).join('')}
+                        </ul>
+                    </div>
+                ` : '';
+                
+                // Add "Display Features" link if features exist
+                const featuresLink = service.features ? `
+                    <button class="show-features-toggle" data-service="${service.name.replace(/\s+/g, '-').toLowerCase()}">
+                        Display Features <span class="chevron-icon down">▼</span>
+                    </button>
+                ` : '';
+                
+                div.innerHTML = `
+                    <div class="package-content" style="padding-bottom: 30px;">
+                        <h3>${service.name}</h3>
+                        <span class="${tagClass}">${service.ServiceType}</span>
+                        <p class="description">${service.description || "No description available."}</p>
+                        ${durationText ? `<p><strong>Duration:</strong> ${durationText}</p>` : ''}
+                        ${service.price ? `<p><strong>Price:</strong> C$${service.price.toFixed(2)}</p>` : ''}
+                        ${featuresLink}
+                    </div>
+                    ${featuresOverlay}
+                `;
+                
+                // Add click handler for service selection
+                div.addEventListener('click', (e) => {
+                    // Don't toggle selection if clicking on features link
+                    if (!e.target.classList.contains('show-features-toggle')) {
+                        toggleService(div, service);
+                    }
                 });
                 
-                const closeButton = div.querySelector('.close-overlay');
-                if (closeButton) {
-                    closeButton.addEventListener('click', (e) => {
+                // Add click handler for features toggle
+                if (service.features) {
+                    const featuresButton = div.querySelector('.show-features-toggle');
+                    featuresButton.addEventListener('click', (e) => {
                         e.stopPropagation();
                         const overlay = div.querySelector('.features-overlay');
-                        overlay.style.display = 'none';
+                        overlay.style.display = 'block';
                     });
+                    
+                    const closeButton = div.querySelector('.close-overlay');
+                    if (closeButton) {
+                        closeButton.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            const overlay = div.querySelector('.features-overlay');
+                            overlay.style.display = 'none';
+                        });
+                    }
                 }
-            }
-            
-            servicesGrid.appendChild(div);
+                
+                servicesGrid.appendChild(div);
+            });
         });
-    });
-    
-    // Show review button
-    document.getElementById('review-selection').style.display = 'block';
-    document.getElementById('back-to-bundle').style.display = 'block';
-    
-    // Set up review button click handler
-    document.getElementById('review-selection').addEventListener('click', () => {
-        if (checkBundleRequirements()) {
-            renderStep3();
-            window.scrollTo(0, 0);
-        } else {
-            const warningElement = document.getElementById('requirements-warning');
-            warningElement.style.display = 'flex';
-            warningElement.classList.add('shake-warning');
-            setTimeout(() => {
-                warningElement.classList.remove('shake-warning');
-            }, 500);
-        }
-    });
-    
-    setupOptionsSection();
-}
+        
+        // Show review button
+        document.getElementById('review-selection').style.display = 'block';
+        document.getElementById('back-to-bundle').style.display = 'block';
+        
+        // Set up review button click handler
+        document.getElementById('review-selection').addEventListener('click', () => {
+            if (checkBundleRequirements()) {
+                renderStep3();
+                window.scrollTo(0, 0);
+            } else {
+                const warningElement = document.getElementById('requirements-warning');
+                warningElement.style.display = 'flex';
+                warningElement.classList.add('shake-warning');
+                setTimeout(() => {
+                    warningElement.classList.remove('shake-warning');
+                }, 500);
+            }
+        });
+        
+        setupOptionsSection();
+    }
 
     // Toggle service selection
     function toggleService(el, service) {
@@ -2700,29 +2842,24 @@ function renderServices() {
             const categoryId = category.toLowerCase().replace(/\s+/g, '-');
             const selectedCount = getSelectedCount(category);
             
-            // For custom bundles, just update the count text
-            if (selectedBundle.isCustom) {
-                const countSpan = document.querySelector(`#services-${categoryId}`)?.closest('.category-services-container')?.querySelector('.category-title span');
-                if (countSpan) {
-                    countSpan.textContent = `${selectedCount} selected`;
-                }
-                return;
+            // Update the count text for all bundles (including custom)
+            const countSpan = document.querySelector(`#services-${categoryId}`)?.closest('.category-services-container')?.querySelector('.category-title span');
+            if (countSpan) {
+                countSpan.textContent = selectedBundle.isCustom ? 
+                    `${selectedCount} selected` : 
+                    `${selectedCount} of ${limit} selected`;
             }
+            
+            // Skip progress bar for custom bundles
+            if (selectedBundle.isCustom) return;
             
             const percent = Math.min((selectedCount / limit) * 100, 100);
             
             const progressBar = document.querySelector(`#progress-${categoryId} .progress-bar`);
-            const categoryTitle = document.querySelector(`#services-${categoryId}`).closest('.category-services-container').querySelector('.category-title');
-            const countSpan = categoryTitle.querySelector('span');
-            
             if (progressBar) {
                 progressBar.style.width = `${percent}%`;
                 progressBar.style.backgroundColor = percent === 100 ? '#2ecc71' : '#3498db';
                 progressBar.style.transition = 'width 0.3s ease, background-color 0.3s ease';
-            }
-            
-            if (countSpan) {
-                countSpan.textContent = `${selectedCount} of ${limit} selected`;
             }
         });
     }
@@ -2796,7 +2933,7 @@ function renderServices() {
         return date >= twoWeeksLater;
     }
 
-   // Render calendar
+    // Render calendar
     function renderCalendar(date) {
         const month = date.getMonth();
         const year = date.getFullYear();
@@ -2922,71 +3059,71 @@ function renderServices() {
         }
     }
     
-function renderTimeSlots(date, availability = []) {
-    const container = document.getElementById('time-slots-container');
-    container.innerHTML = '';
+    function renderTimeSlots(date, availability = []) {
+        const container = document.getElementById('time-slots-container');
+        container.innerHTML = '';
 
-    // Time slots in EST (what user sees)
-    const timeSlots = [
-        { start: 9, end: 12 },   // 9AM-12PM EST
-        { start: 12, end: 15 },  // 12PM-3PM EST
-        { start: 15, end: 18 },  // 3PM-6PM EST
-        { start: 18, end: 21 }   // 6PM-9PM EST
-    ];
+        // Time slots in EST (what user sees)
+        const timeSlots = [
+            { start: 9, end: 12 },   // 9AM-12PM EST
+            { start: 12, end: 15 },  // 12PM-3PM EST
+            { start: 15, end: 18 },  // 3PM-6PM EST
+            { start: 18, end: 21 }   // 6PM-9PM EST
+        ];
 
-    timeSlots.forEach(slot => {
-        // Create Date objects in local time (EST)
-        const slotStartLocal = new Date(`${date}T${padTime(slot.start)}:00:00`);
-        const slotEndLocal = new Date(`${date}T${padTime(slot.end)}:00:00`);
+        timeSlots.forEach(slot => {
+            // Create Date objects in local time (EST)
+            const slotStartLocal = new Date(`${date}T${padTime(slot.start)}:00:00`);
+            const slotEndLocal = new Date(`${date}T${padTime(slot.end)}:00:00`);
 
-        // Convert local EST to UTC for API comparison
-        // During daylight time (March-November), EST is UTC-4
-        const slotStartUTC = new Date(slotStartLocal);
-        slotStartUTC.setHours(slotStartUTC.getHours() + 4);
-        
-        const slotEndUTC = new Date(slotEndLocal);
-        slotEndUTC.setHours(slotEndUTC.getHours() + 4);
-
-        // Check against API availability
-        const isBooked = availability.some(apiSlot => {
-            const apiStart = new Date(apiSlot.start);
-            const apiEnd = new Date(apiSlot.end);
+            // Convert local EST to UTC for API comparison
+            // During daylight time (March-November), EST is UTC-4
+            const slotStartUTC = new Date(slotStartLocal);
+            slotStartUTC.setHours(slotStartUTC.getHours() + 4);
             
-            // Check if this slot overlaps with a booked slot (in UTC)
-            return (
-                (slotStartUTC >= apiStart && slotStartUTC < apiEnd) || // Our start is within booked slot
-                (slotEndUTC > apiStart && slotEndUTC <= apiEnd) ||     // Our end is within booked slot
-                (slotStartUTC <= apiStart && slotEndUTC >= apiEnd)      // Our slot completely contains booked slot
-            );
-        });
+            const slotEndUTC = new Date(slotEndLocal);
+            slotEndUTC.setHours(slotEndUTC.getHours() + 4);
 
-        // Create the time slot element
-        const slotElement = document.createElement('div');
-        slotElement.className = `time-slot ${isBooked ? 'booked' : 'available'}`;
-        slotElement.dataset.start = slotStartUTC.toISOString();
-        slotElement.dataset.end = slotEndUTC.toISOString();
-        
-        slotElement.innerHTML = `
-            <div class="slot-time">${formatTime(slotStartLocal)} - ${formatTime(slotEndLocal)}</div>
-            <div class="slot-status">${isBooked ? 'Booked' : 'Available'}</div>
-        `;
-
-        if (!isBooked) {
-            slotElement.addEventListener('click', (e) => {
-                e.stopPropagation();
-                document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected-slot'));
-                slotElement.classList.add('selected-slot');
+            // Check against API availability
+            const isBooked = availability.some(apiSlot => {
+                const apiStart = new Date(apiSlot.start);
+                const apiEnd = new Date(apiSlot.end);
+                
+                // Check if this slot overlaps with a booked slot (in UTC)
+                return (
+                    (slotStartUTC >= apiStart && slotStartUTC < apiEnd) || // Our start is within booked slot
+                    (slotEndUTC > apiStart && slotEndUTC <= apiEnd) ||     // Our end is within booked slot
+                    (slotStartUTC <= apiStart && slotEndUTC >= apiEnd)      // Our slot completely contains booked slot
+                );
             });
-        }
 
-        container.appendChild(slotElement);
-    });
-}
-// Helper function to pad time (9 -> "09")
-function padTime(num) {
-    return num.toString().padStart(2, '0');
-}
-    
+            // Create the time slot element
+            const slotElement = document.createElement('div');
+            slotElement.className = `time-slot ${isBooked ? 'booked' : 'available'}`;
+            slotElement.dataset.start = slotStartUTC.toISOString();
+            slotElement.dataset.end = slotEndUTC.toISOString();
+            
+            slotElement.innerHTML = `
+                <div class="slot-time">${formatTime(slotStartLocal)} - ${formatTime(slotEndLocal)}</div>
+                <div class="slot-status">${isBooked ? 'Booked' : 'Available'}</div>
+            `;
+
+            if (!isBooked) {
+                slotElement.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected-slot'));
+                    slotElement.classList.add('selected-slot');
+                });
+            }
+
+            container.appendChild(slotElement);
+        });
+    }
+
+    // Helper function to pad time (9 -> "09")
+    function padTime(num) {
+        return num.toString().padStart(2, '0');
+    }
     
     function formatTime(date) {
         return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -3173,7 +3310,6 @@ function padTime(num) {
         bundles.push({
             name: "✨ Build Your Own Bundle ✨",
             description: "Create a fully custom package with as many services as you like",
-            duration: "3 hours",
             categories: {},
             discountPercentage: 0,
             isCustom: true
@@ -3187,24 +3323,15 @@ function padTime(num) {
         const div = originalCreateBundleDiv(bundle, index, isSpecial);
         if (bundle.isCustom) {
             div.classList.add('custom-bundle');
-            div.innerHTML = `
-                <h3>${bundle.name}</h3>
-                <p>${bundle.description || "No description provided."}</p>
-                ${bundle.duration ? `<p class="bundle-duration">Duration: ${bundle.duration}</p>` : ''}
-                <p class="services-included">Services included:</p>
-                <div class="infinity-symbol">∞</div>
-            `;
             div.addEventListener('click', () => {
                 selectedBundle = {
                     name: "Custom Bundle",
                     description: "Fully custom bundle",
-                    duration: "3 hours",
                     categories: {},
                     discountPercentage: 0,
                     isCustom: true  // Make sure this flag is set
                 };
                 showStep(2);
-                window.scrollTo(0, 0);
             });
         }
         return div;
