@@ -2333,7 +2333,7 @@
             ${ribbon}
             <h3>${bundle.name}</h3>
             <p>${bundle.description || "No description provided."}</p>
-            ${bundle.duration ? `<p class="bundle-duration">Duration: ${bundle.duration}</p>` : ''}
+            ${bundle.duration ? `<p class="bundle-duration">Duration: ${formatDuration(bundle.duration)}</p>` : ''}
             ${servicesIncludedContent}
         `;
         
