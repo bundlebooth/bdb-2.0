@@ -228,10 +228,11 @@
       border: 2px solid var(--bb-accent);
     }
     
-    .infinity-symbol {
-      font-size: 1.5rem;
-      margin: 10px 0;
+    .plus-symbol {
+      font-size: 3rem;
+      margin: 20px 0;
       text-align: center;
+      color: #666;
     }
     
     /* END OF UPDATED STEP 1 STYLES */
@@ -566,16 +567,22 @@
     }
     .promo-input button {
       padding: 8px 12px;
-      background: var(--bb-accent);
-      color: white;
+      background: #e9ecef;
+      color: var(--bb-dark);
       border: none;
       border-radius: 4px;
       cursor: pointer;
     }
+    .promo-input button:hover {
+      background: #ddd;
+    }
     .promo-error {
-      color: var(--bb-red);
+      color: var(--bb-green);
       font-size: 0.8rem;
       margin-top: 4px;
+    }
+    .promo-error.invalid {
+      color: var(--bb-red);
     }
     .promo-discount-row {
       display: flex;
@@ -830,7 +837,7 @@
     
     .calendar-nav-button:disabled {
       color: #ccc;
-      cursor: not-allowed;
+      cursor: not-allowed
     }
     
     .calendar-grid {
@@ -1529,8 +1536,7 @@
                 <h3>✨ Build Your Own Bundle ✨</h3>
                 <p>Create a fully custom package with as many services as you like</p>
                 <p class="bundle-duration">Duration: 3 hours</p>
-                <p class="services-included">Services included:</p>
-                <div class="infinity-symbol">∞</div>
+                <div class="plus-symbol">+</div>
             </div>
             
             <h3 class="section-title">Promotions 🎉</h3>
@@ -1956,32 +1962,96 @@
         });
     });
 
-    // Apply promo code
+    // Apply promo code with all validation checks
     function applyPromoCode() {
         const promoCode = document.getElementById('promo-code').value.trim().toUpperCase();
         const errorElement = document.getElementById('promo-error');
+        const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
         
         if (!promoCode) {
             errorElement.textContent = 'Please enter a promo code';
+            errorElement.classList.add('invalid');
             return;
         }
         
-        const validCode = validPromoCodes.find(code => code.code === promoCode);
+        const validCode = validPromoCodes.find(code => code.promoCode === promoCode);
         
-        if (validCode) {
-            promoCodeApplied = validCode;
-            promoDiscount = validCode.discountValue;
-            errorElement.textContent = '';
-            errorElement.style.color = 'var(--bb-green)';
-            errorElement.textContent = `Promo code applied: $${promoDiscount} off`;
-            updatePrices();
-        } else {
-            errorElement.style.color = 'var(--bb-red)';
+        if (!validCode) {
             errorElement.textContent = 'Invalid promo code';
+            errorElement.classList.add('invalid');
             promoCodeApplied = null;
             promoDiscount = 0;
             updatePrices();
+            return;
         }
+        
+        // Check if promo is active
+        if (!validCode.isActive) {
+            errorElement.textContent = 'This promo code is not currently active';
+            errorElement.classList.add('invalid');
+            promoCodeApplied = null;
+            promoDiscount = 0;
+            updatePrices();
+            return;
+        }
+        
+        // Check date validity
+        const today = new Date();
+        if (validCode.validFrom && new Date(validCode.validFrom) > today) {
+            errorElement.textContent = 'This promo code is not valid yet';
+            errorElement.classList.add('invalid');
+            promoCodeApplied = null;
+            promoDiscount = 0;
+            updatePrices();
+            return;
+        }
+        
+        if (validCode.validTo && new Date(validCode.validTo) < today) {
+            errorElement.textContent = 'This promo code has expired';
+            errorElement.classList.add('invalid');
+            promoCodeApplied = null;
+            promoDiscount = 0;
+            updatePrices();
+            return;
+        }
+        
+        // Check minimum order value
+        if (validCode.minimumOrderValue && subtotal < validCode.minimumOrderValue) {
+            errorElement.textContent = `Minimum order of $${validCode.minimumOrderValue} required for this promo`;
+            errorElement.classList.add('invalid');
+            promoCodeApplied = null;
+            promoDiscount = 0;
+            updatePrices();
+            return;
+        }
+        
+        // Check applicable categories if specified
+        if (validCode.applicableCategories && validCode.applicableCategories.length > 0) {
+            const hasApplicableService = selectedServices.some(service => 
+                validCode.applicableCategories.includes(service.ServiceType)
+            );
+            
+            if (!hasApplicableService) {
+                errorElement.textContent = 'This promo code does not apply to your selected services';
+                errorElement.classList.add('invalid');
+                promoCodeApplied = null;
+                promoDiscount = 0;
+                updatePrices();
+                return;
+            }
+        }
+        
+        // Apply discount based on type
+        if (validCode.discountType === 'percentage') {
+            promoDiscount = subtotal * (validCode.discountValue / 100);
+        } else {
+            promoDiscount = validCode.discountValue;
+        }
+        
+        promoCodeApplied = validCode;
+        errorElement.textContent = validCode.description || `Promo code applied: $${promoDiscount.toFixed(2)} off`;
+        errorElement.classList.remove('invalid');
+        updatePrices();
     }
 
     // Set up progress bar navigation
@@ -2032,6 +2102,8 @@
             const res = await fetch('https://raw.githubusercontent.com/bundlebooth/bdb-2.0/main/data/bundles.json');
             if (!res.ok) throw new Error('Failed to fetch bundles');
             bundles = await res.json();
+            
+
             
             renderBundles();
         } catch (error) {
@@ -2197,9 +2269,9 @@
         const ribbon = isSpecial && bundle.discountPercentage ? 
             `<div class="corner-ribbon">${bundle.discountPercentage}% OFF</div>` : '';
             
-        // Add infinity symbol for custom bundle
+        // Add plus symbol for custom bundle
         const servicesIncludedContent = bundle.isCustom ? 
-            `<div class="infinity-symbol">∞</div>` : 
+            `<div class="plus-symbol">+</div>` : 
             `<div class="tag-list">${categoryTags}</div>`;
         
         div.innerHTML = `
@@ -2207,7 +2279,6 @@
             <h3>${bundle.name}</h3>
             <p>${bundle.description || "No description provided."}</p>
             ${bundle.duration ? `<p class="bundle-duration">Duration: ${bundle.duration}</p>` : ''}
-            <p class="services-included">Services included:</p>
             ${servicesIncludedContent}
         `;
         
@@ -2325,8 +2396,6 @@
         if (promoDiscount > 0) {
             document.getElementById('promo-discount-row').style.display = 'flex';
             document.getElementById('promo-discount-amount').textContent = `-C$${promoDiscount.toFixed(2)}`;
-            document.getElementById('promo-error').textContent = `Promo code applied: $${promoDiscount} off`;
-            document.getElementById('promo-error').style.color = 'var(--bb-green)';
         } else {
             document.getElementById('promo-discount-row').style.display = 'none';
         }
@@ -3098,7 +3167,7 @@
             const slotStartLocal = new Date(`${date}T${padTime(slot.start)}:00:00`);
             const slotEndLocal = new Date(`${date}T${padTime(slot.end)}:00:00`);
 
-            // Convert local EST to UTC for API comparison
+                       // Convert local EST to UTC for API comparison
             // During daylight time (March-November), EST is UTC-4
             const slotStartUTC = new Date(slotStartLocal);
             slotStartUTC.setHours(slotStartUTC.getHours() + 4);
