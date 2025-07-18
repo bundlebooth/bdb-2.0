@@ -1913,19 +1913,35 @@ let selectedSlotElement = null; // To track the currently selected time slot
         }
 
         // Load promo codes
-        try {
-            const promoRes = await fetch("https://bundlebooth.github.io/bdb-2.0/data/promo_codes.json");
-            validPromoCodes = await promoRes.json();
-        } catch (err) {
-            console.error("Failed to load promo_codes.json", err);
-            validPromoCodes = [
-                {
-                    "code": "TEST25",
-                    "discountValue": 25,
-                    "description": "Test promo code - $25 off"
-                }
-            ];
+try {
+    const promoRes = await fetch("https://bundlebooth.github.io/bdb-2.0/data/promo_codes.json");
+    if (!promoRes.ok) throw new Error('Failed to fetch promo codes');
+    
+    // Parse response and ensure it's an array
+    const promoData = await promoRes.json();
+    validPromoCodes = Array.isArray(promoData) ? promoData : [];
+    
+    // If we got empty array or invalid data, use fallback
+    if (validPromoCodes.length === 0) {
+        throw new Error('Empty promo codes array');
+    }
+} catch (err) {
+    console.error("Error loading promo codes:", err);
+    // Fallback to test promo code
+    validPromoCodes = [
+        {
+            "promoCode": "TEST25",
+            "discountType": "percentage",
+            "discountValue": 25,
+            "description": "25% off your total order",
+            "isActive": true,
+            "validFrom": "2025-01-01T00:00:00Z",
+            "validTo": "2025-12-31T23:59:59Z",
+            "minimumOrderValue": 0,
+            "applicableCategories": ["Interactive Booths", "Sweets and Brews"]
         }
+    ];
+}
 
         // Initialize the builder
         await fetchBundles();
@@ -2032,28 +2048,34 @@ let selectedSlotElement = null; // To track the currently selected time slot
     });
 
     // Apply promo code with all validation checks
-    function applyPromoCode() {
-        const promoCode = document.getElementById('promo-code').value.trim().toUpperCase();
-        const errorElement = document.getElementById('promo-error');
-        const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
-        
-        if (!promoCode) {
-            errorElement.textContent = 'Please enter a promo code';
-            errorElement.classList.add('invalid');
-            return;
-        }
-        
-        const validCode = validPromoCodes.find(code => code.promoCode === promoCode);
-        
-        if (!validCode) {
-            errorElement.textContent = 'Invalid promo code';
-            errorElement.classList.add('invalid');
-            promoCodeApplied = null;
-            promoDiscount = 0;
-            updatePrices();
-            return;
-        }
-        
+function applyPromoCode() {
+    // Ensure validPromoCodes is always an array
+    if (!Array.isArray(validPromoCodes)) {
+        console.error('validPromoCodes is not an array, resetting to empty array');
+        validPromoCodes = [];
+    }
+
+    const promoCode = document.getElementById('promo-code').value.trim().toUpperCase();
+    const errorElement = document.getElementById('promo-error');
+    const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
+    
+    if (!promoCode) {
+        errorElement.textContent = 'Please enter a promo code';
+        errorElement.classList.add('invalid');
+        return;
+    }
+    
+    // Safe array find operation
+    const validCode = validPromoCodes.find(code => code.promoCode === promoCode);
+    
+    if (!validCode) {
+        errorElement.textContent = 'Invalid promo code';
+        errorElement.classList.add('invalid');
+        promoCodeApplied = null;
+        promoDiscount = 0;
+        updatePrices();
+        return;
+    }
         // Check if promo is active
         if (!validCode.isActive) {
             errorElement.textContent = 'This promo code is not currently active';
