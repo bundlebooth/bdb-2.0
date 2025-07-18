@@ -931,32 +931,15 @@
       margin-top: 20px;
     }
     
-
-.time-slot {
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    position: relative;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-}
-
-.time-slot:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.time-slot.selected-slot {
-    box-shadow: 0 0 0 2px var(--bb-accent);
-    border-color: var(--bb-accent);
-}
-
-/* Add this new rule to maintain blue border on hover */
-.time-slot.selected-slot:hover {
-    box-shadow: 0 0 0 2px var(--bb-accent), 0 2px 4px rgba(0,0,0,0.1);
-    border-color: var(--bb-accent);
-    transform: translateY(-2px);
-}
+    .time-slot {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      position: relative;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+    }
     
     .time-slot::before {
       content: '';
@@ -1883,11 +1866,10 @@
     let stripe;
     let cardElement;
     let currentDisplayedDate = new Date();
-	const twoWeeksLater = new Date();
+const twoWeeksLater = new Date();
 	twoWeeksLater.setDate(twoWeeksLater.getDate() + 14);
 	if (twoWeeksLater.getMonth() !== currentDisplayedDate.getMonth()) {
-    currentDisplayedDate = new Date(twoWeeksLater);}
-    let selectedDateElement = null;
+    currentDisplayedDate = new Date(twoWeeksLater);}    let selectedDateElement = null;
     let serviceFeatures = {}; // To store features data
     let globalGuestSize = 100; // Default guest size
     let globalSparklersCount = 50; // Default sparklers count
@@ -1895,7 +1877,7 @@
     let promoDiscount = 0;
     let validPromoCodes = [];
     let { jsPDF } = window.jspdf;
-	let selectedSlotElement = null; // To track the currently selected time slot
+let selectedSlotElement = null; // To track the currently selected time slot
 
     // Initialize the builder when DOM is loaded
     document.addEventListener("DOMContentLoaded", async () => {
@@ -2471,7 +2453,6 @@ function updateMonthNavigationButtons() {
     nextButton.disabled = currentDisplayedDate.getMonth() === maxDate.getMonth() && 
                          currentDisplayedDate.getFullYear() === maxDate.getFullYear();
 }
-
     // Update prices with discounts
     function updatePrices() {
         const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
@@ -3254,95 +3235,66 @@ function renderCalendar(date) {
         }
     }
     
-function renderTimeSlots(date, availability = []) {
-    const container = document.getElementById('time-slots-container');
-    container.innerHTML = '';
+    function renderTimeSlots(date, availability = []) {
+        const container = document.getElementById('time-slots-container');
+        container.innerHTML = '';
 
-    // Time slots in EST (what user sees)
-    const timeSlots = [
-        { start: 9, end: 12 },   // 9AM-12PM EST
-        { start: 12, end: 15 },  // 12PM-3PM EST
-        { start: 15, end: 18 },  // 3PM-6PM EST
-        { start: 18, end: 21 }   // 6PM-9PM EST
-    ];
+        // Time slots in EST (what user sees)
+        const timeSlots = [
+            { start: 9, end: 12 },   // 9AM-12PM EST
+            { start: 12, end: 15 },  // 12PM-3PM EST
+            { start: 15, end: 18 },  // 3PM-6PM EST
+            { start: 18, end: 21 }   // 6PM-9PM EST
+        ];
 
-    timeSlots.forEach(slot => {
-        // Create Date objects in local time (EST)
-        const slotStartLocal = new Date(`${date}T${padTime(slot.start)}:00:00`);
-        const slotEndLocal = new Date(`${date}T${padTime(slot.end)}:00:00`);
+        timeSlots.forEach(slot => {
+            // Create Date objects in local time (EST)
+            const slotStartLocal = new Date(`${date}T${padTime(slot.start)}:00:00`);
+            const slotEndLocal = new Date(`${date}T${padTime(slot.end)}:00:00`);
 
-        // Convert local EST to UTC for API comparison
-        // During daylight time (March-November), EST is UTC-4
-        const slotStartUTC = new Date(slotStartLocal);
-        slotStartUTC.setHours(slotStartUTC.getHours() + 4);
-        
-        const slotEndUTC = new Date(slotEndLocal);
-        slotEndUTC.setHours(slotEndUTC.getHours() + 4);
-
-        // Check against API availability
-        const isBooked = availability.some(apiSlot => {
-            const apiStart = new Date(apiSlot.start);
-            const apiEnd = new Date(apiSlot.end);
+                       // Convert local EST to UTC for API comparison
+            // During daylight time (March-November), EST is UTC-4
+            const slotStartUTC = new Date(slotStartLocal);
+            slotStartUTC.setHours(slotStartUTC.getHours() + 4);
             
-            // Check if this slot overlaps with a booked slot (in UTC)
-            return (
-                (slotStartUTC >= apiStart && slotStartUTC < apiEnd) || // Our start is within booked slot
-                (slotEndUTC > apiStart && slotEndUTC <= apiEnd) ||     // Our end is within booked slot
-                (slotStartUTC <= apiStart && slotEndUTC >= apiEnd)      // Our slot completely contains booked slot
-            );
-        });
+            const slotEndUTC = new Date(slotEndLocal);
+            slotEndUTC.setHours(slotEndUTC.getHours() + 4);
 
-        // Create the time slot element
-        const slotElement = document.createElement('div');
-        slotElement.className = `time-slot ${isBooked ? 'booked' : 'available'}`;
-        slotElement.dataset.start = slotStartUTC.toISOString();
-        slotElement.dataset.end = slotEndUTC.toISOString();
-        
-        slotElement.innerHTML = `
-            <div class="slot-time">${formatTime(slotStartLocal)} - ${formatTime(slotEndLocal)}</div>
-            <div class="slot-status">${isBooked ? 'Booked' : 'Available'}</div>
-        `;
+            // Check against API availability
+            const isBooked = availability.some(apiSlot => {
+                const apiStart = new Date(apiSlot.start);
+                const apiEnd = new Date(apiSlot.end);
+                
+                // Check if this slot overlaps with a booked slot (in UTC)
+                return (
+                    (slotStartUTC >= apiStart && slotStartUTC < apiEnd) || // Our start is within booked slot
+                    (slotEndUTC > apiStart && slotEndUTC <= apiEnd) ||     // Our end is within booked slot
+                    (slotStartUTC <= apiStart && slotEndUTC >= apiEnd)      // Our slot completely contains booked slot
+                );
+            });
 
-        if (!isBooked) {
-            slotElement.addEventListener('click', (e) => {
-                e.stopPropagation();
-                
-                // If this slot is already selected, unselect it
-                if (slotElement.classList.contains('selected-slot')) {
-                    slotElement.classList.remove('selected-slot');
-                    selectedSlotElement = null;
-                    return;
-                }
-                
-                // Remove selection from all slots
-                document.querySelectorAll('.time-slot').forEach(s => {
-                    s.classList.remove('selected-slot');
+            // Create the time slot element
+            const slotElement = document.createElement('div');
+            slotElement.className = `time-slot ${isBooked ? 'booked' : 'available'}`;
+            slotElement.dataset.start = slotStartUTC.toISOString();
+            slotElement.dataset.end = slotEndUTC.toISOString();
+            
+            slotElement.innerHTML = `
+                <div class="slot-time">${formatTime(slotStartLocal)} - ${formatTime(slotEndLocal)}</div>
+                <div class="slot-status">${isBooked ? 'Booked' : 'Available'}</div>
+            `;
+
+            if (!isBooked) {
+                slotElement.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected-slot'));
+                    slotElement.classList.add('selected-slot');
                 });
-                
-                // Add selection to clicked slot
-                slotElement.classList.add('selected-slot');
-                
-                // Store reference to selected slot
-                selectedSlotElement = slotElement;
-            });
-            
-            // Add hover effect that maintains selection
-            slotElement.addEventListener('mouseenter', () => {
-                if (slotElement.classList.contains('selected-slot')) {
-                    slotElement.style.boxShadow = '0 0 0 2px var(--bb-accent), 0 2px 4px rgba(0,0,0,0.1)';
-                }
-            });
-            
-            slotElement.addEventListener('mouseleave', () => {
-                if (slotElement.classList.contains('selected-slot')) {
-                    slotElement.style.boxShadow = '0 0 0 2px var(--bb-accent)';
-                }
-            });
-        }
+            }
 
-        container.appendChild(slotElement);
-    });
-}
+            container.appendChild(slotElement);
+        });
+    }
 
     // Helper function to pad time (9 -> "09")
     function padTime(num) {
