@@ -580,7 +580,13 @@
       margin-top: 8px;
       color: var(--bb-green);
     }
-    .promo-input {
+    .promo-wrapper {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.promo-input {
       display: flex;
       gap: 8px;
       margin-top: 8px;
@@ -603,10 +609,10 @@
       background: #ddd;
     }
     .promo-error {
-      color: var(--bb-green);
+      color: var(--bb-green); display: block; width: 100%; margin-top: 4px;
       font-size: 0.8rem;
       margin-top: 4px;
-    }
+     margin-top: 4px; font-size: 0.85rem; display: block; width: auto;}
     .promo-error.invalid {
       color: var(--bb-red);
     }
@@ -1706,11 +1712,13 @@
                 <span id="promo-discount-amount">-C$0</span>
             </div>
             <div class="promo-row" id="promo-row">
-                <div class="promo-input">
+                <div class="promo-wrapper">
+    <div class="promo-input">
                     <input type="text" id="promo-code" placeholder="Enter promo code">
                     <button id="apply-promo">Apply</button>
                 </div>
-                <div class="promo-error" id="promo-error"></div>
+                    </div>
+    <div class="promo-error" id="promo-error"></div>
             </div>
             <div class="final-total">
                 <span>Total:</span>
@@ -2062,7 +2070,7 @@ function applyPromoCode() {
     }
 
     // Check if this is a special bundle (has discountPercentage)
-    if (selectedBundle.discountPercentage > 0) {
+    if (selectedBundle && selectedBundle.discountPercentage > 0) {
         errorElement.textContent = 'Promo codes cannot be applied to discounted special bundles';
         errorElement.classList.add('invalid');
         promoCodeApplied = null;
@@ -2138,6 +2146,7 @@ function applyPromoCode() {
 
     promoCodeApplied = validCode;
     errorElement.textContent = validCode.description || `Promo code applied: $${promoDiscount.toFixed(2)} off`;
+    errorElement.classList.remove('invalid');
     errorElement.classList.remove('invalid');
     updatePrices();
 }
@@ -2383,6 +2392,10 @@ function applyPromoCode() {
 
     // Handle bundle selection
 function selectBundle(index) {
+    promoCodeApplied = null;
+    promoDiscount = 0;
+    document.getElementById("promo-code").value = "";
+    document.getElementById("promo-error").textContent = "";
     const currentPromoCode = document.getElementById('promo-code').value;
     
     selectedBundle = bundles[index];
@@ -2407,6 +2420,10 @@ function selectBundle(index) {
 
     // Handle custom bundle selection
 function selectCustomBundle() {
+    promoCodeApplied = null;
+    promoDiscount = 0;
+    document.getElementById("promo-code").value = "";
+    document.getElementById("promo-error").textContent = "";
     const currentPromoCode = document.getElementById('promo-code').value;
     
     selectedBundle = {
