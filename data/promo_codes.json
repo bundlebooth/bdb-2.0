@@ -4,8 +4,7 @@
   "discountType": "percentage",   
   "discountValue": 25,           
   "validFrom": "2025-06-15T00:00:00Z",
-  "validTo": "2025-10-15T23:59:59Z",
-  "usageLimit": 100,            
+  "validTo": "2025-10-15T23:59:59Z",         
   "minimumOrderValue": 50,     
   "applicableCategories": ["Interactive Booths", "Sweets and Brews"], 
   "isActive": true
