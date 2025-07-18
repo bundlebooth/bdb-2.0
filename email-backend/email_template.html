@@ -1,99 +1,99 @@
- <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Booking Confirmation</title>
-      <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background-color: #f8f8f8; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-        .content { padding: 20px; background-color: white; border-left: 1px solid #eee; border-right: 1px solid #eee; }
-        .footer { background-color: #f8f8f8; padding: 20px; text-align: center; border-radius: 0 0 8px 8px; font-size: 14px; }
-        .event-title { font-size: 24px; font-weight: bold; margin-bottom: 10px; }
-        .event-details { margin: 20px 0; }
-        .detail-row { display: flex; margin-bottom: 10px; }
-        .detail-label { font-weight: bold; width: 150px; }
-        .services-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        .total-row { font-weight: bold; border-top: 2px solid #333; }
-        .button { 
-          display: inline-block; padding: 10px 20px; background-color: #4CAF50; 
-          color: white; text-decoration: none; border-radius: 4px; margin: 10px 0;
-        }
-        .special-requests { background-color: #f9f9f9; padding: 15px; border-radius: 4px; margin: 15px 0; }
-      </style>
-    </head>
-    <body>
-      <div class="header">
-        <div class="event-title">${eventName}</div>
-        <div>Your event booking has been confirmed</div>
-      </div>
-      
-      <div class="content">
-        <h3>Contact Information:</h3>
-        <div class="event-details">
-          <div class="detail-row">
-            <div class="detail-label">Your Name:</div>
-            <div>${contactName}</div>
-          </div>
-          <div class="detail-row">
-            <div class="detail-label">Email:</div>
-            <div>${email}</div>
-          </div>
-          <div class="detail-row">
-            <div class="detail-label">Phone Number:</div>
-            <div>${phoneNumber || 'Not provided'}</div>
-          </div>
-        </div>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Booking Confirmation</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+  <!-- Outer table with fixed width -->
+  <table width="100%" cellspacing="0" cellpadding="0">
+    <tr>
+      <td align="center">
+        <table width="600" cellspacing="0" cellpadding="0" style="border-collapse: collapse;">
+          <!-- Header -->
+          <tr>
+            <td style="background-color: #f8f8f8; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
+              <div style="font-size: 24px; font-weight: bold; margin-bottom: 10px;">${eventName}</div>
+              <div>Your event booking has been confirmed</div>
+            </td>
+          </tr>
+          
+          <!-- Content -->
+          <tr>
+            <td style="padding: 20px; background-color: white; border-left: 1px solid #eee; border-right: 1px solid #eee;">
+              <h3 style="margin-top: 0;">Contact Information:</h3>
+              <div style="margin: 20px 0;">
+                <div style="display: flex; margin-bottom: 10px;">
+                  <div style="font-weight: bold; width: 150px;">Your Name:</div>
+                  <div>${contactName}</div>
+                </div>
+                <div style="display: flex; margin-bottom: 10px;">
+                  <div style="font-weight: bold; width: 150px;">Email:</div>
+                  <div>${email}</div>
+                </div>
+                <div style="display: flex; margin-bottom: 10px;">
+                  <div style="font-weight: bold; width: 150px;">Phone Number:</div>
+                  <div>${phoneNumber || 'Not provided'}</div>
+                </div>
+              </div>
 
-        <h3>Event Details:</h3>
-        <div class="event-details">
-          <div class="detail-row">
-            <div class="detail-label">Event Name:</div>
-            <div>${eventName}</div>
-          </div>
-          <div class="detail-row">
-            <div class="detail-label">Event Type:</div>
-            <div>${eventType || 'Not specified'}</div>
-          </div>
-          <div class="detail-row">
-            <div class="detail-label">Event Date:</div>
-            <div>${eventDate || 'Not specified'}</div>
-          </div>
-          <div class="detail-row">
-            <div class="detail-label">Duration:</div>
-            <div>${durationHours || 'Not specified'} hours</div>
-          </div>
-          <div class="detail-row">
-            <div class="detail-label">Location:</div>
-            <div>${eventLocation || 'Location not specified'}</div>
-          </div>
-        </div>
+              <h3>Event Details:</h3>
+              <div style="margin: 20px 0;">
+                <div style="display: flex; margin-bottom: 10px;">
+                  <div style="font-weight: bold; width: 150px;">Event Name:</div>
+                  <div>${eventName}</div>
+                </div>
+                <div style="display: flex; margin-bottom: 10px;">
+                  <div style="font-weight: bold; width: 150px;">Event Type:</div>
+                  <div>${eventType || 'Not specified'}</div>
+                </div>
+                <div style="display: flex; margin-bottom: 10px;">
+                  <div style="font-weight: bold; width: 150px;">Event Date:</div>
+                  <div>${eventDate || 'Not specified'}</div>
+                </div>
+                <div style="display: flex; margin-bottom: 10px;">
+                  <div style="font-weight: bold; width: 150px;">Duration:</div>
+                  <div>${durationHours || 'Not specified'} hours</div>
+                </div>
+                <div style="display: flex; margin-bottom: 10px;">
+                  <div style="font-weight: bold; width: 150px;">Location:</div>
+                  <div>${eventLocation || 'Location not specified'}</div>
+                </div>
+              </div>
 
-        ${specialRequests ? `
-        <div class="special-requests">
-          <h4>Special Requests/Notes:</h4>
-          <p>${specialRequests}</p>
-        </div>
-        ` : ''}
-        
-        <h3>Services Booked:</h3>
-        <table class="services-table">
-          ${servicesList}
-          <tr class="total-row">
-            <td style="padding: 8px 0;">Total</td>
-            <td style="padding: 8px 0; text-align: right;">C$${total.toFixed(2)}</td>
+              ${specialRequests ? `
+              <div style="background-color: #f9f9f9; padding: 15px; border-radius: 4px; margin: 15px 0;">
+                <h4 style="margin-top: 0;">Special Requests/Notes:</h4>
+                <p>${specialRequests}</p>
+              </div>
+              ` : ''}
+              
+              <h3>Services Booked:</h3>
+              <table width="100%" cellspacing="0" cellpadding="0" style="border-collapse: collapse; margin: 20px 0;">
+                ${servicesList}
+                <tr style="font-weight: bold; border-top: 2px solid #333;">
+                  <td style="padding: 8px 0;">Total</td>
+                  <td style="padding: 8px 0; text-align: right;">C$${total.toFixed(2)}</td>
+                </tr>
+              </table>
+              
+              <p>Thank you for choosing BundleBooth, ${contactName}!</p>
+              <p>We'll be in touch soon to confirm the details of your event.</p>
+              
+              <a href="#" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px; margin: 10px 0;">View Booking Details</a>
+            </td>
+          </tr>
+          
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f8f8f8; padding: 20px; text-align: center; border-radius: 0 0 8px 8px; font-size: 14px;">
+              <p>Need to make changes? <a href="#" style="color: #4CAF50;">Contact us</a> or <a href="#" style="color: #4CAF50;">Cancel booking</a></p>
+              <p>© ${new Date().getFullYear()} ${process.env.FROM_NAME || 'BundleBooth'}. All rights reserved.</p>
+            </td>
           </tr>
         </table>
-        
-        <p>Thank you for choosing BundleBooth, ${contactName}!</p>
-        <p>We'll be in touch soon to confirm the details of your event.</p>
-        
-        <a href="#" class="button">View Booking Details</a>
-      </div>
-      
-      <div class="footer">
-        <p>Need to make changes? <a href="#">Contact us</a> or <a href="#">Cancel booking</a></p>
-        <p>© ${new Date().getFullYear()} ${process.env.FROM_NAME || 'BundleBooth'}. All rights reserved.</p>
-      </div>
-    </body>
-    </html>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
