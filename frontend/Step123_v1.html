@@ -179,15 +179,15 @@
       gap: 8px;
     }
     
-    .tag {
-      background: #f0f4f8;
-      color: var(--bb-accent);
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      display: inline-flex;
-      align-items: center;
-    }
+.tag {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-right: 6px;
+    margin-bottom: 6px;
+}
     
     .tag-count {
       display: inline-flex;
@@ -1513,6 +1513,37 @@
         flex-direction: column;
         gap: 0;
       }
+	  
+	  .tag.scene-setters {
+    background: #e6f0fa;
+    color: var(--tag-scene);
+}
+
+.tag.sweets-brews {
+    background: #e6d9cb;
+    color: var(--tag-sweets);
+}
+
+.tag.special-effects {
+    background: #fff7e0;
+    color: var(--tag-special-effects);
+}
+
+.tag.guest-book {
+    background: #fce7f3;
+    color: var(--tag-guest-book);
+}
+
+.tag.digital {
+    background: #e8ecef;
+    color: var(--tag-digital);
+}
+
+.tag.interactive {
+    background: #f3e8ff;
+    color: var(--tag-interactive);
+}
+	  
     }
 
 </style>
@@ -2252,9 +2283,6 @@
             let tagClass = 'tag';
             if (category.includes('Scene')) tagClass += ' scene-setters';
             if (category.includes('Sweets')) tagClass += ' sweets-brews';
-            if (category.includes('Special Effects')) tagClass += ' special-effects';
-            if (category.includes('Guest Book')) tagClass += ' guest-book';
-            if (category.includes('Digital')) tagClass += ' digital';
             if (category.includes('Interactive')) tagClass += ' interactive';
             
             return `
@@ -2271,8 +2299,9 @@
             
         // Add plus symbol for custom bundle
         const servicesIncludedContent = bundle.isCustom ? 
-            `<div class="plus-symbol">+</div>` : 
-            `<div class="tag-list">${categoryTags}</div>`;
+    `<div class="plus-symbol">+</div>` : 
+    `<div class="categories-label">Services Includes:</div>
+     <div>${categoryTags}</div>`;
         
         div.innerHTML = `
             ${ribbon}
