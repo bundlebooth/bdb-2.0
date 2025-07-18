@@ -2033,16 +2033,6 @@
             if (!res.ok) throw new Error('Failed to fetch bundles');
             bundles = await res.json();
             
-            // Add custom bundle
-            bundles.push({
-                name: "✨ Build Your Own Bundle ✨",
-                description: "Create a fully custom package with as many services as you like",
-                duration: "3 hours",
-                categories: {},
-                discountPercentage: 0,
-                isCustom: true
-            });
-            
             renderBundles();
         } catch (error) {
             console.error("Error loading bundles:", error);
