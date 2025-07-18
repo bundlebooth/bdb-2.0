@@ -4,7 +4,7 @@
     "description": "For weddings with glam and customization",
     "Special": true,
     "discountPercentage": 15,
-    "Duration": 3,
+    "duration": 3,
     "categories": {
       "Interactive Booths": 1,
       "Scene Setters": 1
@@ -15,7 +15,7 @@
     "description": "Professional-grade booths and effects for corporate events.",
     "Special": true,
     "discountPercentage": 10,
-    "Duration": 3,
+    "duration": 3,
     "categories": {
       "Interactive Booths": 1,
       "Scene Setters": 1
@@ -26,7 +26,7 @@
     "description": "High-end wedding atmosphere with double booths and sweets.",
     "Special": true,
     "discountPercentage": 18,
-    "Duration": 3,
+    "duration": 3,
     "categories": {
       "Interactive Booths": 2,
       "Scene Setters": 1,
@@ -38,7 +38,7 @@
     "description": "High-end wedding atmosphere with double booths and sweets.",
     "Special": true,
     "discountPercentage": 18,
-    "Duration": 3,
+    "duration": 3,
     "categories": {
       "Interactive Booths": 2,
       "Scene Setters": 1,
