@@ -2048,26 +2048,22 @@ try {
     });
 
     // Apply promo code with all validation checks
-function applyPromoCode() {
-    // Ensure validPromoCodes is always an array
-    if (!Array.isArray(validPromoCodes)) {
-        console.error('validPromoCodes is not an array, resetting to empty array');
-        validPromoCodes = [];
-    }
 
-    const promoCode = document.getElementById('promo-code').value.trim().toUpperCase();
+function applyPromoCode() {
+    const promoCodeInput = document.getElementById('promo-code');
+    const promoCode = promoCodeInput.value.trim().toUpperCase();
     const errorElement = document.getElementById('promo-error');
     const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
-    
+
     if (!promoCode) {
         errorElement.textContent = 'Please enter a promo code';
         errorElement.classList.add('invalid');
         return;
     }
-    
-    // Safe array find operation
-    const validCode = validPromoCodes.find(code => code.promoCode === promoCode);
-    
+
+    const validCode = validPromoCodes.find(code => code.promoCode.toUpperCase() === promoCode);
+    console.log('PROMO DEBUG:', { enteredPromoCode: promoCode, matchedPromoCodeObject: validCode, subtotalAmount: subtotal, selectedServicesList: selectedServices });
+
     if (!validCode) {
         errorElement.textContent = 'Invalid promo code';
         errorElement.classList.add('invalid');
@@ -2076,74 +2072,66 @@ function applyPromoCode() {
         updatePrices();
         return;
     }
-        // Check if promo is active
-        if (!validCode.isActive) {
-            errorElement.textContent = 'This promo code is not currently active';
-            errorElement.classList.add('invalid');
-            promoCodeApplied = null;
-            promoDiscount = 0;
-            updatePrices();
-            return;
-        }
-        
-        // Check date validity
-        const today = new Date();
-        if (validCode.validFrom && new Date(validCode.validFrom) > today) {
-            errorElement.textContent = 'This promo code is not valid yet';
-            errorElement.classList.add('invalid');
-            promoCodeApplied = null;
-            promoDiscount = 0;
-            updatePrices();
-            return;
-        }
-        
-        if (validCode.validTo && new Date(validCode.validTo) < today) {
-            errorElement.textContent = 'This promo code has expired';
-            errorElement.classList.add('invalid');
-            promoCodeApplied = null;
-            promoDiscount = 0;
-            updatePrices();
-            return;
-        }
-        
-        // Check minimum order value
-        if (validCode.minimumOrderValue && subtotal < validCode.minimumOrderValue) {
-            errorElement.textContent = `Minimum order of $${validCode.minimumOrderValue} required for this promo`;
-            errorElement.classList.add('invalid');
-            promoCodeApplied = null;
-            promoDiscount = 0;
-            updatePrices();
-            return;
-        }
-        
-        // Check applicable categories if specified
-        if (validCode.applicableCategories && validCode.applicableCategories.length > 0) {
-            const hasApplicableService = selectedServices.some(service => 
-                validCode.applicableCategories.includes(service.ServiceType)
-            );
-            
-            if (!hasApplicableService) {
-                errorElement.textContent = 'This promo code does not apply to your selected services';
-                errorElement.classList.add('invalid');
-                promoCodeApplied = null;
-                promoDiscount = 0;
-                updatePrices();
-                return;
-            }
-        }
-        
-        // Apply discount based on type
-        if (validCode.discountType === 'percentage') {
-            promoDiscount = subtotal * (validCode.discountValue / 100);
-        } else {
-            promoDiscount = validCode.discountValue;
-        }
-        
-        promoCodeApplied = validCode;
-        errorElement.textContent = validCode.description || `Promo code applied: $${promoDiscount.toFixed(2)} off`;
-        errorElement.classList.remove('invalid');
+
+    const today = new Date();
+    if (!validCode.isActive) {
+        errorElement.textContent = 'This promo code is not currently active';
+        errorElement.classList.add('invalid');
+        promoCodeApplied = null;
+        promoDiscount = 0;
         updatePrices();
+        return;
     }
+    if (validCode.validFrom && new Date(validCode.validFrom) > today) {
+        errorElement.textContent = 'This promo code is not valid yet';
+        errorElement.classList.add('invalid');
+        promoCodeApplied = null;
+        promoDiscount = 0;
+        updatePrices();
+        return;
+    }
+    if (validCode.validTo && new Date(validCode.validTo) < today) {
+        errorElement.textContent = 'This promo code has expired';
+        errorElement.classList.add('invalid');
+        promoCodeApplied = null;
+        promoDiscount = 0;
+        updatePrices();
+        return;
+    }
+    if (validCode.minimumOrderValue && subtotal < validCode.minimumOrderValue) {
+        errorElement.textContent = `Minimum order of $${validCode.minimumOrderValue} required for this promo`;
+        errorElement.classList.add('invalid');
+        promoCodeApplied = null;
+        promoDiscount = 0;
+        updatePrices();
+        return;
+    }
+    if (validCode.applicableCategories && validCode.applicableCategories.length > 0) {
+        const hasApplicableService = selectedServices.some(service =>
+            validCode.applicableCategories.includes(service.ServiceType)
+        );
+        if (!hasApplicableService) {
+            errorElement.textContent = 'This promo code does not apply to your selected services';
+            errorElement.classList.add('invalid');
+            promoCodeApplied = null;
+            promoDiscount = 0;
+            updatePrices();
+            return;
+        }
+    }
+
+    if (validCode.discountType === 'percentage') {
+        promoDiscount = subtotal * (validCode.discountValue / 100);
+    } else {
+        promoDiscount = validCode.discountValue;
+    }
+
+    promoCodeApplied = validCode;
+    errorElement.textContent = validCode.description || `Promo code applied: $${promoDiscount.toFixed(2)} off`;
+    errorElement.classList.remove('invalid');
+    updatePrices();
+}
+
 
     // Set up progress bar navigation
     function setupProgressBarNavigation() {
