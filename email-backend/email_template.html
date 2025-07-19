@@ -33,7 +33,7 @@
                 </div>
                 <div style="display: flex; margin-bottom: 10px;">
                   <div style="font-weight: bold; width: 150px;">Phone Number:</div>
-                  <div>${phoneNumber || 'Not provided'}</div>
+                  <div>${phoneNumber}</div>
                 </div>
               </div>
 
@@ -45,23 +45,23 @@
                 </div>
                 <div style="display: flex; margin-bottom: 10px;">
                   <div style="font-weight: bold; width: 150px;">Event Type:</div>
-                  <div>${eventType || 'Not specified'}</div>
+                  <div>${eventType}</div>
                 </div>
                 <div style="display: flex; margin-bottom: 10px;">
                   <div style="font-weight: bold; width: 150px;">Event Date:</div>
-                  <div>${eventDate || 'Not specified'}</div>
+                  <div>${eventDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
                 </div>
                 <div style="display: flex; margin-bottom: 10px;">
                   <div style="font-weight: bold; width: 150px;">Time Slot:</div>
-                  <div>${timeSlot || 'Not specified'}</div>
+                  <div>${timeSlot.startTime} - ${timeSlot.endTime} (EST)</div>
                 </div>
                 <div style="display: flex; margin-bottom: 10px;">
                   <div style="font-weight: bold; width: 150px;">Duration:</div>
-                  <div>${durationHours || 'Not specified'} hours</div>
+                  <div>${durationHours} hours</div>
                 </div>
                 <div style="display: flex; margin-bottom: 10px;">
                   <div style="font-weight: bold; width: 150px;">Location:</div>
-                  <div>${eventLocation || 'Location not specified'}</div>
+                  <div>${eventLocation}</div>
                 </div>
               </div>
 
@@ -71,6 +71,20 @@
                 <p>${specialRequests}</p>
               </div>
               ` : ''}
+              
+              <h3>Bundle Information:</h3>
+              <div style="margin: 20px 0;">
+                <div style="display: flex; margin-bottom: 10px;">
+                  <div style="font-weight: bold; width: 150px;">Bundle Name:</div>
+                  <div>${bundleName}</div>
+                </div>
+                ${bundleDescription ? `
+                <div style="display: flex; margin-bottom: 10px;">
+                  <div style="font-weight: bold; width: 150px;">Description:</div>
+                  <div>${bundleDescription}</div>
+                </div>
+                ` : ''}
+              </div>
               
               <h3>Services Booked:</h3>
               <table width="100%" cellspacing="0" cellpadding="0" style="border-collapse: collapse; margin: 20px 0;">
@@ -90,7 +104,7 @@
                       ${service.ServiceType === "Scene Setters" && service.slug === "sparklers-box" ? `Quantity: ${service.selectedTier.value} sparklers` : ''}
                       ${service.ServiceType === "Interactive Booths" && service.slug === "photo-booth" ? `Option: ${service.selectedTier.label}` : ''}
                       ${service.duration ? `<br>Duration: ${service.duration}` : ''}
-                    ` : ''}
+                    ` : service.duration ? `Duration: ${service.duration}` : 'Standard'}
                   </td>
                   <td style="padding: 8px 0; text-align: right;">C$${(service.selectedPrice || service.price || 0).toFixed(2)}</td>
                 </tr>
@@ -143,6 +157,14 @@
                   <div style="font-weight: bold; width: 150px;">Payment Date:</div>
                   <div>${new Date().toLocaleDateString()}</div>
                 </div>
+                <div style="display: flex; margin-bottom: 10px;">
+                  <div style="font-weight: bold; width: 150px;">Transaction ID:</div>
+                  <div>${transactionId || 'Pending'}</div>
+                </div>
+                <div style="display: flex; margin-bottom: 10px;">
+                  <div style="font-weight: bold; width: 150px;">Payment Status:</div>
+                  <div>${paymentStatus || 'Completed'}</div>
+                </div>
               </div>
               
               <p>Thank you for choosing BundleBooth, ${contactName}!</p>
@@ -154,10 +176,14 @@
                   <li>Your booking is confirmed. A payment of C$${total.toFixed(2)} was processed.</li>
                   <li>Final details (guest count, etc.) must be confirmed 14 days before the event.</li>
                   <li>For any changes, please contact us at least 7 days before the event.</li>
+                  <li>All times are in Eastern Time Zone (EST)</li>
                 </ul>
               </div>
               
-              <a href="#" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px; margin: 10px 0;">View Booking Details</a>
+              <div style="text-align: center; margin-top: 30px;">
+                <a href="#" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px; margin: 10px 0;">View Booking Details</a>
+                <a href="mailto:support@bundlebooth.ca" style="display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 4px; margin: 10px 10px;">Contact Support</a>
+              </div>
             </td>
           </tr>
           
