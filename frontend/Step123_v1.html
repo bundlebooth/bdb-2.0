@@ -3377,6 +3377,7 @@ function renderCalendar(date) {
     // Handle booking submission
     // Handle booking submission
 // Handle booking submission
+// Handle booking submission
 async function handleBookingSubmit(e) {
     e.preventDefault();
     
@@ -3392,23 +3393,23 @@ async function handleBookingSubmit(e) {
         return;
     }
 
-    // Get the selected time slot (already in UTC from the availability API)
-    const startTimeUTC = new Date(selectedSlot.dataset.start);
-    const endTimeUTC = new Date(selectedSlot.dataset.end);
+    // Get the raw UTC times from the slot data
+    const startTimeUTC = selectedSlot.dataset.start;
+    const endTimeUTC = selectedSlot.dataset.end;
 
     const total = parseFloat(document.getElementById('final-total-price').textContent.replace('C$', ''));
     const bookingData = {
         eventName: document.getElementById('event-name').value,
         eventType: document.getElementById('event-type').value,
-        eventDate: selectedSlot.dataset.start.split('T')[0],
-        duration: 3, // Fixed duration since we're using 3-hour slots
+        eventDate: startTimeUTC.split('T')[0],
+        duration: 3,
         location: document.getElementById('event-location').value,
         notes: document.getElementById('special-requests').value,
         contactName: document.getElementById('contact-name').value,
         email: document.getElementById('contact-email').value,
         phone: document.getElementById('contact-phone').value,
-        startTime: startTimeUTC.toISOString(), // Already in UTC
-        endTime: endTimeUTC.toISOString()     // Already in UTC
+        startTime: startTimeUTC, // Pass UTC time directly
+        endTime: endTimeUTC      // Pass UTC time directly
     };
 
     document.getElementById('stripe-payment-form').style.display = 'block';
