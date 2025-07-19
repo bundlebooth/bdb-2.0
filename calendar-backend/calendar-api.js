@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
+const { DateTime } = require('luxon');
 
 const app = express();
 
@@ -19,12 +20,16 @@ app.use(cors({
 
 app.use(express.json());
 
+// Constants
+const TIMEZONE = 'America/New_York'; // Handles EST/EDT automatically
+const SLOT_DURATION = 180; // 3 hours in minutes
+
 // Health Check Endpoint
 app.get('/', (req, res) => {
   res.json({
     status: 'running',
     service: 'BundleBooth Calendar API',
-    timestamp: new Date().toISOString(),
+    timestamp: DateTime.now().setZone(TIMEZONE).toISO(),
     endpoints: {
       availability: '/api/availability?date=YYYY-MM-DD',
       bookings: '/api/bookings'
@@ -69,7 +74,6 @@ const getAccessToken = async () => {
 const mergeTimeSlots = (slots) => {
   if (slots.length === 0) return [];
 
-  // Sort by start time
   const sortedSlots = [...slots].sort((a, b) => 
     new Date(a.start.dateTime) - new Date(b.start.dateTime)
   );
@@ -82,7 +86,6 @@ const mergeTimeSlots = (slots) => {
     const currentEnd = new Date(currentSlot.end.dateTime);
     const nextStart = new Date(nextSlot.start.dateTime);
 
-    // Merge if overlapping or adjacent
     if (nextStart <= currentEnd) {
       currentSlot.end.dateTime = new Date(
         Math.max(currentEnd, new Date(nextSlot.end.dateTime))
@@ -92,94 +95,155 @@ const mergeTimeSlots = (slots) => {
       currentSlot = { ...nextSlot };
     }
   }
-  merged.push(currentSlot); // Add the last slot
+  merged.push(currentSlot);
   return merged;
 };
 
-// Configure axios to always use ET timezone
-const axios = require('axios');
-const { DateTime } = require('luxon');
-
-// AVAILABILITY ENDPOINT
+// Calendar Availability Endpoint
 app.get('/api/availability', async (req, res) => {
   try {
     const date = req.query.date;
-    const timezone = 'America/New_York'; // Correct ET timezone
-    
-    // Define slots in ET
-    const slots = [
-      { start: '09:00', end: '12:00', display: '9:00 AM - 12:00 PM' },
-      { start: '12:00', end: '15:00', display: '12:00 PM - 3:00 PM' },
-      { start: '15:00', end: '18:00', display: '3:00 PM - 6:00 PM' },
-      { start: '18:00', end: '21:00', display: '6:00 PM - 9:00 PM' },
-      { start: '21:00', end: '00:00', display: '9:00 PM - 12:00 AM' }
+    if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return res.status(400).json({ error: 'Valid date parameter (YYYY-MM-DD) is required' });
+    }
+
+    const accessToken = await getAccessToken();
+    const calendarOwner = process.env.CALENDAR_OWNER_UPN;
+
+    // Define time slots in local time (Eastern Time)
+    const timeSlots = [
+      { start: '09:00:00', end: '12:00:00', display: '9:00 AM - 12:00 PM' },
+      { start: '12:00:00', end: '15:00:00', display: '12:00 PM - 3:00 PM' },
+      { start: '15:00:00', end: '18:00:00', display: '3:00 PM - 6:00 PM' },
+      { start: '18:00:00', end: '21:00:00', display: '6:00 PM - 9:00 PM' },
+      { start: '21:00:00', end: '00:00:00', display: '9:00 PM - 12:00 AM' }
     ];
 
-    // Convert to proper ET datetime strings
-    const availability = slots.map(slot => {
-      const startET = DateTime.fromISO(`${date}T${slot.start}`, { zone: timezone });
-      const endET = DateTime.fromISO(`${date}T${slot.end}`, { zone: timezone });
-      
-      return {
-        display: slot.display,
-        start: startET.toISO(),
-        end: endET.toISO(),
-        startET: startET.toFormat('h:mm a'),
-        endET: endET.toFormat('h:mm a')
-      };
-    });
+    // Get all events for the day
+    const startTime = DateTime.fromISO(`${date}T00:00:00`, { zone: TIMEZONE }).toISO();
+    const endTime = DateTime.fromISO(`${date}T23:59:59`, { zone: TIMEZONE }).toISO();
 
-    res.json({ date, availability });
-  } catch (error) {
-    console.error('Availability error:', error);
-    res.status(500).json({ error: 'Failed to fetch availability' });
-  }
-});
-
-// BOOKING ENDPOINT
-app.post('/api/bookings', async (req, res) => {
-  try {
-    const { start, end, name, email } = req.body;
-    const timezone = 'America/New_York';
-    
-    // Convert to ET explicitly
-    const startET = DateTime.fromISO(start, { zone: timezone });
-    const endET = DateTime.fromISO(end, { zone: timezone });
-
-    const response = await axios.post(
-      `https://graph.microsoft.com/v1.0/users/${process.env.CALENDAR_OWNER_UPN}/events`,
+    const response = await axios.get(
+      `https://graph.microsoft.com/v1.0/users/${calendarOwner}/calendar/events`,
       {
-        subject: `Booking: ${name}`,
-        start: {
-          dateTime: startET.toISO(),
-          timeZone: timezone
+        params: {
+          startDateTime: startTime,
+          endDateTime: endTime,
+          $select: 'subject,start,end'
         },
-        end: {
-          dateTime: endET.toISO(),
-          timeZone: timezone
-        }
-      },
-      {
         headers: {
-          Authorization: `Bearer ${process.env.MICROSOFT_ACCESS_TOKEN}`,
+          Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'application/json'
         }
       }
     );
 
+    const events = response.data.value || [];
+
+    // Check availability for each slot
+    const availability = timeSlots.map(slot => {
+      const slotStart = DateTime.fromISO(`${date}T${slot.start}`, { zone: TIMEZONE }).toISO();
+      const slotEnd = DateTime.fromISO(`${date}T${slot.end}`, { zone: TIMEZONE }).toISO();
+
+      const isBooked = events.some(event => {
+        const eventStart = new Date(event.start.dateTime);
+        const eventEnd = new Date(event.end.dateTime);
+        return (eventStart < new Date(slotEnd) && (eventEnd > new Date(slotStart));
+      });
+
+      return {
+        display: slot.display,
+        start: slotStart,
+        end: slotEnd,
+        status: 'busy',
+        booked: isBooked
+      };
+    });
+
+    res.json({ 
+      date: date,
+      timezone: TIMEZONE,
+      availability: availability 
+    });
+
+  } catch (error) {
+    console.error('Availability Error:', error.response?.data || error.message);
+    res.status(500).json({ 
+      error: 'Failed to fetch availability',
+      details: error.response?.data || error.message
+    });
+  }
+});
+
+// Booking Endpoint
+app.post('/api/bookings', async (req, res) => {
+  try {
+    const { start, end, name, email, eventDetails } = req.body;
+    
+    if (!start || !end || !name || !email) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const accessToken = await getAccessToken();
+    
+    // Convert to proper DateTime objects with timezone
+    const startDT = DateTime.fromISO(start, { zone: TIMEZONE });
+    const endDT = DateTime.fromISO(end, { zone: TIMEZONE });
+
+    const response = await axios.post(
+      `https://graph.microsoft.com/v1.0/users/${process.env.CALENDAR_OWNER_UPN}/events`,
+      {
+        subject: `Booking: ${name}`,
+        body: {
+          contentType: "HTML",
+          content: `
+            <p>Client: ${name}</p>
+            <p>Email: ${email}</p>
+            <p>Event: ${eventDetails?.eventName || 'Not specified'}</p>
+            <p>Location: ${eventDetails?.location || 'Not specified'}</p>
+            <p>Guests: ${eventDetails?.guestCount || 'Not specified'}</p>
+            <p>Notes: ${eventDetails?.notes || 'None'}</p>
+          `
+        },
+        start: { 
+          dateTime: startDT.toISO(),
+          timeZone: TIMEZONE
+        },
+        end: { 
+          dateTime: endDT.toISO(),
+          timeZone: TIMEZONE
+        }
+      },
+      { 
+        headers: { 
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    // Return booking details with local times for verification
     res.json({ 
       success: true,
       eventId: response.data.id,
-      startET: startET.toFormat('h:mm a'),
-      endET: endET.toFormat('h:mm a')
+      eventLink: response.data.webLink,
+      localTimes: {
+        start: startDT.toFormat('h:mm a'),
+        end: endDT.toFormat('h:mm a'),
+        timezone: TIMEZONE
+      }
     });
   } catch (error) {
-    console.error('Booking error:', error.response?.data || error.message);
-    res.status(500).json({ error: 'Failed to create booking' });
+    console.error('Booking Error:', error.response?.data || error.message);
+    res.status(500).json({ 
+      error: 'Failed to create booking',
+      details: error.response?.data || error.message
+    });
   }
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`Using timezone: ${TIMEZONE}`);
 });
