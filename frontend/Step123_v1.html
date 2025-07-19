@@ -3266,13 +3266,14 @@ function renderTimeSlots(date, availability = []) {
     ];
 
     timeSlots.forEach(slot => {
-        // Create Date objects in local time (EST)
-        const slotStartLocal = new Date(`${date}T${padTime(slot.start)}:00:00`);
-        const slotEndLocal = new Date(`${date}T${padTime(slot.end)}:00:00`);
-        
-        // Convert to UTC for backend comparison
-        const slotStartUTC = new Date(slotStartLocal.getTime());
-        const slotEndUTC = new Date(slotEndLocal.getTime());
+        // Create Date objects in EST
+        const estDateStr = `${date}T${padTime(slot.start)}:00:00-05:00`;
+        const slotStart = new Date(estDateStr);
+        const slotEnd = new Date(`${date}T${padTime(slot.end)}:00:00-05:00`);
+
+        // Convert to UTC for backend
+        const slotStartUTC = new Date(slotStart.getTime());
+        const slotEndUTC = new Date(slotEnd.getTime());
 
         // Check against API availability
         const isBooked = availability.some(apiSlot => {
@@ -3289,13 +3290,13 @@ function renderTimeSlots(date, availability = []) {
         const slotElement = document.createElement('div');
         slotElement.className = `time-slot ${isBooked ? 'booked' : 'available'}`;
         
-        // Store UTC times in data attributes
+        // Store UTC ISO strings in data attributes
         slotElement.dataset.start = slotStartUTC.toISOString();
         slotElement.dataset.end = slotEndUTC.toISOString();
         
         // Display local EST times to user
         slotElement.innerHTML = `
-            <div class="slot-time">${slotStartLocal.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${slotEndLocal.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+            <div class="slot-time">${slotStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${slotEnd.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
             <div class="slot-status">${isBooked ? 'Booked' : 'Available'}</div>
         `;
 
@@ -3390,22 +3391,22 @@ async function handleBookingSubmit(e) {
         return;
     }
 
-    // Get the selected time in EST (frontend display time)
-    const estTimeString = selectedSlot.querySelector('.slot-time').textContent;
-    const [startTimeStr, endTimeStr] = estTimeString.split(' - ');
-    
-    // Parse EST times and convert to UTC
-    const estDate = selectedSlot.dataset.start.split('T')[0];
-    const startEst = new Date(`${estDate}T${startTimeStr}:00-05:00`); // EST is UTC-5
-    const endEst = new Date(`${estDate}T${endTimeStr}:00-05:00`);
-    
-    const startUTC = startEst.toISOString();
-    const endUTC = endEst.toISOString();
+    // Get the UTC times from data attributes
+    const startUTC = selectedSlot.dataset.start;
+    const endUTC = selectedSlot.dataset.end;
 
+    // Validate the dates
+    if (!startUTC || !endUTC || isNaN(new Date(startUTC).getTime()) {
+        console.error('Invalid time values:', { startUTC, endUTC });
+        alert('Invalid time selection. Please try again.');
+        return;
+    }
+
+    const total = parseFloat(document.getElementById('final-total-price').textContent.replace('C$', ''));
     const bookingData = {
         eventName: document.getElementById('event-name').value,
         eventType: document.getElementById('event-type').value,
-        eventDate: estDate,
+        eventDate: startUTC.split('T')[0],
         duration: 3,
         location: document.getElementById('event-location').value,
         notes: document.getElementById('special-requests').value,
