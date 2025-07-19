@@ -103,40 +103,51 @@ app.get('/api/availability', async (req, res) => {
     const date = req.query.date;
     const accessToken = await getAccessToken();
     
-    // Define slots in EST
+    // Define your EXACT desired time slots in EST
     const timeSlots = [
-      { start: '09:00:00', end: '12:00:00' },
-      { start: '12:00:00', end: '15:00:00' },
-      // ... other slots
+      { display: '9:00 AM - 12:00 PM', start: '09:00', end: '12:00' },
+      { display: '12:00 PM - 3:00 PM', start: '12:00', end: '15:00' },
+      { display: '3:00 PM - 6:00 PM', start: '15:00', end: '18:00' },
+      { display: '6:00 PM - 9:00 PM', start: '18:00', end: '21:00' },
+      { display: '9:00 PM - 12:00 AM', start: '21:00', end: '00:00' }
     ];
 
-    // Check availability for each EST slot
-    const availability = await Promise.all(timeSlots.map(async (slot) => {
-      const startEST = `${date}T${slot.start}-05:00`;
-      const endEST = `${date}T${slot.end}-05:00`;
-      
-      const response = await axios.get(
-        `https://graph.microsoft.com/v1.0/users/${process.env.CALENDAR_OWNER_UPN}/calendar/events`,
-        {
-          params: {
-            startDateTime: startEST,
-            endDateTime: endEST,
-            $select: 'start,end'
-          },
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json'
-          }
+    // Get ALL events for the day in EST
+    const response = await axios.get(
+      `https://graph.microsoft.com/v1.0/users/${process.env.CALENDAR_OWNER_UPN}/calendar/events`,
+      {
+        params: {
+          startDateTime: `${date}T00:00:00-05:00`, // Start of day in EST
+          endDateTime: `${date}T23:59:59-05:00`,   // End of day in EST
+          $select: 'start,end'
+        },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
         }
-      );
+      }
+    );
+
+    const events = response.data.value || [];
+
+    // Check each slot against events
+    const availability = timeSlots.map(slot => {
+      const slotStart = new Date(`${date}T${slot.start}:00-05:00`);
+      const slotEnd = new Date(`${date}T${slot.end}:00-05:00`);
+      
+      const isBooked = events.some(event => {
+        const eventStart = new Date(event.start.dateTime);
+        const eventEnd = new Date(event.end.dateTime);
+        return eventStart < slotEnd && eventEnd > slotStart;
+      });
 
       return {
-        display: `${formatTime(slot.start)} - ${formatTime(slot.end)}`,
-        start: startEST,
-        end: endEST,
-        booked: response.data.value.length > 0
+        display: slot.display,
+        start: slotStart.toISOString(),
+        end: slotEnd.toISOString(),
+        booked: isBooked
       };
-    }));
+    });
 
     res.json({ date, availability });
   } catch (error) {
@@ -160,26 +171,26 @@ app.post('/api/bookings', async (req, res) => {
     const { start, end, name, email, eventDetails } = req.body;
     const accessToken = await getAccessToken();
 
-    // EXPLICITLY set timezone for Microsoft Graph
+    // Create the event in EST
     const response = await axios.post(
       `https://graph.microsoft.com/v1.0/users/${process.env.CALENDAR_OWNER_UPN}/events`,
       {
         subject: `Booking: ${name}`,
-        start: { 
-          dateTime: start,  // Keep as ISO string but...
-          timeZone: 'Eastern Standard Time' // THIS IS CRUCIAL
+        start: {
+          dateTime: start,  // ISO string with -05:00 offset
+          timeZone: 'Eastern Standard Time' // CRITICAL
         },
-        end: { 
+        end: {
           dateTime: end,
-          timeZone: 'Eastern Standard Time' // MUST specify here too
+          timeZone: 'Eastern Standard Time' // CRITICAL
         },
         body: {
           contentType: "HTML",
           content: `...your event details...`
         }
       },
-      { 
-        headers: { 
+      {
+        headers: {
           Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'application/json'
         }
@@ -188,11 +199,8 @@ app.post('/api/bookings', async (req, res) => {
 
     res.json({ success: true, eventId: response.data.id });
   } catch (error) {
-    console.error('Booking Error:', error.response?.data || error.message);
-    res.status(500).json({ 
-      error: 'Failed to create booking',
-      details: error.response?.data || error.message
-    });
+    console.error('Booking Error:', error);
+    res.status(500).json({ error: 'Failed to create booking' });
   }
 });
 
