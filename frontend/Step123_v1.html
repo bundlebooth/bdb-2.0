@@ -3393,23 +3393,30 @@ async function handleBookingSubmit(e) {
         return;
     }
 
-    // Get the raw UTC times from the slot data
-    const startTimeUTC = selectedSlot.dataset.start;
-    const endTimeUTC = selectedSlot.dataset.end;
+    // Get the selected time in EST (frontend display time)
+    const estTimeString = selectedSlot.querySelector('.slot-time').textContent;
+    const [startTimeStr, endTimeStr] = estTimeString.split(' - ');
+    
+    // Parse EST times and convert to UTC
+    const estDate = selectedSlot.dataset.start.split('T')[0];
+    const startEst = new Date(`${estDate}T${startTimeStr}:00-05:00`); // EST is UTC-5
+    const endEst = new Date(`${estDate}T${endTimeStr}:00-05:00`);
+    
+    const startUTC = startEst.toISOString();
+    const endUTC = endEst.toISOString();
 
-    const total = parseFloat(document.getElementById('final-total-price').textContent.replace('C$', ''));
     const bookingData = {
         eventName: document.getElementById('event-name').value,
         eventType: document.getElementById('event-type').value,
-        eventDate: startTimeUTC.split('T')[0],
+        eventDate: estDate,
         duration: 3,
         location: document.getElementById('event-location').value,
         notes: document.getElementById('special-requests').value,
         contactName: document.getElementById('contact-name').value,
         email: document.getElementById('contact-email').value,
         phone: document.getElementById('contact-phone').value,
-        startTime: startTimeUTC, // Pass UTC time directly
-        endTime: endTimeUTC      // Pass UTC time directly
+        startTime: startUTC,
+        endTime: endUTC
     };
 
     document.getElementById('stripe-payment-form').style.display = 'block';
