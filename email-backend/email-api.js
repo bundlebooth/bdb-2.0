@@ -31,12 +31,12 @@ app.post('/send-booking-email', async (req, res) => {
     const { 
       contactName, 
       email, 
-      phone,
+      phoneNumber,
       eventName, 
       eventType,
       eventDate, 
       timeSlotDisplay,
-      location, 
+      eventLocation, 
       specialRequests,
       services = [],
       bundleName,
@@ -66,19 +66,17 @@ app.post('/send-booking-email', async (req, res) => {
     }) : 'Not specified';
 
     const formattedTimeSlot = timeSlotDisplay || 'Not specified';
-    const formattedDuration = '3 hours';
-    const formattedLocation = location || 'Location not specified';
+    const formattedDuration = '3 hours'; // Fixed duration as per requirement
+    const formattedLocation = eventLocation || 'Location not specified';
     const formattedPaymentMethod = paymentLast4 ? `Credit Card (ending in ${paymentLast4})` : 'Credit Card (ending in ****)';
 
     // Calculate actual subtotal from services
     const calculatedSubtotal = services.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
 
-    // Get discount details
-    const bundleDiscountValue = discount || 0;
+    // Get discount details from selectedBundle or promoCodeApplied
+    const bundleDiscountValue = selectedBundle?.discountValue || discount || 0;
     const bundleDiscountPercentage = selectedBundle?.discountPercentage || 0;
     const promoCode = promoCodeApplied?.promoCode || '';
-    const promoDiscountValue = promoDiscount || 0;
-    const promoDiscountPercentage = promoCodeApplied?.discountPercentage || 0;
 
     // Create email
     const apiInstance = new Brevo.TransactionalEmailsApi();
@@ -125,7 +123,7 @@ app.post('/send-booking-email', async (req, res) => {
                 </div>
                 <div style="display: flex; margin-bottom: 10px;">
                   <div style="font-weight: bold; width: 150px;">Phone Number:</div>
-                  <div>${phone || 'Not provided'}</div>
+                  <div>${phoneNumber || 'Not provided'}</div>
                 </div>
               </div>
 
@@ -208,24 +206,24 @@ app.post('/send-booking-email', async (req, res) => {
                 </tr>
                 
                 <!-- Bundle Discount -->
-                ${bundleDiscountValue > 0 ? `
-                <tr>
-                  <td colspan="3" style="padding: 8px 0; text-align: right; font-weight: bold; color: #27ae60;">
-                    ${bundleDiscountPercentage > 0 ? `Bundle Discount (${bundleDiscountPercentage}%)` : 'Bundle Discount'}:
-                  </td>
-                  <td style="padding: 8px 0; text-align: right; color: #27ae60;">-C$${bundleDiscountValue.toFixed(2)}</td>
-                </tr>
-                ` : ''}
-                
-                <!-- Promo Discount -->
-                ${promoDiscountValue > 0 ? `
-                <tr>
-                  <td colspan="3" style="padding: 8px 0; text-align: right; font-weight: bold; color: #27ae60;">
-                    Promo Discount ${promoCode ? `(${promoCode})` : ''}:
-                  </td>
-                  <td style="padding: 8px 0; text-align: right; color: #27ae60;">-C$${promoDiscountValue.toFixed(2)}</td>
-                </tr>
-                ` : ''}
+${bundleDiscountValue > 0 ? `
+<tr>
+  <td colspan="3" style="padding: 8px 0; text-align: right; font-weight: bold; color: #27ae60;">
+    ${bundleDiscountPercentage > 0 ? `Bundle Discount (${bundleDiscountPercentage}%)` : 'Bundle Discount'}:
+  </td>
+  <td style="padding: 8px 0; text-align: right; color: #27ae60;">-C$${bundleDiscountValue.toFixed(2)}</td>
+</tr>
+` : ''}
+
+// Promo Discount
+${promoDiscount > 0 ? `
+<tr>
+  <td colspan="3" style="padding: 8px 0; text-align: right; font-weight: bold; color: #27ae60;">
+    Promo Discount (${promoCode || ''}):
+  </td>
+  <td style="padding: 8px 0; text-align: right; color: #27ae60;">-C$${promoDiscount.toFixed(2)}</td>
+</tr>
+` : ''}
                 
                 <!-- Total -->
                 <tr style="font-weight: bold; border-top: 2px solid #333;">
