@@ -74,15 +74,15 @@ app.post('/send-booking-email', async (req, res) => {
     const calculatedSubtotal = services.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
 
     // Get discount details from selectedBundle or promoCodeApplied
-const bundleDiscountValue = selectedBundle?.isCustom ? 0 : 
-                          (selectedBundle?.discountValue || discount || 0);
-const bundleDiscountPercentage = selectedBundle?.isCustom ? 0 : 
-                               (selectedBundle?.discountPercentage || 0);
+    const bundleDiscountValue = selectedBundle?.isCustom ? 0 : 
+                              (selectedBundle?.discountValue || discount || 0);
+    const bundleDiscountPercentage = selectedBundle?.isCustom ? 0 : 
+                                   (selectedBundle?.discountPercentage || 0);
     const promoCode = promoCodeApplied?.promoCode || '';
 
-    const totalBeforePromo = subtotal - bundleDiscountValue;
-const total = Math.max(0, totalBeforePromo - promoDiscount);
-    
+    // Recalculate total to ensure consistency
+    const totalBeforePromo = calculatedSubtotal - bundleDiscountValue;
+    const calculatedTotal = Math.max(0, totalBeforePromo - (promoDiscount || 0));
 
     // Create email
     const apiInstance = new Brevo.TransactionalEmailsApi();
@@ -212,29 +212,29 @@ const total = Math.max(0, totalBeforePromo - promoDiscount);
                 </tr>
                 
                 <!-- Bundle Discount -->
-${bundleDiscountValue > 0 ? `
-<tr>
-  <td colspan="3" style="padding: 8px 0; text-align: right; font-weight: bold; color: #27ae60;">
-    ${bundleDiscountPercentage > 0 ? `Bundle Discount (${bundleDiscountPercentage}%)` : 'Bundle Discount'}:
-  </td>
-  <td style="padding: 8px 0; text-align: right; color: #27ae60;">-C$${bundleDiscountValue.toFixed(2)}</td>
-</tr>
-` : ''}
+                ${bundleDiscountValue > 0 ? `
+                <tr>
+                  <td colspan="3" style="padding: 8px 0; text-align: right; font-weight: bold; color: #27ae60;">
+                    ${bundleDiscountPercentage > 0 ? `Bundle Discount (${bundleDiscountPercentage}%)` : 'Bundle Discount'}:
+                  </td>
+                  <td style="padding: 8px 0; text-align: right; color: #27ae60;">-C$${bundleDiscountValue.toFixed(2)}</td>
+                </tr>
+                ` : ''}
 
-// Promo Discount
-${promoDiscount > 0 ? `
-<tr>
-  <td colspan="3" style="padding: 8px 0; text-align: right; font-weight: bold; color: #27ae60;">
-    Promo Discount (${promoCode || ''}):
-  </td>
-  <td style="padding: 8px 0; text-align: right; color: #27ae60;">-C$${promoDiscount.toFixed(2)}</td>
-</tr>
-` : ''}
+                <!-- Promo Discount -->
+                ${promoDiscount > 0 ? `
+                <tr>
+                  <td colspan="3" style="padding: 8px 0; text-align: right; font-weight: bold; color: #27ae60;">
+                    Promo Discount (${promoCode || ''}):
+                  </td>
+                  <td style="padding: 8px 0; text-align: right; color: #27ae60;">-C$${promoDiscount.toFixed(2)}</td>
+                </tr>
+                ` : ''}
                 
                 <!-- Total -->
                 <tr style="font-weight: bold; border-top: 2px solid #333;">
                   <td colspan="3" style="padding: 8px 0; text-align: right;">Total:</td>
-                  <td style="padding: 8px 0; text-align: right;">C$${total.toFixed(2)}</td>
+                  <td style="padding: 8px 0; text-align: right;">C$${calculatedTotal.toFixed(2)}</td>
                 </tr>
               </table>
               
@@ -246,7 +246,7 @@ ${promoDiscount > 0 ? `
                 </div>
                 <div style="display: flex; margin-bottom: 10px;">
                   <div style="font-weight: bold; width: 150px;">Amount Paid:</div>
-                  <div>C$${total.toFixed(2)}</div>
+                  <div>C$${calculatedTotal.toFixed(2)}</div>
                 </div>
                 <div style="display: flex; margin-bottom: 10px;">
                   <div style="font-weight: bold; width: 150px;">Payment Date:</div>
@@ -272,7 +272,7 @@ ${promoDiscount > 0 ? `
               <div style="background-color: #f9f9f9; padding: 15px; border-radius: 4px; margin: 15px 0;">
                 <h4 style="margin-top: 0;">Important Notes:</h4>
                 <ul style="margin: 0; padding-left: 20px;">
-                  <li>Your booking is confirmed. A payment of C$${total.toFixed(2)} was processed.</li>
+                  <li>Your booking is confirmed. A payment of C$${calculatedTotal.toFixed(2)} was processed.</li>
                   <li>Final details (guest count, etc.) must be confirmed 14 days before the event.</li>
                   <li>For any changes, please contact us at least 7 days before the event.</li>
                   <li>All times are in Eastern Time Zone (EST)</li>
