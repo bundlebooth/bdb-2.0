@@ -1859,7 +1859,7 @@
         stripeBackendUrl: 'https://bdb-2-0-stripe-api-backend.onrender.com',
            workingHours: { 
         start: 13, // 9 AM EST = 13 UTC (during daylight time)
-        end: 25    // 9 PM EST = 1 AM next day UTC
+        end: 28    // 12 AM EST = 4 AM UTC (next day)
     },
     slotDuration: 180
     };
@@ -3262,7 +3262,8 @@ function renderCalendar(date) {
             { start: 9, end: 12 },   // 9AM-12PM EST
             { start: 12, end: 15 },  // 12PM-3PM EST
             { start: 15, end: 18 },  // 3PM-6PM EST
-            { start: 18, end: 21 }   // 6PM-9PM EST
+            { start: 18, end: 21 },   // 6PM-9PM EST
+	    { start: 21, end: 24 }   // 9PM-12AM EST
         ];
 
         timeSlots.forEach(slot => {
