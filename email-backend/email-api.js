@@ -35,7 +35,7 @@ app.post('/send-booking-email', async (req, res) => {
       eventName, 
       eventType,
       eventDate, 
-      timeSlot = { startTime: null, endTime: null },
+      timeSlotDisplay, // Changed from timeSlot object to direct display string
       durationHours,
       eventLocation, 
       specialRequests,
@@ -62,9 +62,9 @@ app.post('/send-booking-email', async (req, res) => {
       day: 'numeric' 
     }) : 'Not specified';
 
-    // Format time slot directly from the selected values (no timezone conversion)
-    const formattedTimeSlot = timeSlot.startTime && timeSlot.endTime 
-      ? `${new Date(timeSlot.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${new Date(timeSlot.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} (EST)`
+    // Use the exact display string from frontend with EST indicator
+    const formattedTimeSlot = timeSlotDisplay 
+      ? `${timeSlotDisplay} (EST)`
       : 'Not specified';
 
     const formattedDuration = durationHours 
@@ -324,5 +324,4 @@ app.post('/send-booking-email', async (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  console.log(`Brevo API Key: ${process.env.BREVO_API_KEY ? 'Configured' : 'Missing'}`);
 });
