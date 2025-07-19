@@ -3288,7 +3288,8 @@ function renderCalendar(date) {
                 return (
                     (slotStartUTC >= apiStart && slotStartUTC < apiEnd) || // Our start is within booked slot
                     (slotEndUTC > apiStart && slotEndUTC <= apiEnd) ||     // Our end is within booked slot
-                    (slotStartUTC <= apiStart && slotEndUTC >= apiEnd)      // Our slot completely contains booked slot
+                    (slotStartUTC <= apiStart && slotEndUTC >= apiEnd) ||      // Our slot completely contains booked slot
+		     (slotStartUTC < apiEnd && slotEndUTC > apiStart) 
                 );
             });
 
