@@ -2064,15 +2064,19 @@ try {
 
     // Apply promo code with all validation checks
 
+// Updated applyPromoCode function
 function applyPromoCode() {
     const promoCodeInput = document.getElementById('promo-code');
     const promoCode = promoCodeInput.value.trim().toUpperCase();
     const errorElement = document.getElementById('promo-error');
     const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
-	
-	   // Check if this is a special/discounted bundle
-    if (selectedBundle && selectedBundle.Special || selectedBundle.discountPercentage > 0) {
-        errorElement.textContent = 'Promo codes cannot be applied to discounted bundles';
+    
+    // Reset previous state
+    errorElement.textContent = '';
+    errorElement.classList.remove('invalid');
+    
+    if (!promoCode) {
+        errorElement.textContent = 'Please enter a promo code';
         errorElement.classList.add('invalid');
         promoCodeApplied = null;
         promoDiscount = 0;
@@ -2080,15 +2084,8 @@ function applyPromoCode() {
         return;
     }
 
-    if (!promoCode) {
-        errorElement.textContent = 'Please enter a promo code';
-        errorElement.classList.add('invalid');
-        return;
-    }
-
     const validCode = validPromoCodes.find(code => code.promoCode.toUpperCase() === promoCode);
-    console.log('PROMO DEBUG:', { enteredPromoCode: promoCode, matchedPromoCodeObject: validCode, subtotalAmount: subtotal, selectedServicesList: selectedServices });
-
+    
     if (!validCode) {
         errorElement.textContent = 'Invalid promo code';
         errorElement.classList.add('invalid');
@@ -2098,7 +2095,7 @@ function applyPromoCode() {
         return;
     }
 
-    const today = new Date();
+    // Check if promo code is active
     if (!validCode.isActive) {
         errorElement.textContent = 'This promo code is not currently active';
         errorElement.classList.add('invalid');
@@ -2107,6 +2104,9 @@ function applyPromoCode() {
         updatePrices();
         return;
     }
+
+    // Check validity dates
+    const today = new Date();
     if (validCode.validFrom && new Date(validCode.validFrom) > today) {
         errorElement.textContent = 'This promo code is not valid yet';
         errorElement.classList.add('invalid');
@@ -2115,6 +2115,7 @@ function applyPromoCode() {
         updatePrices();
         return;
     }
+    
     if (validCode.validTo && new Date(validCode.validTo) < today) {
         errorElement.textContent = 'This promo code has expired';
         errorElement.classList.add('invalid');
@@ -2123,6 +2124,8 @@ function applyPromoCode() {
         updatePrices();
         return;
     }
+
+    // Check minimum order value
     if (validCode.minimumOrderValue && subtotal < validCode.minimumOrderValue) {
         errorElement.textContent = `Minimum order of $${validCode.minimumOrderValue} required for this promo`;
         errorElement.classList.add('invalid');
@@ -2131,6 +2134,8 @@ function applyPromoCode() {
         updatePrices();
         return;
     }
+
+    // Check applicable categories
     if (validCode.applicableCategories && validCode.applicableCategories.length > 0) {
         const hasApplicableService = selectedServices.some(service =>
             validCode.applicableCategories.includes(service.ServiceType)
@@ -2145,6 +2150,7 @@ function applyPromoCode() {
         }
     }
 
+    // Calculate discount
     if (validCode.discountType === 'percentage') {
         promoDiscount = subtotal * (validCode.discountValue / 100);
     } else {
@@ -2502,47 +2508,48 @@ function updateMonthNavigationButtons() {
                          currentDisplayedDate.getFullYear() === maxDate.getFullYear();
 }
     // Update prices with discounts
-    function updatePrices() {
-	
-	    if (!promoCodeApplied) {
-        promoDiscount = 0;
+// Updated updatePrices function
+function updatePrices() {
+    const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
+    
+    // Get bundle discount (either from bundle data or default 10% for non-custom bundles)
+    const bundleDiscountValue = selectedBundle.isCustom ? 0 : 
+                              (selectedBundle.discountPercentage ? selectedBundle.discountPercentage/100 : 0);
+    
+    const discount = subtotal * bundleDiscountValue;
+    const totalBeforePromo = subtotal - discount;
+    const total = Math.max(0, totalBeforePromo - promoDiscount);
+    
+    // Update price displays
+    document.getElementById('subtotal-price').textContent = `C$${subtotal.toFixed(2)}`;
+    
+    // Show bundle discount only if there is one
+    if (discount > 0) {
+        document.getElementById('discount-row').style.display = 'flex';
+        const discountText = selectedBundle.discountPercentage ? 
+            `Bundle Discount (${selectedBundle.discountPercentage}%):` : 
+            `Bundle Discount:`;
+        document.querySelector('.discount-row span:first-child').textContent = discountText;
+        document.getElementById('discount-amount').textContent = `-C$${discount.toFixed(2)}`;
+    } else {
+        document.getElementById('discount-row').style.display = 'none';
+    }
+    
+    // Show promo discount only if there is one
+    if (promoDiscount > 0 && promoCodeApplied) {
+        document.getElementById('promo-discount-row').style.display = 'flex';
+        document.getElementById('promo-discount-amount').textContent = `-C$${promoDiscount.toFixed(2)}`;
+    } else {
         document.getElementById('promo-discount-row').style.display = 'none';
     }
-	
-        const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
-        const discountPercentage = selectedBundle.isCustom ? 0 : (selectedBundle.discountPercentage ? selectedBundle.discountPercentage/100 : bundleDiscount);
-        const discount = subtotal * discountPercentage;
-        const totalBeforePromo = subtotal - discount;
-        const total = Math.max(0, totalBeforePromo - promoDiscount);
-        
-        // Update price displays
-        document.getElementById('subtotal-price').textContent = `C$${subtotal.toFixed(2)}`;
-        
-        if (discount > 0) {
-            document.getElementById('discount-row').style.display = 'flex';
-            const discountText = selectedBundle.discountPercentage ? 
-                `Bundle Discount (${selectedBundle.discountPercentage}%):` : 
-                `Bundle Discount (10%):`;
-            document.querySelector('.discount-row span:first-child').textContent = discountText;
-            document.getElementById('discount-amount').textContent = `-C$${discount.toFixed(2)}`;
-        } else {
-            document.getElementById('discount-row').style.display = 'none';
-        }
-        
-        if (promoDiscount > 0) {
-            document.getElementById('promo-discount-row').style.display = 'flex';
-            document.getElementById('promo-discount-amount').textContent = `-C$${promoDiscount.toFixed(2)}`;
-        } else {
-            document.getElementById('promo-discount-row').style.display = 'none';
-        }
-        
-        document.getElementById('final-total-price').textContent = `C$${total.toFixed(2)}`;
-        
-        // Update payment amount displays
-        document.getElementById('payment-amount').textContent = `$${total.toFixed(2)}`;
-        document.getElementById('payment-info-amount').textContent = `$${total.toFixed(2)}`;
-        document.getElementById('confirmed-amount').textContent = `$${total.toFixed(2)}`;
-    }
+    
+    document.getElementById('final-total-price').textContent = `C$${total.toFixed(2)}`;
+    
+    // Update payment amount displays
+    document.getElementById('payment-amount').textContent = `$${total.toFixed(2)}`;
+    document.getElementById('payment-info-amount').textContent = `$${total.toFixed(2)}`;
+    document.getElementById('confirmed-amount').textContent = `$${total.toFixed(2)}`;
+}
 
     // Render the selected services list with durations and options
     function renderSelectedServicesList() {
@@ -3442,27 +3449,26 @@ function clearPromoCode() {
     }
 
     // Handle booking submission
-    async function handleBookingSubmit(e) {
-        e.preventDefault();
-        
-        if (!document.getElementById('event-details-form').checkValidity()) {
-            document.getElementById('event-details-form').reportValidity();
-            return;
-        }
-        
-        // Check if a time slot is selected
-        const selectedSlot = document.querySelector('.selected-slot');
-        if (!selectedSlot) {
-            alert('Please select an available time slot');
-            return;
-        }
-        
-        document.getElementById('stripe-payment-form').style.display = 'block';
-        document.getElementById('payment-info').style.display = 'block';
-        document.getElementById('submit-booking').style.display = 'none';
+async function handleBookingSubmit(e) {
+    e.preventDefault();
+    
+    if (!document.getElementById('event-details-form').checkValidity()) {
+        document.getElementById('event-details-form').reportValidity();
+        return;
     }
+    
+    // Check if a time slot is selected
+    const selectedSlot = document.querySelector('.selected-slot');
+    if (!selectedSlot) {
+        alert('Please select an available time slot');
+        return;
+    }
+    
+    document.getElementById('stripe-payment-form').style.display = 'block';
+    document.getElementById('payment-info').style.display = 'block';
+    document.getElementById('submit-booking').style.display = 'none';
+}
 
-// Updated handlePaymentSubmit function
 async function handlePaymentSubmit(e) {
     e.preventDefault();
     const button = e.target;
@@ -3481,6 +3487,11 @@ async function handlePaymentSubmit(e) {
         }
         
         const total = parseFloat(document.getElementById('final-total-price').textContent.replace('C$', ''));
+        const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
+        const bundleDiscountValue = selectedBundle.isCustom ? 0 : 
+                                  (selectedBundle.discountPercentage ? selectedBundle.discountPercentage/100 : 0);
+        const discount = subtotal * bundleDiscountValue;
+        
         const bookingData = {
             eventName: document.getElementById('event-name').value,
             eventType: document.getElementById('event-type').value,
@@ -3500,12 +3511,17 @@ async function handlePaymentSubmit(e) {
             selectedBundle: {
                 name: selectedBundle.name,
                 isCustom: selectedBundle.isCustom,
-                discountPercentage: selectedBundle.discountPercentage || 0
+                discountPercentage: selectedBundle.discountPercentage || 0,
+                discountValue: discount
             },
+            subtotal: subtotal,
+            discount: discount,
             promoCodeApplied: promoCodeApplied ? {
                 promoCode: promoCodeApplied.promoCode,
                 discountValue: promoDiscount
-            } : null
+            } : null,
+            promoDiscount: promoDiscount,
+            total: total
         };
 
             // 3. Process Stripe payment
