@@ -102,43 +102,56 @@ app.get('/api/availability', async (req, res) => {
   try {
     const date = req.query.date;
     const accessToken = await getAccessToken();
-    
-    // Define your desired time slots in EST
+    const calendarOwner = process.env.CALENDAR_OWNER_UPN;
+
+    // Define your EXACT desired time slots in EST
     const timeSlots = [
-      { start: '09:00:00', end: '12:00:00' },
-      { start: '12:00:00', end: '15:00:00' },
-      { start: '15:00:00', end: '18:00:00' },
-      { start: '18:00:00', end: '21:00:00' },
-      { start: '21:00:00', end: '00:00:00' }
+      { display: '9:00 AM - 12:00 PM', start: '09:00:00', end: '12:00:00' },
+      { display: '12:00 PM - 3:00 PM', start: '12:00:00', end: '15:00:00' },
+      { display: '3:00 PM - 6:00 PM', start: '15:00:00', end: '18:00:00' },
+      { display: '6:00 PM - 9:00 PM', start: '18:00:00', end: '21:00:00' },
+      { display: '9:00 PM - 12:00 AM', start: '21:00:00', end: '00:00:00' }
     ];
 
-    // Check availability for each slot
-    const availability = await Promise.all(timeSlots.map(async (slot) => {
-      const startTime = `${date}T${slot.start}-05:00`;
-      const endTime = `${date}T${slot.end}-05:00`;
-      
-      // Check if this slot is booked
-      const response = await axios.get(
-        `https://graph.microsoft.com/v1.0/users/${process.env.CALENDAR_OWNER_UPN}/calendar/events`,
-        {
-          params: {
-            startDateTime: startTime,
-            endDateTime: endTime,
-            $select: 'subject,start,end'
-          },
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json'
-          }
+    // Get all events for the day
+    const startTime = `${date}T00:00:00-05:00`;
+    const endTime = `${date}T23:59:59-05:00`;
+    
+    const response = await axios.get(
+      `https://graph.microsoft.com/v1.0/users/${calendarOwner}/calendar/events`,
+      {
+        params: {
+          startDateTime: startTime,
+          endDateTime: endTime,
+          $select: 'start,end'
+        },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
         }
-      );
+      }
+    );
+
+    const events = response.data.value || [];
+
+    // Check each predefined slot against existing events
+    const availability = timeSlots.map(slot => {
+      const slotStart = new Date(`${date}T${slot.start}-05:00`);
+      const slotEnd = new Date(`${date}T${slot.end}-05:00`);
+      
+      const isBooked = events.some(event => {
+        const eventStart = new Date(event.start.dateTime);
+        const eventEnd = new Date(event.end.dateTime);
+        return (eventStart < slotEnd && eventEnd > slotStart);
+      });
 
       return {
-        start: startTime,
-        end: endTime,
-        booked: response.data.value.length > 0
+        display: slot.display,
+        start: slotStart.toISOString(),
+        end: slotEnd.toISOString(),
+        booked: isBooked
       };
-    }));
+    });
 
     res.json({ date, availability });
   } catch (error) {
@@ -152,35 +165,7 @@ app.get('/api/availability', async (req, res) => {
 app.post('/api/bookings', async (req, res) => {
   try {
     const { start, end, name, email, eventDetails } = req.body;
-    
-    // Verify the times are in our expected slots
-    const validSlots = [
-      '09:00:00', '12:00:00', '15:00:00', '18:00:00', '21:00:00', '00:00:00'
-    ];
-    
-    const startTime = new Date(start);
-    const endTime = new Date(end);
-    
-    // Convert to EST time strings
-    const startEST = startTime.toLocaleTimeString('en-US', { 
-      timeZone: 'America/New_York',
-      hour12: false,
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    });
-    
-    const endEST = endTime.toLocaleTimeString('en-US', { 
-      timeZone: 'America/New_York',
-      hour12: false,
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    });
-
-    if (!validSlots.includes(startEST) || !validSlots.includes(endEST)) {
-      return res.status(400).json({ error: 'Invalid time slot selected' });
-    }
+    const accessToken = await getAccessToken();
 
     const response = await axios.post(
       `https://graph.microsoft.com/v1.0/users/${process.env.CALENDAR_OWNER_UPN}/events`,
@@ -194,7 +179,10 @@ app.post('/api/bookings', async (req, res) => {
           dateTime: end,
           timeZone: 'Eastern Standard Time'
         },
-        // ... other event details
+        body: {
+          contentType: "HTML",
+          content: `...your event details...`
+        }
       },
       { 
         headers: { 
