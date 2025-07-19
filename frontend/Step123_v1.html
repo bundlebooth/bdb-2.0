@@ -2061,6 +2061,15 @@ function applyPromoCode() {
         return;
     }
 
+    // Check if this is a special bundle (has discountPercentage)
+    if (selectedBundle && selectedBundle.discountPercentage > 0) {
+        errorElement.textContent = 'Promo codes cannot be applied to discounted special bundles';
+        errorElement.classList.add('invalid');
+        promoCodeApplied = null;
+        promoDiscount = 0;
+        updatePrices();
+        return;
+    }
     const validCode = validPromoCodes.find(code => code.promoCode.toUpperCase() === promoCode);
     console.log('PROMO DEBUG:', { enteredPromoCode: promoCode, matchedPromoCodeObject: validCode, subtotalAmount: subtotal, selectedServicesList: selectedServices });
 
@@ -2373,28 +2382,64 @@ function applyPromoCode() {
     }
 
     // Handle bundle selection
-    function selectBundle(index) {
-        selectedBundle = bundles[index];
-        document.querySelectorAll('#bundle-list .bundle-card').forEach((el, i) => {
-            el.classList.toggle('selected', i === index);
-        });
-        
-        renderStep2();
+function selectBundle(index) {
+    promoCodeApplied = null;
+    promoDiscount = 0;
+    document.getElementById("promo-code").value = "";
+    document.getElementById("promo-error").textContent = "";
+    const currentPromoCode = document.getElementById('promo-code').value;
+    
+    selectedBundle = bundles[index];
+    document.querySelectorAll('#bundle-list .bundle-card').forEach((el, i) => {
+        el.classList.toggle('selected', i === index);
+    });
+    
+    // Reset selected services
+    selectedServices = [];
+    
+    renderStep2();
+    
+    // Restore promo code if it exists
+    if (currentPromoCode) {
+        document.getElementById('promo-code').value = currentPromoCode;
+        // Re-apply promo code if it was valid
+        if (promoCodeApplied) {
+            applyPromoCode();
+        }
     }
+}
 
     // Handle custom bundle selection
-    function selectCustomBundle() {
-        selectedBundle = {
-            name: "Custom Bundle",
-            description: "Fully custom bundle",
-            duration: "3 hours",
-            categories: {},
-            discountPercentage: 0,
-            isCustom: true
-        };
-        renderStep2();
-        window.scrollTo(0, 0);
+function selectCustomBundle() {
+    promoCodeApplied = null;
+    promoDiscount = 0;
+    document.getElementById("promo-code").value = "";
+    document.getElementById("promo-error").textContent = "";
+    const currentPromoCode = document.getElementById('promo-code').value;
+    
+    selectedBundle = {
+        name: "Custom Bundle",
+        description: "Fully custom bundle",
+        duration: "3 hours",
+        categories: {},
+        discountPercentage: 0,
+        isCustom: true
+    };
+    
+    // Reset selected services
+    selectedServices = [];
+    
+    renderStep2();
+    
+    // Restore promo code if it exists
+    if (currentPromoCode) {
+        document.getElementById('promo-code').value = currentPromoCode;
+        // Re-apply promo code if it was valid
+        if (promoCodeApplied) {
+            applyPromoCode();
+        }
     }
+}
 
     // Show step 2 with services
     function renderStep2() {
@@ -2404,20 +2449,34 @@ function applyPromoCode() {
     }
 
     // Updated renderStep3 function to handle dynamic discounts
-    function renderStep3() {
-        showStep(3);
+function renderStep3() {
+    showStep(3);
+    window.scrollTo(0, 0);
+    
+    // Update bundle title
+    document.getElementById('bundle-title').textContent = selectedBundle.name;
+    
+    // Render selected services list
+    renderSelectedServicesList();
+    
+    // Initialize calendar with current month
+    renderCalendar(currentDisplayedDate);
+    
+    // Set up event listeners
+    document.getElementById('back-to-services').addEventListener('click', () => {
+        const currentPromoCode = document.getElementById('promo-code').value;
+        showStep(2);
         window.scrollTo(0, 0);
         
-        // Update bundle title
-        document.getElementById('bundle-title').textContent = selectedBundle.name;
-        
-        // Render selected services list
-        renderSelectedServicesList();
-        
-        // Initialize calendar with current month
-        renderCalendar(currentDisplayedDate);
-        
-        // Set up event listeners
+        // Restore promo code if it exists
+        if (currentPromoCode) {
+            document.getElementById('promo-code').value = currentPromoCode;
+            // Re-apply promo code if it was valid
+            if (promoCodeApplied) {
+                applyPromoCode();
+            }
+        }
+    });
         document.getElementById('back-to-services').addEventListener('click', () => {
             showStep(2);
             window.scrollTo(0, 0);
