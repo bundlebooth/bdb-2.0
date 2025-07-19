@@ -36,8 +36,6 @@ app.post('/send-booking-email', async (req, res) => {
       eventType,
       eventDate, 
       timeSlotDisplay,
-      startTime,
-      endTime,
       eventLocation, 
       specialRequests,
       services = [],
@@ -68,23 +66,17 @@ app.post('/send-booking-email', async (req, res) => {
     }) : 'Not specified';
 
     const formattedTimeSlot = timeSlotDisplay || 'Not specified';
-    
-    // Calculate duration from start and end times
-    let formattedDuration = 'Not specified';
-    if (startTime && endTime) {
-      const start = new Date(`2000-01-01T${startTime}`);
-      const end = new Date(`2000-01-01T${endTime}`);
-      const diffHours = (end - start) / (1000 * 60 * 60);
-      formattedDuration = `${diffHours} hour${diffHours !== 1 ? 's' : ''}`;
-    } else if (durationHours) {
-      formattedDuration = `${durationHours} hour${durationHours !== 1 ? 's' : ''}`;
-    }
-
+    const formattedDuration = '3 hours'; // Fixed duration as per requirement
     const formattedLocation = eventLocation || 'Location not specified';
     const formattedPaymentMethod = paymentLast4 ? `Credit Card (ending in ${paymentLast4})` : 'Credit Card (ending in ****)';
 
     // Calculate actual subtotal from services
     const calculatedSubtotal = services.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
+
+    // Get discount details from selectedBundle or promoCodeApplied
+    const bundleDiscountValue = selectedBundle?.discountValue || discount || 0;
+    const bundleDiscountPercentage = selectedBundle?.discountPercentage || 0;
+    const promoCode = promoCodeApplied?.promoCode || '';
 
     // Create email
     const apiInstance = new Brevo.TransactionalEmailsApi();
@@ -201,8 +193,7 @@ app.post('/send-booking-email', async (req, res) => {
                       ${service.ServiceType === "Sweets and Brews" ? `Guests: ${service.selectedTier.value}` : ''}
                       ${service.ServiceType === "Scene Setters" && service.slug === "sparklers-box" ? `Quantity: ${service.selectedTier.value} sparklers` : ''}
                       ${service.ServiceType === "Interactive Booths" && service.slug === "photo-booth" ? `Option: ${service.selectedTier.label}` : ''}
-                      ${service.duration ? `<br>Duration: ${service.duration}` : ''}
-                    ` : service.duration ? `Duration: ${service.duration}` : 'Standard'}
+                    ` : 'Standard'}
                   </td>
                   <td style="padding: 8px 0; text-align: right;">C$${(service.selectedPrice || service.price || 0).toFixed(2)}</td>
                 </tr>
@@ -214,20 +205,21 @@ app.post('/send-booking-email', async (req, res) => {
                   <td style="padding: 8px 0; text-align: right;">C$${calculatedSubtotal.toFixed(2)}</td>
                 </tr>
                 
-                <!-- Show either bundle discount or promo discount -->
-                ${discount > 0 ? `
+                <!-- Bundle Discount -->
+                ${bundleDiscountValue > 0 ? `
                 <tr>
                   <td colspan="3" style="padding: 8px 0; text-align: right; font-weight: bold; color: #27ae60;">
-                    ${selectedBundle.discountPercentage ? `Bundle Discount (${selectedBundle.discountPercentage}%)` : 'Bundle Discount'}:
+                    ${bundleDiscountPercentage > 0 ? `Bundle Discount (${bundleDiscountPercentage}%)` : 'Bundle Discount'}:
                   </td>
-                  <td style="padding: 8px 0; text-align: right; color: #27ae60;">-C$${discount.toFixed(2)}</td>
+                  <td style="padding: 8px 0; text-align: right; color: #27ae60;">-C$${bundleDiscountValue.toFixed(2)}</td>
                 </tr>
                 ` : ''}
                 
+                <!-- Promo Discount -->
                 ${promoDiscount > 0 ? `
                 <tr>
                   <td colspan="3" style="padding: 8px 0; text-align: right; font-weight: bold; color: #27ae60;">
-                    Promo Discount (${promoCodeApplied?.promoCode || ''}):
+                    Promo Discount (${promoCode || ''}):
                   </td>
                   <td style="padding: 8px 0; text-align: right; color: #27ae60;">-C$${promoDiscount.toFixed(2)}</td>
                 </tr>
