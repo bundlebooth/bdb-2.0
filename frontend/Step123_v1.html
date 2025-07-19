@@ -63,26 +63,28 @@
       width: 100%;
     }
     
-    .section-title {
-      font-size: 1.5rem;
-      color: var(--bb-blue);
-      margin: 30px 0 15px 0;
-      padding-bottom: 8px;
-      border-bottom: 2px solid var(--bb-accent);
-      text-align: center;
-      position: relative;
-    }
-    
-    .section-title:after {
-      content: "";
-      position: absolute;
-      bottom: -5px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 50px;
-      height: 3px;
-      background: var(--bb-accent);
-    }
+/* Add a new grey separator line */
+.section-divider {
+  display: flex;
+  align-items: center;
+  margin: 30px 0;
+  color: #666;
+}
+
+.section-divider::before,
+.section-divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #ddd;
+}
+
+.section-divider::before {
+  margin-right: 10px;
+}
+
+.section-divider::after {
+  margin-left: 10px;
+}
     
     .step-description {
       color: #666;
@@ -1613,7 +1615,7 @@
                 <div class="plus-symbol">+</div>
             </div>
             
-            <h3 class="section-title">Promotions 🎉</h3>
+            <div class="section-divider">🔥 Exclusive Deals</div>
             
             <!-- Bundles grid -->
             <div class="bundles-grid" id="bundle-list">
