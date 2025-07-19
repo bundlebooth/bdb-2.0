@@ -3266,50 +3266,44 @@ function renderTimeSlots(date, availability = []) {
     ];
 
     timeSlots.forEach(slot => {
-        // Create Date objects in EST
+        // Create Date objects in EST (UTC-5)
         const estDateStr = `${date}T${padTime(slot.start)}:00:00-05:00`;
         const slotStart = new Date(estDateStr);
         const slotEnd = new Date(`${date}T${padTime(slot.end)}:00:00-05:00`);
 
-        // Convert to UTC for backend
-        const slotStartUTC = new Date(slotStart.getTime());
-        const slotEndUTC = new Date(slotEnd.getTime());
-
-        // Check against API availability
-        const isBooked = availability.some(apiSlot => {
-            const apiStart = new Date(apiSlot.start);
-            const apiEnd = new Date(apiSlot.end);
-            
-            return (
-                (slotStartUTC >= apiStart && slotStartUTC < apiEnd) ||
-                (slotEndUTC > apiStart && slotEndUTC <= apiEnd) ||
-                (slotStartUTC <= apiStart && slotEndUTC >= apiEnd)
-            );
-        });
+        // Validate dates
+        if (isNaN(slotStart.getTime()) {
+            console.error('Invalid start date:', estDateStr);
+            return;
+        }
+        if (isNaN(slotEnd.getTime())) {
+            console.error('Invalid end date:', `${date}T${padTime(slot.end)}:00:00-05:00`);
+            return;
+        }
 
         const slotElement = document.createElement('div');
-        slotElement.className = `time-slot ${isBooked ? 'booked' : 'available'}`;
-        
-        // Store UTC ISO strings in data attributes
-        slotElement.dataset.start = slotStartUTC.toISOString();
-        slotElement.dataset.end = slotEndUTC.toISOString();
+        slotElement.className = `time-slot available`;
+        slotElement.dataset.date = date; // Store the date separately
         
         // Display local EST times to user
         slotElement.innerHTML = `
             <div class="slot-time">${slotStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${slotEnd.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-            <div class="slot-status">${isBooked ? 'Booked' : 'Available'}</div>
+            <div class="slot-status">Available</div>
         `;
 
-        if (!isBooked) {
-            slotElement.addEventListener('click', (e) => {
-                e.stopPropagation();
-                document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected-slot'));
-                slotElement.classList.add('selected-slot');
-            });
-        }
+        slotElement.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected-slot'));
+            slotElement.classList.add('selected-slot');
+        });
 
         container.appendChild(slotElement);
     });
+}
+
+// Helper function to pad time
+function padTime(num) {
+    return num.toString().padStart(2, '0');
 }
 
     // Helper function to pad time (9 -> "09")
@@ -3376,6 +3370,7 @@ function renderTimeSlots(date, availability = []) {
     // Handle booking submission
 // Handle booking submission
 // Handle booking submission
+// Handle booking submission
 async function handleBookingSubmit(e) {
     e.preventDefault();
     
@@ -3391,35 +3386,52 @@ async function handleBookingSubmit(e) {
         return;
     }
 
-    // Get the UTC times from data attributes
-    const startUTC = selectedSlot.dataset.start;
-    const endUTC = selectedSlot.dataset.end;
+    try {
+        // Get the displayed time (EST)
+        const timeText = selectedSlot.querySelector('.slot-time').textContent;
+        const [startTimeStr, endTimeStr] = timeText.split(' - ');
+        
+        // Get the date portion from data attributes
+        const dateStr = selectedSlot.dataset.date;
+        if (!dateStr) {
+            throw new Error('Missing date data');
+        }
 
-    // Validate the dates
-    if (!startUTC || !endUTC || isNaN(new Date(startUTC).getTime()) {
-        console.error('Invalid time values:', { startUTC, endUTC });
-        alert('Invalid time selection. Please try again.');
-        return;
+        // Parse EST times (assuming EST is UTC-5)
+        const startEst = new Date(`${dateStr}T${startTimeStr}:00-05:00`);
+        const endEst = new Date(`${dateStr}T${endTimeStr}:00-05:00`);
+
+        // Validate dates
+        if (isNaN(startEst.getTime()) throw new Error(`Invalid start time: ${startTimeStr}`);
+        if (isNaN(endEst.getTime())) throw new Error(`Invalid end time: ${endTimeStr}`);
+
+        // Convert to UTC strings
+        const startUTC = startEst.toISOString();
+        const endUTC = endEst.toISOString();
+
+        const total = parseFloat(document.getElementById('final-total-price').textContent.replace('C$', ''));
+        const bookingData = {
+            eventName: document.getElementById('event-name').value,
+            eventType: document.getElementById('event-type').value,
+            eventDate: dateStr,
+            duration: 3,
+            location: document.getElementById('event-location').value,
+            notes: document.getElementById('special-requests').value,
+            contactName: document.getElementById('contact-name').value,
+            email: document.getElementById('contact-email').value,
+            phone: document.getElementById('contact-phone').value,
+            startTime: startUTC,
+            endTime: endUTC
+        };
+
+        document.getElementById('stripe-payment-form').style.display = 'block';
+        document.getElementById('payment-info').style.display = 'block';
+        document.getElementById('submit-booking').style.display = 'none';
+
+    } catch (error) {
+        console.error('Booking error:', error);
+        alert(`Error processing booking: ${error.message}`);
     }
-
-    const total = parseFloat(document.getElementById('final-total-price').textContent.replace('C$', ''));
-    const bookingData = {
-        eventName: document.getElementById('event-name').value,
-        eventType: document.getElementById('event-type').value,
-        eventDate: startUTC.split('T')[0],
-        duration: 3,
-        location: document.getElementById('event-location').value,
-        notes: document.getElementById('special-requests').value,
-        contactName: document.getElementById('contact-name').value,
-        email: document.getElementById('contact-email').value,
-        phone: document.getElementById('contact-phone').value,
-        startTime: startUTC,
-        endTime: endUTC
-    };
-
-    document.getElementById('stripe-payment-form').style.display = 'block';
-    document.getElementById('payment-info').style.display = 'block';
-    document.getElementById('submit-booking').style.display = 'none';
 }
     // Handle payment submission
     async function handlePaymentSubmit(e) {
