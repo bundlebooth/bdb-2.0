@@ -98,12 +98,16 @@ const mergeTimeSlots = (slots) => {
 
 // Calendar Availability Endpoint (Final Optimized Version)
 // In calendar-api.js
+// In your availability endpoint
 app.get('/api/availability', async (req, res) => {
   try {
     const date = req.query.date;
     const accessToken = await getAccessToken();
     
-    // Define your EXACT desired time slots in EST
+    // Use America/New_York which automatically handles EST/EDT
+    const timezone = 'America/New_York';
+    
+    // Define your desired time slots (will auto-adjust for DST)
     const timeSlots = [
       { display: '9:00 AM - 12:00 PM', start: '09:00', end: '12:00' },
       { display: '12:00 PM - 3:00 PM', start: '12:00', end: '15:00' },
@@ -112,13 +116,13 @@ app.get('/api/availability', async (req, res) => {
       { display: '9:00 PM - 12:00 AM', start: '21:00', end: '00:00' }
     ];
 
-    // Get ALL events for the day in EST
+    // Get events using the correct timezone
     const response = await axios.get(
       `https://graph.microsoft.com/v1.0/users/${process.env.CALENDAR_OWNER_UPN}/calendar/events`,
       {
         params: {
-          startDateTime: `${date}T00:00:00-05:00`, // Start of day in EST
-          endDateTime: `${date}T23:59:59-05:00`,   // End of day in EST
+          startDateTime: new Date(`${date}T00:00:00`).toLocaleString('en-US', { timeZone: timezone }),
+          endDateTime: new Date(`${date}T23:59:59`).toLocaleString('en-US', { timeZone: timezone }),
           $select: 'start,end'
         },
         headers: {
@@ -130,10 +134,10 @@ app.get('/api/availability', async (req, res) => {
 
     const events = response.data.value || [];
 
-    // Check each slot against events
+    // Check availability
     const availability = timeSlots.map(slot => {
-      const slotStart = new Date(`${date}T${slot.start}:00-05:00`);
-      const slotEnd = new Date(`${date}T${slot.end}:00-05:00`);
+      const slotStart = new Date(`${date}T${slot.start}:00`);
+      const slotEnd = new Date(`${date}T${slot.end}:00`);
       
       const isBooked = events.some(event => {
         const eventStart = new Date(event.start.dateTime);
@@ -171,18 +175,20 @@ app.post('/api/bookings', async (req, res) => {
     const { start, end, name, email, eventDetails } = req.body;
     const accessToken = await getAccessToken();
 
-    // Create the event in EST
+    // Use the correct timezone identifier that handles DST
+    const timezone = 'America/New_York';
+
     const response = await axios.post(
       `https://graph.microsoft.com/v1.0/users/${process.env.CALENDAR_OWNER_UPN}/events`,
       {
         subject: `Booking: ${name}`,
         start: {
-          dateTime: start,  // ISO string with -05:00 offset
-          timeZone: 'Eastern Standard Time' // CRITICAL
+          dateTime: start,
+          timeZone: timezone // Using correct timezone
         },
         end: {
           dateTime: end,
-          timeZone: 'Eastern Standard Time' // CRITICAL
+          timeZone: timezone // Using correct timezone
         },
         body: {
           contentType: "HTML",
