@@ -16,17 +16,6 @@ const defaultClient = Brevo.ApiClient.instance;
 const apiKey = defaultClient.authentications['api-key'];
 apiKey.apiKey = process.env.BREVO_API_KEY;
 
-// Helper function to format time
-function formatTime(date) {
-  if (!date) return '';
-  try {
-    const d = new Date(date);
-    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  } catch (e) {
-    return '';
-  }
-}
-
 // Health check
 app.get('/', (req, res) => {
   res.json({
@@ -46,8 +35,7 @@ app.post('/send-booking-email', async (req, res) => {
       eventName, 
       eventType,
       eventDate, 
-      startTime,
-      endTime,
+      timeSlot = { startTime: null, endTime: null },
       durationHours,
       eventLocation, 
       specialRequests,
@@ -56,7 +44,6 @@ app.post('/send-booking-email', async (req, res) => {
       bundleDescription,
       selectedBundle = {},
       promoCodeApplied,
-      paymentMethod,
       paymentLast4,
       transactionId,
       paymentStatus
@@ -75,9 +62,9 @@ app.post('/send-booking-email', async (req, res) => {
       day: 'numeric' 
     }) : 'Not specified';
 
-    // Use the actual selected time slot from Step 3
-    const formattedTimeSlot = startTime && endTime 
-      ? `${formatTime(new Date(startTime))} - ${formatTime(new Date(endTime))} (EST)`
+    // Format time slot directly from the selected values (no timezone conversion)
+    const formattedTimeSlot = timeSlot.startTime && timeSlot.endTime 
+      ? `${new Date(timeSlot.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${new Date(timeSlot.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} (EST)`
       : 'Not specified';
 
     const formattedDuration = durationHours 
@@ -85,10 +72,8 @@ app.post('/send-booking-email', async (req, res) => {
       : 'Not specified';
 
     const formattedLocation = eventLocation || 'Location not specified';
-    
-    // Use the actual payment method details from Stripe
     const formattedPaymentMethod = paymentLast4 
-      ? `${paymentMethod || 'Credit Card'} (ending in ${paymentLast4})` 
+      ? `Credit Card (ending in ${paymentLast4})` 
       : 'Credit Card (ending in ****)';
 
     // Calculate prices
