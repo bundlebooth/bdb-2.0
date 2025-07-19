@@ -205,7 +205,8 @@ app.post('/send-booking-email', async (req, res) => {
                   <td style="padding: 8px 0; text-align: right;">C$${calculatedSubtotal.toFixed(2)}</td>
                 </tr>
                 
-                <!-- Bundle Discount -->
+
+<!-- Bundle Discount -->
 ${bundleDiscountValue > 0 ? `
 <tr>
   <td colspan="3" style="padding: 8px 0; text-align: right; font-weight: bold; color: #27ae60;">
@@ -215,7 +216,7 @@ ${bundleDiscountValue > 0 ? `
 </tr>
 ` : ''}
 
-// Promo Discount
+<!-- Promo Discount -->
 ${promoDiscount > 0 ? `
 <tr>
   <td colspan="3" style="padding: 8px 0; text-align: right; font-weight: bold; color: #27ae60;">
