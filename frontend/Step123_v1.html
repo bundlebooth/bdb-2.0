@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width,initial-scale=1,maximum-scale=0,user-scalable=no" name="viewport"/>
+<meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport"/>
 <meta http-equiv="Permissions-Policy" content="payment=(self 'https://bundlebooth.ca')">
 <title>BundleBooth Custom Builder</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
@@ -41,19 +41,22 @@
       font-family: Poppins, sans-serif;
       background: var(--bb-light);
       color: var(--bb-dark);
-      line-height: 1.5
+      line-height: 1.5;
+      font-size: 16px;
     }
     .container {
       display: flex;
       min-height: 100vh;
-      flex-wrap: nowrap
+      flex-wrap: nowrap;
+      padding: 0;
     }
     main {
       flex: 1;
-      padding: 24px 20px;
+      padding: 16px;
       overflow-y: auto;
       background: var(--bb-light);
-      position: relative
+      position: relative;
+      width: 100%;
     }
     
     /* UPDATED STEP 1 STYLES */
@@ -63,33 +66,34 @@
       width: 100%;
     }
     
-/* Add a new grey separator line */
-.section-divider {
-  display: flex;
-  align-items: center;
-  margin: 30px 0;
-  color: #666;
-}
+    /* Add a new grey separator line */
+    .section-divider {
+      display: flex;
+      align-items: center;
+      margin: 24px 0;
+      color: #666;
+      font-size: 18px;
+    }
 
-.section-divider::before,
-.section-divider::after {
-  content: "";
-  flex: 1;
-  border-bottom: 1px solid #ddd;
-}
+    .section-divider::before,
+    .section-divider::after {
+      content: "";
+      flex: 1;
+      border-bottom: 1px solid #ddd;
+    }
 
-.section-divider::before {
-  margin-right: 10px;
-}
+    .section-divider::before {
+      margin-right: 10px;
+    }
 
-.section-divider::after {
-  margin-left: 10px;
-}
+    .section-divider::after {
+      margin-left: 10px;
+    }
     
     .step-description {
       color: #666;
       margin-bottom: 20px;
-      font-size: 0.95rem;
+      font-size: 16px;
       text-align: left;
     }
     
@@ -103,9 +107,9 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
       cursor: pointer;
       transition: all 0.3s ease;
-      width: 285px;
-      height: 323px;
-      margin: 0 auto;
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto 30px;
     }
     
     .custom-bundle-banner:hover {
@@ -121,14 +125,14 @@
     
     .custom-bundle-banner p {
       margin: 8px 0 16px;
-      font-size: 0.95rem;
+      font-size: 1rem;
       color: #555;
     }
     
     .bundles-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
+      grid-template-columns: 1fr;
+      gap: 16px;
       width: 100%;
     }
     
@@ -152,12 +156,12 @@
     
     .bundle-card h3 {
       margin-top: 0;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       color: var(--bb-blue);
     }
     
     .bundle-card p {
-      font-size: 0.9rem;
+      font-size: 1rem;
       color: #666;
       margin: 8px 0;
     }
@@ -166,10 +170,11 @@
       font-weight: 500;
       color: var(--bb-accent);
       margin: 8px 0;
+      font-size: 1rem;
     }
     
     .services-included {
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       color: #666;
       margin: 10px 0 5px 0;
     }
@@ -181,53 +186,52 @@
       gap: 8px;
     }
     
-.tag {
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    margin-right: 6px;
-    margin-bottom: 6px;
-}
+    .tag {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
 
-.tag.scene-setters {
-    background: #e6f0fa;
-    color: #1e3a8a;
-}
-.tag.sweets-brews {
-    background: #e6d9cb;
-    color: #5c4033;
-}
-.tag.special-effects {
-    background: #fff7e0;
-    color: #5a4a00;
-}
-.tag.guest-book {
-    background: #fce7f3;
-    color: #831843;
-}
-.tag.digital {
-    background: #e8ecef;
-    color: #495057;
-}
-.tag.interactive {
-    background: #f3e8ff;
-    color: #6b21a8;
-}
-
+    .tag.scene-setters {
+      background: #e6f0fa;
+      color: var(--tag-scene);
+    }
+    .tag.sweets-brews {
+      background: #e6d9cb;
+      color: var(--tag-sweets);
+    }
+    .tag.special-effects {
+      background: #fff7e0;
+      color: var(--tag-special-effects);
+    }
+    .tag.guest-book {
+      background: #fce7f3;
+      color: var(--tag-guest-book);
+    }
+    .tag.digital {
+      background: #e8ecef;
+      color: var(--tag-digital);
+    }
+    .tag.interactive {
+      background: #f3e8ff;
+      color: var(--tag-interactive);
+    }
     
     .tag-count {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 18px;
-      height: 18px;
+      width: 20px;
+      height: 20px;
       background: var(--bb-dark);
       color: white;
       border-radius: 50%;
       margin-right: 4px;
-      font-size: 0.65rem;
+      font-size: 0.75rem;
     }
     
     .corner-ribbon {
@@ -237,7 +241,7 @@
       background: var(--bb-red);
       color: white;
       padding: 4px 8px;
-      font-size: 0.7rem;
+      font-size: 0.8rem;
       font-weight: bold;
       transform: rotate(10deg);
       border-radius: 4px;
@@ -271,7 +275,7 @@
       background: #fff;
       border: 1px solid #ddd;
       border-radius: 12px;
-      padding: 18px;
+      padding: 16px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, .06);
       opacity: 0;
       transform: translateY(20px);
@@ -303,7 +307,7 @@
     .package h3 {
       margin: 0;
       color: var(--bb-blue);
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       line-height: 1.3;
       display: inline-block;
       vertical-align: middle;
@@ -311,14 +315,14 @@
     }
     .package p.description {
       margin: 0;
-      font-size: .9rem;
+      font-size: 1rem;
       color: #555
     }
     .package p {
       margin: 0
     }
     .price {
-      font-size: 1rem
+      font-size: 1.1rem
     }
     .price.sale {
       color: var(--bb-green);
@@ -331,26 +335,26 @@
     .discount {
       color: var(--bb-green);
       font-weight: 600;
-      font-size: .9rem;
+      font-size: 1rem;
       margin-left: 5px
     }
     .original-price {
       text-decoration: line-through;
       color: var(--bb-secondary);
-      font-size: .9rem;
+      font-size: 1rem;
       margin-left: 5px
     }
     .book-now-button {
       display: inline-block;
       margin-top: 12px;
-      padding: 10px 16px;
+      padding: 12px 16px;
       background: rgba(44, 62, 80, .1);
       color: var(--bb-blue);
-      font-weight: 400;
+      font-weight: 500;
       border-radius: 6px;
       text-decoration: none;
       transition: all .25s;
-      font-size: 14px;
+      font-size: 16px;
       border: none;
       cursor: pointer;
       width: 100%;
@@ -374,11 +378,11 @@
     .category-tag {
       display: inline-flex;
       align-items: center;
-      padding: 4px 10px;
+      padding: 6px 12px;
       border-radius: 4px;
       margin-right: 6px;
       margin-bottom: 6px;
-      font-size: 0.75rem;
+      font-size: 0.85rem;
       font-weight: 500;
     }
     
@@ -416,17 +420,17 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 18px;
-      height: 18px;
+      width: 20px;
+      height: 20px;
       background: var(--bb-dark);
       color: white;
       border-radius: 50%;
       margin-right: 4px;
-      font-size: 0.65rem;
+      font-size: 0.75rem;
     }
     
     .categories-label {
-      font-size: 12px;
+      font-size: 14px;
       color: #666;
       margin-top: 8px;
       margin-bottom: 4px;
@@ -441,7 +445,7 @@
       border: 1px solid #e9ecef;
     }
     .selection-label {
-      font-size: 14px;
+      font-size: 16px;
       margin-bottom: 8px;
       display: flex;
       justify-content: space-between;
@@ -471,7 +475,7 @@
       text-align: center;
       margin-top: auto;
       padding: 0;
-      font-size: 0.85rem;
+      font-size: 0.95rem;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -480,7 +484,7 @@
       position: absolute;
       bottom: 15px;
       left: 0;
-      padding: 0 18px;
+      padding: 0 16px;
     }
     .show-features-toggle:hover {
       text-decoration: underline;
@@ -505,17 +509,17 @@
       right: 16px;
       background: transparent;
       border: none;
-      font-size: 16px;
+      font-size: 20px;
       cursor: pointer;
       color: #666;
     }
     .features-overlay ul {
-      padding-left: 18px;
+      padding-left: 20px;
       margin: 0;
     }
     .features-overlay li {
-      margin-bottom: 6px;
-      font-size: 14px;
+      margin-bottom: 8px;
+      font-size: 16px;
       color: #333;
     }
     
@@ -537,12 +541,12 @@
       border-bottom: 1px solid #eee;
     }
     .summary-title {
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       font-weight: 600;
       color: var(--bb-blue);
     }
     .summary-price {
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       font-weight: 600;
       color: var(--bb-green);
     }
@@ -557,9 +561,11 @@
     }
     .service-name {
       font-weight: 500;
+      font-size: 1rem;
     }
     .service-price {
       color: var(--bb-dark);
+      font-size: 1rem;
     }
     .total-row {
       display: flex;
@@ -568,64 +574,70 @@
       padding-top: 16px;
       border-top: 2px solid #eee;
       font-weight: 600;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
     }
     .discount-row {
       display: flex;
       justify-content: space-between;
       margin-top: 8px;
       color: var(--bb-green);
+      font-size: 1.1rem;
     }
-	/* Add this new rule to position the error message below */
-.promo-message-container {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-}
-.promo-row {
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    margin-top: 8px;
-}
+    /* Add this new rule to position the error message below */
+    .promo-message-container {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+    }
+    .promo-row {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+    }
     .promo-input {
       display: flex;
       gap: 8px;
       margin-top: 8px;
+      width: 100%;
     }
     .promo-input input {
       flex: 1;
-      padding: 8px;
+      padding: 12px;
       border: 1px solid #ddd;
       border-radius: 4px;
+      font-size: 16px;
     }
     .promo-input button {
-      padding: 8px 12px;
+      padding: 12px 16px;
       background: #e9ecef;
       color: var(--bb-dark);
       border: none;
       border-radius: 4px;
       cursor: pointer;
+      font-size: 16px;
     }
     .promo-input button:hover {
       background: #ddd;
     }
 
-.promo-error {
-    color: var(--bb-green);
-    font-size: 0.8rem;
-    width: 100%;
-}
+    .promo-error {
+      color: var(--bb-green);
+      font-size: 0.9rem;
+      width: 100%;
+      margin-top: 8px;
+    }
 
-.promo-error.invalid {
-    color: var(--bb-red);
-}
+    .promo-error.invalid {
+      color: var(--bb-red);
+    }
     .promo-discount-row {
       display: flex;
       justify-content: space-between;
       margin-top: 8px;
       color: var(--bb-green);
+      font-size: 1.1rem;
     }
     .final-total {
       display: flex;
@@ -634,7 +646,7 @@
       padding-top: 16px;
       border-top: 2px solid #eee;
       font-weight: 700;
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       color: var(--bb-dark);
     }
     .form-group {
@@ -644,21 +656,23 @@
       display: block;
       margin-bottom: 8px;
       font-weight: 500;
+      font-size: 16px;
     }
     .form-group input,
     .form-group select,
     .form-group textarea {
       width: 100%;
-      padding: 12px;
+      padding: 14px;
       border: 1px solid #ddd;
       border-radius: 6px;
-      font-size: 14px;
+      font-size: 16px;
     }
     .form-group textarea {
-      min-height: 100px;
+      min-height: 120px;
     }
     .form-row {
       display: flex;
+      flex-direction: column;
       gap: 16px;
     }
     .form-row .form-group {
@@ -666,6 +680,7 @@
     }
     .action-buttons {
       display: flex;
+      flex-direction: column;
       gap: 12px;
       margin-top: 24px;
     }
@@ -690,7 +705,7 @@
       margin-bottom: 16px;
     }
     .service-features {
-      font-size: 13px;
+      font-size: 15px;
       color: #666;
       margin-top: 4px;
     }
@@ -703,7 +718,7 @@
     }
     .edit-service {
       color: var(--bb-accent);
-      font-size: 13px;
+      font-size: 15px;
       cursor: pointer;
       margin-left: 8px;
     }
@@ -712,9 +727,9 @@
     }
     .service-category {
       display: inline-block;
-      padding: 2px 8px;
+      padding: 4px 10px;
       border-radius: 4px;
-      font-size: 12px;
+      font-size: 14px;
       margin-left: 8px;
     }
     .service-category.scene-setters {
@@ -752,10 +767,10 @@
     }
     .package-notes {
       margin-top: 16px;
-      padding: 12px;
+      padding: 16px;
       background: #f8f9fa;
       border-radius: 6px;
-      font-size: 14px;
+      font-size: 16px;
     }
     
     /* Progress Bar Styles */
@@ -763,14 +778,16 @@
       display: flex;
       justify-content: center;
       margin: 20px 0;
+      flex-wrap: wrap;
     }
     #progress-bar div {
       flex: 1;
+      min-width: 120px;
       text-align: center;
-      padding: 10px;
+      padding: 12px 8px;
       border-bottom: 4px solid #ccc;
       color: #999;
-      font-size: 14px;
+      font-size: 16px;
       cursor: pointer;
     }
     #progress-bar div.active {
@@ -794,18 +811,15 @@
       padding: 12px 16px;
       border-radius: 8px;
       margin-bottom: 16px;
-      white-space: nowrap;
-      font-size: 14px;
+      font-size: 16px;
       overflow-x: auto;
     }
     
     /* Mobile-only warning */
-    
       
-      @keyframes slideUp {
-        from { transform: translateX(-50%) translateY(100%); }
-        to { transform: translateX(-50%) translateY(0); }
-      }
+    @keyframes slideUp {
+      from { transform: translateX(-50%) translateY(100%); }
+      to { transform: translateX(-50%) translateY(0); }
     }
     
     /* Toast Message */
@@ -817,33 +831,35 @@
       transform: translateX(-50%);
       background-color: #111;
       color: #fff;
-      padding: 10px 20px;
+      padding: 12px 24px;
       border-radius: 20px;
       opacity: 0.9;
       z-index: 1000;
-      font-size: 14px;
+      font-size: 16px;
+      max-width: 90%;
+      text-align: center;
     }
     
     /* CALENDAR STYLES */
     .calendar-container {
       margin: 20px 0;
-      padding: 20px;
+      padding: 16px;
       background: white;
       border-radius: 12px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
       gap: 20px;
     }
     
     .calendar-panel {
       flex: 1;
-      min-width: 300px;
+      width: 100%;
     }
     
     .time-slot-panel {
       flex: 1;
-      min-width: 300px;
+      width: 100%;
     }
     
     .calendar-header {
@@ -855,7 +871,7 @@
     
     .calendar-title {
       font-weight: 600;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
     }
     
     .calendar-nav {
@@ -867,9 +883,9 @@
       background: none;
       border: none;
       cursor: pointer;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       color: var(--bb-blue);
-      padding: 0 5px;
+      padding: 0 10px;
     }
     
     .calendar-nav-button:disabled {
@@ -886,17 +902,18 @@
     .calendar-day-header {
       text-align: center;
       font-weight: 600;
-      padding: 5px;
-      font-size: 0.9rem;
+      padding: 8px;
+      font-size: 1rem;
     }
     
     .calendar-day {
       text-align: center;
-      padding: 10px;
+      padding: 12px;
       border-radius: 6px;
       cursor: pointer;
       transition: all 0.2s;
       position: relative;
+      font-size: 1rem;
     }
     
     .calendar-day:hover {
@@ -943,22 +960,23 @@
     }
     
     .time-slot {
-      padding: 12px;
+      padding: 16px;
       border-radius: 8px;
       border: 1px solid #ddd;
       position: relative;
       transition: all 0.2s ease;
       display: flex;
       align-items: center;
+      font-size: 1rem;
     }
     
     .time-slot::before {
       content: '';
       display: inline-block;
-      width: 8px;
-      height: 8px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
-      margin-right: 10px;
+      margin-right: 12px;
     }
     
     .time-slot.available {
@@ -992,8 +1010,8 @@
     
     .slot-status {
       margin-left: auto;
-      font-size: 0.8em;
-      padding: 4px 8px;
+      font-size: 0.9em;
+      padding: 6px 10px;
       border-radius: 4px;
     }
     
@@ -1015,27 +1033,30 @@
     .time-slot-header {
       font-weight: 600;
       margin-bottom: 10px;
+      font-size: 1.2rem;
     }
     
     .loading {
       text-align: center;
       padding: 20px;
       color: #666;
+      font-size: 1rem;
     }
     
     .calendar-error {
       color: #E74C3C;
       background-color: #FDEDED;
-      padding: 10px;
+      padding: 12px;
       border-radius: 4px;
       margin: 10px 0;
       text-align: center;
       display: none;
+      font-size: 1rem;
     }
     
     .timezone-note {
       margin-top: 15px;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       color: #666;
       text-align: center;
       font-style: italic;
@@ -1046,7 +1067,7 @@
     }
     
     .form-section-title {
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       font-weight: 600;
       color: var(--bb-blue);
       margin-bottom: 15px;
@@ -1056,8 +1077,8 @@
     
     /* Loading spinner */
     .spinner {
-      width: 20px;
-      height: 20px;
+      width: 24px;
+      height: 24px;
       border: 3px solid rgba(0, 0, 0, 0.1);
       border-radius: 50%;
       border-top-color: #666;
@@ -1081,7 +1102,7 @@
     }
     
     #card-element {
-      padding: 12px;
+      padding: 14px;
       border: 1px solid #ddd;
       border-radius: 4px;
       background: white;
@@ -1091,6 +1112,7 @@
     #payment-errors {
       color: var(--bb-red);
       margin-bottom: 15px;
+      font-size: 1rem;
     }
     
     .processing-message {
@@ -1099,7 +1121,7 @@
       margin: 10px 0;
       color: #666;
       font-style: italic;
-      font-size: 13px;
+      font-size: 1rem;
     }
     
     /* Payment info in notes */
@@ -1107,13 +1129,13 @@
       margin-top: 10px;
       padding-top: 10px;
       border-top: 1px solid #eee;
-      font-size: 0.9rem;
+      font-size: 1rem;
     }
     
     /* Guest size and pricing tier controls */
     .service-options {
       margin-top: 10px;
-      padding: 10px;
+      padding: 12px;
       background: #f8f9fa;
       border-radius: 6px;
       display: none;
@@ -1130,21 +1152,21 @@
     .option-group label {
       display: block;
       margin-bottom: 5px;
-      font-size: 13px;
+      font-size: 1rem;
       font-weight: 500;
     }
     
     .option-group select {
       width: 100%;
-      padding: 8px;
+      padding: 10px;
       border: 1px solid #ddd;
       border-radius: 4px;
-      font-size: 13px;
+      font-size: 1rem;
     }
     
     .service-details {
       margin-top: 8px;
-      font-size: 13px;
+      font-size: 1rem;
       color: #666;
     }
     
@@ -1165,6 +1187,7 @@
     .options-section h4 {
       margin-top: 0;
       margin-bottom: 12px;
+      font-size: 1.2rem;
     }
     
     .option-group {
@@ -1176,6 +1199,7 @@
       margin-bottom: 8px;
       display: flex;
       align-items: center;
+      font-size: 1.1rem;
     }
     
     .option-controls {
@@ -1191,13 +1215,15 @@
     }
     
     .option-option {
-      padding: 10px 12px;
+      padding: 12px 14px;
       border: 1px solid #ddd;
       border-radius: 6px;
       cursor: pointer;
       transition: all 0.2s;
       flex: 1;
       text-align: center;
+      min-width: 100px;
+      font-size: 1rem;
     }
     
     .option-option:hover {
@@ -1217,13 +1243,14 @@
     }
     
     .guest-size-value {
-      min-width: 40px;
+      min-width: 50px;
       text-align: center;
+      font-size: 1.1rem;
     }
     
     .option-button {
-      width: 32px;
-      height: 32px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       border: 1px solid #ddd;
       background: white;
@@ -1231,7 +1258,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
+      font-size: 20px;
     }
     
     .option-button:hover {
@@ -1243,7 +1270,7 @@
       position: relative;
       display: inline-block;
       width: 80px;
-      height: 26px;
+      height: 30px;
     }
     
     .toggle-switch input {
@@ -1267,8 +1294,8 @@
     .toggle-slider:before {
       position: absolute;
       content: "";
-      height: 18px;
-      width: 18px;
+      height: 22px;
+      width: 22px;
       left: 4px;
       bottom: 4px;
       background-color: white;
@@ -1281,14 +1308,14 @@
     }
     
     input:checked + .toggle-slider:before {
-      transform: translateX(54px);
+      transform: translateX(50px);
     }
     
     .toggle-labels {
       position: absolute;
       width: 100%;
       height: 100%;
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 500;
       display: flex;
       align-items: center;
@@ -1306,9 +1333,9 @@
     /* Service Type Tags */
     .package-type-tag {
       display: inline-block;
-      padding: 4px 8px;
+      padding: 6px 12px;
       border-radius: 4px;
-      font-size: 0.75rem;
+      font-size: 0.85rem;
       font-weight: 500;
       margin-top: 8px;
     }
@@ -1354,17 +1381,17 @@
       padding: 12px 16px;
       border-radius: 8px;
       margin-top: 20px;
-      font-size: 14px;
+      font-size: 1rem;
     }
     
     /* Display Features Button */
     .display-features-btn {
       display: inline-block;
-      padding: 6px 12px;
+      padding: 8px 14px;
       border: 1px solid var(--bb-accent);
       border-radius: 4px;
       color: var(--bb-accent);
-      font-size: 0.85rem;
+      font-size: 0.95rem;
       text-align: center;
       margin-top: 10px;
       cursor: pointer;
@@ -1387,7 +1414,7 @@
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       z-index: 1001;
-      font-size: 15px;
+      font-size: 16px;
       max-width: 90%;
       width: auto;
       min-width: 280px;
@@ -1408,15 +1435,15 @@
       right: 10px;
       background: none;
       border: none;
-      font-size: 16px;
+      font-size: 20px;
       color: #888;
       cursor: pointer;
     }
     
     .inline-icon {
-      width: 18px;
-      height: 18px;
-      margin-right: 6px;
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
       vertical-align: middle;
       display: inline-block;
     }
@@ -1436,7 +1463,7 @@
     }
     
     .category-title {
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       font-weight: 600;
       margin-bottom: 15px;
       color: var(--bb-blue);
@@ -1448,11 +1475,9 @@
     
     .services-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: 1fr;
       gap: 16px;
       margin-top: 16px;
-      overflow-x: auto;
-      padding-bottom: 10px;
     }
     
     .chevron-icon {
@@ -1495,102 +1520,77 @@
     /* Button container */
     .button-container {
       display: flex;
+      flex-direction: column;
       gap: 12px;
       margin-top: 24px;
     }
     
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-      .action-buttons {
-        flex-direction: column;
-      }
-      .action-buttons button {
-        width: 100%;
-      }
-      .calendar-container {
-        flex-direction: column;
-      }
-      .option-options {
-        flex-direction: column;
-      }
-      
-      #greeting-popup {
-        max-width: 95%;
-        width: 95%;
-        left: 2.5%;
-        transform: none;
-      }
-
-      .button-container {
-        flex-direction: column;
-      }
-      
+    /* Responsive adjustments for larger screens */
+    @media (min-width: 768px) {
       .bundles-grid {
-          grid-template-columns: 1fr;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       }
       
       .services-grid {
-          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-          overflow-x: auto;
-          -webkit-overflow-scrolling: touch;
-          scrollbar-width: thin;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       }
       
-      .services-grid::-webkit-scrollbar {
-          height: 6px;
-      }
-      
-      .services-grid::-webkit-scrollbar-thumb {
-          background-color: #ccc;
-          border-radius: 3px;
-      }
-      
-      /* Mobile-only form adjustments */
       .form-row {
-        flex-direction: column;
-        gap: 0;
+        flex-direction: row;
       }
-	  
-	  .tag.scene-setters {
-    background: #e6f0fa;
-    color: var(--tag-scene);
-}
-
-.tag.sweets-brews {
-    background: #e6d9cb;
-    color: var(--tag-sweets);
-}
-
-.tag.special-effects {
-    background: #fff7e0;
-    color: var(--tag-special-effects);
-}
-
-.tag.guest-book {
-    background: #fce7f3;
-    color: var(--tag-guest-book);
-}
-
-.tag.digital {
-    background: #e8ecef;
-    color: var(--tag-digital);
-}
-
-.tag.interactive {
-    background: #f3e8ff;
-    color: var(--tag-interactive);
-}
-	  
+      
+      .action-buttons {
+        flex-direction: row;
+      }
+      
+      .calendar-container {
+        flex-direction: row;
+      }
+      
+      .button-container {
+        flex-direction: row;
+      }
     }
 
+    /* Ensure selected time slot keeps its selected look on hover */
+    .time-slot.selected-slot:hover {
+      box-shadow: 0 0 0 2px var(--bb-accent);
+      border-color: var(--bb-accent);
+      transform: none;
+    }
 
-/* Ensure selected time slot keeps its selected look on hover */
-.time-slot.selected-slot:hover {
-  box-shadow: 0 0 0 2px var(--bb-accent);
-  border-color: var(--bb-accent);
-  transform: none;
-}
-
+    /* Mobile-specific adjustments */
+    @media (max-width: 480px) {
+      #progress-bar div {
+        padding: 10px 4px;
+        font-size: 14px;
+        min-width: 100px;
+      }
+      
+      .bundle-card h3 {
+        font-size: 1.2rem;
+      }
+      
+      .package h3 {
+        font-size: 1.1rem;
+      }
+      
+      .calendar-day {
+        padding: 8px;
+      }
+      
+      .time-slot {
+        padding: 12px;
+      }
+      
+      .summary-title, .summary-price {
+        font-size: 1.2rem;
+      }
+      
+      .total-row, .final-total {
+        font-size: 1.2rem;
+      }
+    }
 </style>
 </head>
 <body>
@@ -1640,7 +1640,7 @@
                     </div>
                     <div class="option-controls">
                         <div style="display: flex; align-items: center; gap: 10px;">
-                            <span style="font-size: 12px;">Digital Only</span>
+                            <span style="font-size: 14px;">Digital Only</span>
                             <label class="toggle-switch">
                                 <input type="checkbox" id="photo-booth-toggle">
                                 <span class="toggle-slider"></span>
@@ -1649,7 +1649,7 @@
                                     <span></span>
                                 </div>
                             </label>
-                            <span style="font-size: 12px;">Unlimited Prints</span>
+                            <span style="font-size: 14px;">Unlimited Prints</span>
                         </div>
                     </div>
                 </div>
@@ -1717,15 +1717,15 @@
                 <span id="promo-discount-amount">-C$0</span>
             </div>
 
-<div class="promo-row">
-    <div class="promo-input">
-        <input type="text" id="promo-code" placeholder="Enter promo code">
-        <button id="apply-promo">Apply</button>
-    </div>
-    <div class="promo-message-container">
-        <div class="promo-error" id="promo-error"></div>
-    </div>
-</div>
+            <div class="promo-row">
+                <div class="promo-input">
+                    <input type="text" id="promo-code" placeholder="Enter promo code">
+                    <button id="apply-promo">Apply</button>
+                </div>
+                <div class="promo-message-container">
+                    <div class="promo-error" id="promo-error"></div>
+                </div>
+            </div>
             <div class="final-total">
                 <span>Total:</span>
                 <span id="final-total-price">C$0</span>
@@ -2346,7 +2346,8 @@ function setupProgressBarNavigation() {
         
         bundles.forEach((bundle, index) => {
             const isSpecial = bundle.Special || bundle.discountPercentage > 0;
-            const div = createBundleDiv(bundle, index, isSpecial);
+            const isCustom = bundle.isCustom;
+            const div = createBundleDiv(bundle, index, isSpecial, isCustom);
             list.appendChild(div);
         });
 
@@ -2356,15 +2357,18 @@ function setupProgressBarNavigation() {
     }
 
     // Helper function to create bundle divs with new styling
-    function createBundleDiv(bundle, index, isSpecial) {
+    function createBundleDiv(bundle, index, isSpecial, isCustom) {
         const div = document.createElement('div');
-        div.className = `bundle-card ${isSpecial ? 'special-bundle' : ''} ${bundle.isCustom ? 'custom-bundle' : ''}`;
+        div.className = `bundle-card ${isSpecial ? 'special-bundle' : ''} ${isCustom ? 'custom-bundle' : ''}`;
         
         // Generate category tags with count badges
         const categoryTags = Object.entries(bundle.categories).map(([category, count]) => {
             let tagClass = 'tag';
             if (category.includes('Scene')) tagClass += ' scene-setters';
             if (category.includes('Sweets')) tagClass += ' sweets-brews';
+            if (category.includes('Special Effects')) tagClass += ' special-effects';
+            if (category.includes('Guest Book')) tagClass += ' guest-book';
+            if (category.includes('Digital')) tagClass += ' digital';
             if (category.includes('Interactive')) tagClass += ' interactive';
             
             return `
@@ -2380,10 +2384,10 @@ function setupProgressBarNavigation() {
             `<div class="corner-ribbon">${bundle.discountPercentage}% OFF</div>` : '';
             
         // Add plus symbol for custom bundle
-        const servicesIncludedContent = bundle.isCustom ? 
-    `<div class="plus-symbol">+</div>` : 
-    `<div class="categories-label">Services Includes:</div>
-     <div>${categoryTags}</div>`;
+        const servicesIncludedContent = isCustom ? 
+            `<div class="plus-symbol">+</div>` : 
+            `<div class="categories-label">Services Includes:</div>
+             <div class="tag-list">${categoryTags}</div>`;
         
         div.innerHTML = `
             ${ribbon}
@@ -2394,7 +2398,7 @@ function setupProgressBarNavigation() {
         `;
         
         div.addEventListener('click', () => {
-            if (bundle.isCustom) {
+            if (isCustom) {
                 selectCustomBundle();
             } else {
                 selectBundle(index);
@@ -2465,22 +2469,22 @@ function setupProgressBarNavigation() {
             window.location.reload();
         });
         
-// Month navigation
-document.getElementById('prev-month').addEventListener('click', () => {
-    const newDate = new Date(currentDisplayedDate);
-    newDate.setMonth(newDate.getMonth() - 1);
-    currentDisplayedDate = newDate;
-    renderCalendar(currentDisplayedDate);
-    updateMonthNavigationButtons();
-});
+        // Month navigation
+        document.getElementById('prev-month').addEventListener('click', () => {
+            const newDate = new Date(currentDisplayedDate);
+            newDate.setMonth(newDate.getMonth() - 1);
+            currentDisplayedDate = newDate;
+            renderCalendar(currentDisplayedDate);
+            updateMonthNavigationButtons();
+        });
         
-document.getElementById('next-month').addEventListener('click', () => {
-    const newDate = new Date(currentDisplayedDate);
-    newDate.setMonth(newDate.getMonth() + 1);
-    currentDisplayedDate = newDate;
-    renderCalendar(currentDisplayedDate);
-    updateMonthNavigationButtons();
-});
+        document.getElementById('next-month').addEventListener('click', () => {
+            const newDate = new Date(currentDisplayedDate);
+            newDate.setMonth(newDate.getMonth() + 1);
+            currentDisplayedDate = newDate;
+            renderCalendar(currentDisplayedDate);
+            updateMonthNavigationButtons();
+        });
         
         // Set up phone number formatting
         const phoneInput = document.getElementById('contact-phone');
@@ -2490,66 +2494,66 @@ document.getElementById('next-month').addEventListener('click', () => {
         updatePrices();
     }
 
-function updateMonthNavigationButtons() {
-    const today = new Date();
-    const prevButton = document.getElementById('prev-month');
-    const nextButton = document.getElementById('next-month');
+    function updateMonthNavigationButtons() {
+        const today = new Date();
+        const prevButton = document.getElementById('prev-month');
+        const nextButton = document.getElementById('next-month');
+        
+        // Disable previous button if we're showing the current month
+        prevButton.disabled = 
+            currentDisplayedDate.getMonth() === today.getMonth() && 
+            currentDisplayedDate.getFullYear() === today.getFullYear();
+        
+        // Optionally, you could disable next button after a certain date
+        // For example, disable booking more than 1 year in advance:
+        const maxDate = new Date();
+        maxDate.setFullYear(maxDate.getFullYear() + 1);
+        nextButton.disabled = currentDisplayedDate.getMonth() === maxDate.getMonth() && 
+                             currentDisplayedDate.getFullYear() === maxDate.getFullYear();
+    }
     
-    // Disable previous button if we're showing the current month
-    prevButton.disabled = 
-        currentDisplayedDate.getMonth() === today.getMonth() && 
-        currentDisplayedDate.getFullYear() === today.getFullYear();
-    
-    // Optionally, you could disable next button after a certain date
-    // For example, disable booking more than 1 year in advance:
-    const maxDate = new Date();
-    maxDate.setFullYear(maxDate.getFullYear() + 1);
-    nextButton.disabled = currentDisplayedDate.getMonth() === maxDate.getMonth() && 
-                         currentDisplayedDate.getFullYear() === maxDate.getFullYear();
-}
     // Update prices with discounts
-// In the updatePrices() function, replace with:
-function updatePrices() {
-    const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
-    
-    // Get bundle discount (either from bundle data or default 0 for non-custom bundles)
-    const bundleDiscountValue = selectedBundle.isCustom ? 0 : 
-                              (selectedBundle.discountPercentage ? selectedBundle.discountPercentage/100 : 0);
-    
-    const discount = subtotal * bundleDiscountValue;
-    const totalBeforePromo = subtotal - discount;
-    const total = Math.max(0, totalBeforePromo - promoDiscount);
-    
-    // Update price displays
-    document.getElementById('subtotal-price').textContent = `C$${subtotal.toFixed(2)}`;
-    
-    // Show bundle discount only if there is one
-    if (discount > 0) {
-        document.getElementById('discount-row').style.display = 'flex';
-        const discountText = selectedBundle.discountPercentage ? 
-            `Bundle Discount (${selectedBundle.discountPercentage}%):` : 
-            `Bundle Discount:`;
-        document.querySelector('.discount-row span:first-child').textContent = discountText;
-        document.getElementById('discount-amount').textContent = `-C$${discount.toFixed(2)}`;
-    } else {
-        document.getElementById('discount-row').style.display = 'none';
+    function updatePrices() {
+        const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
+        
+        // Get bundle discount (either from bundle data or default 0 for non-custom bundles)
+        const bundleDiscountValue = selectedBundle.isCustom ? 0 : 
+                                  (selectedBundle.discountPercentage ? selectedBundle.discountPercentage/100 : 0);
+        
+        const discount = subtotal * bundleDiscountValue;
+        const totalBeforePromo = subtotal - discount;
+        const total = Math.max(0, totalBeforePromo - promoDiscount);
+        
+        // Update price displays
+        document.getElementById('subtotal-price').textContent = `C$${subtotal.toFixed(2)}`;
+        
+        // Show bundle discount only if there is one
+        if (discount > 0) {
+            document.getElementById('discount-row').style.display = 'flex';
+            const discountText = selectedBundle.discountPercentage ? 
+                `Bundle Discount (${selectedBundle.discountPercentage}%):` : 
+                `Bundle Discount:`;
+            document.querySelector('.discount-row span:first-child').textContent = discountText;
+            document.getElementById('discount-amount').textContent = `-C$${discount.toFixed(2)}`;
+        } else {
+            document.getElementById('discount-row').style.display = 'none';
+        }
+        
+        // Show promo discount only if there is one
+        if (promoDiscount > 0 && promoCodeApplied) {
+            document.getElementById('promo-discount-row').style.display = 'flex';
+            document.getElementById('promo-discount-amount').textContent = `-C$${promoDiscount.toFixed(2)}`;
+        } else {
+            document.getElementById('promo-discount-row').style.display = 'none';
+        }
+        
+        document.getElementById('final-total-price').textContent = `C$${total.toFixed(2)}`;
+        
+        // Update payment amount displays
+        document.getElementById('payment-amount').textContent = `$${total.toFixed(2)}`;
+        document.getElementById('payment-info-amount').textContent = `$${total.toFixed(2)}`;
+        document.getElementById('confirmed-amount').textContent = `$${total.toFixed(2)}`;
     }
-    
-    // Show promo discount only if there is one
-    if (promoDiscount > 0 && promoCodeApplied) {
-        document.getElementById('promo-discount-row').style.display = 'flex';
-        document.getElementById('promo-discount-amount').textContent = `-C$${promoDiscount.toFixed(2)}`;
-    } else {
-        document.getElementById('promo-discount-row').style.display = 'none';
-    }
-    
-    document.getElementById('final-total-price').textContent = `C$${total.toFixed(2)}`;
-    
-    // Update payment amount displays
-    document.getElementById('payment-amount').textContent = `$${total.toFixed(2)}`;
-    document.getElementById('payment-info-amount').textContent = `$${total.toFixed(2)}`;
-    document.getElementById('confirmed-amount').textContent = `$${total.toFixed(2)}`;
-}
 
     // Render the selected services list with durations and options
     function renderSelectedServicesList() {
@@ -2838,17 +2842,15 @@ function updatePrices() {
 
     // Show/hide steps
     function showStep(stepNumber) {
-	
-	
         // Hide all steps
         document.getElementById('step-1').style.display = 'none';
         document.getElementById('step-2').style.display = 'none';
         document.getElementById('step-3').style.display = 'none';
 		
-		   // Clear promo code if leaving step 3
-    if (getCurrentStep() === 3 && stepNumber !== 3) {
-        clearPromoCode();
-    }
+        // Clear promo code if leaving step 3
+        if (getCurrentStep() === 3 && stepNumber !== 3) {
+            clearPromoCode();
+        }
         
         // Show the requested step
         document.getElementById(`step-${stepNumber}`).style.display = 'block';
