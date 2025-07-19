@@ -74,9 +74,15 @@ app.post('/send-booking-email', async (req, res) => {
     const calculatedSubtotal = services.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
 
     // Get discount details from selectedBundle or promoCodeApplied
-    const bundleDiscountValue = selectedBundle?.discountValue || discount || 0;
-    const bundleDiscountPercentage = selectedBundle?.discountPercentage || 0;
+const bundleDiscountValue = selectedBundle?.isCustom ? 0 : 
+                          (selectedBundle?.discountValue || discount || 0);
+const bundleDiscountPercentage = selectedBundle?.isCustom ? 0 : 
+                               (selectedBundle?.discountPercentage || 0);
     const promoCode = promoCodeApplied?.promoCode || '';
+
+    const totalBeforePromo = subtotal - bundleDiscountValue;
+const total = Math.max(0, totalBeforePromo - promoDiscount);
+    
 
     // Create email
     const apiInstance = new Brevo.TransactionalEmailsApi();
