@@ -56,6 +56,7 @@ app.post('/send-booking-email', async (req, res) => {
       bundleDescription,
       selectedBundle = {},
       promoCodeApplied,
+      paymentMethod,
       paymentLast4,
       transactionId,
       paymentStatus
@@ -74,7 +75,7 @@ app.post('/send-booking-email', async (req, res) => {
       day: 'numeric' 
     }) : 'Not specified';
 
-    // Use the selected time slot from Step 3
+    // Use the actual selected time slot from Step 3
     const formattedTimeSlot = startTime && endTime 
       ? `${formatTime(new Date(startTime))} - ${formatTime(new Date(endTime))} (EST)`
       : 'Not specified';
@@ -84,8 +85,10 @@ app.post('/send-booking-email', async (req, res) => {
       : 'Not specified';
 
     const formattedLocation = eventLocation || 'Location not specified';
+    
+    // Use the actual payment method details from Stripe
     const formattedPaymentMethod = paymentLast4 
-      ? `Credit Card (ending in ${paymentLast4})` 
+      ? `${paymentMethod || 'Credit Card'} (ending in ${paymentLast4})` 
       : 'Credit Card (ending in ****)';
 
     // Calculate prices
