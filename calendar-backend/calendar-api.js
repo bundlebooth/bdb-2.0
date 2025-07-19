@@ -97,89 +97,53 @@ const mergeTimeSlots = (slots) => {
 };
 
 // Calendar Availability Endpoint (Final Optimized Version)
+// In calendar-api.js
 app.get('/api/availability', async (req, res) => {
   try {
     const date = req.query.date;
-    if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-      return res.status(400).json({ error: 'Valid date parameter (YYYY-MM-DD) is required' });
-    }
-
     const accessToken = await getAccessToken();
-    const calendarOwner = process.env.CALENDAR_OWNER_UPN;
-    const startTime = `${date}T00:00:00`;
-    const endTime = `${date}T23:59:59`;
+    
+    // Define your desired time slots in EST
+    const timeSlots = [
+      { start: '09:00:00', end: '12:00:00' },
+      { start: '12:00:00', end: '15:00:00' },
+      { start: '15:00:00', end: '18:00:00' },
+      { start: '18:00:00', end: '21:00:00' },
+      { start: '21:00:00', end: '00:00:00' }
+    ];
 
-    // Fetch schedule (free/busy) data
-    const scheduleResponse = await axios.post(
-      `https://graph.microsoft.com/v1.0/users/${calendarOwner}/calendar/getSchedule`,
-      {
-        schedules: [calendarOwner],
-        startTime: { dateTime: startTime, timeZone: 'Eastern Standard Time' },
-        endTime: { dateTime: endTime, timeZone: 'Eastern Standard Time' },
-        availabilityViewInterval: 60
-      },
-      { 
-        headers: { 
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
+    // Check availability for each slot
+    const availability = await Promise.all(timeSlots.map(async (slot) => {
+      const startTime = `${date}T${slot.start}-05:00`;
+      const endTime = `${date}T${slot.end}-05:00`;
+      
+      // Check if this slot is booked
+      const response = await axios.get(
+        `https://graph.microsoft.com/v1.0/users/${process.env.CALENDAR_OWNER_UPN}/calendar/events`,
+        {
+          params: {
+            startDateTime: startTime,
+            endDateTime: endTime,
+            $select: 'subject,start,end'
+          },
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+          }
         }
-      }
-    );
-
-    if (!scheduleResponse.data.value || scheduleResponse.data.value.length === 0) {
-      return res.status(404).json({ error: 'No calendar data found' });
-    }
-
-    // Merge overlapping slots
-    const mergedSlots = mergeTimeSlots(scheduleResponse.data.value[0].scheduleItems || []);
-
-    // Fetch actual events
-    const eventsResponse = await axios.get(
-      `https://graph.microsoft.com/v1.0/users/${calendarOwner}/calendar/events`,
-      {
-        params: {
-          startDateTime: startTime,
-          endDateTime: endTime,
-          $select: 'subject,start,end'
-        },
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-
-    const events = eventsResponse.data.value || [];
-
-    // Map to final availability (with booked status)
-    const availability = mergedSlots.map(slot => {
-      const slotStart = new Date(slot.start.dateTime);
-      const slotEnd = new Date(slot.end.dateTime);
-      const isBooked = events.some(event => {
-        const eventStart = new Date(event.start.dateTime);
-        const eventEnd = new Date(event.end.dateTime);
-        return (eventStart < slotEnd && eventEnd > slotStart);
-      });
+      );
 
       return {
-        start: slot.start.dateTime,
-        end: slot.end.dateTime,
-        status: slot.status || 'busy', // Default to 'busy' if undefined
-        booked: isBooked
+        start: startTime,
+        end: endTime,
+        booked: response.data.value.length > 0
       };
-    });
+    }));
 
-    res.json({ 
-      date: date,
-      availability: availability 
-    });
-
+    res.json({ date, availability });
   } catch (error) {
-    console.error('Availability Error:', error.response?.data || error.message);
-    res.status(500).json({ 
-      error: 'Failed to fetch availability',
-      details: error.response?.data || error.message
-    });
+    console.error('Availability Error:', error);
+    res.status(500).json({ error: 'Failed to fetch availability' });
   }
 });
 
