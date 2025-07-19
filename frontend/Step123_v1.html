@@ -2508,11 +2508,11 @@ function updateMonthNavigationButtons() {
                          currentDisplayedDate.getFullYear() === maxDate.getFullYear();
 }
     // Update prices with discounts
-// Updated updatePrices function
+// In the updatePrices() function, replace with:
 function updatePrices() {
     const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
     
-    // Get bundle discount (either from bundle data or default 10% for non-custom bundles)
+    // Get bundle discount (either from bundle data or default 0 for non-custom bundles)
     const bundleDiscountValue = selectedBundle.isCustom ? 0 : 
                               (selectedBundle.discountPercentage ? selectedBundle.discountPercentage/100 : 0);
     
