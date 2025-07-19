@@ -184,60 +184,92 @@ app.get('/api/availability', async (req, res) => {
 });
 
 // Booking Endpoint (Unchanged)
+// Booking Endpoint (Updated with proper timezone handling)
 app.post('/api/bookings', async (req, res) => {
-  try {
-    const { start, end, name, email, eventDetails } = req.body;
-    
-    if (!start || !end || !name || !email) {
-      return res.status(400).json({ error: 'Missing required fields' });
+    try {
+        const { start, end, name, email, eventDetails } = req.body;
+        
+        if (!start || !end || !name || !email) {
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
+
+        // Convert UTC times from frontend back to EST (UTC-4 during daylight saving)
+        const adjustForEST = (dateString) => {
+            const date = new Date(dateString);
+            date.setHours(date.getHours() - 4); // Subtract 4 hours for EST (UTC-4)
+            return date;
+        };
+
+        const startTimeEST = adjustForEST(start);
+        const endTimeEST = adjustForEST(end);
+
+        const accessToken = await getAccessToken();
+        
+        // Create calendar event with explicit EST timezone
+        const response = await axios.post(
+            `https://graph.microsoft.com/v1.0/users/${process.env.CALENDAR_OWNER_UPN}/events`,
+            {
+                subject: `Booking: ${name}`,
+                body: {
+                    contentType: "HTML",
+                    content: `
+                        <p>Client: ${name}</p>
+                        <p>Email: ${email}</p>
+                        <p>Event: ${eventDetails?.eventName || 'Not specified'}</p>
+                        <p>Location: ${eventDetails?.location || 'Not specified'}</p>
+                        <p>Guests: ${eventDetails?.guestCount || 'Not specified'}</p>
+                        <p>Notes: ${eventDetails?.notes || 'None'}</p>
+                    `
+                },
+                start: { 
+                    dateTime: startTimeEST.toISOString(),
+                    timeZone: 'Eastern Standard Time' // Explicit EST timezone
+                },
+                end: { 
+                    dateTime: endTimeEST.toISOString(),
+                    timeZone: 'Eastern Standard Time' // Explicit EST timezone
+                }
+            },
+            { 
+                headers: { 
+                    Authorization: `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+
+        // Log successful booking for debugging
+        console.log('Booking created successfully:', {
+            requestTime: new Date().toISOString(),
+            clientStart: start,
+            clientEnd: end,
+            calendarStart: startTimeEST.toISOString(),
+            calendarEnd: endTimeEST.toISOString(),
+            eventId: response.data.id
+        });
+
+        res.json({ 
+            success: true,
+            eventId: response.data.id,
+            eventLink: response.data.webLink,
+            eventTime: {
+                start: startTimeEST.toISOString(),
+                end: endTimeEST.toISOString(),
+                timeZone: 'EST'
+            }
+        });
+
+    } catch (error) {
+        console.error('Booking Error:', {
+            message: error.message,
+            requestBody: req.body,
+            response: error.response?.data
+        });
+        res.status(500).json({ 
+            error: 'Failed to create booking',
+            details: error.response?.data || error.message
+        });
     }
-
-    const accessToken = await getAccessToken();
-    
-    const response = await axios.post(
-      `https://graph.microsoft.com/v1.0/users/${process.env.CALENDAR_OWNER_UPN}/events`,
-      {
-        subject: `Booking: ${name}`,
-        body: {
-          contentType: "HTML",
-          content: `
-            <p>Client: ${name}</p>
-            <p>Email: ${email}</p>
-            <p>Event: ${eventDetails?.eventName || 'Not specified'}</p>
-            <p>Location: ${eventDetails?.location || 'Not specified'}</p>
-            <p>Guests: ${eventDetails?.guestCount || 'Not specified'}</p>
-            <p>Notes: ${eventDetails?.notes || 'None'}</p>
-          `
-        },
-        start: { 
-          dateTime: start,
-          timeZone: 'UTC'
-        },
-        end: { 
-          dateTime: end,
-          timeZone: 'UTC'
-        }
-      },
-      { 
-        headers: { 
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-
-    res.json({ 
-      success: true,
-      eventId: response.data.id,
-      eventLink: response.data.webLink
-    });
-  } catch (error) {
-    console.error('Booking Error:', error.response?.data || error.message);
-    res.status(500).json({ 
-      error: 'Failed to create booking',
-      details: error.response?.data || error.message
-    });
-  }
 });
 
 const PORT = process.env.PORT || 3000;
