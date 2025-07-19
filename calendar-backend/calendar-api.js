@@ -148,27 +148,53 @@ app.get('/api/availability', async (req, res) => {
 });
 
 // Booking Endpoint (Unchanged)
+// In calendar-api.js
 app.post('/api/bookings', async (req, res) => {
   try {
     const { start, end, name, email, eventDetails } = req.body;
     
-    // Ensure times are in EST
-    const estStart = new Date(start).toLocaleString('en-US', { timeZone: 'America/New_York' });
-    const estEnd = new Date(end).toLocaleString('en-US', { timeZone: 'America/New_York' });
+    // Verify the times are in our expected slots
+    const validSlots = [
+      '09:00:00', '12:00:00', '15:00:00', '18:00:00', '21:00:00', '00:00:00'
+    ];
+    
+    const startTime = new Date(start);
+    const endTime = new Date(end);
+    
+    // Convert to EST time strings
+    const startEST = startTime.toLocaleTimeString('en-US', { 
+      timeZone: 'America/New_York',
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+    
+    const endEST = endTime.toLocaleTimeString('en-US', { 
+      timeZone: 'America/New_York',
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+
+    if (!validSlots.includes(startEST) || !validSlots.includes(endEST)) {
+      return res.status(400).json({ error: 'Invalid time slot selected' });
+    }
 
     const response = await axios.post(
       `https://graph.microsoft.com/v1.0/users/${process.env.CALENDAR_OWNER_UPN}/events`,
       {
         subject: `Booking: ${name}`,
         start: { 
-          dateTime: estStart,
+          dateTime: start,
           timeZone: 'Eastern Standard Time'
         },
         end: { 
-          dateTime: estEnd,
+          dateTime: end,
           timeZone: 'Eastern Standard Time'
         },
-        // ... rest of event details
+        // ... other event details
       },
       { 
         headers: { 
