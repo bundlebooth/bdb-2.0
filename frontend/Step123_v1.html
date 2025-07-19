@@ -2046,6 +2046,7 @@ try {
 
         // Set up back to bundle button
         document.getElementById('back-to-bundle').addEventListener('click', () => {
+			    clearPromoCode();
             showStep(1);
             window.scrollTo(0, 0);
         });
@@ -2066,6 +2067,16 @@ function applyPromoCode() {
     const promoCode = promoCodeInput.value.trim().toUpperCase();
     const errorElement = document.getElementById('promo-error');
     const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
+	
+	   // Check if this is a special/discounted bundle
+    if (selectedBundle && selectedBundle.Special || selectedBundle.discountPercentage > 0) {
+        errorElement.textContent = 'Promo codes cannot be applied to discounted bundles';
+        errorElement.classList.add('invalid');
+        promoCodeApplied = null;
+        promoDiscount = 0;
+        updatePrices();
+        return;
+    }
 
     if (!promoCode) {
         errorElement.textContent = 'Please enter a promo code';
@@ -2146,19 +2157,22 @@ function applyPromoCode() {
 
 
     // Set up progress bar navigation
-    function setupProgressBarNavigation() {
-        const progressSteps = document.querySelectorAll('#progress-bar div');
-        progressSteps.forEach((step, index) => {
-            step.addEventListener('click', () => {
-                const currentStep = getCurrentStep();
-                if (index < currentStep) {
-                    // Allow going back to completed steps
-                    showStep(index + 1);
-                    window.scrollTo(0, 0);
+function setupProgressBarNavigation() {
+    const progressSteps = document.querySelectorAll('#progress-bar div');
+    progressSteps.forEach((step, index) => {
+        step.addEventListener('click', () => {
+            const currentStep = getCurrentStep();
+            if (index < currentStep) {
+                // Clear promo code if going back from step 3
+                if (currentStep === 3) {
+                    clearPromoCode();
                 }
-            });
+                showStep(index + 1);
+                window.scrollTo(0, 0);
+            }
         });
-    }
+    });
+}
 
     // Get current step (1, 2, or 3)
     function getCurrentStep() {
@@ -2431,6 +2445,7 @@ function applyPromoCode() {
         
         // Set up event listeners
         document.getElementById('back-to-services').addEventListener('click', () => {
+			clearPromoCode();
             showStep(2);
             window.scrollTo(0, 0);
         });
@@ -2438,6 +2453,7 @@ function applyPromoCode() {
         document.getElementById('submit-booking').addEventListener('click', handleBookingSubmit);
         document.getElementById('submit-payment').addEventListener('click', handlePaymentSubmit);
         document.getElementById('new-bundle-button').addEventListener('click', () => {
+			    clearPromoCode();
             window.location.reload();
         });
         
@@ -2485,6 +2501,12 @@ function updateMonthNavigationButtons() {
 }
     // Update prices with discounts
     function updatePrices() {
+	
+	    if (!promoCodeApplied) {
+        promoDiscount = 0;
+        document.getElementById('promo-discount-row').style.display = 'none';
+    }
+	
         const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
         const discountPercentage = selectedBundle.isCustom ? 0 : (selectedBundle.discountPercentage ? selectedBundle.discountPercentage/100 : bundleDiscount);
         const discount = subtotal * discountPercentage;
@@ -2807,10 +2829,17 @@ function updateMonthNavigationButtons() {
 
     // Show/hide steps
     function showStep(stepNumber) {
+	
+	
         // Hide all steps
         document.getElementById('step-1').style.display = 'none';
         document.getElementById('step-2').style.display = 'none';
         document.getElementById('step-3').style.display = 'none';
+		
+		   // Clear promo code if leaving step 3
+    if (getCurrentStep() === 3 && stepNumber !== 3) {
+        clearPromoCode();
+    }
         
         // Show the requested step
         document.getElementById(`step-${stepNumber}`).style.display = 'block';
@@ -3355,6 +3384,27 @@ function renderCalendar(date) {
     function clearTimeSlots() {
         document.getElementById('time-slots-container').innerHTML = '';
     }
+	
+function clearPromoCode() {
+    const promoCodeInput = document.getElementById('promo-code');
+    const errorElement = document.getElementById('promo-error');
+    const promoDiscountRow = document.getElementById('promo-discount-row');
+    
+    // Reset all promo-related UI elements
+    promoCodeInput.value = '';
+    errorElement.textContent = '';
+    errorElement.classList.remove('invalid');
+    
+    // Reset promo-related variables
+    promoCodeApplied = null;
+    promoDiscount = 0;
+    
+    // Hide the promo discount row
+    promoDiscountRow.style.display = 'none';
+    
+    // Update prices to reflect removal of promo discount
+    updatePrices();
+}
 
     // Send email via backend
     async function sendConfirmationEmail(bookingData) {
