@@ -3376,6 +3376,7 @@ function renderCalendar(date) {
 
     // Handle booking submission
     // Handle booking submission
+// Handle booking submission
 async function handleBookingSubmit(e) {
     e.preventDefault();
     
@@ -3391,16 +3392,9 @@ async function handleBookingSubmit(e) {
         return;
     }
 
-    // Convert local EST times to UTC before sending to backend
-    const startTimeLocal = new Date(selectedSlot.dataset.start);
-    const endTimeLocal = new Date(selectedSlot.dataset.end);
-    
-    // Adjust for EST to UTC conversion (add 4 hours during daylight time)
-    const startTimeUTC = new Date(startTimeLocal);
-    startTimeUTC.setHours(startTimeUTC.getHours() + 4);
-    
-    const endTimeUTC = new Date(endTimeLocal);
-    endTimeUTC.setHours(endTimeUTC.getHours() + 4);
+    // Get the selected time slot (already in UTC from the availability API)
+    const startTimeUTC = new Date(selectedSlot.dataset.start);
+    const endTimeUTC = new Date(selectedSlot.dataset.end);
 
     const total = parseFloat(document.getElementById('final-total-price').textContent.replace('C$', ''));
     const bookingData = {
@@ -3413,15 +3407,14 @@ async function handleBookingSubmit(e) {
         contactName: document.getElementById('contact-name').value,
         email: document.getElementById('contact-email').value,
         phone: document.getElementById('contact-phone').value,
-        startTime: startTimeUTC.toISOString(), // Use UTC-converted time
-        endTime: endTimeUTC.toISOString()     // Use UTC-converted time
+        startTime: startTimeUTC.toISOString(), // Already in UTC
+        endTime: endTimeUTC.toISOString()     // Already in UTC
     };
 
     document.getElementById('stripe-payment-form').style.display = 'block';
     document.getElementById('payment-info').style.display = 'block';
     document.getElementById('submit-booking').style.display = 'none';
 }
-
     // Handle payment submission
     async function handlePaymentSubmit(e) {
         e.preventDefault();
