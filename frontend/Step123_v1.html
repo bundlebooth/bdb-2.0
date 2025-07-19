@@ -3371,9 +3371,11 @@ function padTime(num) {
 // Handle booking submission
 // Handle booking submission
 // Handle booking submission
+// Handle booking submission
 async function handleBookingSubmit(e) {
     e.preventDefault();
     
+    // Validate form
     if (!document.getElementById('event-details-form').checkValidity()) {
         document.getElementById('event-details-form').reportValidity();
         return;
@@ -3402,14 +3404,23 @@ async function handleBookingSubmit(e) {
         const endEst = new Date(`${dateStr}T${endTimeStr}:00-05:00`);
 
         // Validate dates
-        if (isNaN(startEst.getTime()) throw new Error(`Invalid start time: ${startTimeStr}`);
-        if (isNaN(endEst.getTime())) throw new Error(`Invalid end time: ${endTimeStr}`);
+        if (isNaN(startEst.getTime())) {
+            throw new Error(`Invalid start time: ${startTimeStr}`);
+        }
+        if (isNaN(endEst.getTime())) {
+            throw new Error(`Invalid end time: ${endTimeStr}`);
+        }
 
         // Convert to UTC strings
         const startUTC = startEst.toISOString();
         const endUTC = endEst.toISOString();
 
-        const total = parseFloat(document.getElementById('final-total-price').textContent.replace('C$', ''));
+        // Get total price
+        const totalElement = document.getElementById('final-total-price');
+        const totalText = totalElement.textContent.replace('C$', '');
+        const total = parseFloat(totalText);
+
+        // Prepare booking data
         const bookingData = {
             eventName: document.getElementById('event-name').value,
             eventType: document.getElementById('event-type').value,
@@ -3424,6 +3435,7 @@ async function handleBookingSubmit(e) {
             endTime: endUTC
         };
 
+        // Show payment form
         document.getElementById('stripe-payment-form').style.display = 'block';
         document.getElementById('payment-info').style.display = 'block';
         document.getElementById('submit-booking').style.display = 'none';
