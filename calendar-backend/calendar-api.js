@@ -186,16 +186,18 @@ app.get('/api/availability', async (req, res) => {
 // Booking Endpoint (Unchanged)
 // In the booking endpoint, ensure timezone is properly handled:
 // Booking Endpoint (Fixed Timezone Handling)
+// Booking Endpoint (Fixed Timezone Handling)
 app.post('/api/bookings', async (req, res) => {
   try {
-    const { start, end, name, email, eventDetails } = req.body;
+    const { startTime, endTime, name, email, eventDetails } = req.body;
     
-    if (!start || !end || !name || !email) {
+    if (!startTime || !endTime || !name || !email) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
     const accessToken = await getAccessToken();
     
+    // Create event in calendar with explicit UTC timezone
     const response = await axios.post(
       `https://graph.microsoft.com/v1.0/users/${process.env.CALENDAR_OWNER_UPN}/events`,
       {
@@ -210,13 +212,13 @@ app.post('/api/bookings', async (req, res) => {
             <p>Notes: ${eventDetails?.notes || 'None'}</p>
           `
         },
-        start: { 
-          dateTime: start, // Use the UTC time directly
-          timeZone: 'UTC'  // Explicitly set to UTC
+        start: {
+          dateTime: startTime,
+          timeZone: 'UTC'
         },
-        end: { 
-          dateTime: end,   // Use the UTC time directly
-          timeZone: 'UTC'  // Explicitly set to UTC
+        end: {
+          dateTime: endTime,
+          timeZone: 'UTC'
         }
       },
       { 
