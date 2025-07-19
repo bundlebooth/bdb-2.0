@@ -114,8 +114,8 @@ app.get('/api/availability', async (req, res) => {
       `https://graph.microsoft.com/v1.0/users/${calendarOwner}/calendar/getSchedule`,
       {
         schedules: [calendarOwner],
-        startTime: { dateTime: startTime, timeZone: 'UTC' },
-        endTime: { dateTime: endTime, timeZone: 'UTC' },
+        startTime: { dateTime: startTime, timeZone: 'Eastern Standard Time' },
+        endTime: { dateTime: endTime, timeZone: 'Eastern Standard Time' },
         availabilityViewInterval: 60
       },
       { 
