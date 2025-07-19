@@ -9,6 +9,7 @@
 <script src="https://js.stripe.com/v3/"></script>
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
 <style>
     :root {
       --bb-blue: #333;
@@ -1857,11 +1858,11 @@
         backendUrl: 'https://bdb-2-0-calendar-api-backend.onrender.com',
         emailBackendUrl: 'https://bdb-2-0-brevo-email-backend.onrender.com/send-booking-email',
         stripeBackendUrl: 'https://bdb-2-0-stripe-api-backend.onrender.com',
-           workingHours: { 
-        start: 13, // 9 AM EST = 13 UTC (during daylight time)
-        end: 25    // 9 PM EST = 1 AM next day UTC
-    },
-    slotDuration: 180
+        workingHours: { 
+            start: 13, // 9 AM EST = 13 UTC (during daylight time)
+            end: 25    // 9 PM EST = 1 AM next day UTC
+        },
+        slotDuration: 180
     };
 
     // Global variables
@@ -1874,10 +1875,7 @@
     let stripe;
     let cardElement;
     let currentDisplayedDate = new Date();
-const twoWeeksLater = new Date();
-	twoWeeksLater.setDate(twoWeeksLater.getDate() + 14);
-	if (twoWeeksLater.getMonth() !== currentDisplayedDate.getMonth()) {
-    currentDisplayedDate = new Date(twoWeeksLater);}    let selectedDateElement = null;
+    let selectedDateElement = null;
     let serviceFeatures = {}; // To store features data
     let globalGuestSize = 100; // Default guest size
     let globalSparklersCount = 50; // Default sparklers count
@@ -1885,7 +1883,9 @@ const twoWeeksLater = new Date();
     let promoDiscount = 0;
     let validPromoCodes = [];
     let { jsPDF } = window.jspdf;
-let selectedSlotElement = null; // To track the currently selected time slot
+    let selectedSlotElement = null; // To track the currently selected time slot
+    const { DateTime } = luxon;
+    const timezone = 'America/New_York';
 
     // Initialize the builder when DOM is loaded
     document.addEventListener("DOMContentLoaded", async () => {
@@ -1913,35 +1913,35 @@ let selectedSlotElement = null; // To track the currently selected time slot
         }
 
         // Load promo codes
-try {
-    const promoRes = await fetch("https://bundlebooth.github.io/bdb-2.0/data/promo_codes.json");
-    if (!promoRes.ok) throw new Error('Failed to fetch promo codes');
-    
-    // Parse response and ensure it's an array
-    const promoData = await promoRes.json();
-    validPromoCodes = Array.isArray(promoData) ? promoData : [];
-    
-    // If we got empty array or invalid data, use fallback
-    if (validPromoCodes.length === 0) {
-        throw new Error('Empty promo codes array');
-    }
-} catch (err) {
-    console.error("Error loading promo codes:", err);
-    // Fallback to test promo code
-    validPromoCodes = [
-        {
-            "promoCode": "TEST25",
-            "discountType": "percentage",
-            "discountValue": 25,
-            "description": "25% off your total order",
-            "isActive": true,
-            "validFrom": "2025-01-01T00:00:00Z",
-            "validTo": "2025-12-31T23:59:59Z",
-            "minimumOrderValue": 0,
-            "applicableCategories": ["Interactive Booths", "Sweets and Brews"]
+        try {
+            const promoRes = await fetch("https://bundlebooth.github.io/bdb-2.0/data/promo_codes.json");
+            if (!promoRes.ok) throw new Error('Failed to fetch promo codes');
+            
+            // Parse response and ensure it's an array
+            const promoData = await promoRes.json();
+            validPromoCodes = Array.isArray(promoData) ? promoData : [];
+            
+            // If we got empty array or invalid data, use fallback
+            if (validPromoCodes.length === 0) {
+                throw new Error('Empty promo codes array');
+            }
+        } catch (err) {
+            console.error("Error loading promo codes:", err);
+            // Fallback to test promo code
+            validPromoCodes = [
+                {
+                    "promoCode": "TEST25",
+                    "discountType": "percentage",
+                    "discountValue": 25,
+                    "description": "25% off your total order",
+                    "isActive": true,
+                    "validFrom": "2025-01-01T00:00:00Z",
+                    "validTo": "2025-12-31T23:59:59Z",
+                    "minimumOrderValue": 0,
+                    "applicableCategories": ["Interactive Booths", "Sweets and Brews"]
+                }
+            ];
         }
-    ];
-}
 
         // Initialize the builder
         await fetchBundles();
@@ -2048,99 +2048,98 @@ try {
     });
 
     // Apply promo code with all validation checks
+    function applyPromoCode() {
+        const promoCodeInput = document.getElementById('promo-code');
+        const promoCode = promoCodeInput.value.trim().toUpperCase();
+        const errorElement = document.getElementById('promo-error');
+        const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
 
-function applyPromoCode() {
-    const promoCodeInput = document.getElementById('promo-code');
-    const promoCode = promoCodeInput.value.trim().toUpperCase();
-    const errorElement = document.getElementById('promo-error');
-    const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
+        if (!promoCode) {
+            errorElement.textContent = 'Please enter a promo code';
+            errorElement.classList.add('invalid');
+            return;
+        }
 
-    if (!promoCode) {
-        errorElement.textContent = 'Please enter a promo code';
-        errorElement.classList.add('invalid');
-        return;
-    }
-
-    // Check if this is a special bundle (has discountPercentage)
-    if (selectedBundle && selectedBundle.discountPercentage > 0) {
-        errorElement.textContent = 'Promo codes cannot be applied to discounted special bundles';
-        errorElement.classList.add('invalid');
-        promoCodeApplied = null;
-        promoDiscount = 0;
-        updatePrices();
-        return;
-    }
-    const validCode = validPromoCodes.find(code => code.promoCode.toUpperCase() === promoCode);
-    console.log('PROMO DEBUG:', { enteredPromoCode: promoCode, matchedPromoCodeObject: validCode, subtotalAmount: subtotal, selectedServicesList: selectedServices });
-
-    if (!validCode) {
-        errorElement.textContent = 'Invalid promo code';
-        errorElement.classList.add('invalid');
-        promoCodeApplied = null;
-        promoDiscount = 0;
-        updatePrices();
-        return;
-    }
-
-    const today = new Date();
-    if (!validCode.isActive) {
-        errorElement.textContent = 'This promo code is not currently active';
-        errorElement.classList.add('invalid');
-        promoCodeApplied = null;
-        promoDiscount = 0;
-        updatePrices();
-        return;
-    }
-    if (validCode.validFrom && new Date(validCode.validFrom) > today) {
-        errorElement.textContent = 'This promo code is not valid yet';
-        errorElement.classList.add('invalid');
-        promoCodeApplied = null;
-        promoDiscount = 0;
-        updatePrices();
-        return;
-    }
-    if (validCode.validTo && new Date(validCode.validTo) < today) {
-        errorElement.textContent = 'This promo code has expired';
-        errorElement.classList.add('invalid');
-        promoCodeApplied = null;
-        promoDiscount = 0;
-        updatePrices();
-        return;
-    }
-    if (validCode.minimumOrderValue && subtotal < validCode.minimumOrderValue) {
-        errorElement.textContent = `Minimum order of $${validCode.minimumOrderValue} required for this promo`;
-        errorElement.classList.add('invalid');
-        promoCodeApplied = null;
-        promoDiscount = 0;
-        updatePrices();
-        return;
-    }
-    if (validCode.applicableCategories && validCode.applicableCategories.length > 0) {
-        const hasApplicableService = selectedServices.some(service =>
-            validCode.applicableCategories.includes(service.ServiceType)
-        );
-        if (!hasApplicableService) {
-            errorElement.textContent = 'This promo code does not apply to your selected services';
+        // Check if this is a special bundle (has discountPercentage)
+        if (selectedBundle && selectedBundle.discountPercentage > 0) {
+            errorElement.textContent = 'Promo codes cannot be applied to discounted special bundles';
             errorElement.classList.add('invalid');
             promoCodeApplied = null;
             promoDiscount = 0;
             updatePrices();
             return;
         }
+        
+        const validCode = validPromoCodes.find(code => code.promoCode.toUpperCase() === promoCode);
+        console.log('PROMO DEBUG:', { enteredPromoCode: promoCode, matchedPromoCodeObject: validCode, subtotalAmount: subtotal, selectedServicesList: selectedServices });
+
+        if (!validCode) {
+            errorElement.textContent = 'Invalid promo code';
+            errorElement.classList.add('invalid');
+            promoCodeApplied = null;
+            promoDiscount = 0;
+            updatePrices();
+            return;
+        }
+
+        const today = new Date();
+        if (!validCode.isActive) {
+            errorElement.textContent = 'This promo code is not currently active';
+            errorElement.classList.add('invalid');
+            promoCodeApplied = null;
+            promoDiscount = 0;
+            updatePrices();
+            return;
+        }
+        if (validCode.validFrom && new Date(validCode.validFrom) > today) {
+            errorElement.textContent = 'This promo code is not valid yet';
+            errorElement.classList.add('invalid');
+            promoCodeApplied = null;
+            promoDiscount = 0;
+            updatePrices();
+            return;
+        }
+        if (validCode.validTo && new Date(validCode.validTo) < today) {
+            errorElement.textContent = 'This promo code has expired';
+            errorElement.classList.add('invalid');
+            promoCodeApplied = null;
+            promoDiscount = 0;
+            updatePrices();
+            return;
+        }
+        if (validCode.minimumOrderValue && subtotal < validCode.minimumOrderValue) {
+            errorElement.textContent = `Minimum order of $${validCode.minimumOrderValue} required for this promo`;
+            errorElement.classList.add('invalid');
+            promoCodeApplied = null;
+            promoDiscount = 0;
+            updatePrices();
+            return;
+        }
+        if (validCode.applicableCategories && validCode.applicableCategories.length > 0) {
+            const hasApplicableService = selectedServices.some(service =>
+                validCode.applicableCategories.includes(service.ServiceType)
+            );
+            if (!hasApplicableService) {
+                errorElement.textContent = 'This promo code does not apply to your selected services';
+                errorElement.classList.add('invalid');
+                promoCodeApplied = null;
+                promoDiscount = 0;
+                updatePrices();
+                return;
+            }
+        }
+
+        if (validCode.discountType === 'percentage') {
+            promoDiscount = subtotal * (validCode.discountValue / 100);
+        } else {
+            promoDiscount = validCode.discountValue;
+        }
+
+        promoCodeApplied = validCode;
+        errorElement.textContent = validCode.description || `Promo code applied: $${promoDiscount.toFixed(2)} off`;
+        errorElement.classList.remove('invalid');
+        updatePrices();
     }
-
-    if (validCode.discountType === 'percentage') {
-        promoDiscount = subtotal * (validCode.discountValue / 100);
-    } else {
-        promoDiscount = validCode.discountValue;
-    }
-
-    promoCodeApplied = validCode;
-    errorElement.textContent = validCode.description || `Promo code applied: $${promoDiscount.toFixed(2)} off`;
-    errorElement.classList.remove('invalid');
-    updatePrices();
-}
-
 
     // Set up progress bar navigation
     function setupProgressBarNavigation() {
@@ -2190,8 +2189,6 @@ function applyPromoCode() {
             const res = await fetch('https://raw.githubusercontent.com/bundlebooth/bdb-2.0/main/data/bundles.json');
             if (!res.ok) throw new Error('Failed to fetch bundles');
             bundles = await res.json();
-            
-
             
             renderBundles();
         } catch (error) {
@@ -2356,9 +2353,9 @@ function applyPromoCode() {
             
         // Add plus symbol for custom bundle
         const servicesIncludedContent = bundle.isCustom ? 
-    `<div class="plus-symbol">+</div>` : 
-    `<div class="categories-label">Services Includes:</div>
-     <div>${categoryTags}</div>`;
+            `<div class="plus-symbol">+</div>` : 
+            `<div class="categories-label">Services Includes:</div>
+             <div>${categoryTags}</div>`;
         
         div.innerHTML = `
             ${ribbon}
@@ -2382,91 +2379,22 @@ function applyPromoCode() {
     }
 
     // Handle bundle selection
-function selectBundle(index) {
-    promoCodeApplied = null;
-    promoDiscount = 0;
-    document.getElementById("promo-code").value = "";
-    document.getElementById("promo-error").textContent = "";
-    const currentPromoCode = document.getElementById('promo-code').value;
-    
-    selectedBundle = bundles[index];
-    document.querySelectorAll('#bundle-list .bundle-card').forEach((el, i) => {
-        el.classList.toggle('selected', i === index);
-    });
-    
-    // Reset selected services
-    selectedServices = [];
-    
-    renderStep2();
-    
-    // Restore promo code if it exists
-    if (currentPromoCode) {
-        document.getElementById('promo-code').value = currentPromoCode;
-        // Re-apply promo code if it was valid
-        if (promoCodeApplied) {
-            applyPromoCode();
-        }
-    }
-}
-
-    // Handle custom bundle selection
-function selectCustomBundle() {
-    promoCodeApplied = null;
-    promoDiscount = 0;
-    document.getElementById("promo-code").value = "";
-    document.getElementById("promo-error").textContent = "";
-    const currentPromoCode = document.getElementById('promo-code').value;
-    
-    selectedBundle = {
-        name: "Custom Bundle",
-        description: "Fully custom bundle",
-        duration: "3 hours",
-        categories: {},
-        discountPercentage: 0,
-        isCustom: true
-    };
-    
-    // Reset selected services
-    selectedServices = [];
-    
-    renderStep2();
-    
-    // Restore promo code if it exists
-    if (currentPromoCode) {
-        document.getElementById('promo-code').value = currentPromoCode;
-        // Re-apply promo code if it was valid
-        if (promoCodeApplied) {
-            applyPromoCode();
-        }
-    }
-}
-
-    // Show step 2 with services
-    function renderStep2() {
-        if (!selectedBundle) return;
-        showStep(2);
-        renderServices();
-    }
-
-    // Updated renderStep3 function to handle dynamic discounts
-function renderStep3() {
-    showStep(3);
-    window.scrollTo(0, 0);
-    
-    // Update bundle title
-    document.getElementById('bundle-title').textContent = selectedBundle.name;
-    
-    // Render selected services list
-    renderSelectedServicesList();
-    
-    // Initialize calendar with current month
-    renderCalendar(currentDisplayedDate);
-    
-    // Set up event listeners
-    document.getElementById('back-to-services').addEventListener('click', () => {
+    function selectBundle(index) {
+        promoCodeApplied = null;
+        promoDiscount = 0;
+        document.getElementById("promo-code").value = "";
+        document.getElementById("promo-error").textContent = "";
         const currentPromoCode = document.getElementById('promo-code').value;
-        showStep(2);
-        window.scrollTo(0, 0);
+        
+        selectedBundle = bundles[index];
+        document.querySelectorAll('#bundle-list .bundle-card').forEach((el, i) => {
+            el.classList.toggle('selected', i === index);
+        });
+        
+        // Reset selected services
+        selectedServices = [];
+        
+        renderStep2();
         
         // Restore promo code if it exists
         if (currentPromoCode) {
@@ -2476,35 +2404,100 @@ function renderStep3() {
                 applyPromoCode();
             }
         }
-    });
+    }
+
+    // Handle custom bundle selection
+    function selectCustomBundle() {
+        promoCodeApplied = null;
+        promoDiscount = 0;
+        document.getElementById("promo-code").value = "";
+        document.getElementById("promo-error").textContent = "";
+        const currentPromoCode = document.getElementById('promo-code').value;
+        
+        selectedBundle = {
+            name: "Custom Bundle",
+            description: "Fully custom bundle",
+            duration: "3 hours",
+            categories: {},
+            discountPercentage: 0,
+            isCustom: true
+        };
+        
+        // Reset selected services
+        selectedServices = [];
+        
+        renderStep2();
+        
+        // Restore promo code if it exists
+        if (currentPromoCode) {
+            document.getElementById('promo-code').value = currentPromoCode;
+            // Re-apply promo code if it was valid
+            if (promoCodeApplied) {
+                applyPromoCode();
+            }
+        }
+    }
+
+    // Show step 2 with services
+    function renderStep2() {
+        if (!selectedBundle) return;
+        showStep(2);
+        renderServices();
+    }
+
+    // Updated renderStep3 function to handle dynamic discounts
+    function renderStep3() {
+        showStep(3);
+        window.scrollTo(0, 0);
+        
+        // Update bundle title
+        document.getElementById('bundle-title').textContent = selectedBundle.name;
+        
+        // Render selected services list
+        renderSelectedServicesList();
+        
+        // Initialize calendar with current month
+        renderCalendar(currentDisplayedDate);
+        
+        // Set up event listeners
         document.getElementById('back-to-services').addEventListener('click', () => {
+            const currentPromoCode = document.getElementById('promo-code').value;
             showStep(2);
             window.scrollTo(0, 0);
+            
+            // Restore promo code if it exists
+            if (currentPromoCode) {
+                document.getElementById('promo-code').value = currentPromoCode;
+                // Re-apply promo code if it was valid
+                if (promoCodeApplied) {
+                    applyPromoCode();
+                }
+            }
         });
-        
+            
         document.getElementById('submit-booking').addEventListener('click', handleBookingSubmit);
         document.getElementById('submit-payment').addEventListener('click', handlePaymentSubmit);
         document.getElementById('new-bundle-button').addEventListener('click', () => {
             window.location.reload();
         });
         
-// Month navigation
-document.getElementById('prev-month').addEventListener('click', () => {
-    const newDate = new Date(currentDisplayedDate);
-    newDate.setMonth(newDate.getMonth() - 1);
-    currentDisplayedDate = newDate;
-    renderCalendar(currentDisplayedDate);
-    updateMonthNavigationButtons();
-});
-        
-document.getElementById('next-month').addEventListener('click', () => {
-    const newDate = new Date(currentDisplayedDate);
-    newDate.setMonth(newDate.getMonth() + 1);
-    currentDisplayedDate = newDate;
-    renderCalendar(currentDisplayedDate);
-    updateMonthNavigationButtons();
-});
-        
+        // Month navigation
+        document.getElementById('prev-month').addEventListener('click', () => {
+            const newDate = new Date(currentDisplayedDate);
+            newDate.setMonth(newDate.getMonth() - 1);
+            currentDisplayedDate = newDate;
+            renderCalendar(currentDisplayedDate);
+            updateMonthNavigationButtons();
+        });
+            
+        document.getElementById('next-month').addEventListener('click', () => {
+            const newDate = new Date(currentDisplayedDate);
+            newDate.setMonth(newDate.getMonth() + 1);
+            currentDisplayedDate = newDate;
+            renderCalendar(currentDisplayedDate);
+            updateMonthNavigationButtons();
+        });
+            
         // Set up phone number formatting
         const phoneInput = document.getElementById('contact-phone');
         phoneInput.addEventListener('input', formatPhoneNumber);
@@ -2513,23 +2506,24 @@ document.getElementById('next-month').addEventListener('click', () => {
         updatePrices();
     }
 
-function updateMonthNavigationButtons() {
-    const today = new Date();
-    const prevButton = document.getElementById('prev-month');
-    const nextButton = document.getElementById('next-month');
-    
-    // Disable previous button if we're showing the current month
-    prevButton.disabled = 
-        currentDisplayedDate.getMonth() === today.getMonth() && 
-        currentDisplayedDate.getFullYear() === today.getFullYear();
-    
-    // Optionally, you could disable next button after a certain date
-    // For example, disable booking more than 1 year in advance:
-    const maxDate = new Date();
-    maxDate.setFullYear(maxDate.getFullYear() + 1);
-    nextButton.disabled = currentDisplayedDate.getMonth() === maxDate.getMonth() && 
-                         currentDisplayedDate.getFullYear() === maxDate.getFullYear();
-}
+    function updateMonthNavigationButtons() {
+        const today = new Date();
+        const prevButton = document.getElementById('prev-month');
+        const nextButton = document.getElementById('next-month');
+        
+        // Disable previous button if we're showing the current month
+        prevButton.disabled = 
+            currentDisplayedDate.getMonth() === today.getMonth() && 
+            currentDisplayedDate.getFullYear() === today.getFullYear();
+        
+        // Optionally, you could disable next button after a certain date
+        // For example, disable booking more than 1 year in advance:
+        const maxDate = new Date();
+        maxDate.setFullYear(maxDate.getFullYear() + 1);
+        nextButton.disabled = currentDisplayedDate.getMonth() === maxDate.getMonth() && 
+                             currentDisplayedDate.getFullYear() === maxDate.getFullYear();
+    }
+
     // Update prices with discounts
     function updatePrices() {
         const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
@@ -3184,104 +3178,104 @@ function updateMonthNavigationButtons() {
     }
 
     // Render calendar
-function renderCalendar(date) {
-    const month = date.getMonth();
-    const year = date.getFullYear();
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    // Calculate date two weeks from today
-    const twoWeeksLater = new Date(today);
-    twoWeeksLater.setDate(today.getDate() + 14);
-    
-    // Set month/year title
-    document.getElementById('calendar-month-year').textContent = 
-        new Date(year, month).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-    
-    // Update month navigation buttons
-    updateMonthNavigationButtons();
-    
-    // Get first day of month and total days
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    
-    // Get days from previous month (disabled)
-    const prevMonthDays = new Date(year, month, 0).getDate();
-    
-    // Clear calendar
-    const calendarDays = document.getElementById('calendar-days');
-    calendarDays.innerHTML = '';
-    
-    // Add days from previous month (disabled)
-    for (let i = 0; i < firstDay; i++) {
-        const dayElement = document.createElement('div');
-        dayElement.className = 'calendar-day unavailable';
-        dayElement.textContent = prevMonthDays - firstDay + i + 1;
-        calendarDays.appendChild(dayElement);
-    }
-    
-    // Add days of current month
-    for (let i = 1; i <= daysInMonth; i++) {
-        const dayDate = new Date(year, month, i);
-        dayDate.setHours(0, 0, 0, 0);
-        const dayElement = document.createElement('div');
-        dayElement.className = 'calendar-day';
-        dayElement.textContent = i;
+    function renderCalendar(date) {
+        const month = date.getMonth();
+        const year = date.getFullYear();
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
         
-        // Mark current day
-        if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
-            dayElement.classList.add('current');
+        // Calculate date two weeks from today
+        const twoWeeksLater = new Date(today);
+        twoWeeksLater.setDate(today.getDate() + 14);
+        
+        // Set month/year title
+        document.getElementById('calendar-month-year').textContent = 
+            new Date(year, month).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        
+        // Update month navigation buttons
+        updateMonthNavigationButtons();
+        
+        // Get first day of month and total days
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        
+        // Get days from previous month (disabled)
+        const prevMonthDays = new Date(year, month, 0).getDate();
+        
+        // Clear calendar
+        const calendarDays = document.getElementById('calendar-days');
+        calendarDays.innerHTML = '';
+        
+        // Add days from previous month (disabled)
+        for (let i = 0; i < firstDay; i++) {
+            const dayElement = document.createElement('div');
+            dayElement.className = 'calendar-day unavailable';
+            dayElement.textContent = prevMonthDays - firstDay + i + 1;
+            calendarDays.appendChild(dayElement);
         }
         
-        // Check if date is available or is exactly two weeks from today
-        if (isDateAvailable(dayDate) || 
-            (dayDate.getDate() === twoWeeksLater.getDate() && 
-             dayDate.getMonth() === twoWeeksLater.getMonth() && 
-             dayDate.getFullYear() === twoWeeksLater.getFullYear())) {
-            dayElement.classList.add('available');
+        // Add days of current month
+        for (let i = 1; i <= daysInMonth; i++) {
+            const dayDate = new Date(year, month, i);
+            dayDate.setHours(0, 0, 0, 0);
+            const dayElement = document.createElement('div');
+            dayElement.className = 'calendar-day';
+            dayElement.textContent = i;
             
-            // Auto-select two weeks later date if it's in this month
-            if (dayDate.getDate() === twoWeeksLater.getDate() && 
-                dayDate.getMonth() === twoWeeksLater.getMonth() && 
-                dayDate.getFullYear() === twoWeeksLater.getFullYear()) {
-                dayElement.classList.add('selected');
-                selectedDateElement = dayElement;
-                // Load availability for this date
-                loadAvailability(dayDate.toISOString().split('T')[0]);
-                
-                // Update selected date header
-                document.getElementById('selected-date-header').textContent = 
-                    dayDate.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' });
+            // Mark current day
+            if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                dayElement.classList.add('current');
             }
             
-            // Add click handler for available days
-            dayElement.addEventListener('click', () => {
-                // Remove previous selection
-                if (selectedDateElement) {
-                    selectedDateElement.classList.remove('selected');
-                    if (selectedDateElement.classList.contains('current')) {
-                        selectedDateElement.classList.add('current');
-                    }
+            // Check if date is available or is exactly two weeks from today
+            if (isDateAvailable(dayDate) || 
+                (dayDate.getDate() === twoWeeksLater.getDate() && 
+                 dayDate.getMonth() === twoWeeksLater.getMonth() && 
+                 dayDate.getFullYear() === twoWeeksLater.getFullYear())) {
+                dayElement.classList.add('available');
+                
+                // Auto-select two weeks later date if it's in this month
+                if (dayDate.getDate() === twoWeeksLater.getDate() && 
+                    dayDate.getMonth() === twoWeeksLater.getMonth() && 
+                    dayDate.getFullYear() === twoWeeksLater.getFullYear()) {
+                    dayElement.classList.add('selected');
+                    selectedDateElement = dayElement;
+                    // Load availability for this date
+                    loadAvailability(dayDate.toISOString().split('T')[0]);
+                    
+                    // Update selected date header
+                    document.getElementById('selected-date-header').textContent = 
+                        dayDate.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' });
                 }
                 
-                // Select this date
-                dayElement.classList.add('selected');
-                selectedDateElement = dayElement;
-                
-                // Update selected date header
-                document.getElementById('selected-date-header').textContent = 
-                    dayDate.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' });
-                
-                // Load availability
-                loadAvailability(dayDate.toISOString().split('T')[0]);
-            });
-        } else {
-            dayElement.classList.add('unavailable');
+                // Add click handler for available days
+                dayElement.addEventListener('click', () => {
+                    // Remove previous selection
+                    if (selectedDateElement) {
+                        selectedDateElement.classList.remove('selected');
+                        if (selectedDateElement.classList.contains('current')) {
+                            selectedDateElement.classList.add('current');
+                        }
+                    }
+                    
+                    // Select this date
+                    dayElement.classList.add('selected');
+                    selectedDateElement = dayElement;
+                    
+                    // Update selected date header
+                    document.getElementById('selected-date-header').textContent = 
+                        dayDate.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' });
+                    
+                    // Load availability
+                    loadAvailability(dayDate.toISOString().split('T')[0]);
+                });
+            } else {
+                dayElement.classList.add('unavailable');
+            }
+            
+            calendarDays.appendChild(dayElement);
         }
-        
-        calendarDays.appendChild(dayElement);
     }
-}
 
     // Load availability
     async function loadAvailability(date) {
@@ -3290,20 +3284,11 @@ function renderCalendar(date) {
             hideCalendarError();
             clearTimeSlots();
             
-            const response = await fetch(`${config.backendUrl}/api/availability?date=${date}`);
+            // For demo purposes, we'll generate some sample time slots
+            // In a real app, you would fetch this from your backend
+            const sampleAvailability = generateSampleAvailability(date);
             
-            if (!response.ok) {
-                throw new Error(`Failed to load availability: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            
-            // Validate response structure
-            if (!data.availability || !Array.isArray(data.availability)) {
-                throw new Error('Invalid availability data format');
-            }
-            
-            renderTimeSlots(date, data.availability);
+            renderTimeSlots(date, sampleAvailability);
         } catch (error) {
             console.error('Availability error:', error);
             showCalendarError(`Failed to load availability: ${error.message}`);
@@ -3312,43 +3297,68 @@ function renderCalendar(date) {
         }
     }
     
-// In your HTML/JS file
-function renderTimeSlots(date, availability = []) {
-    const container = document.getElementById('time-slots-container');
-    container.innerHTML = '';
-
-    availability.forEach(slot => {
-        const slotElement = document.createElement('div');
-        slotElement.className = `time-slot ${slot.booked ? 'booked' : 'available'}`;
-        slotElement.dataset.start = slot.start;
-        slotElement.dataset.end = slot.end;
-        slotElement.innerHTML = `
-            <div class="slot-time">${slot.display}</div>
-            <div class="slot-status">${slot.booked ? 'Booked' : 'Available'}</div>
-        `;
-
-        if (!slot.booked) {
-            slotElement.addEventListener('click', () => {
-                document.querySelectorAll('.time-slot').forEach(s => {
-                    s.classList.remove('selected-slot');
-                });
-                slotElement.classList.add('selected-slot');
+    // Generate sample availability data for demo purposes
+    function generateSampleAvailability(date) {
+        const availability = [];
+        const startHour = 9; // 9 AM
+        const endHour = 21; // 9 PM
+        const slotDuration = 3; // 3 hour slots
+        
+        for (let hour = startHour; hour <= endHour - slotDuration; hour += 1) {
+            const startTime = new Date(date);
+            startTime.setHours(hour, 0, 0, 0);
+            
+            const endTime = new Date(startTime);
+            endTime.setHours(hour + slotDuration, 0, 0, 0);
+            
+            // Format display time (e.g., "9:00 AM - 12:00 PM")
+            const displayStart = startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const displayEnd = endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            // Randomly mark some slots as booked for demo purposes
+            const isBooked = Math.random() < 0.3; // 30% chance of being booked
+            
+            availability.push({
+                start: startTime.toISOString(),
+                end: endTime.toISOString(),
+                display: `${displayStart} - ${displayEnd}`,
+                booked: isBooked
             });
         }
-
-        container.appendChild(slotElement);
-    });
-}
-
-
-
-    // Helper function to pad time (9 -> "09")
-    function padTime(num) {
-        return num.toString().padStart(2, '0');
+        
+        return availability;
     }
     
-    function formatTime(date) {
-        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    // Render time slots
+    function renderTimeSlots(date, availability) {
+        const container = document.getElementById('time-slots-container');
+        container.innerHTML = '';
+        
+        availability.forEach(slot => {
+            const slotElement = document.createElement('div');
+            slotElement.className = `time-slot ${slot.booked ? 'booked' : 'available'}`;
+            slotElement.dataset.start = slot.start;
+            slotElement.dataset.end = slot.end;
+            slotElement.innerHTML = `
+                <div class="slot-time">${slot.display}</div>
+                <div class="slot-status">${slot.booked ? 'Booked' : 'Available'}</div>
+            `;
+
+            if (!slot.booked) {
+                slotElement.addEventListener('click', () => {
+                    // Remove previous selection
+                    if (selectedSlotElement) {
+                        selectedSlotElement.classList.remove('selected-slot');
+                    }
+                    
+                    // Select this slot
+                    slotElement.classList.add('selected-slot');
+                    selectedSlotElement = slotElement;
+                });
+            }
+
+            container.appendChild(slotElement);
+        });
     }
 
     function showCalendarLoading() {
@@ -3401,36 +3411,6 @@ function renderTimeSlots(date, availability = []) {
             throw error;
         }
     }
-
-
-	// When creating the booking request
-function handleBookingSubmit() {
-  const selectedSlot = document.querySelector('.selected-slot');
-  
-  // Create dates with EXPLICIT Eastern Timezone
-  const startTime = new Date(selectedSlot.dataset.start);
-  const endTime = new Date(selectedSlot.dataset.end);
-  
-  // Format as ISO strings with timezone offset
-  const startISO = `${startTime.getFullYear()}-${pad(startTime.getMonth()+1)}-${pad(startTime.getDate())}T${pad(startTime.getHours())}:${pad(startTime.getMinutes())}:00-05:00`;
-  const endISO = `${endTime.getFullYear()}-${pad(endTime.getMonth()+1)}-${pad(endTime.getDate())}T${pad(endTime.getHours())}:${pad(endTime.getMinutes())}:00-05:00`;
-
-  // Send to backend
-  fetch('/api/bookings', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      start: startISO,
-      end: endISO,
-      // ...other booking data
-    })
-  });
-}
-
-function pad(num) {
-  return num.toString().padStart(2, '0');
-}
-
 
     // Handle booking submission
     async function handleBookingSubmit(e) {
@@ -3513,32 +3493,7 @@ function pad(num) {
 
             if (error) throw error;
 
-            // 4. Create calendar booking
-            const bookingResponse = await fetch(`${config.backendUrl}/api/bookings`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    start: bookingData.startTime,
-                    end: bookingData.endTime,
-                    name: bookingData.contactName,
-                    email: bookingData.email,
-                    eventDetails: {
-                        eventName: bookingData.eventName,
-                        location: bookingData.location,
-                        notes: bookingData.notes
-                    }
-                })
-            });
-            
-            if (!bookingResponse.ok) {
-                const errorData = await bookingResponse.json();
-                throw new Error(errorData.error || 'Booking failed');
-            }
-
-            // 5. Send confirmation email
-            await sendConfirmationEmail(bookingData);
-            
-            // 6. Show success
+            // 4. Show success (in a real app, you would create the booking here)
             document.getElementById('stripe-payment-form').style.display = 'none';
             document.getElementById('event-details-form').style.display = 'none';
             document.getElementById('back-to-services').style.display = 'none';
