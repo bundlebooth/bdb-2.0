@@ -191,13 +191,21 @@ app.post('/api/bookings', async (req, res) => {
   try {
     const { startTime, endTime, name, email, eventDetails } = req.body;
     
+    // Validate input
     if (!startTime || !endTime || !name || !email) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
+    // Validate date format
+    if (isNaN(new Date(startTime).getTime()) {
+      return res.status(400).json({ error: 'Invalid start time format' });
+    }
+    if (isNaN(new Date(endTime).getTime())) {
+      return res.status(400).json({ error: 'Invalid end time format' });
+    }
+
     const accessToken = await getAccessToken();
     
-    // Create event in calendar with explicit UTC timezone
     const response = await axios.post(
       `https://graph.microsoft.com/v1.0/users/${process.env.CALENDAR_OWNER_UPN}/events`,
       {
