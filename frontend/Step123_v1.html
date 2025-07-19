@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,maximum-scale=0,user-scalable=no" name="viewport"/>
 <meta http-equiv="Permissions-Policy" content="payment=(self 'https://bundlebooth.ca')">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://js.stripe.com; script-src 'self' https://js.stripe.com; style-src 'self' https://js.stripe.com 'unsafe-inline';">
 <title>BundleBooth Custom Builder</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
 <script src="https://js.stripe.com/v3/"></script>
@@ -2485,6 +2486,8 @@ function renderStep3() {
                 applyPromoCode();
             }
         }
+	document.getElementById('submit-booking').addEventListener('click', handleBookingSubmit);
+	document.getElementById('submit-payment').addEventListener('click', handlePaymentSubmit);
     });
 // Month navigation
 document.getElementById('prev-month').addEventListener('click', () => {
@@ -3432,25 +3435,28 @@ function renderCalendar(date) {
     }
 
     // Handle booking submission
-    async function handleBookingSubmit(e) {
-        e.preventDefault();
-        
-        if (!document.getElementById('event-details-form').checkValidity()) {
-            document.getElementById('event-details-form').reportValidity();
-            return;
-        }
-        
-        // Check if a time slot is selected
-        const selectedSlot = document.querySelector('.selected-slot');
-        if (!selectedSlot) {
-            alert('Please select an available time slot');
-            return;
-        }
-        
-        document.getElementById('stripe-payment-form').style.display = 'block';
-        document.getElementById('payment-info').style.display = 'block';
-        document.getElementById('submit-booking').style.display = 'none';
+async function handleBookingSubmit(e) {
+    e.preventDefault();
+    
+    if (!document.getElementById('event-details-form').checkValidity()) {
+        document.getElementById('event-details-form').reportValidity();
+        return;
     }
+    
+    // Check if a time slot is selected
+    const selectedSlot = document.querySelector('.selected-slot');
+    if (!selectedSlot) {
+        alert('Please select an available time slot');
+        return;
+    }
+    
+    document.getElementById('stripe-payment-form').style.display = 'block';
+    document.getElementById('payment-info').style.display = 'block';
+    document.getElementById('submit-booking').style.display = 'none';
+    
+    // Scroll to payment section
+    document.getElementById('stripe-payment-form').scrollIntoView({ behavior: 'smooth' });
+}
 
     // Handle payment submission
     async function handlePaymentSubmit(e) {
