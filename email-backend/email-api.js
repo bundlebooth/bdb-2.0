@@ -16,47 +16,61 @@ const defaultClient = Brevo.ApiClient.instance;
 const apiKey = defaultClient.authentications['api-key'];
 apiKey.apiKey = process.env.BREVO_API_KEY;
 
-// Email endpoint - SIMPLIFIED AND WORKING VERSION
+// Helper functions
+const formatTime = (dateString) => {
+  if (!dateString) return '';
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  } catch (e) {
+    console.error('Error formatting time:', e);
+    return '';
+  }
+};
+
+const calculateDuration = (startTime, endTime) => {
+  if (!startTime || !endTime) return null;
+  try {
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+    return (end - start) / (1000 * 60 * 60); // Hours
+  } catch (e) {
+    console.error('Error calculating duration:', e);
+    return null;
+  }
+};
+
+// Email endpoint
 app.post('/send-booking-email', async (req, res) => {
   try {
-    // 1. EXTRACT ALL VALUES FROM STEP 3 FORM
+    // Extract all data from Step 3 form
     const {
-      // Contact Info
       contactName,
       email,
       phoneNumber,
-      
-      // Event Details
       eventName,
       eventType,
       eventDate,
-      timeSlot, // { startTime, endTime }
-      durationHours, // From form or calculated
+      timeSlot = {},
+      durationHours,
       eventLocation,
       specialRequests,
-      
-      // Services
       services = [],
-      
-      // Bundle Info
       bundleName,
       bundleDescription,
       selectedBundle = {},
-      
-      // Payment
+      promoCodeApplied,
       paymentLast4,
       transactionId,
-      paymentStatus,
-      promoCodeApplied
+      paymentStatus
     } = req.body;
 
-    // 2. VALIDATE REQUIRED FIELDS
+    // Validate required fields
     if (!email || !contactName || !eventName) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    // 3. FORMAT VALUES WITH PROPER DEFAULTS
-    // Date
+    // Format all values with proper fallbacks
     const formattedDate = eventDate 
       ? new Date(eventDate).toLocaleDateString('en-US', { 
           weekday: 'long', 
@@ -66,37 +80,28 @@ app.post('/send-booking-email', async (req, res) => {
         })
       : 'Not specified';
 
-    // Time Slot
-    const formattedTimeSlot = (timeSlot?.startTime && timeSlot?.endTime)
-      ? `${new Date(timeSlot.startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${new Date(timeSlot.endTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) (EST)`
+    const formattedTimeSlot = (timeSlot.startTime && timeSlot.endTime)
+      ? `${formatTime(timeSlot.startTime)} - ${formatTime(timeSlot.endTime)} (EST)`
       : 'Not specified';
 
-    // Duration
-    let formattedDuration = 'Not specified';
-    if (durationHours) {
-      formattedDuration = `${durationHours} hour${durationHours !== 1 ? 's' : ''}`;
-    } else if (timeSlot?.startTime && timeSlot?.endTime) {
-      const hours = (new Date(timeSlot.endTime) - new Date(timeSlot.startTime)) / (1000 * 60 * 60);
-      formattedDuration = `${hours.toFixed(1)} hours`;
-    }
+    const duration = durationHours || calculateDuration(timeSlot.startTime, timeSlot.endTime);
+    const formattedDuration = duration 
+      ? `${duration} hour${duration !== 1 ? 's' : ''}`
+      : 'Not specified';
 
-    // Location
     const formattedLocation = eventLocation?.trim() || 'Location not specified';
-
-    // Payment Method
     const formattedPaymentMethod = paymentLast4 
       ? `Credit Card (ending in ${paymentLast4})` 
       : 'Credit Card (ending in ****)';
 
-    // 4. CALCULATE PRICING
-    const subtotal = services.reduce((sum, s) => sum + (s.selectedPrice || s.price || 0), 0);
-    const discount = selectedBundle.discountPercentage 
-      ? subtotal * (selectedBundle.discountPercentage / 100)
-      : subtotal * 0.1; // Default 10%
+    // Calculate pricing
+    const subtotal = services.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
+    const discountPercentage = selectedBundle.discountPercentage ? selectedBundle.discountPercentage / 100 : 0.1;
+    const discount = subtotal * discountPercentage;
     const promoDiscount = promoCodeApplied?.discountValue || 0;
-    const total = subtotal - discount - promoDiscount;
+    const total = Math.max(0, subtotal - discount - promoDiscount);
 
-    // 5. BUILD EMAIL TEMPLATE
+    // Build email HTML
     const emailHtml = `
     <!DOCTYPE html>
     <html>
@@ -109,41 +114,39 @@ app.post('/send-booking-email', async (req, res) => {
         <tr>
           <td align="center">
             <table width="600" cellspacing="0" cellpadding="0" style="border-collapse: collapse;">
-              <!-- Header -->
               <tr>
                 <td style="background-color: #f8f8f8; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
                   <div style="font-size: 24px; font-weight: bold; margin-bottom: 10px;">${eventName}</div>
-                  <div>Your event booking has been confirmed</div>
+                  <div>Your booking confirmation</div>
                 </td>
               </tr>
               
-              <!-- Event Details -->
               <tr>
                 <td style="padding: 20px; background-color: white;">
-                  <h3>Event Details:</h3>
-                  <div style="margin: 10px 0;">
+                  <h3 style="margin-top: 0;">Event Details</h3>
+                  <div style="margin-bottom: 20px;">
                     <div><strong>Date:</strong> ${formattedDate}</div>
                     <div><strong>Time:</strong> ${formattedTimeSlot}</div>
                     <div><strong>Duration:</strong> ${formattedDuration}</div>
                     <div><strong>Location:</strong> ${formattedLocation}</div>
                   </div>
 
-                  <!-- Services -->
-                  <h3>Services:</h3>
-                  <ul>
-                    ${services.map(s => `
-                      <li>
-                        ${s.name} - C$${(s.selectedPrice || s.price).toFixed(2)}
-                        ${s.selectedTier ? `(${s.selectedTier.label})` : ''}
-                      </li>
+                  <h3>Services</h3>
+                  <table width="100%" cellspacing="0" cellpadding="0" style="border-collapse: collapse; margin-bottom: 20px;">
+                    ${services.map(service => `
+                      <tr>
+                        <td style="padding: 8px 0; border-bottom: 1px solid #eee;">${service.name}</td>
+                        <td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">
+                          C$${(service.selectedPrice || service.price || 0).toFixed(2)}
+                        </td>
+                      </tr>
                     `).join('')}
-                  </ul>
+                  </table>
 
-                  <!-- Payment -->
-                  <h3>Payment Information:</h3>
-                  <div style="margin: 10px 0;">
+                  <h3>Payment Information</h3>
+                  <div style="margin-bottom: 20px;">
                     <div><strong>Method:</strong> ${formattedPaymentMethod}</div>
-                    <div><strong>Amount:</strong> C$${total.toFixed(2)}</div>
+                    <div><strong>Total:</strong> C$${total.toFixed(2)}</div>
                   </div>
                 </td>
               </tr>
@@ -155,10 +158,9 @@ app.post('/send-booking-email', async (req, res) => {
     </html>
     `;
 
-    // 6. SEND EMAIL
+    // Send email
     const apiInstance = new Brevo.TransactionalEmailsApi();
     const sendSmtpEmail = new Brevo.SendSmtpEmail();
-    
     sendSmtpEmail.sender = {
       email: process.env.FROM_EMAIL || 'hello@bundlebooth.ca',
       name: process.env.FROM_NAME || 'BundleBooth'
@@ -171,7 +173,8 @@ app.post('/send-booking-email', async (req, res) => {
     
     res.json({ 
       success: true,
-      messageId: data.messageId
+      messageId: data.messageId,
+      timestamp: new Date()
     });
 
   } catch (error) {
