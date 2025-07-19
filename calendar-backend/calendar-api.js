@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
-const { DateTime } = require('luxon');
 
 const app = express();
 
@@ -20,16 +19,12 @@ app.use(cors({
 
 app.use(express.json());
 
-// Constants
-const TIMEZONE = 'America/New_York';
-const SLOT_DURATION = 180; // 3 hours in minutes
-
 // Health Check Endpoint
 app.get('/', (req, res) => {
   res.json({
     status: 'running',
     service: 'BundleBooth Calendar API',
-    timestamp: DateTime.now().setZone(TIMEZONE).toISO(),
+    timestamp: new Date().toISOString(),
     endpoints: {
       availability: '/api/availability?date=YYYY-MM-DD',
       bookings: '/api/bookings'
@@ -70,7 +65,38 @@ const getAccessToken = async () => {
   }
 };
 
-// Calendar Availability Endpoint
+// Helper: Merge overlapping time slots
+const mergeTimeSlots = (slots) => {
+  if (slots.length === 0) return [];
+
+  // Sort by start time
+  const sortedSlots = [...slots].sort((a, b) => 
+    new Date(a.start.dateTime) - new Date(b.start.dateTime)
+  );
+
+  const merged = [];
+  let currentSlot = { ...sortedSlots[0] };
+
+  for (let i = 1; i < sortedSlots.length; i++) {
+    const nextSlot = sortedSlots[i];
+    const currentEnd = new Date(currentSlot.end.dateTime);
+    const nextStart = new Date(nextSlot.start.dateTime);
+
+    // Merge if overlapping or adjacent
+    if (nextStart <= currentEnd) {
+      currentSlot.end.dateTime = new Date(
+        Math.max(currentEnd, new Date(nextSlot.end.dateTime))
+      ).toISOString();
+    } else {
+      merged.push(currentSlot);
+      currentSlot = { ...nextSlot };
+    }
+  }
+  merged.push(currentSlot); // Add the last slot
+  return merged;
+};
+
+// Calendar Availability Endpoint (Final Optimized Version)
 app.get('/api/availability', async (req, res) => {
   try {
     const date = req.query.date;
@@ -80,27 +106,41 @@ app.get('/api/availability', async (req, res) => {
 
     const accessToken = await getAccessToken();
     const calendarOwner = process.env.CALENDAR_OWNER_UPN;
+    const startTime = `${date}T00:00:00`;
+    const endTime = `${date}T23:59:59`;
 
-    // Define time slots
-    const timeSlots = [
-      { start: '09:00:00', end: '12:00:00', display: '9:00 AM - 12:00 PM' },
-      { start: '12:00:00', end: '15:00:00', display: '12:00 PM - 3:00 PM' },
-      { start: '15:00:00', end: '18:00:00', display: '3:00 PM - 6:00 PM' },
-      { start: '18:00:00', end: '21:00:00', display: '6:00 PM - 9:00 PM' },
-      { start: '21:00:00', end: '00:00:00', display: '9:00 PM - 12:00 AM' }
-    ];
+    // Fetch schedule (free/busy) data
+    const scheduleResponse = await axios.post(
+      `https://graph.microsoft.com/v1.0/users/${calendarOwner}/calendar/getSchedule`,
+      {
+        schedules: [calendarOwner],
+        startTime: { dateTime: startTime, timeZone: 'UTC' },
+        endTime: { dateTime: endTime, timeZone: 'UTC' },
+        availabilityViewInterval: 60
+      },
+      { 
+        headers: { 
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
 
-    // Get all events for the day
-    const startTime = DateTime.fromISO(`${date}T00:00:00`, { zone: TIMEZONE }).toISO();
-    const endTime = DateTime.fromISO(`${date}T23:59:59`, { zone: TIMEZONE }).toISO();
+    if (!scheduleResponse.data.value || scheduleResponse.data.value.length === 0) {
+      return res.status(404).json({ error: 'No calendar data found' });
+    }
 
-    const response = await axios.get(
+    // Merge overlapping slots
+    const mergedSlots = mergeTimeSlots(scheduleResponse.data.value[0].scheduleItems || []);
+
+    // Fetch actual events
+    const eventsResponse = await axios.get(
       `https://graph.microsoft.com/v1.0/users/${calendarOwner}/calendar/events`,
       {
         params: {
           startDateTime: startTime,
           endDateTime: endTime,
-          $select: 'start,end'
+          $select: 'subject,start,end'
         },
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -109,30 +149,28 @@ app.get('/api/availability', async (req, res) => {
       }
     );
 
-    const events = response.data.value || [];
+    const events = eventsResponse.data.value || [];
 
-    // Check availability for each slot
-    const availability = timeSlots.map(slot => {
-      const slotStart = DateTime.fromISO(`${date}T${slot.start}`, { zone: TIMEZONE }).toISO();
-      const slotEnd = DateTime.fromISO(`${date}T${slot.end}`, { zone: TIMEZONE }).toISO();
-
+    // Map to final availability (with booked status)
+    const availability = mergedSlots.map(slot => {
+      const slotStart = new Date(slot.start.dateTime);
+      const slotEnd = new Date(slot.end.dateTime);
       const isBooked = events.some(event => {
         const eventStart = new Date(event.start.dateTime);
         const eventEnd = new Date(event.end.dateTime);
-        return (eventStart < new Date(slotEnd)) && (eventEnd > new Date(slotStart));
+        return (eventStart < slotEnd && eventEnd > slotStart);
       });
 
       return {
-        display: slot.display,
-        start: slotStart,
-        end: slotEnd,
+        start: slot.start.dateTime,
+        end: slot.end.dateTime,
+        status: slot.status || 'busy', // Default to 'busy' if undefined
         booked: isBooked
       };
     });
 
     res.json({ 
       date: date,
-      timezone: TIMEZONE,
       availability: availability 
     });
 
@@ -145,7 +183,7 @@ app.get('/api/availability', async (req, res) => {
   }
 });
 
-// Booking Endpoint
+// Booking Endpoint (Unchanged)
 app.post('/api/bookings', async (req, res) => {
   try {
     const { start, end, name, email, eventDetails } = req.body;
@@ -173,11 +211,11 @@ app.post('/api/bookings', async (req, res) => {
         },
         start: { 
           dateTime: start,
-          timeZone: TIMEZONE
+          timeZone: 'UTC'
         },
         end: { 
           dateTime: end,
-          timeZone: TIMEZONE
+          timeZone: 'UTC'
         }
       },
       { 
@@ -205,5 +243,4 @@ app.post('/api/bookings', async (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  console.log(`Using timezone: ${TIMEZONE}`);
 });
