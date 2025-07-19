@@ -71,35 +71,31 @@ const getAccessToken = async () => {
 };
 
 // Calendar Availability Endpoint
+// In your availability endpoint
 app.get('/api/availability', async (req, res) => {
   try {
     const date = req.query.date;
-    if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-      return res.status(400).json({ error: 'Valid date parameter (YYYY-MM-DD) is required' });
-    }
-
     const accessToken = await getAccessToken();
-    const calendarOwner = process.env.CALENDAR_OWNER_UPN;
-
-    // Define time slots
+    
+    // Use America/New_York which automatically handles EST/EDT
+    const timezone = 'America/New_York';
+    
+    // Define your desired time slots (will auto-adjust for DST)
     const timeSlots = [
-      { start: '09:00:00', end: '12:00:00', display: '9:00 AM - 12:00 PM' },
-      { start: '12:00:00', end: '15:00:00', display: '12:00 PM - 3:00 PM' },
-      { start: '15:00:00', end: '18:00:00', display: '3:00 PM - 6:00 PM' },
-      { start: '18:00:00', end: '21:00:00', display: '6:00 PM - 9:00 PM' },
-      { start: '21:00:00', end: '00:00:00', display: '9:00 PM - 12:00 AM' }
+      { display: '9:00 AM - 12:00 PM', start: '09:00', end: '12:00' },
+      { display: '12:00 PM - 3:00 PM', start: '12:00', end: '15:00' },
+      { display: '3:00 PM - 6:00 PM', start: '15:00', end: '18:00' },
+      { display: '6:00 PM - 9:00 PM', start: '18:00', end: '21:00' },
+      { display: '9:00 PM - 12:00 AM', start: '21:00', end: '00:00' }
     ];
 
-    // Get all events for the day
-    const startTime = DateTime.fromISO(`${date}T00:00:00`, { zone: TIMEZONE }).toISO();
-    const endTime = DateTime.fromISO(`${date}T23:59:59`, { zone: TIMEZONE }).toISO();
-
+    // Get events using the correct timezone
     const response = await axios.get(
-      `https://graph.microsoft.com/v1.0/users/${calendarOwner}/calendar/events`,
+      `https://graph.microsoft.com/v1.0/users/${process.env.CALENDAR_OWNER_UPN}/calendar/events`,
       {
         params: {
-          startDateTime: startTime,
-          endDateTime: endTime,
+          startDateTime: new Date(`${date}T00:00:00`).toLocaleString('en-US', { timeZone: timezone }),
+          endDateTime: new Date(`${date}T23:59:59`).toLocaleString('en-US', { timeZone: timezone }),
           $select: 'start,end'
         },
         headers: {
@@ -111,94 +107,69 @@ app.get('/api/availability', async (req, res) => {
 
     const events = response.data.value || [];
 
-    // Check availability for each slot
+    // Check availability
     const availability = timeSlots.map(slot => {
-      const slotStart = DateTime.fromISO(`${date}T${slot.start}`, { zone: TIMEZONE }).toISO();
-      const slotEnd = DateTime.fromISO(`${date}T${slot.end}`, { zone: TIMEZONE }).toISO();
-
+      const slotStart = new Date(`${date}T${slot.start}:00`);
+      const slotEnd = new Date(`${date}T${slot.end}:00`);
+      
       const isBooked = events.some(event => {
         const eventStart = new Date(event.start.dateTime);
         const eventEnd = new Date(event.end.dateTime);
-        return (eventStart < new Date(slotEnd)) && (eventEnd > new Date(slotStart));
+        return eventStart < slotEnd && eventEnd > slotStart;
       });
 
       return {
         display: slot.display,
-        start: slotStart,
-        end: slotEnd,
+        start: slotStart.toISOString(),
+        end: slotEnd.toISOString(),
         booked: isBooked
       };
     });
 
-    res.json({ 
-      date: date,
-      timezone: TIMEZONE,
-      availability: availability 
-    });
-
+    res.json({ date, availability });
   } catch (error) {
-    console.error('Availability Error:', error.response?.data || error.message);
-    res.status(500).json({ 
-      error: 'Failed to fetch availability',
-      details: error.response?.data || error.message
-    });
+    console.error('Availability Error:', error);
+    res.status(500).json({ error: 'Failed to fetch availability' });
   }
 });
-
 // Booking Endpoint
 app.post('/api/bookings', async (req, res) => {
   try {
     const { start, end, name, email, eventDetails } = req.body;
-    
-    if (!start || !end || !name || !email) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
-
     const accessToken = await getAccessToken();
-    
+
+    // Use the correct timezone identifier that handles DST
+    const timezone = 'America/New_York';
+
     const response = await axios.post(
       `https://graph.microsoft.com/v1.0/users/${process.env.CALENDAR_OWNER_UPN}/events`,
       {
         subject: `Booking: ${name}`,
+        start: {
+          dateTime: start,
+          timeZone: timezone // Using correct timezone
+        },
+        end: {
+          dateTime: end,
+          timeZone: timezone // Using correct timezone
+        },
         body: {
           contentType: "HTML",
-          content: `
-            <p>Client: ${name}</p>
-            <p>Email: ${email}</p>
-            <p>Event: ${eventDetails?.eventName || 'Not specified'}</p>
-            <p>Location: ${eventDetails?.location || 'Not specified'}</p>
-            <p>Guests: ${eventDetails?.guestCount || 'Not specified'}</p>
-            <p>Notes: ${eventDetails?.notes || 'None'}</p>
-          `
-        },
-        start: { 
-          dateTime: start,
-          timeZone: TIMEZONE
-        },
-        end: { 
-          dateTime: end,
-          timeZone: TIMEZONE
+          content: `...your event details...`
         }
       },
-      { 
-        headers: { 
+      {
+        headers: {
           Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'application/json'
         }
       }
     );
 
-    res.json({ 
-      success: true,
-      eventId: response.data.id,
-      eventLink: response.data.webLink
-    });
+    res.json({ success: true, eventId: response.data.id });
   } catch (error) {
-    console.error('Booking Error:', error.response?.data || error.message);
-    res.status(500).json({ 
-      error: 'Failed to create booking',
-      details: error.response?.data || error.message
-    });
+    console.error('Booking Error:', error);
+    res.status(500).json({ error: 'Failed to create booking' });
   }
 });
 
