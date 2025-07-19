@@ -21,7 +21,7 @@ app.use(cors({
 app.use(express.json());
 
 // Constants
-const TIMEZONE = 'America/New_York'; // Handles EST/EDT automatically
+const TIMEZONE = 'America/New_York';
 const SLOT_DURATION = 180; // 3 hours in minutes
 
 // Health Check Endpoint
@@ -70,35 +70,6 @@ const getAccessToken = async () => {
   }
 };
 
-// Helper: Merge overlapping time slots
-const mergeTimeSlots = (slots) => {
-  if (slots.length === 0) return [];
-
-  const sortedSlots = [...slots].sort((a, b) => 
-    new Date(a.start.dateTime) - new Date(b.start.dateTime)
-  );
-
-  const merged = [];
-  let currentSlot = { ...sortedSlots[0] };
-
-  for (let i = 1; i < sortedSlots.length; i++) {
-    const nextSlot = sortedSlots[i];
-    const currentEnd = new Date(currentSlot.end.dateTime);
-    const nextStart = new Date(nextSlot.start.dateTime);
-
-    if (nextStart <= currentEnd) {
-      currentSlot.end.dateTime = new Date(
-        Math.max(currentEnd, new Date(nextSlot.end.dateTime))
-      ).toISOString();
-    } else {
-      merged.push(currentSlot);
-      currentSlot = { ...nextSlot };
-    }
-  }
-  merged.push(currentSlot);
-  return merged;
-};
-
 // Calendar Availability Endpoint
 app.get('/api/availability', async (req, res) => {
   try {
@@ -110,7 +81,7 @@ app.get('/api/availability', async (req, res) => {
     const accessToken = await getAccessToken();
     const calendarOwner = process.env.CALENDAR_OWNER_UPN;
 
-    // Define time slots in local time (Eastern Time)
+    // Define time slots
     const timeSlots = [
       { start: '09:00:00', end: '12:00:00', display: '9:00 AM - 12:00 PM' },
       { start: '12:00:00', end: '15:00:00', display: '12:00 PM - 3:00 PM' },
@@ -129,7 +100,7 @@ app.get('/api/availability', async (req, res) => {
         params: {
           startDateTime: startTime,
           endDateTime: endTime,
-          $select: 'subject,start,end'
+          $select: 'start,end'
         },
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -148,14 +119,13 @@ app.get('/api/availability', async (req, res) => {
       const isBooked = events.some(event => {
         const eventStart = new Date(event.start.dateTime);
         const eventEnd = new Date(event.end.dateTime);
-        return (eventStart < new Date(slotEnd) && (eventEnd > new Date(slotStart));
+        return (eventStart < new Date(slotEnd)) && (eventEnd > new Date(slotStart));
       });
 
       return {
         display: slot.display,
         start: slotStart,
         end: slotEnd,
-        status: 'busy',
         booked: isBooked
       };
     });
@@ -186,10 +156,6 @@ app.post('/api/bookings', async (req, res) => {
 
     const accessToken = await getAccessToken();
     
-    // Convert to proper DateTime objects with timezone
-    const startDT = DateTime.fromISO(start, { zone: TIMEZONE });
-    const endDT = DateTime.fromISO(end, { zone: TIMEZONE });
-
     const response = await axios.post(
       `https://graph.microsoft.com/v1.0/users/${process.env.CALENDAR_OWNER_UPN}/events`,
       {
@@ -206,11 +172,11 @@ app.post('/api/bookings', async (req, res) => {
           `
         },
         start: { 
-          dateTime: startDT.toISO(),
+          dateTime: start,
           timeZone: TIMEZONE
         },
         end: { 
-          dateTime: endDT.toISO(),
+          dateTime: end,
           timeZone: TIMEZONE
         }
       },
@@ -222,16 +188,10 @@ app.post('/api/bookings', async (req, res) => {
       }
     );
 
-    // Return booking details with local times for verification
     res.json({ 
       success: true,
       eventId: response.data.id,
-      eventLink: response.data.webLink,
-      localTimes: {
-        start: startDT.toFormat('h:mm a'),
-        end: endDT.toFormat('h:mm a'),
-        timezone: TIMEZONE
-      }
+      eventLink: response.data.webLink
     });
   } catch (error) {
     console.error('Booking Error:', error.response?.data || error.message);
