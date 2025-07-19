@@ -3383,7 +3383,7 @@ async function handleBookingSubmit(e) {
         return;
     }
     
-    // Check time slot selection
+    // Check if a time slot is selected
     const selectedSlot = document.querySelector('.selected-slot');
     if (!selectedSlot) {
         alert('Please select an available time slot');
@@ -3391,39 +3391,51 @@ async function handleBookingSubmit(e) {
     }
 
     try {
-        // Get displayed time (EST)
+        // Get the displayed time (EST)
         const timeText = selectedSlot.querySelector('.slot-time').textContent.trim();
         const [startTimeStr, endTimeStr] = timeText.split(' - ').map(t => t.trim());
         
-        // Get date from data attribute
+        // Get the date portion from data attributes
         const dateStr = selectedSlot.dataset.date;
-        if (!dateStr) throw new Error('Missing date in time slot data');
+        if (!dateStr) {
+            throw new Error('Missing date in time slot data');
+        }
 
-        // Create EST dates (UTC-5)
+        // Parse EST times (UTC-5)
         const startEst = new Date(`${dateStr}T${startTimeStr}:00-05:00`);
         const endEst = new Date(`${dateStr}T${endTimeStr}:00-05:00`);
 
         // Validate dates
-        if (isNaN(startEst.getTime())) throw new Error(`Invalid start time: ${startTimeStr}`);
-        if (isNaN(endEst.getTime())) throw new Error(`Invalid end time: ${endTimeStr}`);
+        if (isNaN(startEst.getTime())) {
+            throw new Error(`Invalid start time: ${startTimeStr}`);
+        }
+        if (isNaN(endEst.getTime())) {
+            throw new Error(`Invalid end time: ${endTimeStr}`);
+        }
 
-        // Convert to UTC
+        // Convert to UTC strings
         const startUTC = startEst.toISOString();
         const endUTC = endEst.toISOString();
+
+        // Get total price
+        const totalElement = document.getElementById('final-total-price');
+        const totalText = totalElement.textContent.replace('C$', '');
+        const total = parseFloat(totalText);
 
         // Prepare booking data
         const bookingData = {
             eventName: document.getElementById('event-name').value,
             eventType: document.getElementById('event-type').value,
             eventDate: dateStr,
-            duration: 3,
+            duration: 3, // hours
             location: document.getElementById('event-location').value,
             notes: document.getElementById('special-requests').value,
             contactName: document.getElementById('contact-name').value,
             email: document.getElementById('contact-email').value,
             phone: document.getElementById('contact-phone').value,
             startTime: startUTC,
-            endTime: endUTC
+            endTime: endUTC,
+            totalPrice: total
         };
 
         // Show payment form
@@ -3431,10 +3443,17 @@ async function handleBookingSubmit(e) {
         document.getElementById('payment-info').style.display = 'block';
         document.getElementById('submit-booking').style.display = 'none';
 
+        // For debugging
+        console.log('Booking data prepared:', bookingData);
+        
+        return bookingData;
+
     } catch (error) {
         console.error('Booking error:', error);
-        alert(`Booking error: ${error.message}`);
+        alert(`Error processing booking: ${error.message}`);
+        throw error; // Re-throw for additional error handling
     }
+}}
 }
     // Handle payment submission
     async function handlePaymentSubmit(e) {
