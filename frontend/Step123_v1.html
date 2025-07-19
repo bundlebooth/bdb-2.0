@@ -3372,16 +3372,18 @@ function padTime(num) {
 // Handle booking submission
 // Handle booking submission
 // Handle booking submission
+// Handle booking submission - COMPLETE FIXED VERSION
 async function handleBookingSubmit(e) {
     e.preventDefault();
     
     // Validate form
-    if (!document.getElementById('event-details-form').checkValidity()) {
-        document.getElementById('event-details-form').reportValidity();
+    const form = document.getElementById('event-details-form');
+    if (!form.checkValidity()) {
+        form.reportValidity();
         return;
     }
     
-    // Check if a time slot is selected
+    // Check time slot selection
     const selectedSlot = document.querySelector('.selected-slot');
     if (!selectedSlot) {
         alert('Please select an available time slot');
@@ -3389,36 +3391,25 @@ async function handleBookingSubmit(e) {
     }
 
     try {
-        // Get the displayed time (EST)
-        const timeText = selectedSlot.querySelector('.slot-time').textContent;
-        const [startTimeStr, endTimeStr] = timeText.split(' - ');
+        // Get displayed time (EST)
+        const timeText = selectedSlot.querySelector('.slot-time').textContent.trim();
+        const [startTimeStr, endTimeStr] = timeText.split(' - ').map(t => t.trim());
         
-        // Get the date portion from data attributes
+        // Get date from data attribute
         const dateStr = selectedSlot.dataset.date;
-        if (!dateStr) {
-            throw new Error('Missing date data');
-        }
+        if (!dateStr) throw new Error('Missing date in time slot data');
 
-        // Parse EST times (assuming EST is UTC-5)
+        // Create EST dates (UTC-5)
         const startEst = new Date(`${dateStr}T${startTimeStr}:00-05:00`);
         const endEst = new Date(`${dateStr}T${endTimeStr}:00-05:00`);
 
         // Validate dates
-        if (isNaN(startEst.getTime())) {
-            throw new Error(`Invalid start time: ${startTimeStr}`);
-        }
-        if (isNaN(endEst.getTime())) {
-            throw new Error(`Invalid end time: ${endTimeStr}`);
-        }
+        if (isNaN(startEst.getTime())) throw new Error(`Invalid start time: ${startTimeStr}`);
+        if (isNaN(endEst.getTime())) throw new Error(`Invalid end time: ${endTimeStr}`);
 
-        // Convert to UTC strings
+        // Convert to UTC
         const startUTC = startEst.toISOString();
         const endUTC = endEst.toISOString();
-
-        // Get total price
-        const totalElement = document.getElementById('final-total-price');
-        const totalText = totalElement.textContent.replace('C$', '');
-        const total = parseFloat(totalText);
 
         // Prepare booking data
         const bookingData = {
@@ -3442,7 +3433,7 @@ async function handleBookingSubmit(e) {
 
     } catch (error) {
         console.error('Booking error:', error);
-        alert(`Error processing booking: ${error.message}`);
+        alert(`Booking error: ${error.message}`);
     }
 }
     // Handle payment submission
