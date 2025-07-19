@@ -16,6 +16,17 @@ const defaultClient = Brevo.ApiClient.instance;
 const apiKey = defaultClient.authentications['api-key'];
 apiKey.apiKey = process.env.BREVO_API_KEY;
 
+// Helper function to format time
+function formatTime(date) {
+  if (!date) return '';
+  try {
+    const d = new Date(date);
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  } catch (e) {
+    return '';
+  }
+}
+
 // Health check
 app.get('/', (req, res) => {
   res.json({
@@ -35,7 +46,7 @@ app.post('/send-booking-email', async (req, res) => {
       eventName, 
       eventType,
       eventDate, 
-      timeSlot = {},
+      timeSlot = { startTime: null, endTime: null },
       durationHours,
       eventLocation, 
       specialRequests,
@@ -54,20 +65,33 @@ app.post('/send-booking-email', async (req, res) => {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    // Calculate prices
-    const subtotal = services.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
-    const discountPercentage = selectedBundle.isCustom ? 0 : (selectedBundle.discountPercentage ? selectedBundle.discountPercentage/100 : 0.1);
-    const discount = subtotal * discountPercentage;
-    const promoDiscount = promoCodeApplied?.discountValue || 0;
-    const total = Math.max(0, subtotal - discount - promoDiscount);
-
-    // Format date if provided
+    // Format display values
     const formattedDate = eventDate ? new Date(eventDate).toLocaleDateString('en-US', { 
       weekday: 'long', 
       year: 'numeric', 
       month: 'long', 
       day: 'numeric' 
     }) : 'Not specified';
+
+    const formattedTimeSlot = timeSlot.startTime && timeSlot.endTime 
+      ? `${formatTime(timeSlot.startTime)} - ${formatTime(timeSlot.endTime)} (EST)`
+      : 'Not specified';
+
+    const formattedDuration = durationHours 
+      ? `${durationHours} hour${durationHours !== 1 ? 's' : ''}`
+      : 'Not specified';
+
+    const formattedLocation = eventLocation || 'Location not specified';
+    const formattedPaymentMethod = paymentLast4 
+      ? `Credit Card (ending in ${paymentLast4})` 
+      : 'Credit Card (ending in ****)';
+
+    // Calculate prices
+    const subtotal = services.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
+    const discountPercentage = selectedBundle.isCustom ? 0 : (selectedBundle.discountPercentage ? selectedBundle.discountPercentage/100 : 0.1);
+    const discount = subtotal * discountPercentage;
+    const promoDiscount = promoCodeApplied?.discountValue || 0;
+    const total = Math.max(0, subtotal - discount - promoDiscount);
 
     // Create email
     const apiInstance = new Brevo.TransactionalEmailsApi();
@@ -135,15 +159,15 @@ app.post('/send-booking-email', async (req, res) => {
                 </div>
                 <div style="display: flex; margin-bottom: 10px;">
                   <div style="font-weight: bold; width: 150px;">Time Slot:</div>
-                  <div>${timeSlot.startTime || 'Not specified'} - ${timeSlot.endTime || 'Not specified'} (EST)</div>
+                  <div>${formattedTimeSlot}</div>
                 </div>
                 <div style="display: flex; margin-bottom: 10px;">
                   <div style="font-weight: bold; width: 150px;">Duration:</div>
-                  <div>${durationHours || 'Not specified'} hours</div>
+                  <div>${formattedDuration}</div>
                 </div>
                 <div style="display: flex; margin-bottom: 10px;">
                   <div style="font-weight: bold; width: 150px;">Location:</div>
-                  <div>${eventLocation || 'Location not specified'}</div>
+                  <div>${formattedLocation}</div>
                 </div>
               </div>
 
@@ -229,7 +253,7 @@ app.post('/send-booking-email', async (req, res) => {
               <div style="margin: 20px 0;">
                 <div style="display: flex; margin-bottom: 10px;">
                   <div style="font-weight: bold; width: 150px;">Payment Method:</div>
-                  <div>Credit Card (ending in ${paymentLast4 || '****'})</div>
+                  <div>${formattedPaymentMethod}</div>
                 </div>
                 <div style="display: flex; margin-bottom: 10px;">
                   <div style="font-weight: bold; width: 150px;">Amount Paid:</div>
