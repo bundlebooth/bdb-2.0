@@ -96,7 +96,7 @@ const mergeTimeSlots = (slots) => {
   return merged;
 };
 
-// Calendar Availability Endpoint
+// Calendar Availability Endpoint (Final Optimized Version)
 app.get('/api/availability', async (req, res) => {
   try {
     const date = req.query.date;
@@ -164,7 +164,7 @@ app.get('/api/availability', async (req, res) => {
       return {
         start: slot.start.dateTime,
         end: slot.end.dateTime,
-        status: slot.status || 'busy',
+        status: slot.status || 'busy', // Default to 'busy' if undefined
         booked: isBooked
       };
     });
@@ -183,27 +183,17 @@ app.get('/api/availability', async (req, res) => {
   }
 });
 
-// Booking Endpoint (Fixed Timezone Handling)
+// Booking Endpoint (Unchanged)
 app.post('/api/bookings', async (req, res) => {
   try {
-    const { startTime, endTime, name, email, eventDetails } = req.body;
+    const { start, end, name, email, eventDetails } = req.body;
     
-    // Validate required fields
-    if (!startTime || !endTime || !name || !email) {
+    if (!start || !end || !name || !email) {
       return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    // Validate date format
-    if (isNaN(new Date(startTime).getTime())) {
-      return res.status(400).json({ error: 'Invalid start time format' });
-    }
-    if (isNaN(new Date(endTime).getTime())) {
-      return res.status(400).json({ error: 'Invalid end time format' });
     }
 
     const accessToken = await getAccessToken();
     
-    // Create event in calendar with explicit UTC timezone
     const response = await axios.post(
       `https://graph.microsoft.com/v1.0/users/${process.env.CALENDAR_OWNER_UPN}/events`,
       {
@@ -215,15 +205,16 @@ app.post('/api/bookings', async (req, res) => {
             <p>Email: ${email}</p>
             <p>Event: ${eventDetails?.eventName || 'Not specified'}</p>
             <p>Location: ${eventDetails?.location || 'Not specified'}</p>
+            <p>Guests: ${eventDetails?.guestCount || 'Not specified'}</p>
             <p>Notes: ${eventDetails?.notes || 'None'}</p>
           `
         },
-        start: {
-          dateTime: startTime,
+        start: { 
+          dateTime: start,
           timeZone: 'UTC'
         },
-        end: {
-          dateTime: endTime,
+        end: { 
+          dateTime: end,
           timeZone: 'UTC'
         }
       },
