@@ -36,7 +36,8 @@ app.post('/send-booking-email', async (req, res) => {
       eventType,
       eventDate, 
       timeSlotDisplay,
-      durationHours,
+      startTime,
+      endTime,
       eventLocation, 
       specialRequests,
       services = [],
@@ -67,9 +68,23 @@ app.post('/send-booking-email', async (req, res) => {
     }) : 'Not specified';
 
     const formattedTimeSlot = timeSlotDisplay || 'Not specified';
-    const formattedDuration = durationHours ? `${durationHours} hour${durationHours !== 1 ? 's' : ''}` : 'Not specified';
+    
+    // Calculate duration from start and end times
+    let formattedDuration = 'Not specified';
+    if (startTime && endTime) {
+      const start = new Date(`2000-01-01T${startTime}`);
+      const end = new Date(`2000-01-01T${endTime}`);
+      const diffHours = (end - start) / (1000 * 60 * 60);
+      formattedDuration = `${diffHours} hour${diffHours !== 1 ? 's' : ''}`;
+    } else if (durationHours) {
+      formattedDuration = `${durationHours} hour${durationHours !== 1 ? 's' : ''}`;
+    }
+
     const formattedLocation = eventLocation || 'Location not specified';
     const formattedPaymentMethod = paymentLast4 ? `Credit Card (ending in ${paymentLast4})` : 'Credit Card (ending in ****)';
+
+    // Calculate actual subtotal from services
+    const calculatedSubtotal = services.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
 
     // Create email
     const apiInstance = new Brevo.TransactionalEmailsApi();
@@ -196,7 +211,7 @@ app.post('/send-booking-email', async (req, res) => {
                 <!-- Subtotal -->
                 <tr>
                   <td colspan="3" style="padding: 8px 0; text-align: right; font-weight: bold;">Subtotal:</td>
-                  <td style="padding: 8px 0; text-align: right;">C$${subtotal.toFixed(2)}</td>
+                  <td style="padding: 8px 0; text-align: right;">C$${calculatedSubtotal.toFixed(2)}</td>
                 </tr>
                 
                 <!-- Show either bundle discount or promo discount -->
@@ -264,11 +279,6 @@ app.post('/send-booking-email', async (req, res) => {
                   <li>For any changes, please contact us at least 7 days before the event.</li>
                   <li>All times are in Eastern Time Zone (EST)</li>
                 </ul>
-              </div>
-              
-              <div style="text-align: center; margin-top: 30px;">
-                <a href="#" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px; margin: 10px 0;">View Booking Details</a>
-                <a href="mailto:support@bundlebooth.ca" style="display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 4px; margin: 10px 10px;">Contact Support</a>
               </div>
             </td>
           </tr>
