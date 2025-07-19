@@ -4,13 +4,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,maximum-scale=0,user-scalable=no" name="viewport"/>
 <meta http-equiv="Permissions-Policy" content="payment=(self 'https://bundlebooth.ca')">
-<meta http-equiv="Content-Security-Policy" content="
-    default-src 'self' https://js.stripe.com;
-    script-src 'self' https://js.stripe.com https://html2canvas.hertzen.com https://cdnjs.cloudflare.com;
-    style-src 'self' https://js.stripe.com https://fonts.googleapis.com;
-    font-src 'self' https://fonts.gstatic.com;
-    img-src 'self' data:;
-"><title>BundleBooth Custom Builder</title>
+<title>BundleBooth Custom Builder</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
 <script src="https://js.stripe.com/v3/"></script>
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -586,13 +580,7 @@
       margin-top: 8px;
       color: var(--bb-green);
     }
-    .promo-wrapper {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.promo-input {
+    .promo-input {
       display: flex;
       gap: 8px;
       margin-top: 8px;
@@ -615,10 +603,10 @@
       background: #ddd;
     }
     .promo-error {
-      color: var(--bb-green); display: block; width: 100%; margin-top: 4px;
+      color: var(--bb-green);
       font-size: 0.8rem;
       margin-top: 4px;
-     margin-top: 4px; font-size: 0.85rem; display: block; width: auto;}
+    }
     .promo-error.invalid {
       color: var(--bb-red);
     }
@@ -1718,13 +1706,11 @@
                 <span id="promo-discount-amount">-C$0</span>
             </div>
             <div class="promo-row" id="promo-row">
-                <div class="promo-wrapper">
-    <div class="promo-input">
+                <div class="promo-input">
                     <input type="text" id="promo-code" placeholder="Enter promo code">
                     <button id="apply-promo">Apply</button>
                 </div>
-                    </div>
-    <div class="promo-error" id="promo-error"></div>
+                <div class="promo-error" id="promo-error"></div>
             </div>
             <div class="final-total">
                 <span>Total:</span>
@@ -2075,16 +2061,6 @@ function applyPromoCode() {
         return;
     }
 
-    // Check if this is a special bundle (has discountPercentage)
-    if (selectedBundle && selectedBundle.discountPercentage > 0) {
-        errorElement.textContent = 'Promo codes cannot be applied to discounted special bundles';
-        errorElement.classList.add('invalid');
-        promoCodeApplied = null;
-        promoDiscount = 0;
-        updatePrices();
-        return;
-    }
-
     const validCode = validPromoCodes.find(code => code.promoCode.toUpperCase() === promoCode);
     console.log('PROMO DEBUG:', { enteredPromoCode: promoCode, matchedPromoCodeObject: validCode, subtotalAmount: subtotal, selectedServicesList: selectedServices });
 
@@ -2153,9 +2129,9 @@ function applyPromoCode() {
     promoCodeApplied = validCode;
     errorElement.textContent = validCode.description || `Promo code applied: $${promoDiscount.toFixed(2)} off`;
     errorElement.classList.remove('invalid');
-    errorElement.classList.remove('invalid');
     updatePrices();
 }
+
 
     // Set up progress bar navigation
     function setupProgressBarNavigation() {
@@ -2397,64 +2373,28 @@ function applyPromoCode() {
     }
 
     // Handle bundle selection
-function selectBundle(index) {
-    promoCodeApplied = null;
-    promoDiscount = 0;
-    document.getElementById("promo-code").value = "";
-    document.getElementById("promo-error").textContent = "";
-    const currentPromoCode = document.getElementById('promo-code').value;
-    
-    selectedBundle = bundles[index];
-    document.querySelectorAll('#bundle-list .bundle-card').forEach((el, i) => {
-        el.classList.toggle('selected', i === index);
-    });
-    
-    // Reset selected services
-    selectedServices = [];
-    
-    renderStep2();
-    
-    // Restore promo code if it exists
-    if (currentPromoCode) {
-        document.getElementById('promo-code').value = currentPromoCode;
-        // Re-apply promo code if it was valid
-        if (promoCodeApplied) {
-            applyPromoCode();
-        }
+    function selectBundle(index) {
+        selectedBundle = bundles[index];
+        document.querySelectorAll('#bundle-list .bundle-card').forEach((el, i) => {
+            el.classList.toggle('selected', i === index);
+        });
+        
+        renderStep2();
     }
-}
 
     // Handle custom bundle selection
-function selectCustomBundle() {
-    promoCodeApplied = null;
-    promoDiscount = 0;
-    document.getElementById("promo-code").value = "";
-    document.getElementById("promo-error").textContent = "";
-    const currentPromoCode = document.getElementById('promo-code').value;
-    
-    selectedBundle = {
-        name: "Custom Bundle",
-        description: "Fully custom bundle",
-        duration: "3 hours",
-        categories: {},
-        discountPercentage: 0,
-        isCustom: true
-    };
-    
-    // Reset selected services
-    selectedServices = [];
-    
-    renderStep2();
-    
-    // Restore promo code if it exists
-    if (currentPromoCode) {
-        document.getElementById('promo-code').value = currentPromoCode;
-        // Re-apply promo code if it was valid
-        if (promoCodeApplied) {
-            applyPromoCode();
-        }
+    function selectCustomBundle() {
+        selectedBundle = {
+            name: "Custom Bundle",
+            description: "Fully custom bundle",
+            duration: "3 hours",
+            categories: {},
+            discountPercentage: 0,
+            isCustom: true
+        };
+        renderStep2();
+        window.scrollTo(0, 0);
     }
-}
 
     // Show step 2 with services
     function renderStep2() {
@@ -2464,36 +2404,31 @@ function selectCustomBundle() {
     }
 
     // Updated renderStep3 function to handle dynamic discounts
-function renderStep3() {
-    showStep(3);
-    window.scrollTo(0, 0);
-    
-    // Update bundle title
-    document.getElementById('bundle-title').textContent = selectedBundle.name;
-    
-    // Render selected services list
-    renderSelectedServicesList();
-    
-    // Initialize calendar with current month
-    renderCalendar(currentDisplayedDate);
-    
-    // Set up event listeners
-    document.getElementById('back-to-services').addEventListener('click', () => {
-        const currentPromoCode = document.getElementById('promo-code').value;
-        showStep(2);
+    function renderStep3() {
+        showStep(3);
         window.scrollTo(0, 0);
         
-        // Restore promo code if it exists
-        if (currentPromoCode) {
-            document.getElementById('promo-code').value = currentPromoCode;
-            // Re-apply promo code if it was valid
-            if (promoCodeApplied) {
-                applyPromoCode();
-            }
-        }
-	document.getElementById('submit-booking').addEventListener('click', handleBookingSubmit);
-	document.getElementById('submit-payment').addEventListener('click', handlePaymentSubmit);
-    });
+        // Update bundle title
+        document.getElementById('bundle-title').textContent = selectedBundle.name;
+        
+        // Render selected services list
+        renderSelectedServicesList();
+        
+        // Initialize calendar with current month
+        renderCalendar(currentDisplayedDate);
+        
+        // Set up event listeners
+        document.getElementById('back-to-services').addEventListener('click', () => {
+            showStep(2);
+            window.scrollTo(0, 0);
+        });
+        
+        document.getElementById('submit-booking').addEventListener('click', handleBookingSubmit);
+        document.getElementById('submit-payment').addEventListener('click', handlePaymentSubmit);
+        document.getElementById('new-bundle-button').addEventListener('click', () => {
+            window.location.reload();
+        });
+        
 // Month navigation
 document.getElementById('prev-month').addEventListener('click', () => {
     const newDate = new Date(currentDisplayedDate);
@@ -3440,28 +3375,25 @@ function renderCalendar(date) {
     }
 
     // Handle booking submission
-async function handleBookingSubmit(e) {
-    e.preventDefault();
-    
-    if (!document.getElementById('event-details-form').checkValidity()) {
-        document.getElementById('event-details-form').reportValidity();
-        return;
+    async function handleBookingSubmit(e) {
+        e.preventDefault();
+        
+        if (!document.getElementById('event-details-form').checkValidity()) {
+            document.getElementById('event-details-form').reportValidity();
+            return;
+        }
+        
+        // Check if a time slot is selected
+        const selectedSlot = document.querySelector('.selected-slot');
+        if (!selectedSlot) {
+            alert('Please select an available time slot');
+            return;
+        }
+        
+        document.getElementById('stripe-payment-form').style.display = 'block';
+        document.getElementById('payment-info').style.display = 'block';
+        document.getElementById('submit-booking').style.display = 'none';
     }
-    
-    // Check if a time slot is selected
-    const selectedSlot = document.querySelector('.selected-slot');
-    if (!selectedSlot) {
-        alert('Please select an available time slot');
-        return;
-    }
-    
-    document.getElementById('stripe-payment-form').style.display = 'block';
-    document.getElementById('payment-info').style.display = 'block';
-    document.getElementById('submit-booking').style.display = 'none';
-    
-    // Scroll to payment section
-    document.getElementById('stripe-payment-form').scrollIntoView({ behavior: 'smooth' });
-}
 
     // Handle payment submission
     async function handlePaymentSubmit(e) {
