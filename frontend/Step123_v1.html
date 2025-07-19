@@ -574,12 +574,19 @@
       margin-top: 8px;
       color: var(--bb-green);
     }
-    .promo-row {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 8px;
-      color: var(--bb-green);
-    }
+	/* Add this new rule to position the error message below */
+.promo-message-container {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+}
+.promo-row {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+}
     .promo-input {
       display: flex;
       gap: 8px;
@@ -602,14 +609,16 @@
     .promo-input button:hover {
       background: #ddd;
     }
-    .promo-error {
-      color: var(--bb-green);
-      font-size: 0.8rem;
-      margin-top: 4px;
-    }
-    .promo-error.invalid {
-      color: var(--bb-red);
-    }
+
+.promo-error {
+    color: var(--bb-green);
+    font-size: 0.8rem;
+    width: 100%;
+}
+
+.promo-error.invalid {
+    color: var(--bb-red);
+}
     .promo-discount-row {
       display: flex;
       justify-content: space-between;
@@ -1705,13 +1714,16 @@
                 <span>Promo Discount:</span>
                 <span id="promo-discount-amount">-C$0</span>
             </div>
-            <div class="promo-row" id="promo-row">
-                <div class="promo-input">
-                    <input type="text" id="promo-code" placeholder="Enter promo code">
-                    <button id="apply-promo">Apply</button>
-                </div>
-                <div class="promo-error" id="promo-error"></div>
-            </div>
+
+<div class="promo-row">
+    <div class="promo-input">
+        <input type="text" id="promo-code" placeholder="Enter promo code">
+        <button id="apply-promo">Apply</button>
+    </div>
+    <div class="promo-message-container">
+        <div class="promo-error" id="promo-error"></div>
+    </div>
+</div>
             <div class="final-total">
                 <span>Total:</span>
                 <span id="final-total-price">C$0</span>
