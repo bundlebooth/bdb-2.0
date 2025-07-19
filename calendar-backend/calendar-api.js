@@ -96,116 +96,85 @@ const mergeTimeSlots = (slots) => {
   return merged;
 };
 
-// Calendar Availability Endpoint (Final Optimized Version)
-// In calendar-api.js
-// In your availability endpoint
+// Configure axios to always use ET timezone
+const axios = require('axios');
+const { DateTime } = require('luxon');
+
+// AVAILABILITY ENDPOINT
 app.get('/api/availability', async (req, res) => {
   try {
     const date = req.query.date;
-    const accessToken = await getAccessToken();
+    const timezone = 'America/New_York'; // Correct ET timezone
     
-    // Use America/New_York which automatically handles EST/EDT
-    const timezone = 'America/New_York';
-    
-    // Define your desired time slots (will auto-adjust for DST)
-    const timeSlots = [
-      { display: '9:00 AM - 12:00 PM', start: '09:00', end: '12:00' },
-      { display: '12:00 PM - 3:00 PM', start: '12:00', end: '15:00' },
-      { display: '3:00 PM - 6:00 PM', start: '15:00', end: '18:00' },
-      { display: '6:00 PM - 9:00 PM', start: '18:00', end: '21:00' },
-      { display: '9:00 PM - 12:00 AM', start: '21:00', end: '00:00' }
+    // Define slots in ET
+    const slots = [
+      { start: '09:00', end: '12:00', display: '9:00 AM - 12:00 PM' },
+      { start: '12:00', end: '15:00', display: '12:00 PM - 3:00 PM' },
+      { start: '15:00', end: '18:00', display: '3:00 PM - 6:00 PM' },
+      { start: '18:00', end: '21:00', display: '6:00 PM - 9:00 PM' },
+      { start: '21:00', end: '00:00', display: '9:00 PM - 12:00 AM' }
     ];
 
-    // Get events using the correct timezone
-    const response = await axios.get(
-      `https://graph.microsoft.com/v1.0/users/${process.env.CALENDAR_OWNER_UPN}/calendar/events`,
-      {
-        params: {
-          startDateTime: new Date(`${date}T00:00:00`).toLocaleString('en-US', { timeZone: timezone }),
-          endDateTime: new Date(`${date}T23:59:59`).toLocaleString('en-US', { timeZone: timezone }),
-          $select: 'start,end'
-        },
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-
-    const events = response.data.value || [];
-
-    // Check availability
-    const availability = timeSlots.map(slot => {
-      const slotStart = new Date(`${date}T${slot.start}:00`);
-      const slotEnd = new Date(`${date}T${slot.end}:00`);
+    // Convert to proper ET datetime strings
+    const availability = slots.map(slot => {
+      const startET = DateTime.fromISO(`${date}T${slot.start}`, { zone: timezone });
+      const endET = DateTime.fromISO(`${date}T${slot.end}`, { zone: timezone });
       
-      const isBooked = events.some(event => {
-        const eventStart = new Date(event.start.dateTime);
-        const eventEnd = new Date(event.end.dateTime);
-        return eventStart < slotEnd && eventEnd > slotStart;
-      });
-
       return {
         display: slot.display,
-        start: slotStart.toISOString(),
-        end: slotEnd.toISOString(),
-        booked: isBooked
+        start: startET.toISO(),
+        end: endET.toISO(),
+        startET: startET.toFormat('h:mm a'),
+        endET: endET.toFormat('h:mm a')
       };
     });
 
     res.json({ date, availability });
   } catch (error) {
-    console.error('Availability Error:', error);
+    console.error('Availability error:', error);
     res.status(500).json({ error: 'Failed to fetch availability' });
   }
 });
 
-function formatTime(timeStr) {
-  const [hours, minutes] = timeStr.split(':');
-  const hourNum = parseInt(hours);
-  const ampm = hourNum >= 12 ? 'PM' : 'AM';
-  const displayHour = hourNum % 12 || 12;
-  return `${displayHour}:${minutes} ${ampm}`;
-}
-
-// Booking Endpoint (Unchanged)
-// In calendar-api.js
+// BOOKING ENDPOINT
 app.post('/api/bookings', async (req, res) => {
   try {
-    const { start, end, name, email, eventDetails } = req.body;
-    const accessToken = await getAccessToken();
-
-    // Use the correct timezone identifier that handles DST
+    const { start, end, name, email } = req.body;
     const timezone = 'America/New_York';
+    
+    // Convert to ET explicitly
+    const startET = DateTime.fromISO(start, { zone: timezone });
+    const endET = DateTime.fromISO(end, { zone: timezone });
 
     const response = await axios.post(
       `https://graph.microsoft.com/v1.0/users/${process.env.CALENDAR_OWNER_UPN}/events`,
       {
         subject: `Booking: ${name}`,
         start: {
-          dateTime: start,
-          timeZone: timezone // Using correct timezone
+          dateTime: startET.toISO(),
+          timeZone: timezone
         },
         end: {
-          dateTime: end,
-          timeZone: timezone // Using correct timezone
-        },
-        body: {
-          contentType: "HTML",
-          content: `...your event details...`
+          dateTime: endET.toISO(),
+          timeZone: timezone
         }
       },
       {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${process.env.MICROSOFT_ACCESS_TOKEN}`,
           'Content-Type': 'application/json'
         }
       }
     );
 
-    res.json({ success: true, eventId: response.data.id });
+    res.json({ 
+      success: true,
+      eventId: response.data.id,
+      startET: startET.toFormat('h:mm a'),
+      endET: endET.toFormat('h:mm a')
+    });
   } catch (error) {
-    console.error('Booking Error:', error);
+    console.error('Booking error:', error.response?.data || error.message);
     res.status(500).json({ error: 'Failed to create booking' });
   }
 });
