@@ -206,24 +206,24 @@ app.post('/send-booking-email', async (req, res) => {
                 </tr>
                 
                 <!-- Bundle Discount -->
-                ${bundleDiscountValue > 0 ? `
-                <tr>
-                  <td colspan="3" style="padding: 8px 0; text-align: right; font-weight: bold; color: #27ae60;">
-                    ${bundleDiscountPercentage > 0 ? `Bundle Discount (${bundleDiscountPercentage}%)` : 'Bundle Discount'}:
-                  </td>
-                  <td style="padding: 8px 0; text-align: right; color: #27ae60;">-C$${bundleDiscountValue.toFixed(2)}</td>
-                </tr>
-                ` : ''}
-                
-                <!-- Promo Discount -->
-                ${promoDiscount > 0 ? `
-                <tr>
-                  <td colspan="3" style="padding: 8px 0; text-align: right; font-weight: bold; color: #27ae60;">
-                    Promo Discount (${promoCode || ''}):
-                  </td>
-                  <td style="padding: 8px 0; text-align: right; color: #27ae60;">-C$${promoDiscount.toFixed(2)}</td>
-                </tr>
-                ` : ''}
+${bundleDiscountValue > 0 ? `
+<tr>
+  <td colspan="3" style="padding: 8px 0; text-align: right; font-weight: bold; color: #27ae60;">
+    ${bundleDiscountPercentage > 0 ? `Bundle Discount (${bundleDiscountPercentage}%)` : 'Bundle Discount'}:
+  </td>
+  <td style="padding: 8px 0; text-align: right; color: #27ae60;">-C$${bundleDiscountValue.toFixed(2)}</td>
+</tr>
+` : ''}
+
+// Promo Discount
+${promoDiscount > 0 ? `
+<tr>
+  <td colspan="3" style="padding: 8px 0; text-align: right; font-weight: bold; color: #27ae60;">
+    Promo Discount (${promoCode || ''}):
+  </td>
+  <td style="padding: 8px 0; text-align: right; color: #27ae60;">-C$${promoDiscount.toFixed(2)}</td>
+</tr>
+` : ''}
                 
                 <!-- Total -->
                 <tr style="font-weight: bold; border-top: 2px solid #333;">
