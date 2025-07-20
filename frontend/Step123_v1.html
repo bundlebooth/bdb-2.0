@@ -3475,6 +3475,7 @@ async function handlePaymentSubmit(e) {
     const errorDisplay = document.getElementById('payment-errors');
     const processingMessage = document.getElementById('processing-message');
     
+    // Set loading state
     button.disabled = true;
     button.innerHTML = '<span class="spinner"></span> Processing...';
     errorDisplay.textContent = '';
@@ -3482,53 +3483,53 @@ async function handlePaymentSubmit(e) {
 
     try {
         // Validate required fields
-        const contactName = document.getElementById('contact-name').value;
-        const email = document.getElementById('contact-email').value;
-        const eventName = document.getElementById('event-name').value;
-        const selectedSlot = document.querySelector('.selected-slot');
+        const requiredFields = {
+            'contact-name': 'Your Name',
+            'contact-email': 'Email',
+            'event-name': 'Event Name',
+            'event-location': 'Event Location'
+        };
         
-        if (!contactName || !email || !eventName) {
-            throw new Error('Please fill in all required fields');
+        const missingFields = [];
+        for (const [id, name] of Object.entries(requiredFields)) {
+            if (!document.getElementById(id).value.trim()) {
+                missingFields.push(name);
+            }
         }
         
+        if (missingFields.length > 0) {
+            throw new Error(`Please fill in: ${missingFields.join(', ')}`);
+        }
+        
+        const selectedSlot = document.querySelector('.selected-slot');
         if (!selectedSlot) {
             throw new Error('Please select an available time slot');
         }
 
         // Prepare booking data
-        const total = parseFloat(document.getElementById('final-total-price').textContent.replace('C$', ''));
-        const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
-        const bundleDiscountValue = selectedBundle.isCustom ? 0 : 
-                                  (selectedBundle.discountPercentage ? selectedBundle.discountPercentage/100 : 0);
-        const discount = subtotal * bundleDiscountValue;
-        
         const bookingData = {
-            contactName: contactName,
-            email: email,
-            phone: document.getElementById('contact-phone').value || '',
-            eventName: eventName,
+            contactName: document.getElementById('contact-name').value.trim(),
+            email: document.getElementById('contact-email').value.trim(),
+            phone: document.getElementById('contact-phone').value.trim() || undefined,
+            eventName: document.getElementById('event-name').value.trim(),
             eventType: document.getElementById('event-type').value || 'Not specified',
             eventDate: selectedSlot.dataset.start.split('T')[0],
             timeSlotDisplay: selectedSlot.dataset.display,
-            eventLocation: document.getElementById('event-location').value || 'Not specified',
-            specialRequests: document.getElementById('special-requests').value || '',
+            eventLocation: document.getElementById('event-location').value.trim(),
+            specialRequests: document.getElementById('special-requests').value.trim() || undefined,
             services: selectedServices,
             bundleName: selectedBundle.name,
-            bundleDescription: selectedBundle.description || '',
+            bundleDescription: selectedBundle.description || undefined,
             selectedBundle: {
                 name: selectedBundle.name,
                 isCustom: selectedBundle.isCustom,
                 discountPercentage: selectedBundle.discountPercentage || 0,
-                discountValue: discount
+                discountValue: selectedBundle.discountValue || 0
             },
-            subtotal: subtotal,
-            discount: discount,
-            promoCodeApplied: promoCodeApplied ? {
-                promoCode: promoCodeApplied.promoCode,
-                discountValue: promoDiscount
-            } : null,
-            promoDiscount: promoDiscount,
-            total: total
+            subtotal: parseFloat(document.getElementById('subtotal-price').textContent.replace('C$', '')),
+            discount: parseFloat(document.getElementById('discount-amount')?.textContent.replace('-C$', '') || 0),
+            promoDiscount: parseFloat(document.getElementById('promo-discount-amount')?.textContent.replace('-C$', '') || 0),
+            total: parseFloat(document.getElementById('final-total-price').textContent.replace('C$', ''))
         };
 
         // Process payment
@@ -3536,14 +3537,18 @@ async function handlePaymentSubmit(e) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                amount: Math.round(total * 100),
-                currency: 'cad'
+                amount: Math.round(bookingData.total * 100),
+                currency: 'cad',
+                metadata: {
+                    eventName: bookingData.eventName,
+                    contactEmail: bookingData.email
+                }
             })
         });
 
         if (!paymentResponse.ok) {
-            const errorData = await paymentResponse.json();
-            throw new Error(errorData.error || 'Payment setup failed');
+            const errorData = await paymentResponse.json().catch(() => ({}));
+            throw new Error(errorData.error || 'Payment processing failed');
         }
 
         const { clientSecret } = await paymentResponse.json();
@@ -3552,7 +3557,8 @@ async function handlePaymentSubmit(e) {
                 card: cardElement,
                 billing_details: {
                     name: bookingData.contactName,
-                    email: bookingData.email
+                    email: bookingData.email,
+                    phone: bookingData.phone
                 }
             }
         });
@@ -3562,28 +3568,6 @@ async function handlePaymentSubmit(e) {
         // Add payment details
         bookingData.transactionId = paymentIntent.id;
         bookingData.paymentStatus = paymentIntent.status;
-
-        // Send booking to calendar API
-        const bookingResponse = await fetch(`${config.backendUrl}/api/bookings`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                start: selectedSlot.dataset.start,
-                end: selectedSlot.dataset.end,
-                name: bookingData.contactName,
-                email: bookingData.email,
-                eventDetails: {
-                    eventName: bookingData.eventName,
-                    location: bookingData.eventLocation,
-                    notes: bookingData.specialRequests
-                }
-            })
-        });
-        
-        if (!bookingResponse.ok) {
-            const errorData = await bookingResponse.json();
-            throw new Error(errorData.error || 'Booking failed');
-        }
 
         // Send confirmation email
         const emailResponse = await fetch(config.emailBackendUrl, {
@@ -3596,27 +3580,22 @@ async function handlePaymentSubmit(e) {
         });
 
         if (!emailResponse.ok) {
-            const errorData = await emailResponse.json();
-            throw new Error(errorData.error || 'Failed to send confirmation email');
+            const errorData = await emailResponse.json().catch(() => ({}));
+            throw new Error(errorData.error || 'Failed to send confirmation');
         }
-        
+
         // Show success
-        document.getElementById('stripe-payment-form').style.display = 'none';
-        document.getElementById('event-details-form').style.display = 'none';
-        document.getElementById('back-to-services').style.display = 'none';
-        document.getElementById('sent-email').textContent = bookingData.email;
         document.getElementById('confirmation-message').style.display = 'block';
+        document.getElementById('sent-email').textContent = bookingData.email;
+        document.getElementById('confirmed-amount').textContent = `$${bookingData.total.toFixed(2)}`;
         
     } catch (error) {
         console.error('Payment error:', error);
         errorDisplay.textContent = error.message;
-        
-        if (error.message.includes('required fields')) {
-            document.getElementById('event-details-form').reportValidity();
-        }
+        errorDisplay.scrollIntoView({ behavior: 'smooth' });
     } finally {
         button.disabled = false;
-        button.textContent = `Pay $${parseFloat(document.getElementById('final-total-price').textContent.replace('C$', ''))} Now`;
+        button.textContent = `Pay $${parseFloat(document.getElementById('final-total-price').textContent.replace('C$', '')).toFixed(2)} Now`;
         processingMessage.style.display = 'none';
     }
 }
