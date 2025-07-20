@@ -3493,18 +3493,15 @@ async function handlePaymentSubmit(e) {
         const discount = subtotal * bundleDiscountValue;
         
         const bookingData = {
+            contactName: document.getElementById('contact-name').value,
+            email: document.getElementById('contact-email').value,
+            phone: document.getElementById('contact-phone').value,
             eventName: document.getElementById('event-name').value,
             eventType: document.getElementById('event-type').value,
             eventDate: selectedSlot.dataset.start.split('T')[0],
             timeSlotDisplay: selectedSlot.dataset.display,
-            duration: 3,
-            location: document.getElementById('event-location').value,
-            notes: document.getElementById('special-requests').value,
-            contactName: document.getElementById('contact-name').value,
-            email: document.getElementById('contact-email').value,
-            phone: document.getElementById('contact-phone').value,
-            startTime: selectedSlot.dataset.start,
-            endTime: selectedSlot.dataset.end,
+            eventLocation: document.getElementById('event-location').value,
+            specialRequests: document.getElementById('special-requests').value,
             services: selectedServices,
             bundleName: selectedBundle.name,
             bundleDescription: selectedBundle.description,
@@ -3524,64 +3521,76 @@ async function handlePaymentSubmit(e) {
             total: total
         };
 
-            // 3. Process Stripe payment
-            const paymentResponse = await fetch(`${config.stripeBackendUrl}/api/payments/create-payment-intent`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    amount: Math.round(total * 100), // Convert to cents
-                    currency: 'cad'
-                })
-            });
+        // Process Stripe payment
+        const paymentResponse = await fetch(`${config.stripeBackendUrl}/api/payments/create-payment-intent`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                amount: Math.round(total * 100), // Convert to cents
+                currency: 'cad'
+            })
+        });
 
-            if (!paymentResponse.ok) throw new Error('Payment setup failed');
-            const { clientSecret } = await paymentResponse.json();
+        if (!paymentResponse.ok) throw new Error('Payment setup failed');
+        const { clientSecret } = await paymentResponse.json();
 
-            const { error } = await stripe.confirmCardPayment(clientSecret, {
-                payment_method: {
-                    card: cardElement,
-                    billing_details: {
-                        name: bookingData.contactName,
-                        email: bookingData.email
-                    }
-                }
-            });
-
-            if (error) throw error;
-
-            // 4. Create calendar booking
-            const bookingResponse = await fetch(`${config.backendUrl}/api/bookings`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    start: bookingData.startTime,
-                    end: bookingData.endTime,
+        const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: {
+                card: cardElement,
+                billing_details: {
                     name: bookingData.contactName,
-                    email: bookingData.email,
-                    eventDetails: {
-                        eventName: bookingData.eventName,
-                        location: bookingData.location,
-                        notes: bookingData.notes
-                    }
-                })
-            });
-            
-            if (!bookingResponse.ok) {
-                const errorData = await bookingResponse.json();
-                throw new Error(errorData.error || 'Booking failed');
+                    email: bookingData.email
+                }
             }
+        });
 
-            // 5. Send confirmation email
-            await sendConfirmationEmail(bookingData);
-            
-            // 6. Show success
-            document.getElementById('stripe-payment-form').style.display = 'none';
-            document.getElementById('event-details-form').style.display = 'none';
-            document.getElementById('back-to-services').style.display = 'none';
-            document.getElementById('sent-email').textContent = bookingData.email;
-            document.getElementById('confirmation-message').style.display = 'block';
-            
-       } catch (error) {
+        if (error) throw error;
+
+        // Add payment details to booking data
+        bookingData.transactionId = paymentIntent.id;
+        bookingData.paymentStatus = paymentIntent.status;
+
+        // Create calendar booking
+        const bookingResponse = await fetch(`${config.backendUrl}/api/bookings`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                start: bookingData.startTime,
+                end: bookingData.endTime,
+                name: bookingData.contactName,
+                email: bookingData.email,
+                eventDetails: {
+                    eventName: bookingData.eventName,
+                    location: bookingData.eventLocation,
+                    notes: bookingData.specialRequests
+                }
+            })
+        });
+        
+        if (!bookingResponse.ok) {
+            const errorData = await bookingResponse.json();
+            throw new Error(errorData.error || 'Booking failed');
+        }
+
+        // Send confirmation email
+        const emailResponse = await fetch(`${config.emailBackendUrl}/send-booking-email`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(bookingData)
+        });
+
+        if (!emailResponse.ok) {
+            throw new Error('Failed to send confirmation email');
+        }
+        
+        // Show success
+        document.getElementById('stripe-payment-form').style.display = 'none';
+        document.getElementById('event-details-form').style.display = 'none';
+        document.getElementById('back-to-services').style.display = 'none';
+        document.getElementById('sent-email').textContent = bookingData.email;
+        document.getElementById('confirmation-message').style.display = 'block';
+        
+    } catch (error) {
         console.error('Payment error:', error);
         errorDisplay.textContent = error.message;
     } finally {
