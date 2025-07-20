@@ -37,10 +37,10 @@ function generateICalendarContent(eventDetails) {
     specialRequests
   } = eventDetails;
 
-  // Parse the time slot (format: "HH:MM AM/PM - HH:MM AM/PM")
+  // Parse the time slot (format: "HH:MM AM/PM - HH:MM AM/PM EST")
   const timeParts = timeSlotDisplay?.match(/(\d{1,2}:\d{2}\s[AP]M)/g) || [];
-  const startTimeStr = timeParts[0] || '12:00 AM';
-  const endTimeStr = timeParts[1] || '3:00 AM';
+  const startTimeStr = timeParts[0] || '6:00 PM'; // Default to 6PM if not specified
+  const endTimeStr = timeParts[1] || '9:00 PM';   // Default to 9PM if not specified
 
   // Parse the event date and combine with time
   const startDateTime = new Date(eventDate);
