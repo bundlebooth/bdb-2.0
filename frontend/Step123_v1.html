@@ -3486,25 +3486,36 @@ async function handlePaymentSubmit(e) {
             throw new Error('Please select an available time slot');
         }
         
+        // Get all required values from the form
+        const contactName = document.getElementById('contact-name').value;
+        const email = document.getElementById('contact-email').value;
+        const eventName = document.getElementById('event-name').value;
+        
+        // Validate required fields
+        if (!contactName || !email || !eventName) {
+            throw new Error('Please fill in all required fields');
+        }
+        
         const total = parseFloat(document.getElementById('final-total-price').textContent.replace('C$', ''));
         const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
         const bundleDiscountValue = selectedBundle.isCustom ? 0 : 
                                   (selectedBundle.discountPercentage ? selectedBundle.discountPercentage/100 : 0);
         const discount = subtotal * bundleDiscountValue;
         
+        // Prepare complete booking data
         const bookingData = {
-            contactName: document.getElementById('contact-name').value,
-            email: document.getElementById('contact-email').value,
-            phone: document.getElementById('contact-phone').value,
-            eventName: document.getElementById('event-name').value,
-            eventType: document.getElementById('event-type').value,
+            contactName: contactName,
+            email: email,
+            phone: document.getElementById('contact-phone').value || '', // Make optional
+            eventName: eventName,
+            eventType: document.getElementById('event-type').value || 'Not specified',
             eventDate: selectedSlot.dataset.start.split('T')[0],
             timeSlotDisplay: selectedSlot.dataset.display,
-            eventLocation: document.getElementById('event-location').value,
-            specialRequests: document.getElementById('special-requests').value,
+            eventLocation: document.getElementById('event-location').value || 'Not specified',
+            specialRequests: document.getElementById('special-requests').value || '',
             services: selectedServices,
             bundleName: selectedBundle.name,
-            bundleDescription: selectedBundle.description,
+            bundleDescription: selectedBundle.description || '',
             selectedBundle: {
                 name: selectedBundle.name,
                 isCustom: selectedBundle.isCustom,
@@ -3555,8 +3566,8 @@ async function handlePaymentSubmit(e) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                start: bookingData.startTime,
-                end: bookingData.endTime,
+                start: selectedSlot.dataset.start,
+                end: selectedSlot.dataset.end,
                 name: bookingData.contactName,
                 email: bookingData.email,
                 eventDetails: {
@@ -3580,7 +3591,8 @@ async function handlePaymentSubmit(e) {
         });
 
         if (!emailResponse.ok) {
-            throw new Error('Failed to send confirmation email');
+            const errorData = await emailResponse.json();
+            throw new Error(errorData.error || 'Failed to send confirmation email');
         }
         
         // Show success
@@ -3593,6 +3605,11 @@ async function handlePaymentSubmit(e) {
     } catch (error) {
         console.error('Payment error:', error);
         errorDisplay.textContent = error.message;
+        
+        // Show form validation errors if needed
+        if (error.message.includes('required fields')) {
+            document.getElementById('event-details-form').reportValidity();
+        }
     } finally {
         button.disabled = false;
         button.innerHTML = 'Pay $' + parseFloat(document.getElementById('final-total-price').textContent.replace('C$', '')) + ' Now';
