@@ -1826,13 +1826,13 @@
         </div>
         
         <!-- Payment Section (now separate from Important Notes) -->
-        <div id="stripe-payment-form" style="display:none;">
-            <h3>Payment Information</h3>
-            <div id="payment-errors"></div>
-            <div id="card-element"></div>
-          <button id="submit-payment" class="book-now-button">Pay <span id="payment-amount"></span> Now</button>
-            <div class="processing-message" id="processing-message">Hang tight! We're processing your booking — this may take a moment.</div>
-        </div>
+<div id="stripe-payment-form" style="display:none;">
+    <h3>Payment Information</h3>
+    <div id="payment-errors"></div>
+    <div id="card-element"></div>  <!-- This is where the card element will mount -->
+    <button id="submit-payment" class="book-now-button">Pay <span id="payment-amount"></span> Now</button>
+    <div class="processing-message" id="processing-message">Hang tight! We're processing your booking — this may take a moment.</div>
+</div>
         
 <div class="payment-info" id="payment-info" style="display:none;">
     <p><strong>Payment Amount:</strong> <span id="payment-info-amount"></span></p>
@@ -2189,25 +2189,22 @@ function setupProgressBarNavigation() {
     }
 
     // Initialize Stripe
-    async function initializeStripe() {
-        try {
-            const response = await fetch(`${config.stripeBackendUrl}/api/config`);
-            const { stripePublicKey } = await response.json();
-            
-            stripe = Stripe(stripePublicKey);
-            const elements = stripe.elements();
-            cardElement = elements.create('card');
-            cardElement.mount('#card-element');
-            
-            return stripe;
-        } catch (error) {
-            console.error('Failed to initialize Stripe:', error);
-            document.getElementById('payment-errors').textContent = 
-                'Payment system unavailable. Please try again later.';
-            throw error;
-        }
+async function initializeStripe() {
+    try {
+        const response = await fetch(`${config.stripeBackendUrl}/api/config`);
+        const { stripePublicKey } = await response.json();
+        
+        stripe = Stripe(stripePublicKey);
+        
+        // Only create elements when needed
+        return stripe;
+    } catch (error) {
+        console.error('Failed to initialize Stripe:', error);
+        document.getElementById('payment-errors').textContent = 
+            'Payment system unavailable. Please try again later.';
+        throw error;
     }
-
+}
     // Fetch bundles data
     async function fetchBundles() {
         try {
@@ -3463,9 +3460,17 @@ async function handleBookingSubmit(e) {
         return;
     }
     
+    // Show payment form
     document.getElementById('stripe-payment-form').style.display = 'block';
     document.getElementById('payment-info').style.display = 'block';
     document.getElementById('submit-booking').style.display = 'none';
+    
+    // Initialize Stripe elements if not already done
+    if (!cardElement) {
+        const elements = stripe.elements();
+        cardElement = elements.create('card');
+        cardElement.mount('#card-element');
+    }
 }
 
 async function handlePaymentSubmit(e) {
