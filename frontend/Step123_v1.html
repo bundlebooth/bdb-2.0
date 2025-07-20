@@ -3481,32 +3481,31 @@ async function handlePaymentSubmit(e) {
     processingMessage.style.display = 'block';
 
     try {
-        const selectedSlot = document.querySelector('.selected-slot');
-        if (!selectedSlot) {
-            throw new Error('Please select an available time slot');
-        }
-        
-        // Get all required values from the form
+        // Validate required fields
         const contactName = document.getElementById('contact-name').value;
         const email = document.getElementById('contact-email').value;
         const eventName = document.getElementById('event-name').value;
+        const selectedSlot = document.querySelector('.selected-slot');
         
-        // Validate required fields
         if (!contactName || !email || !eventName) {
             throw new Error('Please fill in all required fields');
         }
         
+        if (!selectedSlot) {
+            throw new Error('Please select an available time slot');
+        }
+
+        // Prepare booking data
         const total = parseFloat(document.getElementById('final-total-price').textContent.replace('C$', ''));
         const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
         const bundleDiscountValue = selectedBundle.isCustom ? 0 : 
                                   (selectedBundle.discountPercentage ? selectedBundle.discountPercentage/100 : 0);
         const discount = subtotal * bundleDiscountValue;
         
-        // Prepare complete booking data
         const bookingData = {
             contactName: contactName,
             email: email,
-            phone: document.getElementById('contact-phone').value || '', // Make optional
+            phone: document.getElementById('contact-phone').value || '',
             eventName: eventName,
             eventType: document.getElementById('event-type').value || 'Not specified',
             eventDate: selectedSlot.dataset.start.split('T')[0],
@@ -3532,19 +3531,22 @@ async function handlePaymentSubmit(e) {
             total: total
         };
 
-        // Process Stripe payment
+        // Process payment
         const paymentResponse = await fetch(`${config.stripeBackendUrl}/api/payments/create-payment-intent`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                amount: Math.round(total * 100), // Convert to cents
+                amount: Math.round(total * 100),
                 currency: 'cad'
             })
         });
 
-        if (!paymentResponse.ok) throw new Error('Payment setup failed');
-        const { clientSecret } = await paymentResponse.json();
+        if (!paymentResponse.ok) {
+            const errorData = await paymentResponse.json();
+            throw new Error(errorData.error || 'Payment setup failed');
+        }
 
+        const { clientSecret } = await paymentResponse.json();
         const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
             payment_method: {
                 card: cardElement,
@@ -3557,11 +3559,11 @@ async function handlePaymentSubmit(e) {
 
         if (error) throw error;
 
-        // Add payment details to booking data
+        // Add payment details
         bookingData.transactionId = paymentIntent.id;
         bookingData.paymentStatus = paymentIntent.status;
 
-        // Create calendar booking
+        // Send booking to calendar API
         const bookingResponse = await fetch(`${config.backendUrl}/api/bookings`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -3584,9 +3586,12 @@ async function handlePaymentSubmit(e) {
         }
 
         // Send confirmation email
-        const emailResponse = await fetch(`${config.emailBackendUrl}/send-booking-email`, {
+        const emailResponse = await fetch(config.emailBackendUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
             body: JSON.stringify(bookingData)
         });
 
@@ -3606,13 +3611,12 @@ async function handlePaymentSubmit(e) {
         console.error('Payment error:', error);
         errorDisplay.textContent = error.message;
         
-        // Show form validation errors if needed
         if (error.message.includes('required fields')) {
             document.getElementById('event-details-form').reportValidity();
         }
     } finally {
         button.disabled = false;
-        button.innerHTML = 'Pay $' + parseFloat(document.getElementById('final-total-price').textContent.replace('C$', '')) + ' Now';
+        button.textContent = `Pay $${parseFloat(document.getElementById('final-total-price').textContent.replace('C$', ''))} Now`;
         processingMessage.style.display = 'none';
     }
 }
