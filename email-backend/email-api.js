@@ -37,9 +37,33 @@ function generateICalendarContent(eventDetails) {
     specialRequests
   } = eventDetails;
 
-  // Parse the event date and time
-  const startTime = new Date(eventDate);
-  const endTime = new Date(startTime.getTime() + 3 * 60 * 60 * 1000); // 3 hours duration
+  // Parse the time slot (format: "HH:MM AM/PM - HH:MM AM/PM")
+  const timeParts = timeSlotDisplay?.match(/(\d{1,2}:\d{2}\s[AP]M)/g) || [];
+  const startTimeStr = timeParts[0] || '12:00 AM';
+  const endTimeStr = timeParts[1] || '3:00 AM';
+
+  // Parse the event date and combine with time
+  const startDateTime = new Date(eventDate);
+  const endDateTime = new Date(eventDate);
+
+  // Set the time components
+  const setTime = (date, timeStr) => {
+    const [time, period] = timeStr.split(' ');
+    let [hours, minutes] = time.split(':').map(Number);
+    
+    if (period === 'PM' && hours < 12) hours += 12;
+    if (period === 'AM' && hours === 12) hours = 0;
+    
+    date.setHours(hours, minutes, 0, 0);
+  };
+
+  setTime(startDateTime, startTimeStr);
+  setTime(endDateTime, endTimeStr);
+
+  // If end time is earlier than start time (crossing midnight), add a day
+  if (endDateTime <= startDateTime) {
+    endDateTime.setDate(endDateTime.getDate() + 1);
+  }
 
   // Format dates for iCalendar (UTC format)
   const formatDateForICS = (date) => {
@@ -56,8 +80,8 @@ PRODID:-//BundleBooth//Booking Confirmation//EN
 BEGIN:VEVENT
 UID:${uid}
 DTSTAMP:${formatDateForICS(new Date())}
-DTSTART:${formatDateForICS(startTime)}
-DTEND:${formatDateForICS(endTime)}
+DTSTART:${formatDateForICS(startDateTime)}
+DTEND:${formatDateForICS(endDateTime)}
 SUMMARY:${eventName}
 DESCRIPTION:Booking confirmation for ${eventName}.\\n\\nContact: ${contactName} (${email})\\n\\n${specialRequests ? `Notes: ${specialRequests}\\n\\n` : ''}Booked through BundleBooth.
 LOCATION:${eventLocation || 'Location not specified'}
@@ -109,7 +133,7 @@ app.post('/send-booking-email', async (req, res) => {
 
     const formattedTimeSlot = timeSlotDisplay || 'Not specified';
     const formattedDuration = '3 hours'; // Fixed duration as per requirement
-    const formattedLocation = eventLocation || 'Not specified';
+    const formattedLocation = eventLocation || 'Not specified'; // Now properly using eventLocation from request
     const formattedPaymentMethod = 'Credit Card';
 
     // Calculate actual subtotal from services
