@@ -43,7 +43,6 @@ app.post('/send-booking-email', async (req, res) => {
       bundleDescription,
       selectedBundle = {},
       promoCodeApplied,
-      paymentLast4,
       transactionId,
       paymentStatus,
       subtotal,
