@@ -102,7 +102,7 @@ app.post('/send-booking-email', async (req, res) => {
       eventType,
       eventDate, 
       timeSlotDisplay,
-      eventLocation, 
+      location, 
       specialRequests,
       services = [],
       bundleName,
