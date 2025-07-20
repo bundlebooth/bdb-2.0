@@ -31,7 +31,7 @@ app.post('/send-booking-email', async (req, res) => {
     const { 
       contactName, 
       email, 
-      phoneNumber,
+      phone,
       eventName, 
       eventType,
       eventDate, 
@@ -67,8 +67,8 @@ app.post('/send-booking-email', async (req, res) => {
 
     const formattedTimeSlot = timeSlotDisplay || 'Not specified';
     const formattedDuration = '3 hours'; // Fixed duration as per requirement
-    const formattedLocation = eventLocation || 'Location not specified';
-    const formattedPaymentMethod = paymentLast4 ? `Credit Card (ending in ${paymentLast4})` : 'Credit Card (ending in ****)';
+    const formattedLocation = eventLocation || 'Not specified';
+    const formattedPaymentMethod = 'Credit Card';
 
     // Calculate actual subtotal from services
     const calculatedSubtotal = services.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
@@ -106,9 +106,10 @@ app.post('/send-booking-email', async (req, res) => {
     <tr>
       <td align="center">
         <table width="600" cellspacing="0" cellpadding="0" style="border-collapse: collapse;">
-          <!-- Header -->
+          <!-- Header with Logo -->
           <tr>
             <td style="background-color: #f8f8f8; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
+              <img src="https://img1.wsimg.com/isteam/ip/e5031132-8c20-44e3-a810-901cf200c927/BundleBooth_Logo_FULL_FINAL%25202%2520large.png" alt="BundleBooth Logo" style="max-width: 300px; height: auto; margin-bottom: 20px;">
               <div style="font-size: 24px; font-weight: bold; margin-bottom: 10px;">${eventName}</div>
               <div>Your event booking has been confirmed</div>
             </td>
@@ -129,7 +130,7 @@ app.post('/send-booking-email', async (req, res) => {
                 </div>
                 <div style="display: flex; margin-bottom: 10px;">
                   <div style="font-weight: bold; width: 150px;">Phone Number:</div>
-                  <div>${phoneNumber || 'Not provided'}</div>
+                  <div>${phone || 'Not specified'}</div>
                 </div>
               </div>
 
