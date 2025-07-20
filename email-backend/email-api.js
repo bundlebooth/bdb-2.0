@@ -25,6 +25,48 @@ app.get('/', (req, res) => {
   });
 });
 
+// Function to generate iCalendar content
+function generateICalendarContent(eventDetails) {
+  const { 
+    contactName,
+    email,
+    eventName,
+    eventDate,
+    timeSlotDisplay,
+    eventLocation,
+    specialRequests
+  } = eventDetails;
+
+  // Parse the event date and time
+  const startTime = new Date(eventDate);
+  const endTime = new Date(startTime.getTime() + 3 * 60 * 60 * 1000); // 3 hours duration
+
+  // Format dates for iCalendar (UTC format)
+  const formatDateForICS = (date) => {
+    return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z/, 'Z');
+  };
+
+  // Generate a unique identifier
+  const uid = `${Date.now()}@bundlebooth.ca`;
+
+  // Create the iCalendar content
+  return `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//BundleBooth//Booking Confirmation//EN
+BEGIN:VEVENT
+UID:${uid}
+DTSTAMP:${formatDateForICS(new Date())}
+DTSTART:${formatDateForICS(startTime)}
+DTEND:${formatDateForICS(endTime)}
+SUMMARY:${eventName}
+DESCRIPTION:Booking confirmation for ${eventName}.\\n\\nContact: ${contactName} (${email})\\n\\n${specialRequests ? `Notes: ${specialRequests}\\n\\n` : ''}Booked through BundleBooth.
+LOCATION:${eventLocation || 'Location not specified'}
+STATUS:CONFIRMED
+ORGANIZER;CN=BundleBooth:mailto:${process.env.FROM_EMAIL || 'hello@bundlebooth.ca'}
+END:VEVENT
+END:VCALENDAR`;
+}
+
 // Email endpoint
 app.post('/send-booking-email', async (req, res) => {
   try {
@@ -279,6 +321,10 @@ app.post('/send-booking-email', async (req, res) => {
                   <li>All times are in Eastern Time Zone (EST)</li>
                 </ul>
               </div>
+
+              <div style="margin-top: 20px; padding: 10px; background-color: #f0f8ff; border-radius: 4px;">
+                <p><strong>Don't forget to add this event to your calendar!</strong> We've attached an .ics file to this email that you can import into Google Calendar, Outlook, or other calendar applications.</p>
+              </div>
             </td>
           </tr>
           
@@ -296,6 +342,23 @@ app.post('/send-booking-email', async (req, res) => {
 </body>
 </html>
     `;
+
+    // Generate iCalendar content
+    const icsContent = generateICalendarContent({
+      contactName,
+      email,
+      eventName,
+      eventDate,
+      timeSlotDisplay,
+      eventLocation,
+      specialRequests
+    });
+
+    // Add attachment to the email
+    sendSmtpEmail.attachment = [{
+      name: 'BundleBooth_Event.ics',
+      content: Buffer.from(icsContent).toString('base64')
+    }];
 
     // Send email
     const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
