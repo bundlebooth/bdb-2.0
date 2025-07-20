@@ -1774,7 +1774,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="contact-name">Your Name</label>
-                            <input type="text" id="contact-name">
+                            <input type="text" id="contact-name" >
                         </div>
                         <div class="form-group">
                             <label for="contact-phone">Phone Number</label>
@@ -1830,8 +1830,13 @@
             <h3>Payment Information</h3>
             <div id="payment-errors"></div>
             <div id="card-element"></div>
-            <button id="submit-payment" class="book-now-button">Pay <span id="payment-amount">document.getElementById('final-total-price')</span> Now</button>
+            <button id="submit-payment" class="book-now-button">Pay <span id="payment-amount">$0.50</span> Now</button>
             <div class="processing-message" id="processing-message">Hang tight! We're processing your booking — this may take a moment.</div>
+        </div>
+        
+        <div class="payment-info" id="payment-info" style="display:none;">
+            <p><strong>Payment Amount:</strong> <span id="payment-info-amount">$0.50</span></p>
+            <p>This is a test payment - your card will not be charged</p>
         </div>
         
         <div class="action-buttons">
@@ -1842,7 +1847,7 @@
         <div class="confirmation-message" id="confirmation-message">
             <div class="confirmation-icon">✓</div>
             <h3>Booking Confirmed!</h3>
-            <p>Thank you for your booking. Your payment was successful.</p>
+            <p>Thank you for your booking. Your payment of <span id="confirmed-amount">$0.50</span> was successful.</p>
             <p>A confirmation email has been sent to <span id="sent-email"></span> with your booking details.</p>
             <button class="book-now-button" id="new-bundle-button">Create Another Bundle</button>
         </div>
