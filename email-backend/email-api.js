@@ -33,7 +33,7 @@ function generateICalendarContent(eventDetails) {
     eventName,
     eventDate,
     timeSlotDisplay,
-    eventLocation,
+    location,
     specialRequests
   } = eventDetails;
 
@@ -84,7 +84,7 @@ DTSTART:${formatDateForICS(startDateTime)}
 DTEND:${formatDateForICS(endDateTime)}
 SUMMARY:${eventName}
 DESCRIPTION:Booking confirmation for ${eventName}.\\n\\nContact: ${contactName} (${email})\\n\\n${specialRequests ? `Notes: ${specialRequests}\\n\\n` : ''}Booked through BundleBooth.
-LOCATION:${eventLocation || 'Location not specified'}
+LOCATION:${location || 'Location not specified'}
 STATUS:CONFIRMED
 ORGANIZER;CN=BundleBooth:mailto:${process.env.FROM_EMAIL || 'hello@bundlebooth.ca'}
 END:VEVENT
@@ -133,7 +133,7 @@ app.post('/send-booking-email', async (req, res) => {
 
     const formattedTimeSlot = timeSlotDisplay || 'Not specified';
     const formattedDuration = '3 hours'; // Fixed duration as per requirement
-    const formattedLocation = eventLocation || 'Not specified'; // Now properly using eventLocation from request
+    const formattedLocation = location || 'Not specified'; // Now properly using eventLocation from request
     const formattedPaymentMethod = 'Credit Card';
 
     // Calculate actual subtotal from services
@@ -374,7 +374,7 @@ app.post('/send-booking-email', async (req, res) => {
       eventName,
       eventDate,
       timeSlotDisplay,
-      eventLocation,
+      location,
       specialRequests
     });
 
