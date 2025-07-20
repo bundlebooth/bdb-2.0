@@ -3475,183 +3475,118 @@ async function handlePaymentSubmit(e) {
     const errorDisplay = document.getElementById('payment-errors');
     const processingMessage = document.getElementById('processing-message');
     
-    // Set loading state
     button.disabled = true;
     button.innerHTML = '<span class="spinner"></span> Processing...';
     errorDisplay.textContent = '';
     processingMessage.style.display = 'block';
 
     try {
-        // 1. Validate required fields
-        const requiredFields = {
-            'contact-name': 'Your Name',
-            'contact-email': 'Email',
-            'event-name': 'Event Name',
-            'event-location': 'Event Location'
-        };
-        
-        const missingFields = [];
-        for (const [id, name] of Object.entries(requiredFields)) {
-            if (!document.getElementById(id).value.trim()) {
-                missingFields.push(name);
-            }
-        }
-        
-        if (missingFields.length > 0) {
-            throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
-        }
-        
         const selectedSlot = document.querySelector('.selected-slot');
         if (!selectedSlot) {
             throw new Error('Please select an available time slot');
         }
-
-        // 2. Prepare booking data
+        
         const total = parseFloat(document.getElementById('final-total-price').textContent.replace('C$', ''));
         const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
         const bundleDiscountValue = selectedBundle.isCustom ? 0 : 
-                                  (selectedBundle.discountPercentage ? subtotal * (selectedBundle.discountPercentage/100) : 0);
+                                  (selectedBundle.discountPercentage ? selectedBundle.discountPercentage/100 : 0);
+        const discount = subtotal * bundleDiscountValue;
         
         const bookingData = {
-            contactName: document.getElementById('contact-name').value.trim(),
-            email: document.getElementById('contact-email').value.trim(),
-            phone: document.getElementById('contact-phone').value.trim() || undefined,
-            eventName: document.getElementById('event-name').value.trim(),
-            eventType: document.getElementById('event-type').value || 'Not specified',
+            eventName: document.getElementById('event-name').value,
+            eventType: document.getElementById('event-type').value,
             eventDate: selectedSlot.dataset.start.split('T')[0],
             timeSlotDisplay: selectedSlot.dataset.display,
-            eventLocation: document.getElementById('event-location').value.trim(),
-            specialRequests: document.getElementById('special-requests').value.trim() || undefined,
+            duration: 3,
+            location: document.getElementById('event-location').value,
+            notes: document.getElementById('special-requests').value,
+            contactName: document.getElementById('contact-name').value,
+            email: document.getElementById('contact-email').value,
+            phone: document.getElementById('contact-phone').value,
+            startTime: selectedSlot.dataset.start,
+            endTime: selectedSlot.dataset.end,
             services: selectedServices,
             bundleName: selectedBundle.name,
-            bundleDescription: selectedBundle.description || undefined,
+            bundleDescription: selectedBundle.description,
             selectedBundle: {
                 name: selectedBundle.name,
                 isCustom: selectedBundle.isCustom,
                 discountPercentage: selectedBundle.discountPercentage || 0,
-                discountValue: bundleDiscountValue
+                discountValue: discount
             },
             subtotal: subtotal,
-            discount: bundleDiscountValue,
+            discount: discount,
             promoCodeApplied: promoCodeApplied ? {
                 promoCode: promoCodeApplied.promoCode,
                 discountValue: promoDiscount
-            } : undefined,
-            promoDiscount: promoDiscount || 0,
+            } : null,
+            promoDiscount: promoDiscount,
             total: total
         };
 
-        // 3. Process payment with Stripe
-        const paymentResponse = await fetch(`${config.stripeBackendUrl}/api/payments/create-payment-intent`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                amount: Math.round(total * 100),
-                currency: 'cad',
-                metadata: {
-                    eventName: bookingData.eventName,
-                    contactEmail: bookingData.email
+            // 3. Process Stripe payment
+            const paymentResponse = await fetch(`${config.stripeBackendUrl}/api/payments/create-payment-intent`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    amount: Math.round(total * 100), // Convert to cents
+                    currency: 'cad'
+                })
+            });
+
+            if (!paymentResponse.ok) throw new Error('Payment setup failed');
+            const { clientSecret } = await paymentResponse.json();
+
+            const { error } = await stripe.confirmCardPayment(clientSecret, {
+                payment_method: {
+                    card: cardElement,
+                    billing_details: {
+                        name: bookingData.contactName,
+                        email: bookingData.email
+                    }
                 }
-            })
-        });
+            });
 
-        if (!paymentResponse.ok) {
-            const errorData = await paymentResponse.json().catch(() => ({}));
-            throw new Error(errorData.error || 'Payment processing failed');
-        }
+            if (error) throw error;
 
-        const { clientSecret } = await paymentResponse.json();
-        const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-            payment_method: {
-                card: cardElement,
-                billing_details: {
+            // 4. Create calendar booking
+            const bookingResponse = await fetch(`${config.backendUrl}/api/bookings`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    start: bookingData.startTime,
+                    end: bookingData.endTime,
                     name: bookingData.contactName,
                     email: bookingData.email,
-                    phone: bookingData.phone
-                }
-            }
-        });
-
-        if (error) throw error;
-
-        // 4. Add payment details to booking data
-        bookingData.transactionId = paymentIntent.id;
-        bookingData.paymentStatus = paymentIntent.status;
-
-        // 5. Create calendar booking
-        const bookingResponse = await fetch(`${config.backendUrl}/api/bookings`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                start: selectedSlot.dataset.start,
-                end: selectedSlot.dataset.end,
-                name: bookingData.contactName,
-                email: bookingData.email,
-                phone: bookingData.phone,
-                eventDetails: {
-                    eventName: bookingData.eventName,
-                    eventType: bookingData.eventType,
-                    location: bookingData.eventLocation,
-                    notes: bookingData.specialRequests,
-                    bundleName: bookingData.bundleName,
-                    services: bookingData.services.map(s => s.name)
-                }
-            })
-        });
-        
-        if (!bookingResponse.ok) {
-            const errorData = await bookingResponse.json().catch(() => ({}));
-            throw new Error(errorData.error || 'Failed to create booking');
-        }
-
-        // 6. Send confirmation email
-        const emailResponse = await fetch(config.emailBackendUrl, {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(bookingData)
-        });
-
-        if (!emailResponse.ok) {
-            const errorData = await emailResponse.json().catch(() => ({}));
-            throw new Error(errorData.error || 'Failed to send confirmation email');
-        }
-
-        // 7. Show success UI
-        document.getElementById('stripe-payment-form').style.display = 'none';
-        document.getElementById('event-details-form').style.display = 'none';
-        document.getElementById('back-to-services').style.display = 'none';
-        document.getElementById('submit-booking').style.display = 'none';
-        
-        const confirmationMessage = document.getElementById('confirmation-message');
-        if (confirmationMessage) {
-            confirmationMessage.style.display = 'block';
-            document.getElementById('sent-email').textContent = bookingData.email;
-            document.getElementById('confirmed-amount').textContent = `C$${total.toFixed(2)}`;
+                    eventDetails: {
+                        eventName: bookingData.eventName,
+                        location: bookingData.location,
+                        notes: bookingData.notes
+                    }
+                })
+            });
             
-            // Scroll to confirmation
-            setTimeout(() => {
-                confirmationMessage.scrollIntoView({ behavior: 'smooth' });
-            }, 100);
-        }
+            if (!bookingResponse.ok) {
+                const errorData = await bookingResponse.json();
+                throw new Error(errorData.error || 'Booking failed');
+            }
 
-    } catch (error) {
+            // 5. Send confirmation email
+            await sendConfirmationEmail(bookingData);
+            
+            // 6. Show success
+            document.getElementById('stripe-payment-form').style.display = 'none';
+            document.getElementById('event-details-form').style.display = 'none';
+            document.getElementById('back-to-services').style.display = 'none';
+            document.getElementById('sent-email').textContent = bookingData.email;
+            document.getElementById('confirmation-message').style.display = 'block';
+            
+       } catch (error) {
         console.error('Payment error:', error);
         errorDisplay.textContent = error.message;
-        
-        // Scroll to error message
-        errorDisplay.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        // If validation error, highlight the form
-        if (error.message.includes('required fields')) {
-            document.getElementById('event-details-form').reportValidity();
-        }
     } finally {
-        // Reset button state
         button.disabled = false;
-        button.textContent = `Pay C$${parseFloat(document.getElementById('final-total-price').textContent.replace('C$', '')).toFixed(2)}`;
+        button.innerHTML = 'Pay $' + parseFloat(document.getElementById('final-total-price').textContent.replace('C$', '')) + ' Now';
         processingMessage.style.display = 'none';
     }
 }
