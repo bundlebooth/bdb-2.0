@@ -1426,15 +1426,44 @@
       height: 100%;
     }
     
-    /* Category Services Container */
-    .category-services-container {
-      margin-bottom: 30px;
-      border: 1px solid #e9ecef;
-      border-radius: 8px;
-      padding: 16px;
-      background: #fff;
+ .category-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        position: relative;
     }
     
+    .category-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .category-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--bb-blue);
+    }
+    
+    .category-count {
+        font-size: 0.9rem;
+        color: var(--bb-secondary);
+    }
+    
+    /* Remove the old category container styles */
+    .category-services-container {
+        margin-bottom: 30px;
+        border: none;
+        border-radius: 0;
+        padding: 0;
+        background: transparent;
+        box-shadow: none;
+    }
     .category-title {
       font-size: 1.1rem;
       font-weight: 600;
@@ -1595,6 +1624,8 @@
     color: var(--bb-red);
     margin-left: 4px;
 }
+
+
 
 </style>
 </head>
@@ -2911,10 +2942,11 @@ function updatePrices() {
             if (categoryServices.length === 0) return;
 
             const categoryContainer = document.createElement('div');
-            categoryContainer.className = 'category-services-container';
+            categoryContainer.className = 'category-card';
             
             const categoryId = category.toLowerCase().replace(/\s+/g, '-');
             const selectedCount = selectedServices.filter(s => s.ServiceType === category).length;
+			const requiredCount = selectedBundle.categories[category];
             
             // For custom bundles, just show count without limit
             const countText = selectedBundle.isCustom ? 
