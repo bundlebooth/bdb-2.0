@@ -14,6 +14,7 @@
                 --bb-secondary: #666;
                 --bb-green: #2ecc71;
                 --bb-hover-grey: #4a5057;
+                --bb-border: #e0e0e0;
             }
             * {
                 box-sizing: border-box;
@@ -572,6 +573,7 @@
                 gap: 5px;
                 flex-wrap: nowrap;
                 white-space: nowrap;
+                margin-bottom: 10px;
             }
             .slideshow-note {
                 font-family: Poppins, sans-serif;
@@ -661,6 +663,23 @@
                 font-size: 0.9rem;
                 color: #555;
                 line-height: 1.4;
+            }
+
+            .package-details {
+                margin: 12px 0;
+                padding-bottom: 12px;
+                border-bottom: 1px solid #eee;
+            }
+
+            .package-details p {
+                margin: 6px 0;
+                font-size: 0.9rem;
+                color: #555;
+            }
+
+            .package-details strong {
+                color: var(--bb-blue);
+                font-weight: 600;
             }
 
             @media (max-width: 900px) {
@@ -825,7 +844,6 @@
                         </p>
                         
                         <div class="slideshow-container" id="photo-booth-slideshow"><div class="loading">Loading Photo Booth features...</div></div>
-                        <div class="book-now-wrapper"><a href="https://bundlebooth.ca/packages" target="_blank" class="browse-more-button">Browse More</a></div>
                     </div>
                 </div>
                 <div class="booth-container">
@@ -838,7 +856,6 @@
                             <br />
                         </p>
                         <div class="slideshow-container" id="video-booth-slideshow"><div class="loading">Loading 360 Video Booth features...</div></div>
-                        <div class="book-now-wrapper"><a href="https://bundlebooth.ca/packages" target="_blank" class="browse-more-button">Browse More</a></div>
                     </div>
                 </div>
                 <div class="booth-container">
@@ -850,7 +867,6 @@
                             recording is saved as a cherished audio keepsake, allowing you to relive the voices and emotions of your special day for years to come. It's a memorable touch that adds charm and sentiment to any celebration.
                         </p>
                         <div class="slideshow-container" id="audio-guestbook-slideshow"><div class="loading">Loading Audio Guest Book features...</div></div>
-                        <div class="book-now-wrapper"><a href="https://bundlebooth.ca/packages" target="_blank" class="browse-more-button">Browse More</a></div>
                     </div>
                 </div>
                 <div class="booth-container">
@@ -863,7 +879,6 @@
                             they'll love to share.
                         </p>
                         <div class="slideshow-container" id="magazine-booth-slideshow"><div class="loading">Loading Magazine Booth features...</div></div>
-                        <div class="book-now-wrapper"><a href="https://bundlebooth.ca/packages" target="_blank" class="browse-more-button">Browse More</a></div>
                     </div>
                 </div>
             </div>
@@ -1084,69 +1099,89 @@
                     updateFadeEffect();
                 }
 
-                // Load features data
-                fetch("https://bundlebooth.github.io/bdb-2.0/data/features-included.json")
+                // Load services data with pricing information
+                fetch("https://bundlebooth.github.io/bdb-2.0/data/individual-services.json")
                     .then((response) => {
-                        if (!response.ok) throw new Error("Failed to fetch features");
+                        if (!response.ok) throw new Error("Failed to fetch services");
                         return response.json();
                     })
-                    .then((featuresData) => {
-                        renderFeatures(featuresData);
+                    .then((servicesData) => {
+                        // Photo Booth
+                        const photoBoothService = servicesData.find(s => s.name.toLowerCase().includes("photo"));
+                        renderServiceFeatures("photo-booth-slideshow", photoBoothService);
+
+                        // 360 Video Booth
+                        const videoBoothService = servicesData.find(s => s.name.toLowerCase().includes("360"));
+                        renderServiceFeatures("video-booth-slideshow", videoBoothService);
+
+                        // Audio Guest Book
+                        const audioService = servicesData.find(s => s.name.toLowerCase().includes("audio"));
+                        renderServiceFeatures("audio-guestbook-slideshow", audioService);
+
+                        // Magazine Booth
+                        const magazineService = servicesData.find(s => s.name.toLowerCase().includes("magazine"));
+                        renderServiceFeatures("magazine-booth-slideshow", magazineService);
                     })
                     .catch((error) => {
-                        console.error("Error loading features:", error);
-                        // Fallback features if fetch fails
-                        const fallbackFeatures = {
-                            "photo-booth": {
-                                features: [
-                                    "High-resolution DSLR camera",
-                                    "Professional lighting setup",
-                                    "Touchscreen interface",
-                                    "Custom branded photo templates",
-                                    "Instant prints (4x6 or 2x6 strips)",
-                                    "Digital copies for all guests",
-                                    "Online gallery with sharing options",
-                                    "Unlimited sessions during event",
-                                ],
-                            },
-                            "360-video-booth": {
-                                features: [
-                                    "360-degree rotating platform",
-                                    "4K slow-motion video capture",
-                                    "Professional lighting setup",
-                                    "Custom branded intro/outro screens",
-                                    "Instant video sharing via QR codes",
-                                    "Online gallery with download options",
-                                    "Unlimited sessions during event",
-                                    "Professional operator",
-                                ],
-                            },
-                            "audio-guest-book": {
-                                features: [
-                                    "Vintage-style rotary phone",
-                                    "High-quality audio recording",
-                                    "Custom welcome message",
-                                    "Unlimited message recordings",
-                                    "Digital download of all recordings",
-                                    "Beautifully packaged USB with recordings",
-                                    "Optional transcription service",
-                                    "Professional setup and operation",
-                                ],
-                            },
-                            "magazine-booth-box": {
-                                features: [
-                                    "Life-sized magazine frame",
-                                    "Professional lighting setup",
-                                    "High-resolution DSLR camera",
-                                    "Custom magazine cover design",
-                                    "Instant prints (8x10 glossy)",
-                                    "Digital copies for all guests",
-                                    "Online gallery with sharing options",
-                                    "Unlimited sessions during event",
-                                ],
-                            },
-                        };
-                        renderFeatures(fallbackFeatures);
+                        console.error("Error loading services:", error);
+                        // Fallback to the previous features data if this fetch fails
+                        fetch("https://bundlebooth.github.io/bdb-2.0/data/features-included.json")
+                            .then(response => response.json())
+                            .then(featuresData => renderFeatures(featuresData))
+                            .catch(() => {
+                                // Ultimate fallback to hardcoded features
+                                const fallbackFeatures = {
+                                    "photo-booth": {
+                                        features: [
+                                            "High-resolution DSLR camera",
+                                            "Professional lighting setup",
+                                            "Touchscreen interface",
+                                            "Custom branded photo templates",
+                                            "Instant prints (4x6 or 2x6 strips)",
+                                            "Digital copies for all guests",
+                                            "Online gallery with sharing options",
+                                            "Unlimited sessions during event",
+                                        ],
+                                    },
+                                    "360-video-booth": {
+                                        features: [
+                                            "360-degree rotating platform",
+                                            "4K slow-motion video capture",
+                                            "Professional lighting setup",
+                                            "Custom branded intro/outro screens",
+                                            "Instant video sharing via QR codes",
+                                            "Online gallery with download options",
+                                            "Unlimited sessions during event",
+                                            "Professional operator",
+                                        ],
+                                    },
+                                    "audio-guest-book": {
+                                        features: [
+                                            "Vintage-style rotary phone",
+                                            "High-quality audio recording",
+                                            "Custom welcome message",
+                                            "Unlimited message recordings",
+                                            "Digital download of all recordings",
+                                            "Beautifully packaged USB with recordings",
+                                            "Optional transcription service",
+                                            "Professional setup and operation",
+                                        ],
+                                    },
+                                    "magazine-booth-box": {
+                                        features: [
+                                            "Life-sized magazine frame",
+                                            "Professional lighting setup",
+                                            "High-resolution DSLR camera",
+                                            "Custom magazine cover design",
+                                            "Instant prints (8x10 glossy)",
+                                            "Digital copies for all guests",
+                                            "Online gallery with sharing options",
+                                            "Unlimited sessions during event",
+                                        ],
+                                    },
+                                };
+                                renderFeatures(fallbackFeatures);
+                            });
                     });
 
                 function renderFeatures(featuresData) {
@@ -1176,13 +1211,16 @@
                     const photoBoothContainer = document.getElementById("photo-booth-slideshow");
                     if (featuresData["photo-booth"] && featuresData["photo-booth"].features) {
                         photoBoothContainer.innerHTML = `
-            <div class="features-container">
-                <div class="features-title">What's Included:</div>
-                <ul class="features-list">
-                    ${featuresData["photo-booth"].features.map((feature) => `<li>${feature}</li>`).join("")}
-                </ul>
-            </div>
-        `;
+                            <div class="features-container">
+                                <div class="features-title">What's Included:</div>
+                                <ul class="features-list">
+                                    ${featuresData["photo-booth"].features.map((feature) => `<li>${feature}</li>`).join("")}
+                                </ul>
+                            </div>
+                            <div class="book-now-wrapper">
+                                <a href="https://bundlebooth.ca/packages" target="_blank" class="book-now-button">Book Now</a>
+                            </div>
+                        `;
                     } else {
                         photoBoothContainer.innerHTML = '<div class="error-message">No features available for this service</div>';
                     }
@@ -1191,13 +1229,16 @@
                     const videoBoothContainer = document.getElementById("video-booth-slideshow");
                     if (featuresData["360-video-booth"] && featuresData["360-video-booth"].features) {
                         videoBoothContainer.innerHTML = `
-            <div class="features-container">
-                <div class="features-title">What's Included:</div>
-                <ul class="features-list">
-                    ${featuresData["360-video-booth"].features.map((feature) => `<li>${feature}</li>`).join("")}
-                </ul>
-            </div>
-        `;
+                            <div class="features-container">
+                                <div class="features-title">What's Included:</div>
+                                <ul class="features-list">
+                                    ${featuresData["360-video-booth"].features.map((feature) => `<li>${feature}</li>`).join("")}
+                                </ul>
+                            </div>
+                            <div class="book-now-wrapper">
+                                <a href="https://bundlebooth.ca/packages" target="_blank" class="book-now-button">Book Now</a>
+                            </div>
+                        `;
                     } else {
                         videoBoothContainer.innerHTML = '<div class="error-message">No features available for this service</div>';
                     }
@@ -1206,13 +1247,16 @@
                     const audioGuestbookContainer = document.getElementById("audio-guestbook-slideshow");
                     if (featuresData["audio-guest-book"] && featuresData["audio-guest-book"].features) {
                         audioGuestbookContainer.innerHTML = `
-            <div class="features-container">
-                <div class="features-title">What's Included:</div>
-                <ul class="features-list">
-                    ${featuresData["audio-guest-book"].features.map((feature) => `<li>${feature}</li>`).join("")}
-                </ul>
-            </div>
-        `;
+                            <div class="features-container">
+                                <div class="features-title">What's Included:</div>
+                                <ul class="features-list">
+                                    ${featuresData["audio-guest-book"].features.map((feature) => `<li>${feature}</li>`).join("")}
+                                </ul>
+                            </div>
+                            <div class="book-now-wrapper">
+                                <a href="https://bundlebooth.ca/packages" target="_blank" class="book-now-button">Book Now</a>
+                            </div>
+                        `;
                     } else {
                         audioGuestbookContainer.innerHTML = '<div class="error-message">No features available for this service</div>';
                     }
@@ -1221,31 +1265,84 @@
                     const magazineBoothContainer = document.getElementById("magazine-booth-slideshow");
                     if (featuresData["magazine-booth"] && featuresData["magazine-booth"].features) {
                         magazineBoothContainer.innerHTML = `
-            <div class="features-container">
-                <div class="features-title">What's Included:</div>
-                <ul class="features-list">
-                    ${featuresData["magazine-booth"].features.map((feature) => `<li>${feature}</li>`).join("")}
-                </ul>
-            </div>
-        `;
+                            <div class="features-container">
+                                <div class="features-title">What's Included:</div>
+                                <ul class="features-list">
+                                    ${featuresData["magazine-booth"].features.map((feature) => `<li>${feature}</li>`).join("")}
+                                </ul>
+                            </div>
+                            <div class="book-now-wrapper">
+                                <a href="https://bundlebooth.ca/packages" target="_blank" class="book-now-button">Book Now</a>
+                            </div>
+                        `;
                     } else {
                         magazineBoothContainer.innerHTML = '<div class="error-message">No features available for this service</div>';
                     }
                 }
+
                 function renderServiceFeatures(containerId, service) {
                     const container = document.getElementById(containerId);
-                    if (service && service.features) {
-                        container.innerHTML = `
-            <div class="features-container">
-                <div class="features-title">What's Included:</div>
-                <ul class="features-list">
-                    ${service.features.map((feature) => `<li>${feature}</li>`).join("")}
-                </ul>
-            </div>
-        `;
-                    } else {
+                    if (!service) {
                         container.innerHTML = '<div class="error-message">No features available for this service</div>';
+                        return;
                     }
+
+                    // Create price display with sale information if applicable
+                    let priceDisplay = '';
+                    if (service.price) {
+                        priceDisplay = `
+                            <div class="price-container">
+                                <span class="price ${service.Sale === 'Y' ? 'sale' : 'no-sale'}">
+                                    $${service.price} ${service.currency || 'CAD'}
+                                    ${service.Sale === 'Y' ? '<span class="sale-tag">Sale</span>' : ''}
+                                    ${service.New === 'Y' ? '<span class="new-tag">New</span>' : ''}
+                                </span>
+                                ${service.basePrice && service.basePrice > service.price ? 
+                                  `<span class="original-price">$${service.basePrice}</span>` : ''}
+                            </div>
+                        `;
+                    }
+
+                    // Create duration display if available
+                    let durationDisplay = '';
+                    if (service.duration) {
+                        durationDisplay = `
+                            <div class="package-details">
+                                <p><strong>Duration:</strong> ${service.duration} hours</p>
+                            </div>
+                        `;
+                    }
+
+                    // Create pricing tiers display if available
+                    let pricingTiersDisplay = '';
+                    if (service.pricingTiers && service.pricingTiers.length > 0) {
+                        pricingTiersDisplay = `
+                            <div class="package-details">
+                                <p><strong>Options:</strong></p>
+                                <ul class="features-list">
+                                    ${service.pricingTiers.map(tier => 
+                                        `<li>${tier.label}: $${tier.price} ${service.currency || 'CAD'}</li>`
+                                    ).join('')}
+                                </ul>
+                            </div>
+                        `;
+                    }
+
+                    // Combine all the information
+                    container.innerHTML = `
+                        <div class="features-container">
+                            ${priceDisplay}
+                            ${durationDisplay}
+                            ${pricingTiersDisplay}
+                            <div class="features-title">What's Included:</div>
+                            <ul class="features-list">
+                                ${service.features.map(feature => `<li>${feature}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="book-now-wrapper">
+                            <a href="https://bundlebooth.ca/packages" target="_blank" class="book-now-button">Book Now</a>
+                        </div>
+                    `;
                 }
             });
         </script>
