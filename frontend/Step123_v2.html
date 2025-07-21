@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,maximum-scale=0,user-scalable=no" name="viewport"/>
 <meta http-equiv="Permissions-Policy" content="payment=(self 'https://bundlebooth.ca')">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>BundleBooth Custom Builder</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
 <script src="https://js.stripe.com/v3/"></script>
@@ -1602,6 +1603,7 @@
 <body>
 <div class="container">
 <main>
+<a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
         <div class="active">Step 1: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
@@ -1633,7 +1635,7 @@
     </div>
     
     <div class="step" id="step-2" style="display:none;">
-	    
+	    <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
         <h2 style="margin-bottom:16px;">Step 2: Select Your Services</h2>
         <p class="step-description">Choose the services you want to include in your bundle</p>
         <div id="compare-warning" class="compare-message" style="display:none;"></div>
@@ -1705,6 +1707,7 @@
     </div>
     
     <div class="step" id="step-3" style="display:none;">
+	<a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
         <h2 style="margin-bottom:16px;">Step 3: Review & Book</h2>
         <p class="step-description">Review your selections and complete your booking</p>
         
