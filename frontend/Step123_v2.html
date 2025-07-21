@@ -1591,6 +1591,11 @@
   transform: none;
 }
 
+.required-asterisk {
+    color: var(--bb-red);
+    margin-left: 4px;
+}
+
 </style>
 </head>
 <body>
@@ -1604,6 +1609,7 @@
     
     <div class="step" id="step-1">
         <div class="step-1-container">
+		        <div class="summary-card">
             <h2 style="margin-bottom:16px;">Step 1: Choose a Bundle</h2>
             <p class="step-description">Select from our pre-designed bundles or create your own custom package</p>
             
@@ -1622,9 +1628,11 @@
                 <!-- Bundles will be inserted here by JavaScript -->
             </div>
         </div>
+		</div>
     </div>
     
     <div class="step" id="step-2" style="display:none;">
+	    
         <h2 style="margin-bottom:16px;">Step 2: Select Your Services</h2>
         <p class="step-description">Choose the services you want to include in your bundle</p>
         <div id="compare-warning" class="compare-message" style="display:none;"></div>
@@ -1773,16 +1781,16 @@
                 <form id="event-details-form">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="contact-name">Your Name</label>
+                            <label for="contact-name">Your Name <span class="required-asterisk">*</span></label>
                             <input type="text" id="contact-name" >
                         </div>
                         <div class="form-group">
-                            <label for="contact-phone">Phone Number</label>
+                              <label for="contact-phone">Phone Number <span class="required-asterisk">*</span></label>
                             <input type="tel" id="contact-phone" required placeholder="+1 (XXX) XXX-XXXX">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="contact-email">Email</label>
+                        <label for="contact-email">Email <span class="required-asterisk">*</span></label>
                         <input type="email" id="contact-email" required placeholder="your-email@example.com">
                     </div>
                 </form>
@@ -1796,7 +1804,7 @@
                         <input type="text" id="event-name">
                     </div>
                     <div class="form-group mobile-event-type">
-                        <label for="event-type">Event Type</label>
+                        <label for="event-type">Event Type <span class="required-asterisk">*</span></label>
                         <select id="event-type" required>
                             <option value="">Select Event Type</option>
                             <option value="Wedding" selected>Wedding</option>
