@@ -3657,46 +3657,73 @@ async function handlePaymentSubmit(e) {
     }
 }
 
-// Add this at the top of your script
-let currentStep = 1;
-const parentOrigin = 'https://bundlebooth.ca';
+console.log('Script loaded in Step123_Iframe_test.html');
 
-// Replace ALL message-sending code with just this:
-function notifyStepChange() {
-    const height = document.body.scrollHeight;
+function notifyParentOfStepChange() {
     try {
-        window.parent.postMessage({
-            type: 'stepChanged',
-            height: height,
-            step: currentStep
-        }, parentOrigin);
+        console.log('Sending postMessage to parent with origin: https://bundlebooth.ca');
+        window.parent.postMessage('stepChanged', 'https://bundlebooth.ca');
     } catch (error) {
-        console.error('Failed to send step change:', error);
+        console.error('postMessage failed:', error);
     }
 }
 
-// Update your showStep function to call this:
-function showStep(stepNumber) {
-    if (currentStep === stepNumber) return;
-    
-    currentStep = stepNumber;
-    
-    // Your existing step visibility logic
-    document.getElementById('step-1').style.display = 'none';
-    document.getElementById('step-2').style.display = 'none';
-    document.getElementById('step-3').style.display = 'none';
-    document.getElementById(`step-${stepNumber}`).style.display = 'block';
-    
-    updateProgressBar(stepNumber);
-    
-    // Send update immediately after DOM changes
-    notifyStepChange();
+function scrollToTop() {
+    console.log('Attempting to scroll iframe to top');
+    try {
+        document.body.scrollTop = 0; // For older browsers
+        document.documentElement.scrollTop = 0; // Standard
+        const steps = document.getElementById('steps');
+        if (steps) steps.scrollTop = 0;
+    } catch (e) {
+        console.error('Scroll failed:', e);
+    }
+    setTimeout(() => {
+        console.log('Current scroll position:', window.scrollY || document.body.scrollTop || document.documentElement.scrollTop);
+        console.log('Document height:', document.body.scrollHeight);
+        console.log('Viewport height:', window.innerHeight);
+    }, 500);
+    notifyParentOfStepChange();
 }
 
-// Initial notification when page loads
-window.addEventListener('DOMContentLoaded', function() {
-    setTimeout(notifyStepChange, 100); // Small delay to ensure rendering
-});
+console.log('Setting up listeners');
+const progressBar = document.querySelector('#progress-bar');
+if (progressBar) {
+    document.querySelectorAll('#progress-bar div').forEach(step => {
+        step.addEventListener('click', () => {
+            console.log('Progress bar step clicked');
+        });
+    });
+} else {
+    console.warn('Progress bar not found');
+}
+
+const reviewSelection = document.getElementById('review-selection');
+if (reviewSelection) {
+    reviewSelection.addEventListener('click', () => {
+        console.log('Review Selection clicked');
+    });
+} else {
+    console.warn('Review Selection button not found');
+}
+
+const backToBundle = document.getElementById('back-to-bundle');
+if (backToBundle) {
+    backToBundle.addEventListener('click', () => {
+        console.log('Back to Bundle clicked');
+    });
+} else {
+    console.warn('Back to Bundle button not found');
+}
+
+const backToServices = document.getElementById('back-to-services');
+if (backToServices) {
+    backToServices.addEventListener('click', () => {
+        console.log('Back to Services clicked');
+    });
+} else {
+    console.warn('Back to Services button not found');
+}
 
 </script>
 <style>
