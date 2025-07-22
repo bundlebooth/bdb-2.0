@@ -3655,5 +3655,45 @@ async function handlePaymentSubmit(e) {
     }
 }
 </script>
+	<!-- Iframe Scroll Control Script -->
+<script>
+// 1. Listen for messages from the iframe (if it supports postMessage)
+window.addEventListener('message', function(event) {
+    // Security check - only accept messages from BundleBooth's domain
+    if (event.origin === "https://bundlebooth.github.io") {
+        console.log("Message from iframe:", event.data);
+        scrollToIframeTop();
+    }
+});
+
+// 2. Fallback: Scroll to top when iframe loads (initial load)
+document.getElementById('bundlebooth-iframe').addEventListener('load', function() {
+    scrollToIframeTop();
+});
+
+// 3. Fallback: Check URL every second (for SPA navigation)
+let lastIframeSrc = '';
+setInterval(function() {
+    const iframe = document.getElementById('bundlebooth-iframe');
+    if (iframe.src !== lastIframeSrc) {
+        lastIframeSrc = iframe.src;
+        scrollToIframeTop();
+    }
+}, 1000);
+
+// Helper function to scroll to iframe
+function scrollToIframeTop() {
+    const iframe = document.getElementById('bundlebooth-iframe');
+    window.scrollTo({
+        top: iframe.offsetTop - 20, // Adjust offset as needed
+        behavior: 'smooth'
+    });
+}
+
+// Initial scroll (when page loads)
+window.addEventListener('DOMContentLoaded', function() {
+    setTimeout(scrollToIframeTop, 500); // Small delay to ensure iframe is loaded
+});
+</script>
 </body>
 </html>
