@@ -3662,7 +3662,10 @@ console.log('Script loaded in Step123_Iframe_test.html');
 function notifyParentOfStepChange() {
     try {
         console.log('Sending postMessage to parent with origin: https://bundlebooth.ca');
-        window.parent.postMessage('stepChanged', 'https://bundlebooth.ca');
+        window.parent.postMessage({
+  type: 'stepChanged',
+  height: document.body.scrollHeight
+}, 'https://bundlebooth.github.io');
     } catch (error) {
         console.error('postMessage failed:', error);
     }
