@@ -3655,11 +3655,11 @@ async function handlePaymentSubmit(e) {
     }
 }
 
-console.log('Script loaded in Step123_v3.html');
+console.log('Script loaded in Step123_Iframe_test.html');
 
 function notifyParentOfStepChange() {
     try {
-        console.log('Sending postMessage to parent');
+        console.log('Sending postMessage to parent with origin: https://bundlebooth.ca');
         window.parent.postMessage('stepChanged', 'https://bundlebooth.ca');
     } catch (error) {
         console.error('postMessage failed:', error);
@@ -3668,56 +3668,75 @@ function notifyParentOfStepChange() {
 
 function scrollToTop() {
     console.log('Attempting to scroll iframe to top');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    try {
+        document.body.scrollTop = 0; // For older browsers
+        document.documentElement.scrollTop = 0; // Standard
+        const steps = document.getElementById('steps');
+        if (steps) steps.scrollTop = 0;
+    } catch (e) {
+        console.error('Scroll failed:', e);
+    }
+    setTimeout(() => {
+        console.log('Current scroll position:', window.scrollY || document.body.scrollTop || document.documentElement.scrollTop);
+        console.log('Document height:', document.body.scrollHeight);
+        console.log('Viewport height:', window.innerHeight);
+    }, 500);
     notifyParentOfStepChange();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOMContentLoaded fired, setting up listeners');
-    const progressBar = document.querySelector('#progress-bar');
-    if (progressBar) {
-        document.querySelectorAll('#progress-bar div').forEach(step => {
-            step.addEventListener('click', () => {
-                console.log('Progress bar step clicked');
-                setTimeout(scrollToTop, 100);
-            });
-        });
-    } else {
-        console.warn('Progress bar not found');
-    }
-
-    const reviewSelection = document.getElementById('review-selection');
-    if (reviewSelection) {
-        reviewSelection.addEventListener('click', () => {
-            console.log('Review Selection clicked');
+console.log('Setting up listeners');
+const progressBar = document.querySelector('#progress-bar');
+if (progressBar) {
+    document.querySelectorAll('#progress-bar div').forEach(step => {
+        step.addEventListener('click', () => {
+            console.log('Progress bar step clicked');
             setTimeout(scrollToTop, 100);
         });
-    } else {
-        console.warn('Review Selection button not found');
-    }
+    });
+} else {
+    console.warn('Progress bar not found');
+}
 
-    const backToBundle = document.getElementById('back-to-bundle');
-    if (backToBundle) {
-        backToBundle.addEventListener('click', () => {
-            console.log('Back to Bundle clicked');
-            setTimeout(scrollToTop, 100);
-        });
-    } else {
-        console.warn('Back to Bundle button not found');
-    }
+const reviewSelection = document.getElementById('review-selection');
+if (reviewSelection) {
+    reviewSelection.addEventListener('click', () => {
+        console.log('Review Selection clicked');
+        setTimeout(scrollToTop, 100);
+    });
+} else {
+    console.warn('Review Selection button not found');
+}
 
-    const backToServices = document.getElementById('back-to-services');
-    if (backToServices) {
-        backToServices.addEventListener('click', () => {
-            console.log('Back to Services clicked');
-            setTimeout(scrollToTop, 100);
-        });
-    } else {
-        console.warn('Back to Services button not found');
-    }
+const backToBundle = document.getElementById('back-to-bundle');
+if (backToBundle) {
+    backToBundle.addEventListener('click', () => {
+        console.log('Back to Bundle clicked');
+        setTimeout(scrollToTop, 100);
+    });
+} else {
+    console.warn('Back to Bundle button not found');
+}
 
-    setTimeout(scrollToTop, 1000); // Increased delay to ensure DOM readiness
-});
+const backToServices = document.getElementById('back-to-services');
+if (backToServices) {
+    backToServices.addEventListener('click', () => {
+        console.log('Back to Services clicked');
+        setTimeout(scrollToTop, 100);
+    });
+} else {
+    console.warn('Back to Services button not found');
+}
+
+setTimeout(scrollToTop, 1000);
+</script>
+<style>
+body {
+    overflow: auto !important;
+}
+#steps {
+    overflow: auto !important;
+    min-height: 100vh;
+}
 
 </script>
 </body>
