@@ -1,3 +1,9 @@
+<div id="iframe-messages" style="position: fixed; bottom: 20px; right: 20px; background: white; border: 1px solid #ccc; padding: 10px; max-width: 300px; max-height: 200px; overflow-y: auto; z-index: 1000; display: none;">
+  <h4 style="margin-top: 0;">Iframe Messages</h4>
+  <div id="message-log"></div>
+  <button onclick="document.getElementById('iframe-messages').style.display = 'none'" style="margin-top: 10px;">Close</button>
+</div>
+
 <iframe 
   id="bundlebooth-iframe"
   src="https://bundlebooth.github.io/bdb-2.0/frontend/Step123_Iframe_test.html" 
@@ -8,15 +14,38 @@
 
 <style>
   #bundlebooth-iframe {
-    height: 2300px;
+    height: 2300px; /* Initial height */
+    transition: height 0.3s ease;
   }
-  @media (max-width: 768px) { #bundlebooth-iframe { height: 2800px; } }
-  @media (max-width: 480px) { #bundlebooth-iframe { height: 5900px; } }
+  
+  .message-entry {
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+    font-size: 12px;
+  }
+  
+  .message-entry:last-child {
+    border-bottom: none;
+  }
+  
+  .message-time {
+    color: #666;
+    font-size: 10px;
+  }
 </style>
 
 <script>
-// Improved scroll to iframe function (no logging)
-// Keep only these two scroll mechanisms:
+// Function to adjust iframe height
+function adjustIframeHeight(height) {
+  const iframe = document.getElementById('bundlebooth-iframe');
+  if (iframe) {
+    iframe.style.height = height + 'px';
+    logMessage(`Iframe height adjusted to: ${height}px`);
+  }
+}
+
+// Function to scroll to iframe
 function scrollToIframe() {
   const iframe = document.getElementById('bundlebooth-iframe');
   if (iframe) {
@@ -24,16 +53,81 @@ function scrollToIframe() {
       top: iframe.offsetTop - 20,
       behavior: 'smooth'
     });
+    logMessage('Scrolled to iframe');
   }
 }
 
-// 1. Initial scroll
-window.addEventListener('DOMContentLoaded', scrollToIframe);
+// Function to log messages
+function logMessage(message) {
+  const messageLog = document.getElementById('message-log');
+  if (messageLog) {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString();
+    const messageEntry = document.createElement('div');
+    messageEntry.className = 'message-entry';
+    messageEntry.innerHTML = `
+      <div class="message-time">${timeString}</div>
+      <div>${message}</div>
+    `;
+    messageLog.prepend(messageEntry);
+    
+    // Show the messages panel if hidden
+    document.getElementById('iframe-messages').style.display = 'block';
+  }
+}
 
-// 2. Message-based scroll (no logging needed)
+// Initial scroll when page loads
+window.addEventListener('DOMContentLoaded', () => {
+  scrollToIframe();
+  logMessage('Page loaded, iframe initialized');
+});
+
+// Handle messages from iframe
 window.addEventListener('message', function(event) {
-  if (event.data === 'stepChanged') {
+  // Verify the origin is from your GitHub pages
+  if (event.origin !== 'https://bundlebooth.ca') {
+    logMessage(`Message from unauthorized origin blocked: ${event.origin}`);
+    return;
+  }
+  
+  const data = event.data;
+  logMessage(`Message received: ${JSON.stringify(data)}`);
+  
+  if (data.type === 'stepChanged') {
+    logMessage('Step changed in iframe');
+    // Adjust iframe height based on content
+    adjustIframeHeight(data.height);
+    
+    // Scroll to iframe
     scrollToIframe();
   }
 }, false);
+
+// Fallback: periodically check iframe height (optional)
+setInterval(function() {
+  const iframe = document.getElementById('bundlebooth-iframe');
+  if (iframe && iframe.contentWindow) {
+    try {
+      const height = iframe.contentWindow.document.body.scrollHeight;
+      if (height > 0) {
+        adjustIframeHeight(height);
+      }
+    } catch (e) {
+      logMessage('Cross-origin error checking iframe height');
+    }
+  }
+}, 1000);
+
+// Add toggle button for messages panel
+const toggleBtn = document.createElement('button');
+toggleBtn.textContent = 'Show Messages';
+toggleBtn.style.position = 'fixed';
+toggleBtn.style.bottom = '20px';
+toggleBtn.style.right = '20px';
+toggleBtn.style.zIndex = '1001';
+toggleBtn.onclick = function() {
+  const panel = document.getElementById('iframe-messages');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+};
+document.body.appendChild(toggleBtn);
 </script>
