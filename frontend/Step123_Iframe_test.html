@@ -2893,30 +2893,32 @@ function updatePrices() {
     }
 
     // Show/hide steps
-    function showStep(stepNumber) {
-	
-	
-        // Hide all steps
-        document.getElementById('step-1').style.display = 'none';
-        document.getElementById('step-2').style.display = 'none';
-        document.getElementById('step-3').style.display = 'none';
-		
-		   // Clear promo code if leaving step 3
-    if (getCurrentStep() === 3 && stepNumber !== 3) {
-        clearPromoCode();
+ let currentStep = 1;
+
+function showStep(stepNumber) {
+    if (currentStep === stepNumber) return; // No change, do nothing
+    
+    currentStep = stepNumber; // Update current step
+    
+    // Hide all steps
+    document.getElementById('step-1').style.display = 'none';
+    document.getElementById('step-2').style.display = 'none';
+    document.getElementById('step-3').style.display = 'none';
+    
+    // Show the requested step
+    document.getElementById(`step-${stepNumber}`).style.display = 'block';
+    
+    // Update progress bar
+    updateProgressBar(stepNumber);
+    
+    // Notify parent only when step changes
+    notifyParentOfStepChange();
+    
+    // Scroll to top on mobile
+    if (window.innerWidth <= 768) {
+        window.scrollTo(0, 0);
     }
-        
-        // Show the requested step
-        document.getElementById(`step-${stepNumber}`).style.display = 'block';
-        
-        // Update progress bar
-        updateProgressBar(stepNumber);
-        
-        // On mobile, scroll to top when changing steps
-        if (window.innerWidth <= 768) {
-            window.scrollTo(0, 0);
-        }
-    }
+}
 
     // Render services for selected bundle
     function renderServices() {
@@ -3690,7 +3692,6 @@ if (progressBar) {
     document.querySelectorAll('#progress-bar div').forEach(step => {
         step.addEventListener('click', () => {
             console.log('Progress bar step clicked');
-            setTimeout(scrollToTop, 100);
         });
     });
 } else {
@@ -3701,7 +3702,6 @@ const reviewSelection = document.getElementById('review-selection');
 if (reviewSelection) {
     reviewSelection.addEventListener('click', () => {
         console.log('Review Selection clicked');
-        setTimeout(scrollToTop, 100);
     });
 } else {
     console.warn('Review Selection button not found');
@@ -3711,7 +3711,6 @@ const backToBundle = document.getElementById('back-to-bundle');
 if (backToBundle) {
     backToBundle.addEventListener('click', () => {
         console.log('Back to Bundle clicked');
-        setTimeout(scrollToTop, 100);
     });
 } else {
     console.warn('Back to Bundle button not found');
@@ -3721,7 +3720,6 @@ const backToServices = document.getElementById('back-to-services');
 if (backToServices) {
     backToServices.addEventListener('click', () => {
         console.log('Back to Services clicked');
-        setTimeout(scrollToTop, 100);
     });
 } else {
     console.warn('Back to Services button not found');
