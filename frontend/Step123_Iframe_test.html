@@ -3655,41 +3655,68 @@ async function handlePaymentSubmit(e) {
     }
 }
 
-// Notify parent window of step changes
+console.log('Script loaded in Step123_v3.html');
+
 function notifyParentOfStepChange() {
-    window.parent.postMessage('stepChanged', '*'); // Replace '*' with parent domain for production
+    try {
+        console.log('Sending postMessage to parent');
+        window.parent.postMessage('stepChanged', 'https://bundlebooth.ca');
+    } catch (error) {
+        console.error('postMessage failed:', error);
+    }
 }
 
-// Scroll iframe to top and notify parent
 function scrollToTop() {
-    window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll iframe to top
-    notifyParentOfStepChange(); // Notify parent
+    console.log('Attempting to scroll iframe to top');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    notifyParentOfStepChange();
 }
 
-// Set up event listeners for step navigation
 document.addEventListener('DOMContentLoaded', () => {
-    // Progress bar navigation
-    document.querySelectorAll('#progress-bar div').forEach(step => {
-        step.addEventListener('click', () => setTimeout(scrollToTop, 100)); // Delay for transition
-    });
+    console.log('DOMContentLoaded fired, setting up listeners');
+    const progressBar = document.querySelector('#progress-bar');
+    if (progressBar) {
+        document.querySelectorAll('#progress-bar div').forEach(step => {
+            step.addEventListener('click', () => {
+                console.log('Progress bar step clicked');
+                setTimeout(scrollToTop, 100);
+            });
+        });
+    } else {
+        console.warn('Progress bar not found');
+    }
 
-    // Review Selection button
-    document.getElementById('review-selection').addEventListener('click', () => {
-        setTimeout(scrollToTop, 100); // Delay for transition
-    });
+    const reviewSelection = document.getElementById('review-selection');
+    if (reviewSelection) {
+        reviewSelection.addEventListener('click', () => {
+            console.log('Review Selection clicked');
+            setTimeout(scrollToTop, 100);
+        });
+    } else {
+        console.warn('Review Selection button not found');
+    }
 
-    // Back to Bundle button
-    document.getElementById('back-to-bundle').addEventListener('click', () => {
-        setTimeout(scrollToTop, 100); // Delay for transition
-    });
+    const backToBundle = document.getElementById('back-to-bundle');
+    if (backToBundle) {
+        backToBundle.addEventListener('click', () => {
+            console.log('Back to Bundle clicked');
+            setTimeout(scrollToTop, 100);
+        });
+    } else {
+        console.warn('Back to Bundle button not found');
+    }
 
-    // Back to Services button
-    document.getElementById('back-to-services').addEventListener('click', () => {
-        setTimeout(scrollToTop, 100); // Delay for transition
-    });
+    const backToServices = document.getElementById('back-to-services');
+    if (backToServices) {
+        backToServices.addEventListener('click', () => {
+            console.log('Back to Services clicked');
+            setTimeout(scrollToTop, 100);
+        });
+    } else {
+        console.warn('Back to Services button not found');
+    }
 
-    // Scroll to top on initial load
-    setTimeout(scrollToTop, 500); // Delay to ensure DOM is ready
+    setTimeout(scrollToTop, 1000); // Increased delay to ensure DOM readiness
 });
 
 </script>
