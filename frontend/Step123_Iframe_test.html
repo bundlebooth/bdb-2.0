@@ -3654,36 +3654,44 @@ async function handlePaymentSubmit(e) {
         processingMessage.style.display = 'none';
     }
 }
-<script>
-// Scroll control for parent window
+
+// Notify parent window of step changes
 function notifyParentOfStepChange() {
-    // Send message to parent window when step changes
-    if (window.parent) {
-        window.parent.postMessage('stepChanged', '*');
-    }
+    window.parent.postMessage('stepChanged', 'https://bundlebooth.ca'); // Replace '*' with parent domain for production
 }
 
-// Call this whenever step changes
+// Scroll iframe to top and notify parent
 function scrollToTop() {
-    // Scroll within iframe
-    window.scrollTo(0, 0);
-    
-    // Notify parent to scroll to iframe
-    notifyParentOfStepChange();
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll iframe to top
+    notifyParentOfStepChange(); // Notify parent
 }
 
-// Add event listeners for step changes
-document.addEventListener('DOMContentLoaded', function() {
-    // Listen for all step navigation buttons
-    document.querySelectorAll('#progress-bar div, #review-selection, #back-to-bundle, #back-to-services').forEach(el => {
-        el.addEventListener('click', function() {
-            setTimeout(scrollToTop, 100); // Small delay to ensure step transition
-        });
+// Set up event listeners for step navigation
+document.addEventListener('DOMContentLoaded', () => {
+    // Progress bar navigation
+    document.querySelectorAll('#progress-bar div').forEach(step => {
+        step.addEventListener('click', () => setTimeout(scrollToTop, 100)); // Delay for transition
     });
-    
-    // Also scroll to top on initial load
-    setTimeout(scrollToTop, 500);
+
+    // Review Selection button
+    document.getElementById('review-selection').addEventListener('click', () => {
+        setTimeout(scrollToTop, 100); // Delay for transition
+    });
+
+    // Back to Bundle button
+    document.getElementById('back-to-bundle').addEventListener('click', () => {
+        setTimeout(scrollToTop, 100); // Delay for transition
+    });
+
+    // Back to Services button
+    document.getElementById('back-to-services').addEventListener('click', () => {
+        setTimeout(scrollToTop, 100); // Delay for transition
+    });
+
+    // Scroll to top on initial load
+    setTimeout(scrollToTop, 500); // Delay to ensure DOM is ready
 });
+
 </script>
 </body>
 </html>
