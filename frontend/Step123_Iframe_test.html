@@ -3658,45 +3658,46 @@ async function handlePaymentSubmit(e) {
 }
 
 // Add this at the top of your script
-// Add this at the TOP of your existing script
 let currentStep = 1;
+const parentOrigin = 'https://bundlebooth.ca';
 
+// Replace ALL message-sending code with just this:
 function notifyStepChange() {
-  try {
-    const height = document.documentElement.scrollHeight || document.body.scrollHeight;
-    window.parent.postMessage({
-      type: 'stepChanged',
-      height: height,
-      step: currentStep
-    }, 'https://bundlebooth.ca');
-  } catch (error) {
-    console.error('Error sending height update:', error);
-  }
+    const height = document.body.scrollHeight;
+    try {
+        window.parent.postMessage({
+            type: 'stepChanged',
+            height: height,
+            step: currentStep
+        }, parentOrigin);
+    } catch (error) {
+        console.error('Failed to send step change:', error);
+    }
 }
 
-// Modify your existing showStep() function to call this:
+// Update your showStep function to call this:
 function showStep(stepNumber) {
-  if (currentStep === stepNumber) return;
-  
-  currentStep = stepNumber;
-  
-  // Your existing step visibility logic
-  document.getElementById('step-1').style.display = 'none';
-  document.getElementById('step-2').style.display = 'none';
-  document.getElementById('step-3').style.display = 'none';
-  document.getElementById(`step-${stepNumber}`).style.display = 'block';
-  
-  // Your existing progress bar update
-  updateProgressBar(stepNumber);
-  
-  // Send update after a tiny delay to ensure rendering
-  setTimeout(notifyStepChange, 50);
+    if (currentStep === stepNumber) return;
+    
+    currentStep = stepNumber;
+    
+    // Your existing step visibility logic
+    document.getElementById('step-1').style.display = 'none';
+    document.getElementById('step-2').style.display = 'none';
+    document.getElementById('step-3').style.display = 'none';
+    document.getElementById(`step-${stepNumber}`).style.display = 'block';
+    
+    updateProgressBar(stepNumber);
+    
+    // Send update immediately after DOM changes
+    notifyStepChange();
 }
 
-// Initial load notification
-window.addEventListener('load', function() {
-  setTimeout(notifyStepChange, 100);
+// Initial notification when page loads
+window.addEventListener('DOMContentLoaded', function() {
+    setTimeout(notifyStepChange, 100); // Small delay to ensure rendering
 });
+
 </script>
 <style>
 body {
