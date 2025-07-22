@@ -3657,7 +3657,7 @@ async function handlePaymentSubmit(e) {
 
 // Notify parent window of step changes
 function notifyParentOfStepChange() {
-    window.parent.postMessage('stepChanged', 'https://bundlebooth.ca'); // Replace '*' with parent domain for production
+    window.parent.postMessage('stepChanged', '*'); // Replace '*' with parent domain for production
 }
 
 // Scroll iframe to top and notify parent
