@@ -3650,23 +3650,34 @@ async function handlePaymentSubmit(e) {
 
 console.log('Script loaded in Step123_Iframe_test.html');
 
-    let lastStep = 1;
-    function notifyParentOfStepChange() {
-        const currentStep = getCurrentStep();
-        if (currentStep !== lastStep) {
-            try {
-                console.log('Sending stepChanged message to parent');
-                window.parent.postMessage({
-                    type: 'stepChanged',
-                    step: currentStep,
-                    height: document.body.scrollHeight
-                }, 'https://bundlebooth.ca');
-                lastStep = currentStep;
-            } catch (error) {
-                console.error('postMessage failed:', error);
-            }
+// Modified notifyParentOfStepChange function
+let lastStep = 1;
+let lastHeight = 0;
+function notifyParentOfStepChange() {
+    const currentStep = getCurrentStep();
+    const currentHeight = document.body.scrollHeight;
+    
+    // Only send if step OR height changed significantly (>50px)
+    if (currentStep !== lastStep || Math.abs(currentHeight - lastHeight) > 50) {
+        try {
+            const targetOrigin = window.location.hostname === 'bundlebooth.github.io' 
+                ? 'https://bundlebooth.ca' 
+                : window.location.origin;
+                
+            window.parent.postMessage({
+                type: 'stepChanged',
+                step: currentStep,
+                height: currentHeight
+            }, targetOrigin);
+            
+            lastStep = currentStep;
+            lastHeight = currentHeight;
+        } catch (error) {
+            console.error('postMessage failed:', error);
         }
     }
+}
+
 
 function scrollToTop() {
     console.log('Attempting to scroll iframe to top');
