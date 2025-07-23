@@ -678,14 +678,21 @@
     .back-button:hover {
       background: #e0e0e0;
     }
-    .confirmation-message {
-      background: #f8f9fa;
-      padding: 20px;
-      border-radius: 8px;
-      margin-top: 20px;
-      text-align: center;
-      display: none;
-    }
+.confirmation-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1001;
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 500px;
+    display: none;
+    text-align: center;
+}
     .confirmation-icon {
       font-size: 48px;
       color: var(--bb-green);
@@ -1646,6 +1653,29 @@
   background: linear-gradient(135deg, #e0f7fa, #ffffff);
 }
 
+.confirmation-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    display: none;
+}
+    
+    
+    /* Style for back-to-bundle button to match back-to-services */
+    #back-to-bundle {
+        background: #f0f0f0;
+        color: var(--bb-dark);
+    }
+    
+    #back-to-bundle:hover {
+        background: #e0e0e0;
+    }
+
 </style>
 </head>
 <body>
@@ -1867,8 +1897,8 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="event-location">Event Location</label>
-                    <input type="text" id="event-location" placeholder="Venue name or address">
+                    <label for="event-location">Event Location <span class="required-asterisk">*</span></label>
+                    <input type="text" id="event-location" placeholder="Venue name or address" required>
                 </div>
                 <div class="form-group">
                     <label for="special-requests">Special Requests or Notes</label>
@@ -1903,14 +1933,15 @@
             <button class="book-now-button" id="submit-booking">Book Now</button>
         </div>
         
-        <div class="confirmation-message" id="confirmation-message">
-            <div class="confirmation-icon">✓</div>
-            <h3>Booking Confirmed!</h3>
-            <p>Thank you for your booking. Your payment of <span id="confirmed-amount">$0.50</span> was successful.</p>
-            <p>A confirmation email has been sent to <span id="sent-email"></span> with your booking details.</p>
-            <button class="book-now-button" id="new-bundle-button">Create Another Bundle</button>
-        </div>
-    </div>
+<div class="confirmation-overlay" id="confirmation-overlay"></div>
+<div class="confirmation-message" id="confirmation-message">
+    <div class="confirmation-icon">✓</div>
+    <h3>Booking Confirmed!</h3>
+    <p>Thank you for your booking. Your payment of <span id="confirmed-amount">$0.00</span> was successful.</p>
+    <p>A confirmation email has been sent to <span id="sent-email"></span> with your booking details.</p>
+    <button class="book-now-button" id="new-bundle-button" style="margin-top: 20px;">Create Another Bundle</button>
+</div>
+<div class="confirmation-blur" id="confirmation-blur"></div>
 </main>
 </div>
 
@@ -2224,22 +2255,19 @@ function applyPromoCode() {
 
 
     // Set up progress bar navigation
-function setupProgressBarNavigation() {
-    const progressSteps = document.querySelectorAll('#progress-bar div');
-    progressSteps.forEach((step, index) => {
-        step.addEventListener('click', () => {
-            const currentStep = getCurrentStep();
-            if (index < currentStep) {
-                // Clear promo code if going back from step 3
-                if (currentStep === 3) {
-                    clearPromoCode();
+    function setupProgressBarNavigation() {
+        const progressSteps = document.querySelectorAll('#progress-bar div');
+        progressSteps.forEach((step, index) => {
+            step.addEventListener('click', () => {
+                const currentStep = getCurrentStep();
+                if (index + 1 < currentStep) {
+                    // Allow navigation to any previous step
+                    showStep(index + 1);
+                    window.scrollTo(0, 0);
                 }
-                showStep(index + 1);
-                window.scrollTo(0, 0);
-            }
+            });
         });
-    });
-}
+    }
 
     // Get current step (1, 2, or 3)
     function getCurrentStep() {
@@ -2516,9 +2544,13 @@ async function initializeStripe() {
         
         document.getElementById('submit-booking').addEventListener('click', handleBookingSubmit);
         document.getElementById('submit-payment').addEventListener('click', handlePaymentSubmit);
-        document.getElementById('new-bundle-button').addEventListener('click', () => {
-			    clearPromoCode();
-            window.location.reload();
+		document.getElementById('confirmation-blur').style.display = 'none';
+document.getElementById('new-bundle-button').addEventListener('click', () => {
+    // Remove the confirmation elements
+    document.getElementById('confirmation-overlay').style.display = 'none';
+    document.getElementById('confirmation-message').style.display = 'none';
+		clearPromoCode();
+         window.location.reload();
         });
         
 // Month navigation
@@ -2592,12 +2624,16 @@ function updatePrices() {
     }
     
     // Show promo discount only if there is one
-    if (promoDiscount > 0 && promoCodeApplied) {
-        document.getElementById('promo-discount-row').style.display = 'flex';
-        document.getElementById('promo-discount-amount').textContent = `-C$${promoDiscount.toFixed(2)}`;
-    } else {
-        document.getElementById('promo-discount-row').style.display = 'none';
-    }
+        if (promoDiscount > 0 && promoCodeApplied) {
+            document.getElementById('promo-discount-row').style.display = 'flex';
+            const discountText = promoCodeApplied.discountType === 'percentage' ? 
+                `Promo Discount (${promoCodeApplied.discountValue}%):` : 
+                `Promo Discount:`;
+            document.querySelector('.promo-discount-row span:first-child').textContent = discountText;
+            document.getElementById('promo-discount-amount').textContent = `-C$${promoDiscount.toFixed(2)}`;
+        } else {
+            document.getElementById('promo-discount-row').style.display = 'none';
+        }
     
     document.getElementById('final-total-price').textContent = `C$${total.toFixed(2)}`;
     
@@ -3631,11 +3667,21 @@ async function handlePaymentSubmit(e) {
             await sendConfirmationEmail(bookingData);
             
             // 6. Show success
-            document.getElementById('stripe-payment-form').style.display = 'none';
-            document.getElementById('event-details-form').style.display = 'none';
-            document.getElementById('back-to-services').style.display = 'none';
-            document.getElementById('sent-email').textContent = bookingData.email;
-            document.getElementById('confirmation-message').style.display = 'block';
+        document.getElementById('stripe-payment-form').style.display = 'none';
+        document.getElementById('payment-info').style.display = 'none';
+        document.getElementById('back-to-services').style.display = 'none';
+        document.getElementById('submit-booking').style.display = 'none';
+        document.getElementById('confirmation-overlay').style.display = 'block';
+        document.getElementById('confirmation-message').style.display = 'block';
+        document.getElementById('confirmed-amount').textContent = `C$${total.toFixed(2)}`;
+        document.getElementById('sent-email').textContent = bookingData.email;
+        
+        // Scroll to confirmation message
+        document.getElementById('confirmation-message').scrollIntoView({ behavior: 'smooth' });
+
+        document.querySelectorAll('.step-3 > *:not(#confirmation-overlay):not(#confirmation-message)').forEach(el => {
+            el.style.display = 'none';
+        });
             
        } catch (error) {
         console.error('Payment error:', error);
