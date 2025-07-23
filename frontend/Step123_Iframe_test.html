@@ -678,6 +678,7 @@
     .back-button:hover {
       background: #e0e0e0;
     }
+	
 .confirmation-message {
     position: fixed;
     top: 50%;
@@ -693,6 +694,13 @@
     display: none;
     text-align: center;
 }
+
+
+#countdown {
+    font-weight: bold;
+    color: var(--bb-accent);
+}
+
     .confirmation-icon {
       font-size: 48px;
       color: var(--bb-green);
@@ -1991,6 +1999,10 @@ const twoWeeksLater = new Date();
     let { jsPDF } = window.jspdf;
 let selectedSlotElement = null; // To track the currently selected time slot
 
+// Add these variables at the top with your other global variables
+let countdownTimer;
+let countdownSeconds = 5;
+
     // Initialize the builder when DOM is loaded
     document.addEventListener("DOMContentLoaded", async () => {
         // Show greeting popup
@@ -2546,12 +2558,34 @@ async function initializeStripe() {
         document.getElementById('submit-payment').addEventListener('click', handlePaymentSubmit);
 		document.getElementById('confirmation-blur').style.display = 'none';
 document.getElementById('new-bundle-button').addEventListener('click', () => {
+// Clear the countdown
+    clearInterval(countdownTimer);
     // Remove the confirmation elements
     document.getElementById('confirmation-overlay').style.display = 'none';
     document.getElementById('confirmation-message').style.display = 'none';
 		clearPromoCode();
          window.location.reload();
         });
+		
+		  // Reset form and go to Step 1
+    clearPromoCode();
+    showStep(1);
+    window.scrollTo(0, 0);
+	
+	    // Reset all selections
+    selectedServices = [];
+    selectedBundle = null;
+    document.querySelectorAll('.package.selected').forEach(el => {
+        el.classList.remove('selected');
+    });
+    
+    // Reset options
+    globalGuestSize = 100;
+    globalSparklersCount = 50;
+    document.getElementById('guest-size-value').textContent = '100';
+    document.getElementById('sparklers-value').textContent = '50';
+    document.getElementById('photo-booth-toggle').checked = false;
+});
         
 // Month navigation
 document.getElementById('prev-month').addEventListener('click', () => {
@@ -3675,6 +3709,9 @@ async function handlePaymentSubmit(e) {
         document.getElementById('confirmation-message').style.display = 'block';
         document.getElementById('confirmed-amount').textContent = `C$${total.toFixed(2)}`;
         document.getElementById('sent-email').textContent = bookingData.email;
+		
+		 // Start countdown
+        startCountdown();
         
         // Scroll to confirmation message
         document.getElementById('confirmation-message').scrollIntoView({ behavior: 'smooth' });
@@ -3747,6 +3784,29 @@ function scrollToTop() {
         console.log('Viewport height:', window.innerHeight);
     }, 500);
     notifyParentOfStepChange();
+}
+
+// Add these new functions:
+function startCountdown() {
+    countdownSeconds = 5;
+    updateCountdownDisplay();
+    
+    countdownTimer = setInterval(() => {
+        countdownSeconds--;
+        updateCountdownDisplay();
+        
+        if (countdownSeconds <= 0) {
+            clearInterval(countdownTimer);
+            window.location.href = 'https://bundlebooth.ca';
+        }
+    }, 1000);
+}
+
+function updateCountdownDisplay() {
+    const countdownElement = document.getElementById('countdown');
+    if (countdownElement) {
+        countdownElement.textContent = countdownSeconds;
+    }
 }
 
 console.log('Setting up listeners');
