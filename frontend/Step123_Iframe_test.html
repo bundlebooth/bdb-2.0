@@ -1652,26 +1652,24 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(255,255,255,0.8);
         backdrop-filter: blur(5px);
-        z-index: 1000;
+        z-index: 100;
         display: none;
     }
+    
     .confirmation-message {
         position: relative;
-        z-index: 1001;
+        z-index: 101;
     }
-    .freeze-ui *:not(.confirmation-message):not(#new-bundle-button) {
-        pointer-events: none;
-        opacity: 0.5;
+    
+    /* Style for back-to-bundle button to match back-to-services */
+    #back-to-bundle {
+        background: #f0f0f0;
+        color: var(--bb-dark);
     }
-	
-	 #review-selection, #submit-booking {
-        background-color: var(--modern-green);
-        color: white;
-    }
-    #review-selection:hover, #submit-booking:hover {
-        background-color: #1e8449;
+    
+    #back-to-bundle:hover {
+        background: #e0e0e0;
     }
 
 </style>
@@ -1860,10 +1858,10 @@
                 <h3 class="form-section-title">Contact Information</h3>
                 <form id="event-details-form">
                     <div class="form-row">
-						<div class="form-group">
-							<label for="contact-name">Your Name <span class="required-asterisk">*</span></label>
-							<input type="text" id="contact-name" required>
-						</div>
+                        <div class="form-group">
+                            <label for="contact-name">Your Name <span class="required-asterisk">*</span></label>
+                            <input type="text" id="contact-name" >
+                        </div>
                         <div class="form-group">
                               <label for="contact-phone">Phone Number <span class="required-asterisk">*</span></label>
                             <input type="tel" id="contact-phone" required placeholder="+1 (XXX) XXX-XXXX">
@@ -1895,8 +1893,8 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="event-location">Event Location</label>
-                    <input type="text" id="event-location" placeholder="Venue name or address">
+                    <label for="event-location">Event Location <span class="required-asterisk">*</span></label>
+                    <input type="text" id="event-location" placeholder="Venue name or address" required>
                 </div>
                 <div class="form-group">
                     <label for="special-requests">Special Requests or Notes</label>
@@ -1931,14 +1929,14 @@
             <button class="book-now-button" id="submit-booking">Book Now</button>
         </div>
         
-        <div class="confirmation-message" id="confirmation-message">
-            <div class="confirmation-icon">✓</div>
-            <h3>Booking Confirmed!</h3>
-            <p>Thank you for your booking. Your payment of <span id="confirmed-amount">$0.50</span> was successful.</p>
-            <p>A confirmation email has been sent to <span id="sent-email"></span> with your booking details.</p>
-            <button class="book-now-button" id="new-bundle-button">Create Another Bundle</button>
-        </div>
-    </div>
+<div class="confirmation-message" id="confirmation-message">
+    <div class="confirmation-icon">✓</div>
+    <h3>Booking Confirmed!</h3>
+    <p>Thank you for your booking. Your payment of <span id="confirmed-amount">$0.50</span> was successful.</p>
+    <p>A confirmation email has been sent to <span id="sent-email"></span> with your booking details.</p>
+    <button class="book-now-button" id="new-bundle-button">Create Another Bundle</button>
+</div>
+<div class="confirmation-blur" id="confirmation-blur"></div>
 </main>
 </div>
 
@@ -2245,34 +2243,26 @@ function applyPromoCode() {
     }
 
     promoCodeApplied = validCode;
-    errorElement.textContent = validCode.description || `Success: Promo code applied!`;
+    errorElement.textContent = validCode.description || `Promo code applied: $${promoDiscount.toFixed(2)} off`;
     errorElement.classList.remove('invalid');
     updatePrices();
 }
 
 
     // Set up progress bar navigation
-function setupProgressBarNavigation() {
-    const progressSteps = document.querySelectorAll('#progress-bar div');
-    progressSteps.forEach((step, index) => {
-        step.addEventListener('click', () => {
-            // Don't allow navigation if booking is complete
-            if (document.getElementById('confirmation-message').style.display === 'block') {
-                return;
-            }
-            
-            const currentStep = getCurrentStep();
-            if (index < currentStep) {
-                // Clear promo code if going back from step 3
-                if (currentStep === 3) {
-                    clearPromoCode();
+    function setupProgressBarNavigation() {
+        const progressSteps = document.querySelectorAll('#progress-bar div');
+        progressSteps.forEach((step, index) => {
+            step.addEventListener('click', () => {
+                const currentStep = getCurrentStep();
+                if (index + 1 < currentStep) {
+                    // Allow navigation to any previous step
+                    showStep(index + 1);
+                    window.scrollTo(0, 0);
                 }
-                showStep(index + 1);
-                window.scrollTo(0, 0);
-            }
+            });
         });
-    });
-}
+    }
 
     // Get current step (1, 2, or 3)
     function getCurrentStep() {
@@ -2549,9 +2539,10 @@ async function initializeStripe() {
         
         document.getElementById('submit-booking').addEventListener('click', handleBookingSubmit);
         document.getElementById('submit-payment').addEventListener('click', handlePaymentSubmit);
+		document.getElementById('confirmation-blur').style.display = 'none';
         document.getElementById('new-bundle-button').addEventListener('click', () => {
-			    clearPromoCode();
-            window.location.reload();
+		clearPromoCode();
+         window.location.reload();
         });
         
 // Month navigation
@@ -2625,12 +2616,16 @@ function updatePrices() {
     }
     
     // Show promo discount only if there is one
-    if (promoDiscount > 0 && promoCodeApplied) {
-        document.getElementById('promo-discount-row').style.display = 'flex';
-        document.getElementById('promo-discount-amount').textContent = `-C$${promoDiscount.toFixed(2)}`;
-    } else {
-        document.getElementById('promo-discount-row').style.display = 'none';
-    }
+        if (promoDiscount > 0 && promoCodeApplied) {
+            document.getElementById('promo-discount-row').style.display = 'flex';
+            const discountText = promoCodeApplied.discountType === 'percentage' ? 
+                `Promo Discount (${promoCodeApplied.discountValue}%):` : 
+                `Promo Discount:`;
+            document.querySelector('.promo-discount-row span:first-child').textContent = discountText;
+            document.getElementById('promo-discount-amount').textContent = `-C$${promoDiscount.toFixed(2)}`;
+        } else {
+            document.getElementById('promo-discount-row').style.display = 'none';
+        }
     
     document.getElementById('final-total-price').textContent = `C$${total.toFixed(2)}`;
     
@@ -3541,7 +3536,7 @@ async function handleBookingSubmit(e) {
     // Check if a time slot is selected
     const selectedSlot = document.querySelector('.selected-slot');
     if (!selectedSlot) {
-        showToast('Please select an available time slot');
+        alert('Please select an available time slot');
         return;
     }
     
@@ -3664,12 +3659,19 @@ async function handlePaymentSubmit(e) {
             await sendConfirmationEmail(bookingData);
             
             // 6. Show success
-            document.getElementById('stripe-payment-form').style.display = 'none';
-            document.getElementById('event-details-form').style.display = 'none';
-            document.getElementById('back-to-services').style.display = 'none';
-            document.getElementById('sent-email').textContent = bookingData.email;
-            document.getElementById('confirmation-message').style.display = 'block';
-			document.body.classList.add('freeze-ui');
+        document.getElementById('stripe-payment-form').style.display = 'none';
+        document.getElementById('payment-info').style.display = 'none';
+        document.getElementById('back-to-services').style.display = 'none';
+        document.getElementById('submit-booking').style.display = 'none';
+        document.getElementById('sent-email').textContent = bookingData.email;
+		
+		// Show blur overlay and confirmation message
+        document.getElementById('confirmation-blur').style.display = 'block';
+        document.getElementById('confirmation-message').style.display = 'block';
+        
+        // Scroll to confirmation message
+        document.getElementById('confirmation-message').scrollIntoView({ behavior: 'smooth' });
+
             
        } catch (error) {
         console.error('Payment error:', error);
