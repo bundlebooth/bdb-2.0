@@ -190,7 +190,7 @@ app.post('/send-booking-email', async (req, res) => {
     }
   </style>
 </head>
-<body style="margin: 0; padding: 40px 0; font-family: 'Arial', sans-serif; line-height: 1.6; color: #333; background-color: #f5f7fa;">
+<body style="margin: 0; padding: 40px 0; font-family: 'Arial', sans-serif; line-height: 1.6; color: #333; background-color: #dcdcdc;">
   <!--[if mso]>
   <style type="text/css">
     .shadow-card {
