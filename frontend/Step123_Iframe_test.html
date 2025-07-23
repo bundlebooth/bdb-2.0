@@ -678,7 +678,6 @@
     .back-button:hover {
       background: #e0e0e0;
     }
-	
 .confirmation-message {
     position: fixed;
     top: 50%;
@@ -694,13 +693,6 @@
     display: none;
     text-align: center;
 }
-
-
-#countdown {
-    font-weight: bold;
-    color: var(--bb-accent);
-}
-
     .confirmation-icon {
       font-size: 48px;
       color: var(--bb-green);
@@ -1948,6 +1940,7 @@
     <p>Thank you for your booking. Your payment of <span id="confirmed-amount">$0.00</span> was successful.</p>
     <p>A confirmation email has been sent to <span id="sent-email"></span> with your booking details.</p>
     <button class="book-now-button" id="new-bundle-button" style="margin-top: 20px;">Create Another Bundle</button>
+    <!-- Countdown will be inserted here by JavaScript -->
 </div>
 <div class="confirmation-blur" id="confirmation-blur"></div>
 </main>
@@ -1998,10 +1991,6 @@ const twoWeeksLater = new Date();
     let validPromoCodes = [];
     let { jsPDF } = window.jspdf;
 let selectedSlotElement = null; // To track the currently selected time slot
-
-// Add these variables at the top with your other global variables
-let countdownTimer;
-let countdownSeconds = 5;
 
     // Initialize the builder when DOM is loaded
     document.addEventListener("DOMContentLoaded", async () => {
@@ -2558,34 +2547,12 @@ async function initializeStripe() {
         document.getElementById('submit-payment').addEventListener('click', handlePaymentSubmit);
 		document.getElementById('confirmation-blur').style.display = 'none';
 document.getElementById('new-bundle-button').addEventListener('click', () => {
-// Clear the countdown
-    clearInterval(countdownTimer);
     // Remove the confirmation elements
     document.getElementById('confirmation-overlay').style.display = 'none';
     document.getElementById('confirmation-message').style.display = 'none';
-		clearPromoCode();
-         window.location.reload();
-        });
-		
-		  // Reset form and go to Step 1
     clearPromoCode();
-    showStep(1);
-    window.scrollTo(0, 0);
-	
-	    // Reset all selections
-    selectedServices = [];
-    selectedBundle = null;
-    document.querySelectorAll('.package.selected').forEach(el => {
-        el.classList.remove('selected');
-    });
-    
-    // Reset options
-    globalGuestSize = 100;
-    globalSparklersCount = 50;
-    document.getElementById('guest-size-value').textContent = '100';
-    document.getElementById('sparklers-value').textContent = '50';
-    document.getElementById('photo-booth-toggle').checked = false;
-});
+    window.location.reload(); // This will reset everything and go back to Step 1
+        });
         
 // Month navigation
 document.getElementById('prev-month').addEventListener('click', () => {
@@ -3710,8 +3677,7 @@ async function handlePaymentSubmit(e) {
         document.getElementById('confirmed-amount').textContent = `C$${total.toFixed(2)}`;
         document.getElementById('sent-email').textContent = bookingData.email;
 		
-		 // Start countdown
-        startCountdown();
+		
         
         // Scroll to confirmation message
         document.getElementById('confirmation-message').scrollIntoView({ behavior: 'smooth' });
@@ -3719,6 +3685,20 @@ async function handlePaymentSubmit(e) {
         document.querySelectorAll('.step-3 > *:not(#confirmation-overlay):not(#confirmation-message)').forEach(el => {
             el.style.display = 'none';
         });
+		
+		
+let seconds = 5;
+countdownElement.textContent = `You will be redirected to homepage in ${seconds} seconds...`;
+
+const countdownInterval = setInterval(() => {
+    seconds--;
+    countdownElement.textContent = `You will be redirected to homepage in ${seconds} seconds...`;
+    
+    if (seconds <= 0) {
+        clearInterval(countdownInterval);
+        window.open('https://bundlebooth.ca/', '_blank');
+    }
+}, 1000);
             
        } catch (error) {
         console.error('Payment error:', error);
@@ -3784,29 +3764,6 @@ function scrollToTop() {
         console.log('Viewport height:', window.innerHeight);
     }, 500);
     notifyParentOfStepChange();
-}
-
-// Add these new functions:
-function startCountdown() {
-    countdownSeconds = 5;
-    updateCountdownDisplay();
-    
-    countdownTimer = setInterval(() => {
-        countdownSeconds--;
-        updateCountdownDisplay();
-        
-        if (countdownSeconds <= 0) {
-            clearInterval(countdownTimer);
-            window.location.href = 'https://bundlebooth.ca';
-        }
-    }, 1000);
-}
-
-function updateCountdownDisplay() {
-    const countdownElement = document.getElementById('countdown');
-    if (countdownElement) {
-        countdownElement.textContent = countdownSeconds;
-    }
 }
 
 console.log('Setting up listeners');
