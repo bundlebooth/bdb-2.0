@@ -2893,23 +2893,22 @@ function updatePrices() {
     }
 
     // Show/hide steps
- let currentStep = 1;
-
-    let currentStep = 1;
-    function showStep(stepNumber) {
-        if (currentStep === stepNumber) return;
-        
-        currentStep = stepNumber;
-        
-        document.getElementById('step-1').style.display = 'none';
-        document.getElementById('step-2').style.display = 'none';
-        document.getElementById('step-3').style.display = 'none';
-        document.getElementById(`step-${stepNumber}`).style.display = 'block';
-        
-        updateProgressBar(stepNumber);
-        window.scrollTo(0, 0);
-        notifyParentOfStepChange();
-    }
+// Modified showStep function
+let currentStep = 1;
+function showStep(stepNumber) {
+    if (currentStep === stepNumber) return;
+    
+    currentStep = stepNumber;
+    
+    document.getElementById('step-1').style.display = 'none';
+    document.getElementById('step-2').style.display = 'none';
+    document.getElementById('step-3').style.display = 'none';
+    document.getElementById(`step-${stepNumber}`).style.display = 'block';
+    
+    updateProgressBar(stepNumber);
+    window.scrollTo(0, 0);
+    notifyParentOfStepChange();
+}
 
     // Render services for selected bundle
     function renderServices() {
@@ -3651,24 +3650,31 @@ async function handlePaymentSubmit(e) {
 console.log('Script loaded in Step123_Iframe_test.html');
 
 // Modified notifyParentOfStepChange function
-let lastStep = 1;
+let lastStep = null;
 let lastHeight = 0;
 function notifyParentOfStepChange() {
     const currentStep = getCurrentStep();
     const currentHeight = document.body.scrollHeight;
     
-    // Only send if step OR height changed significantly (>50px)
-    if (currentStep !== lastStep || Math.abs(currentHeight - lastHeight) > 50) {
+    // Only send if step changed or height changed significantly (>20px)
+    if (currentStep !== lastStep || Math.abs(currentHeight - lastHeight) > 20) {
         try {
-            const targetOrigin = window.location.hostname === 'bundlebooth.github.io' 
-                ? 'https://bundlebooth.ca' 
-                : window.location.origin;
-                
+            // Determine the correct parent origin
+            let parentOrigin;
+            try {
+                // First try to get the parent's actual origin
+                parentOrigin = window.parent.location.origin;
+            } catch (e) {
+                // Fallback for cross-origin situations
+                parentOrigin = 'https://bundlebooth.ca'; // Your production domain
+            }
+            
+            // Send the message
             window.parent.postMessage({
                 type: 'stepChanged',
                 step: currentStep,
                 height: currentHeight
-            }, targetOrigin);
+            }, parentOrigin);
             
             lastStep = currentStep;
             lastHeight = currentHeight;
