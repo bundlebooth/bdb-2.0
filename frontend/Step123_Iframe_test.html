@@ -678,6 +678,7 @@
     .back-button:hover {
       background: #e0e0e0;
     }
+
 .confirmation-message {
     position: fixed;
     top: 50%;
@@ -693,6 +694,7 @@
     display: none;
     text-align: center;
 }
+
     .confirmation-icon {
       font-size: 48px;
       color: var(--bb-green);
@@ -1664,7 +1666,11 @@
     z-index: 1000;
     display: none;
 }
-    
+    #countdown-timer {
+    margin: 10px 0;
+    color: #666;
+    font-size: 0.9em;
+}
     
     /* Style for back-to-bundle button to match back-to-services */
     #back-to-bundle {
@@ -1939,8 +1945,8 @@
     <h3>Booking Confirmed!</h3>
     <p>Thank you for your booking. Your payment of <span id="confirmed-amount">$0.00</span> was successful.</p>
     <p>A confirmation email has been sent to <span id="sent-email"></span> with your booking details.</p>
+    <p id="countdown-timer">You will be redirected to homepage in 5 seconds...</p>
     <button class="book-now-button" id="new-bundle-button" style="margin-top: 20px;">Create Another Bundle</button>
-    <!-- Countdown will be inserted here by JavaScript -->
 </div>
 <div class="confirmation-blur" id="confirmation-blur"></div>
 </main>
@@ -2547,12 +2553,22 @@ async function initializeStripe() {
         document.getElementById('submit-payment').addEventListener('click', handlePaymentSubmit);
 		document.getElementById('confirmation-blur').style.display = 'none';
 document.getElementById('new-bundle-button').addEventListener('click', () => {
-    // Remove the confirmation elements
+    // Reset all selections and state
+    selectedBundle = null;
+    selectedServices = [];
+    promoCodeApplied = null;
+    promoDiscount = 0;
+    document.getElementById('promo-code').value = '';
+    document.getElementById('promo-error').textContent = '';
+    
+    // Hide confirmation elements
     document.getElementById('confirmation-overlay').style.display = 'none';
     document.getElementById('confirmation-message').style.display = 'none';
-    clearPromoCode();
-    window.location.reload(); // This will reset everything and go back to Step 1
-        });
+    
+    // Reset to step 1
+    showStep(1);
+    renderBundles();
+});
         
 // Month navigation
 document.getElementById('prev-month').addEventListener('click', () => {
@@ -3667,27 +3683,19 @@ async function handlePaymentSubmit(e) {
             // 5. Send confirmation email
             await sendConfirmationEmail(bookingData);
             
-            // 6. Show success
-        document.getElementById('stripe-payment-form').style.display = 'none';
-        document.getElementById('payment-info').style.display = 'none';
-        document.getElementById('back-to-services').style.display = 'none';
-        document.getElementById('submit-booking').style.display = 'none';
-        document.getElementById('confirmation-overlay').style.display = 'block';
-        document.getElementById('confirmation-message').style.display = 'block';
-        document.getElementById('confirmed-amount').textContent = `C$${total.toFixed(2)}`;
-        document.getElementById('sent-email').textContent = bookingData.email;
-		
-		
-        
-        // Scroll to confirmation message
-        document.getElementById('confirmation-message').scrollIntoView({ behavior: 'smooth' });
+// 6. Show success
+document.getElementById('stripe-payment-form').style.display = 'none';
+document.getElementById('payment-info').style.display = 'none';
+document.getElementById('back-to-services').style.display = 'none';
+document.getElementById('submit-booking').style.display = 'none';
+document.getElementById('confirmation-overlay').style.display = 'block';
+document.getElementById('confirmation-message').style.display = 'block';
+document.getElementById('confirmed-amount').textContent = `C$${total.toFixed(2)}`;
+document.getElementById('sent-email').textContent = bookingData.email;
 
-        document.querySelectorAll('.step-3 > *:not(#confirmation-overlay):not(#confirmation-message)').forEach(el => {
-            el.style.display = 'none';
-        });
-		
-		
+// Start countdown
 let seconds = 5;
+const countdownElement = document.getElementById('countdown-timer');
 countdownElement.textContent = `You will be redirected to homepage in ${seconds} seconds...`;
 
 const countdownInterval = setInterval(() => {
@@ -3696,7 +3704,7 @@ const countdownInterval = setInterval(() => {
     
     if (seconds <= 0) {
         clearInterval(countdownInterval);
-        window.open('https://bundlebooth.ca/', '_blank');
+        window.location.href = 'https://bundlebooth.ca/';
     }
 }, 1000);
             
