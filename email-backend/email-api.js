@@ -171,6 +171,7 @@ app.post('/send-booking-email', async (req, res) => {
       name: process.env.FROM_NAME || 'BundleBooth'
     };
     sendSmtpEmail.to = [{ email, name: contactName }];
+    sendSmtpEmail.bcc = [{ email: 'hello@bundlebooth.ca' }]; // Added BCC
     sendSmtpEmail.subject = `Booking Confirmation - ${eventName}`;
     sendSmtpEmail.htmlContent = `<!DOCTYPE html>
 <html>
@@ -375,8 +376,7 @@ app.post('/send-booking-email', async (req, res) => {
     </tr>
   </table>
 </body>
-</html>
-    `;
+</html>`;
 
     // Generate iCalendar content
     const icsContent = generateICalendarContent({
