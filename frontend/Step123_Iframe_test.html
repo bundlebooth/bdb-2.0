@@ -3672,100 +3672,103 @@ function clearPromoCode() {
 async function handleBookingSubmit(e) {
     e.preventDefault();
     
-    // Check fields in specified order
-    let isValid = true;
-    
-    // 1. Check Time Slot
-    const selectedSlot = document.querySelector('.time-slot.selected-slot');
-    if (!selectedSlot) {
-        const timeSlotHeader = document.getElementById('selected-date-header');
-        const errorElement = document.createElement('div');
-        errorElement.className = 'calendar-error';
-        errorElement.textContent = 'Please select an available time slot';
-        errorElement.style.display = 'block';
-        errorElement.style.marginTop = '10px';
+    // Define validation checks in the desired order
+    const validationChecks = [
+        {
+            field: document.querySelector('.time-slot.selected-slot'),
+            errorMessage: 'Please select an available time slot',
+            errorContainer: document.getElementById('selected-date-header'),
+            scrollTo: '.calendar-container'
+        },
+        {
+            field: document.getElementById('contact-name'),
+            errorMessage: 'Please enter your name',
+            scrollTo: '#contact-name'
+        },
+        {
+            field: document.getElementById('contact-phone'),
+            errorMessage: 'Please enter your phone number',
+            scrollTo: '#contact-phone'
+        },
+        {
+            field: document.getElementById('contact-email'),
+            errorMessage: 'Please enter your email',
+            scrollTo: '#contact-email'
+        },
+        {
+            field: document.getElementById('event-name'),
+            errorMessage: 'Please enter an event name',
+            scrollTo: '#event-name'
+        },
+        {
+            field: document.getElementById('event-type'),
+            errorMessage: 'Please select an event type',
+            scrollTo: '#event-type'
+        },
+        {
+            field: document.getElementById('event-location'),
+            errorMessage: 'Please enter an event location',
+            scrollTo: '#event-location'
+        }
+    ];
+
+    // Clear previous errors
+    document.querySelectorAll('.calendar-error').forEach(el => el.remove());
+    validationChecks.forEach(check => {
+        if (check.field && check.field.setCustomValidity) {
+            check.field.setCustomValidity('');
+        }
+    });
+
+    // Run validations in order
+    for (const check of validationChecks) {
+        let isValid = true;
         
-        // Remove any existing error messages
-        const existingError = timeSlotHeader.nextElementSibling;
-        if (existingError && existingError.classList.contains('calendar-error')) {
-            existingError.remove();
+        // Special case for time slot (not a form field)
+        if (check.field === validationChecks[0].field) {
+            if (!check.field) {
+                const errorElement = document.createElement('div');
+                errorElement.className = 'calendar-error';
+                errorElement.textContent = check.errorMessage;
+                errorElement.style.display = 'block';
+                errorElement.style.marginTop = '10px';
+                
+                if (check.errorContainer) {
+                    check.errorContainer.insertAdjacentElement('afterend', errorElement);
+                }
+                
+                isValid = false;
+            }
+        } 
+        // Standard form field validation
+        else if (check.field) {
+            if (!check.field.value.trim()) {
+                check.field.setCustomValidity(check.errorMessage);
+                check.field.reportValidity();
+                isValid = false;
+            }
         }
-        
-        timeSlotHeader.insertAdjacentElement('afterend', errorElement);
-        document.querySelector('.calendar-container').scrollIntoView({ behavior: 'smooth', block: 'center' });
-        isValid = false;
-    }
-    
-    // 2. Check Name
-    const nameField = document.getElementById('contact-name');
-    if (!nameField.value.trim()) {
-        nameField.reportValidity();
-        if (isValid) { // Only scroll if this is the first error
-            nameField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            nameField.focus();
+
+        if (!isValid) {
+            // Scroll to the error
+            const scrollTarget = document.querySelector(check.scrollTo);
+            if (scrollTarget) {
+                scrollTarget.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+                
+                // Focus the field if it's a form element
+                if (check.field && check.field.focus) {
+                    setTimeout(() => {
+                        check.field.focus();
+                    }, 500);
+                }
+            }
+            return; // Stop at first error
         }
-        isValid = false;
     }
-    
-    // 3. Check Phone Number
-    const phoneField = document.getElementById('contact-phone');
-    if (!phoneField.value.trim()) {
-        phoneField.reportValidity();
-        if (isValid) {
-            phoneField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            phoneField.focus();
-        }
-        isValid = false;
-    }
-    
-    // 4. Check Email
-    const emailField = document.getElementById('contact-email');
-    if (!emailField.value.trim()) {
-        emailField.reportValidity();
-        if (isValid) {
-            emailField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            emailField.focus();
-        }
-        isValid = false;
-    }
-    
-    // 5. Check Event Name
-    const eventNameField = document.getElementById('event-name');
-    if (!eventNameField.value.trim()) {
-        eventNameField.reportValidity();
-        if (isValid) {
-            eventNameField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            eventNameField.focus();
-        }
-        isValid = false;
-    }
-    
-    // 6. Check Event Type
-    const eventTypeField = document.getElementById('event-type');
-    if (!eventTypeField.value) {
-        eventTypeField.reportValidity();
-        if (isValid) {
-            eventTypeField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            eventTypeField.focus();
-        }
-        isValid = false;
-    }
-    
-    // 7. Check Event Location
-    const eventLocationField = document.getElementById('event-location');
-    if (!eventLocationField.value.trim()) {
-        eventLocationField.reportValidity();
-        if (isValid) {
-            eventLocationField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            eventLocationField.focus();
-        }
-        isValid = false;
-    }
-    
-    if (!isValid) {
-        return;
-    }
-    
+
     // Show payment form if all validations pass
     document.getElementById('stripe-payment-form').style.display = 'block';
     document.getElementById('payment-info').style.display = 'block';
