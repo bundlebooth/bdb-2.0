@@ -2561,13 +2561,29 @@ document.getElementById('new-bundle-button').addEventListener('click', () => {
     document.getElementById('promo-code').value = '';
     document.getElementById('promo-error').textContent = '';
     
+    // Reset form fields
+    document.getElementById('event-details-form').reset();
+    
     // Hide confirmation elements
     document.getElementById('confirmation-overlay').style.display = 'none';
     document.getElementById('confirmation-message').style.display = 'none';
     
-    // Reset to step 1
-    showStep(1);
+    // Show step 1 and hide others
+    document.getElementById('step-1').style.display = 'block';
+    document.getElementById('step-2').style.display = 'none';
+    document.getElementById('step-3').style.display = 'none';
+    
+    // Reset progress bar
+    updateProgressBar(1);
+    
+    // Re-render bundles
     renderBundles();
+    
+    // Reset payment form if it was shown
+    document.getElementById('stripe-payment-form').style.display = 'none';
+    document.getElementById('payment-info').style.display = 'none';
+    document.getElementById('submit-booking').style.display = 'block';
+    
 });
         
 // Month navigation
@@ -3703,8 +3719,8 @@ const countdownInterval = setInterval(() => {
     countdownElement.textContent = `You will be redirected to homepage in ${seconds} seconds...`;
     
     if (seconds <= 0) {
-        clearInterval(countdownInterval);
-        window.location.href = 'https://bundlebooth.ca/';
+    clearInterval(countdownInterval);
+    window.open('https://bundlebooth.ca/', '_blank');
     }
 }, 1000);
             
