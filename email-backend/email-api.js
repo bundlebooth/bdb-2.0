@@ -172,18 +172,17 @@ app.post('/send-booking-email', async (req, res) => {
     };
     sendSmtpEmail.to = [{ email, name: contactName }];
     sendSmtpEmail.subject = `Booking Confirmation - ${eventName}`;
-    sendSmtpEmail.htmlContent = `
-<!DOCTYPE html>
+    sendSmtpEmail.htmlContent = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <title>Booking Confirmation</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+<body style="margin: 0; padding: 20px 0; font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f8f8f8;">
   <table width="100%" cellspacing="0" cellpadding="0">
     <tr>
       <td align="center">
-        <table width="600" cellspacing="0" cellpadding="0" style="border-collapse: collapse;">
+        <table width="600" cellspacing="0" cellpadding="0" style="border-collapse: collapse; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
           <!-- Header with Logo -->
           <tr>
             <td style="background-color: #f8f8f8; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
@@ -241,7 +240,7 @@ app.post('/send-booking-email', async (req, res) => {
               </div>
 
               ${specialRequests ? `
-              <div style="background-color: #f9f9f9; padding: 15px; border-radius: 4px; margin: 15px 0;">
+              <div style="background-color: #f8f8f8; padding: 15px; border-radius: 4px; margin: 15px 0;">
                 <h4 style="margin-top: 0;">Special Requests/Notes:</h4>
                 <p>${specialRequests}</p>
               </div>
@@ -348,7 +347,7 @@ app.post('/send-booking-email', async (req, res) => {
               <p>Thank you for choosing BundleBooth, ${contactName}!</p>
               <p>We'll be in touch soon to confirm the details of your event.</p>
               
-              <div style="background-color: #f9f9f9; padding: 15px; border-radius: 4px; margin: 15px 0;">
+              <div style="background-color: #f8f8f8; padding: 15px; border-radius: 4px; margin: 15px 0;">
                 <h4 style="margin-top: 0;">Important Notes:</h4>
                 <ul style="margin: 0; padding-left: 20px;">
                   <li>Your booking is confirmed. A payment of C$${calculatedTotal.toFixed(2)} was processed.</li>
@@ -368,7 +367,7 @@ app.post('/send-booking-email', async (req, res) => {
           <tr>
             <td style="background-color: #f8f8f8; padding: 20px; text-align: center; border-radius: 0 0 8px 8px; font-size: 14px;">
               <p>Need to make changes? <a href="mailto:support@bundlebooth.ca" style="color: #4CAF50;">Contact us</a></p>
-              <p>© ${new Date().getFullYear()} BundleBooth. All rights reserved.</p>
+              <p>© ${new Date().getFullYear()} Bundle Booth Entertainment. All rights reserved.</p>
             </td>
           </tr>
         </table>
