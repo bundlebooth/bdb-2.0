@@ -14,7 +14,7 @@
 
 <style>
   #bundlebooth-iframe {
-    height: 2300px; /* Initial height */
+    height: 2300px;
     transition: height 0.3s ease;
   }
   
@@ -71,7 +71,6 @@ function logMessage(message) {
     `;
     messageLog.prepend(messageEntry);
     
-    // Show the messages panel if hidden
     document.getElementById('iframe-messages').style.display = 'block';
   }
 }
@@ -82,41 +81,41 @@ window.addEventListener('DOMContentLoaded', () => {
   logMessage('Page loaded, iframe initialized');
 });
 
-// Handle messages from iframe
+// Handle messages from iframe - COMPLETELY NEW VERSION
 window.addEventListener('message', function(event) {
-  // Verify the origin is from your GitHub pages
-  if (event.origin !== 'https://bundlebooth.ca') {
-    logMessage(`Message from unauthorized origin blocked: ${event.origin}`);
-    return;
-  }
-  
-  const data = event.data;
-  logMessage(`Message received: ${JSON.stringify(data)}`);
-  
-  if (data.type === 'stepChanged') {
-    logMessage('Step changed in iframe');
-    // Adjust iframe height based on content
-    adjustIframeHeight(data.height);
+  // First check if this is a message from our iframe
+  try {
+    const iframe = document.getElementById('bundlebooth-iframe');
+    if (!iframe || event.source !== iframe.contentWindow) {
+      return; // Silently ignore messages not from our iframe
+    }
     
-    // Scroll to iframe
-    scrollToIframe();
+    // Then verify the origin is either GitHub or your production domain
+    const allowedOrigins = [
+      'https://bundlebooth.github.io',
+      'https://bundlebooth.ca'
+    ];
+    
+    if (!allowedOrigins.includes(event.origin)) {
+      return; // Silently ignore unauthorized messages
+    }
+    
+    // Only process if data is an object with type property
+    if (typeof event.data === 'object' && event.data.type) {
+      logMessage(`Valid message from ${event.origin}: ${event.data.type}`);
+      
+      if (event.data.type === 'stepChanged') {
+        logMessage(`Step changed to ${event.data.step}`);
+        if (event.data.height) {
+          adjustIframeHeight(event.data.height);
+        }
+        scrollToIframe();
+      }
+    }
+  } catch (e) {
+    console.error('Error processing message:', e);
   }
 }, false);
-
-// Fallback: periodically check iframe height (optional)
-setInterval(function() {
-  const iframe = document.getElementById('bundlebooth-iframe');
-  if (iframe && iframe.contentWindow) {
-    try {
-      const height = iframe.contentWindow.document.body.scrollHeight;
-      if (height > 0) {
-        adjustIframeHeight(height);
-      }
-    } catch (e) {
-      logMessage('Cross-origin error checking iframe height');
-    }
-  }
-}, 1000);
 
 // Add toggle button for messages panel
 const toggleBtn = document.createElement('button');
