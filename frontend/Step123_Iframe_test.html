@@ -2529,36 +2529,35 @@ async function initializeStripe() {
     }
 	
 	// Preload calendar data when step 2 is shown
-function preloadCalendarData() {
-    // Calculate date two weeks from now
-    const twoWeeksLater = new Date();
-    twoWeeksLater.setDate(twoWeeksLater.getDate() + 14);
-    
-    // Load availability in the background
-    loadAvailability(twoWeeksLater.toISOString().split('T')[0]);
+async function preloadCalendarData() {
+    try {
+        // Calculate date two weeks from now
+        const twoWeeksLater = new Date();
+        twoWeeksLater.setDate(twoWeeksLater.getDate() + 14);
+        
+        // Format date correctly for API
+        const formattedDate = twoWeeksLater.toISOString().split('T')[0];
+        
+        // Only load if we have a valid date and calendar is ready
+        if (formattedDate && document.getElementById('calendar-days')) {
+            await loadAvailability(formattedDate);
+        }
+    } catch (error) {
+        console.error('Preload failed:', error);
+        // Don't show error to user during preload
+    }
 }
 
 // Call preload when step 2 is shown
 document.addEventListener('DOMContentLoaded', () => {
-    // ... existing code ...
-    
-    // Add observer to detect when step 2 becomes visible
-    const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            if (mutation.attributeName === 'style') {
-                const step2 = document.getElementById('step-2');
-                if (step2.style.display !== 'none') {
-                    preloadCalendarData();
-                }
-            }
-        });
-    });
-    
-    observer.observe(document.getElementById('step-2'), {
-        attributes: true,
-        attributeFilter: ['style']
-    });
-})
+    // Add slight delay before preloading to ensure everything is ready
+    setTimeout(() => {
+        const step2 = document.getElementById('step-2');
+        if (step2.style.display !== 'none') {
+            preloadCalendarData().catch(e => console.error('Preload failed:', e));
+        }
+    }, 500);
+});
 
     // Updated renderStep3 function to handle dynamic discounts
     function renderStep3() {
@@ -3443,33 +3442,47 @@ function renderCalendar(date) {
 }
 
     // Load availability
-    async function loadAvailability(date) {
-        try {
-            showCalendarLoading();
-            hideCalendarError();
-            clearTimeSlots();
-            
-            const response = await fetch(`${config.backendUrl}/api/availability?date=${date}`);
-            
-            if (!response.ok) {
-                throw new Error(`Failed to load availability: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            
-            // Validate response structure
-            if (!data.availability || !Array.isArray(data.availability)) {
-                throw new Error('Invalid availability data format');
-            }
-            
-            renderTimeSlots(date, data.availability);
-        } catch (error) {
-            console.error('Availability error:', error);
-            showCalendarError(`Failed to load availability: ${error.message}`);
-        } finally {
-            hideCalendarLoading();
+async function loadAvailability(date) {
+    try {
+        // Validate date format (YYYY-MM-DD)
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+            throw new Error('Invalid date format');
         }
+        
+        showCalendarLoading();
+        hideCalendarError();
+        clearTimeSlots();
+        
+        const response = await fetch(`${config.backendUrl}/api/availability?date=${date}`);
+        
+        if (!response.ok) {
+            // Try to get more detailed error info
+            let errorMsg = `HTTP ${response.status}`;
+            try {
+                const errorData = await response.json();
+                errorMsg += `: ${errorData.message || JSON.stringify(errorData)}`;
+            } catch (e) {
+                errorMsg += ' - Failed to parse error response';
+            }
+            throw new Error(errorMsg);
+        }
+        
+        const data = await response.json();
+        
+        // Validate response structure
+        if (!data?.availability) {
+            throw new Error('Invalid response format from server');
+        }
+        
+        renderTimeSlots(date, data.availability);
+    } catch (error) {
+        console.error('Availability error:', error);
+        showCalendarError(`Failed to load availability: ${error.message}`);
+        throw error; // Re-throw for caller to handle if needed
+    } finally {
+        hideCalendarLoading();
     }
+}
     
 // Updated renderTimeSlots function
 function renderTimeSlots(date, availability = []) {
