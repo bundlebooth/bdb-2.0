@@ -1868,10 +1868,10 @@
                 <h3 class="form-section-title">Contact Information</h3>
                 <form id="event-details-form">
                     <div class="form-row">
-                        <div class="form-group">
-                            <label for="contact-name">Your Name <span class="required-asterisk">*</span></label>
-                            <input type="text" id="contact-name" >
-                        </div>
+						<div class="form-group">
+							<label for="contact-name">Your Name <span class="required-asterisk">*</span></label>
+							<input type="text" id="contact-name" required>
+						</div>
                         <div class="form-group">
                               <label for="contact-phone">Phone Number <span class="required-asterisk">*</span></label>
                             <input type="tel" id="contact-phone" required placeholder="+1 (XXX) XXX-XXXX">
@@ -1887,25 +1887,25 @@
             <div class="form-section">
                 <h3 class="form-section-title">Event Details</h3>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label for="event-name">Event Name</label>
-                        <input type="text" id="event-name">
-                    </div>
-                    <div class="form-group mobile-event-type">
-                        <label for="event-type">Event Type <span class="required-asterisk">*</span></label>
-                        <select id="event-type" required>
-                            <option value="">Select Event Type</option>
-                            <option value="Wedding" selected>Wedding</option>
-                            <option value="Corporate">Corporate Event</option>
-                            <option value="Birthday">Birthday Party</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
+					<div class="form-group">
+						<label for="event-name">Event Name <span class="required-asterisk">*</span></label>
+						<input type="text" id="event-name" required>
+					</div>
+					<div class="form-group mobile-event-type">
+						<label for="event-type">Event Type <span class="required-asterisk">*</span></label>
+						<select id="event-type" required>
+							<option value="">Select Event Type</option>
+							<option value="Wedding">Wedding</option>
+							<option value="Corporate">Corporate Event</option>
+							<option value="Birthday">Birthday Party</option>
+							<option value="Other">Other</option>
+						</select>
+					</div>
                 </div>
-                <div class="form-group">
-                    <label for="event-location">Event Location <span class="required-asterisk">*</span></label>
-                    <input type="text" id="event-location" placeholder="Venue name or address" required>
-                </div>
+				<div class="form-group">
+					<label for="event-location">Event Location <span class="required-asterisk">*</span></label>
+					<input type="text" id="event-location" placeholder="Venue name or address" required>
+				</div>
                 <div class="form-group">
                     <label for="special-requests">Special Requests or Notes</label>
                     <textarea id="special-requests" placeholder="Any additional requirements or notes for our team"></textarea>
