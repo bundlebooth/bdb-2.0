@@ -195,18 +195,18 @@ app.post('/send-booking-email', async (req, res) => {
   <style type="text/css">
     .shadow-card {
       box-shadow: none !important;
-      border: 1px solid #ddd !important;
+      border: 1px solid #e0e0e0 !important;
     }
   </style>
   <![endif]-->
   <table width="100%" cellspacing="0" cellpadding="0" style="border-collapse: collapse;">
     <tr>
       <td align="center" style="padding: 20px 0;">
-        <!-- Modern Card with Enhanced Shadow -->
+        <!-- Modern Card with Grey Border and Shadow -->
         <table width="600" cellspacing="0" cellpadding="0" class="email-container" style="border-collapse: collapse;">
           <tr>
             <td>
-              <div class="shadow-card" style="background-color: #ffffff; border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.12), 0 5px 15px rgba(0,0,0,0.08); border: none; overflow: hidden;">
+              <div class="shadow-card" style="background-color: #ffffff; border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.12), 0 5px 15px rgba(0,0,0,0.08); border: 1px solid #e0e0e0; overflow: hidden;">
                 <!-- Header with Logo -->
                 <div style="background-color: #ffffff; padding: 30px; text-align: center; border-bottom: 1px solid rgba(0,0,0,0.05);">
                   <img src="https://img1.wsimg.com/isteam/ip/e5031132-8c20-44e3-a810-901cf200c927/BundleBooth_Logo_FULL_FINAL%25202%2520large.png" alt="BundleBooth Logo" style="max-width: 280px; height: auto; margin-bottom: 15px;">
