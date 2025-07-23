@@ -3668,43 +3668,16 @@ function clearPromoCode() {
         }
     }
 
-    // Handle booking submission
+// Handle booking submission
 async function handleBookingSubmit(e) {
     e.preventDefault();
     
-    // Get the form element
-    const form = document.getElementById('event-details-form');
-    
-    // Manually check required fields since we're preventing default form submission
-    const requiredFields = [
-        'contact-name',
-        'contact-phone',
-        'contact-email',
-        'event-name',
-        'event-type',
-        'event-location'
-    ];
-    
+    // Check fields in specified order
     let isValid = true;
     
-    requiredFields.forEach(fieldId => {
-        const field = document.getElementById(fieldId);
-        if (!field.value.trim()) {
-            field.reportValidity();
-            isValid = false;
-            
-            // Scroll to the first invalid field
-            if (isValid === false) {
-                field.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                field.focus();
-            }
-        }
-    });
-    
-    // Check if a time slot is selected
+    // 1. Check Time Slot
     const selectedSlot = document.querySelector('.time-slot.selected-slot');
     if (!selectedSlot) {
-        // Show error message near the time slots
         const timeSlotHeader = document.getElementById('selected-date-header');
         const errorElement = document.createElement('div');
         errorElement.className = 'calendar-error';
@@ -3719,10 +3692,73 @@ async function handleBookingSubmit(e) {
         }
         
         timeSlotHeader.insertAdjacentElement('afterend', errorElement);
-        
-        // Scroll to the calendar section
         document.querySelector('.calendar-container').scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
+        isValid = false;
+    }
+    
+    // 2. Check Name
+    const nameField = document.getElementById('contact-name');
+    if (!nameField.value.trim()) {
+        nameField.reportValidity();
+        if (isValid) { // Only scroll if this is the first error
+            nameField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            nameField.focus();
+        }
+        isValid = false;
+    }
+    
+    // 3. Check Phone Number
+    const phoneField = document.getElementById('contact-phone');
+    if (!phoneField.value.trim()) {
+        phoneField.reportValidity();
+        if (isValid) {
+            phoneField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            phoneField.focus();
+        }
+        isValid = false;
+    }
+    
+    // 4. Check Email
+    const emailField = document.getElementById('contact-email');
+    if (!emailField.value.trim()) {
+        emailField.reportValidity();
+        if (isValid) {
+            emailField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            emailField.focus();
+        }
+        isValid = false;
+    }
+    
+    // 5. Check Event Name
+    const eventNameField = document.getElementById('event-name');
+    if (!eventNameField.value.trim()) {
+        eventNameField.reportValidity();
+        if (isValid) {
+            eventNameField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            eventNameField.focus();
+        }
+        isValid = false;
+    }
+    
+    // 6. Check Event Type
+    const eventTypeField = document.getElementById('event-type');
+    if (!eventTypeField.value) {
+        eventTypeField.reportValidity();
+        if (isValid) {
+            eventTypeField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            eventTypeField.focus();
+        }
+        isValid = false;
+    }
+    
+    // 7. Check Event Location
+    const eventLocationField = document.getElementById('event-location');
+    if (!eventLocationField.value.trim()) {
+        eventLocationField.reportValidity();
+        if (isValid) {
+            eventLocationField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            eventLocationField.focus();
+        }
         isValid = false;
     }
     
@@ -3730,7 +3766,7 @@ async function handleBookingSubmit(e) {
         return;
     }
     
-    // Show payment form
+    // Show payment form if all validations pass
     document.getElementById('stripe-payment-form').style.display = 'block';
     document.getElementById('payment-info').style.display = 'block';
     document.getElementById('submit-booking').style.display = 'none';
@@ -3742,7 +3778,6 @@ async function handleBookingSubmit(e) {
         cardElement.mount('#card-element');
     }
 }
-
 async function handlePaymentSubmit(e) {
     e.preventDefault();
     const button = e.target;
