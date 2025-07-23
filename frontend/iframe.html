@@ -40,9 +40,9 @@ function scrollToIframeStart() {
   const iframe = document.getElementById('bundlebooth-iframe');
   if (!iframe) return;
 
-  // Get iframe's exact start position in document
-  const iframeRect = iframe.getBoundingClientRect();
-  const iframeStartPosition = iframeRect.top + window.pageYOffset;
+  // Determine start position based on screen size
+  const isMobile = window.matchMedia('(max-width: 480px)').matches;
+  const iframeStartPosition = isMobile ? 1100 : 900;
 
   // Scroll parent window to iframe's start position
   try {
@@ -99,11 +99,5 @@ window.addEventListener('message', function(event) {
   } catch (error) {
     console.error('Iframe message error:', error);
   }
-});
-
-// ===== INITIALIZATION ===== //
-window.addEventListener('DOMContentLoaded', () => {
-  // Initial scroll to iframe start position
-  setTimeout(scrollToIframeStart, 500);
 });
 </script>
