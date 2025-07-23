@@ -2893,30 +2893,22 @@ function updatePrices() {
     }
 
     // Show/hide steps
-    function showStep(stepNumber) {
-	
-	
-        // Hide all steps
-        document.getElementById('step-1').style.display = 'none';
-        document.getElementById('step-2').style.display = 'none';
-        document.getElementById('step-3').style.display = 'none';
-		
-		   // Clear promo code if leaving step 3
-    if (getCurrentStep() === 3 && stepNumber !== 3) {
-        clearPromoCode();
-    }
-        
-        // Show the requested step
-        document.getElementById(`step-${stepNumber}`).style.display = 'block';
-        
-        // Update progress bar
-        updateProgressBar(stepNumber);
-        
-        // On mobile, scroll to top when changing steps
-        if (window.innerWidth <= 768) {
-            window.scrollTo(0, 0);
-        }
-    }
+// Modified showStep function
+let currentStep = 1;
+function showStep(stepNumber) {
+    if (currentStep === stepNumber) return;
+    
+    currentStep = stepNumber;
+    
+    document.getElementById('step-1').style.display = 'none';
+    document.getElementById('step-2').style.display = 'none';
+    document.getElementById('step-3').style.display = 'none';
+    document.getElementById(`step-${stepNumber}`).style.display = 'block';
+    
+    updateProgressBar(stepNumber);
+    window.scrollTo(0, 0);
+    notifyParentOfStepChange();
+}
 
     // Render services for selected bundle
     function renderServices() {
@@ -3654,6 +3646,112 @@ async function handlePaymentSubmit(e) {
         processingMessage.style.display = 'none';
     }
 }
+
+console.log('Script loaded in Step123_Iframe_test.html');
+
+// Modified notifyParentOfStepChange function
+let lastStep = null;
+let lastHeight = 0;
+function notifyParentOfStepChange() {
+    const currentStep = getCurrentStep();
+    const currentHeight = document.body.scrollHeight;
+    
+    // Only send if step changed or height changed significantly (>20px)
+    if (currentStep !== lastStep || Math.abs(currentHeight - lastHeight) > 20) {
+        try {
+            // Determine the correct parent origin
+            let parentOrigin;
+            try {
+                // First try to get the parent's actual origin
+                parentOrigin = window.parent.location.origin;
+            } catch (e) {
+                // Fallback for cross-origin situations
+                parentOrigin = 'https://bundlebooth.ca'; // Your production domain
+            }
+            
+            // Send the message
+            window.parent.postMessage({
+                type: 'stepChanged',
+                step: currentStep,
+                height: currentHeight
+            }, parentOrigin);
+            
+            lastStep = currentStep;
+            lastHeight = currentHeight;
+        } catch (error) {
+            console.error('postMessage failed:', error);
+        }
+    }
+}
+
+
+function scrollToTop() {
+    console.log('Attempting to scroll iframe to top');
+    try {
+        document.body.scrollTop = 0; // For older browsers
+        document.documentElement.scrollTop = 0; // Standard
+        const steps = document.getElementById('steps');
+        if (steps) steps.scrollTop = 0;
+    } catch (e) {
+        console.error('Scroll failed:', e);
+    }
+    setTimeout(() => {
+        console.log('Current scroll position:', window.scrollY || document.body.scrollTop || document.documentElement.scrollTop);
+        console.log('Document height:', document.body.scrollHeight);
+        console.log('Viewport height:', window.innerHeight);
+    }, 500);
+    notifyParentOfStepChange();
+}
+
+console.log('Setting up listeners');
+const progressBar = document.querySelector('#progress-bar');
+if (progressBar) {
+    document.querySelectorAll('#progress-bar div').forEach(step => {
+        step.addEventListener('click', () => {
+            console.log('Progress bar step clicked');
+        });
+    });
+} else {
+    console.warn('Progress bar not found');
+}
+
+const reviewSelection = document.getElementById('review-selection');
+if (reviewSelection) {
+    reviewSelection.addEventListener('click', () => {
+        console.log('Review Selection clicked');
+    });
+} else {
+    console.warn('Review Selection button not found');
+}
+
+const backToBundle = document.getElementById('back-to-bundle');
+if (backToBundle) {
+    backToBundle.addEventListener('click', () => {
+        console.log('Back to Bundle clicked');
+    });
+} else {
+    console.warn('Back to Bundle button not found');
+}
+
+const backToServices = document.getElementById('back-to-services');
+if (backToServices) {
+    backToServices.addEventListener('click', () => {
+        console.log('Back to Services clicked');
+    });
+} else {
+    console.warn('Back to Services button not found');
+}
+
+</script>
+<style>
+body {
+    overflow: auto !important;
+}
+#steps {
+    overflow: auto !important;
+    min-height: 100vh;
+}
+
 </script>
 </body>
 </html>
