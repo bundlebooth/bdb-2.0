@@ -3649,8 +3649,36 @@ function clearPromoCode() {
 async function handleBookingSubmit(e) {
     e.preventDefault();
     
-    if (!document.getElementById('event-details-form').checkValidity()) {
-        document.getElementById('event-details-form').reportValidity();
+    // Get the form element
+    const form = document.getElementById('event-details-form');
+    
+    // Manually check required fields since we're preventing default form submission
+    const requiredFields = [
+        'contact-name',
+        'contact-phone',
+        'contact-email',
+        'event-name',
+        'event-type',
+        'event-location'
+    ];
+    
+    let isValid = true;
+    
+    requiredFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (!field.value.trim()) {
+            field.reportValidity();
+            isValid = false;
+            
+            // Scroll to the first invalid field
+            if (isValid === false) {
+                field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                field.focus();
+            }
+        }
+    });
+    
+    if (!isValid) {
         return;
     }
     
