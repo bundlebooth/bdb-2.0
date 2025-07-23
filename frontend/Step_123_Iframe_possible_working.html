@@ -1,0 +1,3757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,maximum-scale=0,user-scalable=no" name="viewport"/>
+<meta http-equiv="Permissions-Policy" content="payment=(self 'https://bundlebooth.ca')">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>BundleBooth Custom Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<script src="https://js.stripe.com/v3/"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+    :root {
+      --bb-blue: #333;
+      --bb-red: #e74c3c;
+      --bb-light: #f4f4f4;
+      --bb-dark: #343a40;
+      --tag-blue: #3498db;
+      --tag-green: #2ecc71;
+      --bb-green: #2ecc71;
+      --bb-secondary: #666;
+      --bb-hover-grey: #4a5057;
+      --bb-accent: #3498db;
+      --bb-table-header: #e8ecef;
+      --bb-compare-button: #d3d3d3;
+      --selected-date-color: #f0f0f0;
+      --modern-green: #27ae60;
+      --tag-scene: #1e3a8a;
+      --tag-sweets: #5c4033;
+      --tag-special-effects: #5a4a00;
+      --tag-guest-book: #831843;
+      --tag-digital: #495057;
+      --tag-interactive: #6b21a8;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent
+    }
+    body {
+      margin: 0;
+      font-family: Poppins, sans-serif;
+      background: var(--bb-light);
+      color: var(--bb-dark);
+      line-height: 1.5
+    }
+    .container {
+      display: flex;
+      min-height: 100vh;
+      flex-wrap: nowrap
+    }
+    main {
+      flex: 1;
+      padding: 24px 20px;
+      overflow-y: auto;
+      background: var(--bb-light);
+      position: relative
+    }
+    
+    /* UPDATED STEP 1 STYLES */
+    .step-1-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    
+/* Add a new grey separator line */
+.section-divider {
+  display: flex;
+  align-items: center;
+  font-size: 25px; /* Add this line to make text bigger */
+  margin: 30px 0;
+  color: #666;
+}
+
+.section-divider::before,
+.section-divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #ddd;
+}
+
+.section-divider::before {
+  margin-right: 10px;
+}
+
+.section-divider::after {
+  margin-left: 10px;
+}
+    
+    .step-description {
+      color: #666;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+      text-align: left;
+    }
+    
+    .custom-bundle-banner {
+      text-align: center;
+      border: 2px dashed var(--bb-accent);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 30px;
+      background: #fff;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 285px;
+      height: 323px;
+      margin: 0 auto;
+    }
+    
+    .custom-bundle-banner:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    
+    .custom-bundle-banner h3 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: var(--bb-blue);
+    }
+    
+    .custom-bundle-banner p {
+      margin: 8px 0 16px;
+      font-size: 0.95rem;
+      color: #555;
+    }
+    
+    .bundles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      width: 100%;
+    }
+    
+    .bundle-card {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .bundle-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+    }
+    
+    .bundle-card h3 {
+      margin-top: 0;
+      font-size: 1.2rem;
+      color: var(--bb-blue);
+    }
+    
+    .bundle-card p {
+      font-size: 0.9rem;
+      color: #666;
+      margin: 8px 0;
+    }
+    
+    .bundle-duration {
+      font-weight: 500;
+      color: var(--bb-accent);
+      margin: 8px 0;
+    }
+    
+    .services-included {
+      font-size: 0.85rem;
+      color: #666;
+      margin: 10px 0 5px 0;
+    }
+    
+    .tag-list {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+.tag {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-right: 6px;
+    margin-bottom: 6px;
+}
+
+.tag.scene-setters {
+    background: #e6f0fa;
+    color: #1e3a8a;
+}
+.tag.sweets-brews {
+    background: #e6d9cb;
+    color: #5c4033;
+}
+.tag.special-effects {
+    background: #fff7e0;
+    color: #5a4a00;
+}
+.tag.guest-book {
+    background: #fce7f3;
+    color: #831843;
+}
+.tag.digital {
+    background: #e8ecef;
+    color: #495057;
+}
+.tag.interactive {
+    background: #f3e8ff;
+    color: #6b21a8;
+}
+
+    
+    .tag-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      background: var(--bb-dark);
+      color: white;
+      border-radius: 50%;
+      margin-right: 4px;
+      font-size: 0.65rem;
+    }
+    
+    .corner-ribbon {
+      position: absolute;
+      top: 10px;
+      right: -10px;
+      background: var(--bb-red);
+      color: white;
+      padding: 4px 8px;
+      font-size: 0.7rem;
+      font-weight: bold;
+      transform: rotate(10deg);
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    /* Special bundle styling */
+    .special-bundle {
+      background: linear-gradient(135deg, #fffbea, #fff5d1);
+      border: 2px solid gold;
+    }
+    
+    /* Custom bundle styling */
+    .custom-bundle {
+      background: linear-gradient(135deg, #f0f8ff, #e6f0fa);
+      border: 2px solid var(--bb-accent);
+    }
+    
+    .plus-symbol {
+      font-size: 3rem;
+      margin: 20px 0;
+      text-align: center;
+      color: #666;
+    }
+    
+    /* END OF UPDATED STEP 1 STYLES */
+    
+    /* Rest of the original styles (Steps 2 and 3) remain unchanged */
+    .package {
+      position: relative;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, .06);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp .6s forwards;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s, background-color .2s, border-color .2s;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+      height: 100%;
+    }
+    .package.selected {
+      background-color: rgba(52, 152, 219, .1);
+      border-color: var(--bb-accent)
+    }
+    .package:hover {
+      box-shadow: 0 6px 12px rgba(0, 0, 0, .1);
+      transform: translateY(-2px)
+    }
+    .package:active {
+      transform: scale(.98)
+    }
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+    .package h3 {
+      margin: 0;
+      color: var(--bb-blue);
+      font-size: 1.1rem;
+      line-height: 1.3;
+      display: inline-block;
+      vertical-align: middle;
+      padding-right: 30px
+    }
+    .package p.description {
+      margin: 0;
+      font-size: .9rem;
+      color: #555
+    }
+    .package p {
+      margin: 0
+    }
+    .price {
+      font-size: 1rem
+    }
+    .price.sale {
+      color: var(--bb-green);
+      font-weight: 600
+    }
+    .price.no-sale {
+      color: var(--bb-dark);
+      font-weight: 400
+    }
+    .discount {
+      color: var(--bb-green);
+      font-weight: 600;
+      font-size: .9rem;
+      margin-left: 5px
+    }
+    .original-price {
+      text-decoration: line-through;
+      color: var(--bb-secondary);
+      font-size: .9rem;
+      margin-left: 5px
+    }
+    .book-now-button {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 10px 16px;
+      background: rgba(44, 62, 80, .1);
+      color: var(--bb-blue);
+      font-weight: 400;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: all .25s;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      text-align: center;
+      position: relative;
+    }
+    .book-now-button:focus,
+    .book-now-button:hover {
+      background: var(--bb-hover-grey);
+      color: #fff;
+      outline: 0;
+      transform: translateY(-2px)
+    }
+    .book-now-button:active {
+      background: var(--bb-dark);
+      color: #fff;
+      transform: translateY(0)
+    }
+    
+    /* Category Tags */
+    .category-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-right: 6px;
+      margin-bottom: 6px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    
+    .category-tag.scene-setters {
+      background: #e6f0fa;
+      color: var(--tag-scene);
+    }
+    
+    .category-tag.sweets-brews {
+      background: #e6d9cb;
+      color: var(--tag-sweets);
+    }
+    
+    .category-tag.special-effects {
+      background: #fff7e0;
+      color: var(--tag-special-effects);
+    }
+    
+    .category-tag.guest-book {
+      background: #fce7f3;
+      color: var(--tag-guest-book);
+    }
+    
+    .category-tag.digital {
+      background: #e8ecef;
+      color: var(--tag-digital);
+    }
+    
+    .category-tag.interactive {
+      background: #f3e8ff;
+      color: var(--tag-interactive);
+    }
+    
+    .category-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      background: var(--bb-dark);
+      color: white;
+      border-radius: 50%;
+      margin-right: 4px;
+      font-size: 0.65rem;
+    }
+    
+    .categories-label {
+      font-size: 12px;
+      color: #666;
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+    
+    /* Custom Bundle Builder Styles */
+    .category-progress-block {
+      margin: 20px 0;
+      background: #f8f9fa;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid #e9ecef;
+    }
+    .selection-label {
+      font-size: 14px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .progress-wrapper {
+      height: 8px;
+      background: #e9ecef;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      background: #3498db;
+      width: 0%;
+      transition: width 0.3s ease, background-color 0.3s ease;
+    }
+    #review-selection {
+      margin-top: 24px;
+      width: 100%;
+    }
+    .show-features-toggle {
+      background: transparent;
+      color: var(--bb-blue);
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      text-align: center;
+      margin-top: auto;
+      padding: 0;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding-top: 10px;
+      position: absolute;
+      bottom: 15px;
+      left: 0;
+      padding: 0 18px;
+    }
+    .show-features-toggle:hover {
+      text-decoration: underline;
+    }
+    .features-overlay {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.97);
+      z-index: 10;
+      border-radius: 12px;
+      padding: 20px;
+      overflow-y: auto;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+    }
+    .features-overlay .close-overlay {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      background: transparent;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      color: #666;
+    }
+    .features-overlay ul {
+      padding-left: 18px;
+      margin: 0;
+    }
+    .features-overlay li {
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: #333;
+    }
+    
+    /* Custom Bundle Builder Step 3 Styles */
+    .summary-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    .summary-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #eee;
+    }
+    .summary-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--bb-blue);
+    }
+    .summary-price {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--bb-green);
+    }
+    .service-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #f5f5f5;
+    }
+    .service-item:last-child {
+      border-bottom: none;
+    }
+    .service-name {
+      font-weight: 500;
+    }
+    .service-price {
+      color: var(--bb-dark);
+    }
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 2px solid #eee;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+    .discount-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      color: var(--bb-green);
+    }
+	/* Add this new rule to position the error message below */
+.promo-message-container {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+}
+.promo-row {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+}
+    .promo-input {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .promo-input input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .promo-input button {
+      padding: 8px 12px;
+      background: #e9ecef;
+      color: var(--bb-dark);
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .promo-input button:hover {
+      background: #ddd;
+    }
+
+.promo-error {
+    color: var(--bb-green);
+    font-size: 0.8rem;
+    width: 100%;
+}
+
+.promo-error.invalid {
+    color: var(--bb-red);
+}
+    .promo-discount-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      color: var(--bb-green);
+    }
+    .final-total {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 2px solid #eee;
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: var(--bb-dark);
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    .form-group textarea {
+      min-height: 100px;
+    }
+    .form-row {
+      display: flex;
+      gap: 16px;
+    }
+    .form-row .form-group {
+      flex: 1;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .back-button {
+      background: #f0f0f0;
+      color: var(--bb-dark);
+    }
+    .back-button:hover {
+      background: #e0e0e0;
+    }
+    .confirmation-message {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      text-align: center;
+      display: none;
+    }
+    .confirmation-icon {
+      font-size: 48px;
+      color: var(--bb-green);
+      margin-bottom: 16px;
+    }
+    .service-features {
+      font-size: 13px;
+      color: #666;
+      margin-top: 4px;
+    }
+    .service-features ul {
+      padding-left: 20px;
+      margin-top: 6px;
+    }
+    .service-features li {
+      margin-bottom: 4px;
+    }
+    .edit-service {
+      color: var(--bb-accent);
+      font-size: 13px;
+      cursor: pointer;
+      margin-left: 8px;
+    }
+    .edit-service:hover {
+      text-decoration: underline;
+    }
+    .service-category {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      margin-left: 8px;
+    }
+    .service-category.scene-setters {
+      background: #e6f0fa;
+      color: var(--tag-scene);
+    }
+    
+    .service-category.sweets-brews {
+      background: #e6d9cb;
+      color: var(--tag-sweets);
+    }
+    
+    .service-category.special-effects {
+      background: #fff7e0;
+      color: var(--tag-special-effects);
+    }
+    
+    .service-category.guest-book {
+      background: #fce7f3;
+      color: var(--tag-guest-book);
+    }
+    
+    .service-category.digital {
+      background: #e8ecef;
+      color: var(--tag-digital);
+    }
+    
+    .service-category.interactive {
+      background: #f3e8ff;
+      color: var(--tag-interactive);
+    }
+    
+    .event-details-card {
+      margin-top: 24px;
+    }
+    .package-notes {
+      margin-top: 16px;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    
+    /* Progress Bar Styles */
+    #progress-bar {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    #progress-bar div {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      border-bottom: 4px solid #ccc;
+      color: #999;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    #progress-bar div.active {
+      border-bottom-color: #3498db;
+      color: #3498db;
+      font-weight: bold;
+    }
+    #progress-bar div.completed:not(.active) {
+      border-bottom-color: #2ecc71;
+      color: #2ecc71;
+    }
+    
+    /* Compare Warning */
+    .compare-message {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff3cd;
+      border: 1px solid #ffecb5;
+      color: #856404;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      white-space: nowrap;
+      font-size: 14px;
+      overflow-x: auto;
+    }
+    
+    /* Mobile-only warning */
+    
+      
+      @keyframes slideUp {
+        from { transform: translateX(-50%) translateY(100%); }
+        to { transform: translateX(-50%) translateY(0); }
+      }
+    }
+    
+    /* Toast Message */
+    #toast-msg {
+      display: none;
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #111;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 20px;
+      opacity: 0.9;
+      z-index: 1000;
+      font-size: 14px;
+    }
+    
+    /* CALENDAR STYLES */
+    .calendar-container {
+      margin: 20px 0;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    
+    .calendar-panel {
+      flex: 1;
+      min-width: 300px;
+    }
+    
+    .time-slot-panel {
+      flex: 1;
+      min-width: 300px;
+    }
+    
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .calendar-title {
+      font-weight: 600;
+      font-size: 1.2rem;
+    }
+    
+    .calendar-nav {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .calendar-nav-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: var(--bb-blue);
+      padding: 0 5px;
+    }
+    
+    .calendar-nav-button:disabled {
+      color: #ccc;
+      cursor: not-allowed
+    }
+    
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+    }
+    
+    .calendar-day-header {
+      text-align: center;
+      font-weight: 600;
+      padding: 5px;
+      font-size: 0.9rem;
+    }
+    
+    .calendar-day {
+      text-align: center;
+      padding: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    
+    .calendar-day:hover {
+      background-color: #f0f0f0;
+    }
+    
+    .calendar-day.current {
+      color: var(--bb-dark);
+      font-weight: bold;
+    }
+    
+    .calendar-day.current::after {
+      content: '';
+      position: absolute;
+      bottom: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--bb-accent);
+    }
+    
+    .calendar-day.selected {
+      background-color: var(--selected-date-color);
+      color: var(--bb-dark);
+      font-weight: bold;
+    }
+    
+    .calendar-day.available {
+      color: var(--bb-dark);
+    }
+    
+    .calendar-day.unavailable {
+      color: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .time-slots {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .time-slot {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      position: relative;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+    }
+    
+    .time-slot::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    
+    .time-slot.available {
+      background: #fff;
+      border-color: #ddd;
+      cursor: pointer;
+    }
+    
+    .time-slot.available::before {
+      background-color: var(--modern-green);
+    }
+    
+    .time-slot.available:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .time-slot.booked {
+      background: #f9f9f9;
+      border-color: #eee;
+      cursor: not-allowed;
+    }
+    
+    .time-slot.booked::before {
+      background-color: #e74c3c;
+    }
+    
+    .slot-time {
+      font-weight: 600;
+    }
+    
+    .slot-status {
+      margin-left: auto;
+      font-size: 0.8em;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+    
+    .time-slot.available .slot-status {
+      background: #e8f5e9;
+      color: #27ae60;
+    }
+    
+    .time-slot.booked .slot-status {
+      background: #fde8e8;
+      color: #e74c3c;
+    }
+    
+    .selected-slot {
+      box-shadow: 0 0 0 2px var(--bb-accent);
+      border-color: var(--bb-accent);
+    }
+    
+    .time-slot-header {
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+    
+    .calendar-error {
+      color: #E74C3C;
+      background-color: #FDEDED;
+      padding: 10px;
+      border-radius: 4px;
+      margin: 10px 0;
+      text-align: center;
+      display: none;
+    }
+    
+    .timezone-note {
+      margin-top: 15px;
+      font-size: 0.9rem;
+      color: #666;
+      text-align: center;
+      font-style: italic;
+    }
+    
+    .form-section {
+      margin-bottom: 30px;
+    }
+    
+    .form-section-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--bb-blue);
+      margin-bottom: 15px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    /* Loading spinner */
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top-color: #666;
+      animation: spin 1s ease-in-out infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Stripe Payment Form */
+    #stripe-payment-form {
+      margin-top: 20px;
+      padding: 20px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      border: 1px solid #e9ecef;
+    }
+    
+    #card-element {
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: white;
+      margin-bottom: 20px;
+    }
+    
+    #payment-errors {
+      color: var(--bb-red);
+      margin-bottom: 15px;
+    }
+    
+    .processing-message {
+      display: none;
+      text-align: center;
+      margin: 10px 0;
+      color: #666;
+      font-style: italic;
+      font-size: 13px;
+    }
+    
+    /* Payment info in notes */
+    .payment-info {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #eee;
+      font-size: 0.9rem;
+    }
+    
+    /* Guest size and pricing tier controls */
+    .service-options {
+      margin-top: 10px;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      display: none;
+    }
+    
+    .service-options.active {
+      display: block;
+    }
+    
+    .option-group {
+      margin-bottom: 10px;
+    }
+    
+    .option-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    
+    .option-group select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    
+    .service-details {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #666;
+    }
+    
+    .service-details span {
+      display: block;
+      margin-bottom: 4px;
+    }
+    
+    /* Options section */
+    .options-section {
+      margin: 20px 0;
+      padding: 16px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border: 1px solid #e9ecef;
+    }
+    
+    .options-section h4 {
+      margin-top: 0;
+      margin-bottom: 12px;
+    }
+    
+    .option-group {
+      margin-bottom: 16px;
+    }
+    
+    .option-group-title {
+      font-weight: 500;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .option-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .option-options {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .option-option {
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex: 1;
+      text-align: center;
+    }
+    
+    .option-option:hover {
+      background: #e9ecef;
+    }
+    
+    .option-option.selected {
+      background: var(--bb-accent);
+      color: white;
+      border-color: var(--bb-accent);
+    }
+    
+    .guest-size-adjuster {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .guest-size-value {
+      min-width: 40px;
+      text-align: center;
+    }
+    
+    .option-button {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid #ddd;
+      background: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    
+    .option-button:hover {
+      background: #e9ecef;
+    }
+    
+    /* Toggle switch for Photo Booth options */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 80px;
+      height: 26px;
+    }
+    
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
+    }
+    
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    
+    input:checked + .toggle-slider {
+      background-color: var(--bb-accent);
+    }
+    
+    input:checked + .toggle-slider:before {
+      transform: translateX(54px);
+    }
+    
+    .toggle-labels {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      font-size: 10px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 8px;
+      box-sizing: border-box;
+      pointer-events: none;
+    }
+    
+    .toggle-labels span {
+      color: white;
+      z-index: 1;
+    }
+    
+    /* Service Type Tags */
+    .package-type-tag {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      margin-top: 8px;
+    }
+    
+    .package-type-tag.scene-setters {
+      background: #e6f0fa;
+      color: var(--tag-scene);
+    }
+    
+    .package-type-tag.sweets-brews {
+      background: #e6d9cb;
+      color: var(--tag-sweets);
+    }
+    
+    .package-type-tag.special-effects {
+      background: #fff7e0;
+      color: var(--tag-special-effects);
+    }
+    
+    .package-type-tag.guest-book {
+      background: #fce7f3;
+      color: var(--tag-guest-book);
+    }
+    
+    .package-type-tag.digital {
+      background: #e8ecef;
+      color: var(--tag-digital);
+    }
+    
+    .package-type-tag.interactive {
+      background: #f3e8ff;
+      color: var(--tag-interactive);
+    }
+    
+    /* Requirements Warning */
+    .requirements-warning {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff3cd;
+      border: 1px solid #ffecb5;
+      color: #856404;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+    
+    /* Display Features Button */
+    .display-features-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      border: 1px solid var(--bb-accent);
+      border-radius: 4px;
+      color: var(--bb-accent);
+      font-size: 0.85rem;
+      text-align: center;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .display-features-btn:hover {
+      background-color: rgba(52, 152, 219, 0.1);
+    }
+    
+    /* Greeting Popup */
+    #greeting-popup {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #fefefe;
+      color: #333;
+      padding: 16px 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 1001;
+      font-size: 15px;
+      max-width: 90%;
+      width: auto;
+      min-width: 280px;
+      text-align: left;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      line-height: 1.6;
+      word-wrap: break-word;
+    }
+    
+    #greeting-popup.show {
+      opacity: 1;
+    }
+    
+    #greeting-popup .close-btn {
+      position: absolute;
+      top: 6px;
+      right: 10px;
+      background: none;
+      border: none;
+      font-size: 16px;
+      color: #888;
+      cursor: pointer;
+    }
+    
+    .inline-icon {
+      width: 18px;
+      height: 18px;
+      margin-right: 6px;
+      vertical-align: middle;
+      display: inline-block;
+    }
+    
+    .inline-icon svg {
+      width: 100%;
+      height: 100%;
+    }
+    
+    /* Category Services Container */
+    .category-services-container {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        position: relative;
+    }
+    
+    .category-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: var(--bb-blue);
+      padding-bottom: 8px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+    }
+    
+    .chevron-icon {
+      margin-left: 5px;
+      transition: transform 0.2s;
+    }
+    
+    .chevron-icon.down {
+      transform: rotate(0deg);
+    }
+    
+    .chevron-icon.up {
+      transform: rotate(180deg);
+    }
+
+    /* Shake animation for warning */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+
+    .shake-warning {
+      animation: shake 0.5s ease-in-out;
+    }
+
+    /* Back to bundle button */
+    #back-to-bundle {
+      margin-top: 24px;
+      width: 100%;
+      background: rgba(44, 62, 80, .1);
+      color: var(--bb-blue);
+    }
+
+    #back-to-bundle:hover {
+      background: var(--bb-hover-grey);
+      color: #fff;
+    }
+
+    /* Button container */
+    .button-container {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .action-buttons {
+        flex-direction: column;
+      }
+      .action-buttons button {
+        width: 100%;
+      }
+      .calendar-container {
+        flex-direction: column;
+      }
+      .option-options {
+        flex-direction: column;
+      }
+      
+      #greeting-popup {
+        max-width: 95%;
+        width: 95%;
+        left: 2.5%;
+        transform: none;
+      }
+
+      .button-container {
+        flex-direction: column;
+      }
+      
+      .bundles-grid {
+          grid-template-columns: 1fr;
+      }
+      
+      .services-grid {
+          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: thin;
+      }
+      
+      .services-grid::-webkit-scrollbar {
+          height: 6px;
+      }
+      
+      .services-grid::-webkit-scrollbar-thumb {
+          background-color: #ccc;
+          border-radius: 3px;
+      }
+      
+      /* Mobile-only form adjustments */
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+	  
+	  .tag.scene-setters {
+    background: #e6f0fa;
+    color: var(--tag-scene);
+}
+
+.tag.sweets-brews {
+    background: #e6d9cb;
+    color: var(--tag-sweets);
+}
+
+.tag.special-effects {
+    background: #fff7e0;
+    color: var(--tag-special-effects);
+}
+
+.tag.guest-book {
+    background: #fce7f3;
+    color: var(--tag-guest-book);
+}
+
+.tag.digital {
+    background: #e8ecef;
+    color: var(--tag-digital);
+}
+
+.tag.interactive {
+    background: #f3e8ff;
+    color: var(--tag-interactive);
+}
+	  
+    }
+
+
+/* Ensure selected time slot keeps its selected look on hover */
+.time-slot.selected-slot:hover {
+  box-shadow: 0 0 0 2px var(--bb-accent);
+  border-color: var(--bb-accent);
+  transform: none;
+}
+
+.required-asterisk {
+    color: var(--bb-red);
+    margin-left: 4px;
+}
+
+
+.bundles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+@media (min-width: 1024px) {
+  .bundles-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 600px) and (max-width: 1023px) {
+  .bundles-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 599px) {
+  .bundles-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.bundle-card, .custom-bundle-banner {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  height: 100%;
+}
+
+.bundle-card:hover, .custom-bundle-banner:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.custom-bundle-banner {
+  border: 2px dashed var(--bb-accent);
+  background: linear-gradient(135deg, #e0f7fa, #ffffff);
+}
+
+</style>
+</head>
+<body>
+<div class="container">
+<main>
+<a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
+    <div id="progress-bar">
+        <div class="active">Step 1: Choose a Bundle</div>
+        <div>Step 2: Select Services</div>
+        <div>Step 3: Review & Book</div>
+    </div>
+    
+    <div class="step" id="step-1">
+        <div class="step-1-container">
+            <h2 style="margin-bottom:16px;">Step 1: Choose a Bundle</h2>
+            <p class="step-description">Select from our pre-designed bundles or create your own custom package</p>
+            
+            <!-- Custom bundle banner at the top -->
+		    <div class="summary-card">
+            <div class="custom-bundle-banner" onclick="selectCustomBundle()">
+                <h3>✨ Build Your Own Bundle ✨</h3>
+                <p>Create a fully custom package with as many services as you like</p>
+                <p class="bundle-duration">Duration: 3 hours</p>
+                <div class="plus-symbol">+</div>
+            </div>
+            
+            <div class="section-divider">🔥 Exclusive Deals</div>
+            
+            <!-- Bundles grid -->
+            <div class="bundles-grid" id="bundle-list">
+                <!-- Bundles will be inserted here by JavaScript -->
+            </div>
+        </div>
+		</div>
+    </div>
+    
+    <div class="step" id="step-2" style="display:none;">
+	    <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
+        <h2 style="margin-bottom:16px;">Step 2: Select Your Services</h2>
+        <p class="step-description">Choose the services you want to include in your bundle</p>
+        <div id="compare-warning" class="compare-message" style="display:none;"></div>
+        <div id="services-container"></div>
+        
+        <!-- Options Section in Step 2 -->
+        <div class="options-section" id="options-section">
+            <h4>Options & Add-ons</h4>
+            <div class="form-row">
+                <div id="photo-booth-option" class="option-group" style="display:none;flex:1;">
+                    <div class="option-group-title">
+                        Photo Booth Options
+                    </div>
+                    <div class="option-controls">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 12px;">Digital Only</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="photo-booth-toggle">
+                                <span class="toggle-slider"></span>
+                                <div class="toggle-labels">
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </label>
+                            <span style="font-size: 12px;">Unlimited Prints</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="sweets-brews-option" class="option-group" style="display:none;flex:1;">
+                    <div class="option-group-title">
+                        Sweets & Brews Guest Size
+                    </div>
+                    <div class="option-controls">
+                        <div class="guest-size-adjuster">
+                            <button class="option-button" id="decrease-guests">-</button>
+                            <div class="guest-size-value" id="guest-size-value">100</div>
+                            <button class="option-button" id="increase-guests">+</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="sparklers-option" class="option-group" style="display:none;flex:1;">
+                    <div class="option-group-title">
+                        Sparklers Quantity
+                    </div>
+                    <div class="option-controls">
+                        <div class="guest-size-adjuster">
+                            <button class="option-button" id="decrease-sparklers">-</button>
+                            <div class="guest-size-value" id="sparklers-value">50</div>
+                            <button class="option-button" id="increase-sparklers">+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="requirements-warning" class="requirements-warning" style="display:none;">
+            <svg viewBox="0 0 24 24" width="16" height="16" style="vertical-align:middle;margin-right:8px;">
+                <path fill="#856404" d="M12 2L1 21h22L12 2zm0 4l7.5 13h-15L12 6zm-1 3v6h2V9h-2zm0 8v2h2v-2h-2z"/>
+            </svg>
+            <span id="warning-message">You have not selected all the required services for this bundle. Please select the remaining services to proceed.</span>
+        </div>
+        
+        <div class="button-container">
+            <button id="back-to-bundle" class="book-now-button">&lt; Review Bundle</button>
+            <button id="review-selection" class="book-now-button">Review Selection</button>
+        </div>
+    </div>
+    
+    <div class="step" id="step-3" style="display:none;">
+	<a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
+        <h2 style="margin-bottom:16px;">Step 3: Review & Book</h2>
+        <p class="step-description">Review your selections and complete your booking</p>
+        
+        <div class="summary-card">
+            <div class="summary-header">
+                <div class="summary-title" id="bundle-title">Your Custom Bundle</div>
+            </div>
+            <div id="selected-services-list"></div>
+            <div class="total-row">
+                <span>Subtotal:</span>
+                <span id="subtotal-price">C$0</span>
+            </div>
+            <div class="discount-row" id="discount-row" style="display: none;">
+                <span>Bundle Discount (10%):</span>
+                <span id="discount-amount">-C$0</span>
+            </div>
+            <div class="promo-discount-row" id="promo-discount-row" style="display: none;">
+                <span>Promo Discount:</span>
+                <span id="promo-discount-amount">-C$0</span>
+            </div>
+
+<div class="promo-row">
+    <div class="promo-input">
+        <input type="text" id="promo-code" placeholder="Enter promo code">
+        <button id="apply-promo">Apply</button>
+    </div>
+    <div class="promo-message-container">
+        <div class="promo-error" id="promo-error"></div>
+    </div>
+</div>
+            <div class="final-total">
+                <span>Total:</span>
+                <span id="final-total-price">C$0</span>
+            </div>
+        </div>
+        
+        <!-- Calendar Section -->
+        <div class="calendar-container">
+            <div class="calendar-panel">
+                <div class="calendar-header">
+                    <button class="calendar-nav-button" id="prev-month" disabled><</button>
+                    <div class="calendar-title" id="calendar-month-year">July 2025</div>
+                    <button class="calendar-nav-button" id="next-month">></button>
+                </div>
+                <div class="calendar-grid" id="calendar-days-header">
+                    <div class="calendar-day-header">SUN</div>
+                    <div class="calendar-day-header">MON</div>
+                    <div class="calendar-day-header">TUE</div>
+                    <div class="calendar-day-header">WED</div>
+                    <div class="calendar-day-header">THU</div>
+                    <div class="calendar-day-header">FRI</div>
+                    <div class="calendar-day-header">SAT</div>
+                </div>
+                <div class="calendar-grid" id="calendar-days">
+                    <!-- Calendar days will be dynamically inserted here -->
+                </div>
+            </div>
+            
+            <div class="time-slot-panel">
+                <div class="time-slot-header" id="selected-date-header">Select a date</div>
+                <div id="calendar-loading" class="loading">
+                    <div class="spinner"></div>
+                    <div>Loading availability...</div>
+                </div>
+                <div id="calendar-error" class="calendar-error"></div>
+                <div id="time-slots-container" class="time-slots"></div>
+                <div class="timezone-note">All times are in Eastern Time Zone (EST)</div>
+            </div>
+        </div>
+        
+        <!-- Event Details Form -->
+        <div class="summary-card">
+            <div class="form-section">
+                <h3 class="form-section-title">Contact Information</h3>
+                <form id="event-details-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contact-name">Your Name <span class="required-asterisk">*</span></label>
+                            <input type="text" id="contact-name" >
+                        </div>
+                        <div class="form-group">
+                              <label for="contact-phone">Phone Number <span class="required-asterisk">*</span></label>
+                            <input type="tel" id="contact-phone" required placeholder="+1 (XXX) XXX-XXXX">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-email">Email <span class="required-asterisk">*</span></label>
+                        <input type="email" id="contact-email" required placeholder="your-email@example.com">
+                    </div>
+                </form>
+            </div>
+            
+            <div class="form-section">
+                <h3 class="form-section-title">Event Details</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="event-name">Event Name</label>
+                        <input type="text" id="event-name">
+                    </div>
+                    <div class="form-group mobile-event-type">
+                        <label for="event-type">Event Type <span class="required-asterisk">*</span></label>
+                        <select id="event-type" required>
+                            <option value="">Select Event Type</option>
+                            <option value="Wedding" selected>Wedding</option>
+                            <option value="Corporate">Corporate Event</option>
+                            <option value="Birthday">Birthday Party</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="event-location">Event Location</label>
+                    <input type="text" id="event-location" placeholder="Venue name or address">
+                </div>
+                <div class="form-group">
+                    <label for="special-requests">Special Requests or Notes</label>
+                    <textarea id="special-requests" placeholder="Any additional requirements or notes for our team"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="package-notes">
+            <p><strong>Important Notes:</strong></p>
+            <ul>
+                <li>Your booking is not confirmed until payment is received</li>
+                <li>Final guest count and details must be confirmed 14 days before your event</li>
+            </ul>
+        </div>
+        
+        <!-- Payment Section (now separate from Important Notes) -->
+<div id="stripe-payment-form" style="display:none;">
+    <h3>Payment Information</h3>
+    <div id="payment-errors"></div>
+    <div id="card-element"></div>  <!-- This is where the card element will mount -->
+    <button id="submit-payment" class="book-now-button">Pay <span id="payment-amount"></span> Now</button>
+    <div class="processing-message" id="processing-message">Hang tight! We're processing your booking — this may take a moment.</div>
+</div>
+        
+<div class="payment-info" id="payment-info" style="display:none;">
+    <p><strong>Payment Amount:</strong> <span id="payment-info-amount"></span></p>
+</div>
+        
+        <div class="action-buttons">
+            <button class="book-now-button back-button" id="back-to-services">Back to Services</button>
+            <button class="book-now-button" id="submit-booking">Book Now</button>
+        </div>
+        
+        <div class="confirmation-message" id="confirmation-message">
+            <div class="confirmation-icon">✓</div>
+            <h3>Booking Confirmed!</h3>
+            <p>Thank you for your booking. Your payment of <span id="confirmed-amount">$0.50</span> was successful.</p>
+            <p>A confirmation email has been sent to <span id="sent-email"></span> with your booking details.</p>
+            <button class="book-now-button" id="new-bundle-button">Create Another Bundle</button>
+        </div>
+    </div>
+</main>
+</div>
+
+<div id="toast-msg"></div>
+
+<!-- Greeting Popup -->
+<div id="greeting-popup">
+    <button class="close-btn" onclick="document.getElementById('greeting-popup').style.display='none';">×</button>
+    ✨<strong>New Features Update (v2.01)</strong>:<br/>
+    • ⚖️ <strong>Compare Packages</strong> — select 2 or more to view them side by side<br/>
+    • <span class="inline-icon"><svg fill="black" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7a3.18 3.18 0 000-1.39l7.13-4.15A3.004 3.004 0 1014 4a3 3 0 002.88 2.06c.31 0 .62-.05.91-.14l.02.01L9.66 11.2a3 3 0 100 1.6l7.14 4.17c-.3.09-.61.13-.93.13A3 3 0 1018 16.08z"></path></svg></span><strong>Share Button</strong> — send packages via WhatsApp, SMS, or Email (mobile &amp; desktop friendly)
+</div>
+
+<script>
+    // Configuration
+    const config = {
+        backendUrl: 'https://bdb-2-0-calendar-api-backend.onrender.com',
+        emailBackendUrl: 'https://bdb-2-0-brevo-email-backend.onrender.com/send-booking-email',
+        stripeBackendUrl: 'https://bdb-2-0-stripe-api-backend.onrender.com',
+           workingHours: { 
+        start: 13, // 9 AM EST = 13 UTC (during daylight time)
+        end: 28    // 12 AM EST = 4 AM UTC (next day)
+    },
+    slotDuration: 180
+    };
+
+    // Global variables
+    let servicesIncluded = {};
+    let selectedBundle = null;
+    let bundles = [];
+    let services = [];
+    let selectedServices = [];
+    const bundleDiscount = 0.1; // 10% discount for bundles
+    let stripe;
+    let cardElement;
+    let currentDisplayedDate = new Date();
+const twoWeeksLater = new Date();
+	twoWeeksLater.setDate(twoWeeksLater.getDate() + 14);
+	if (twoWeeksLater.getMonth() !== currentDisplayedDate.getMonth()) {
+    currentDisplayedDate = new Date(twoWeeksLater);}    let selectedDateElement = null;
+    let serviceFeatures = {}; // To store features data
+    let globalGuestSize = 100; // Default guest size
+    let globalSparklersCount = 50; // Default sparklers count
+    let promoCodeApplied = null;
+    let promoDiscount = 0;
+    let validPromoCodes = [];
+    let { jsPDF } = window.jspdf;
+let selectedSlotElement = null; // To track the currently selected time slot
+
+    // Initialize the builder when DOM is loaded
+    document.addEventListener("DOMContentLoaded", async () => {
+        // Show greeting popup
+        const popup = document.getElementById('greeting-popup');
+        popup.classList.add('show');
+        setTimeout(() => {
+            popup.style.opacity = '0';
+        }, 10000);
+        
+        // Load services included data
+        try {
+            const res = await fetch("https://bundlebooth.github.io/bdb-2.0/data/individual-services.json");
+            servicesIncluded = await res.json();
+        } catch (err) {
+            console.error("Failed to load individual-services.json", err);
+        }
+
+        // Load service features data
+        try {
+            const featuresRes = await fetch("https://bundlebooth.github.io/bdb-2.0/data/features-included.json");
+            serviceFeatures = await featuresRes.json();
+        } catch (err) {
+            console.error("Failed to load features-included.json", err);
+        }
+
+        // Load promo codes
+try {
+    const promoRes = await fetch("https://bundlebooth.github.io/bdb-2.0/data/promo_codes.json");
+    if (!promoRes.ok) throw new Error('Failed to fetch promo codes');
+    
+    // Parse response and ensure it's an array
+    const promoData = await promoRes.json();
+    validPromoCodes = Array.isArray(promoData) ? promoData : [];
+    
+    // If we got empty array or invalid data, use fallback
+    if (validPromoCodes.length === 0) {
+        throw new Error('Empty promo codes array');
+    }
+} catch (err) {
+    console.error("Error loading promo codes:", err);
+    // Fallback to test promo code
+    validPromoCodes = [
+        {
+            "promoCode": "TEST25",
+            "discountType": "percentage",
+            "discountValue": 25,
+            "description": "25% off your total order",
+            "isActive": true,
+            "validFrom": "2025-01-01T00:00:00Z",
+            "validTo": "2025-12-31T23:59:59Z",
+            "minimumOrderValue": 0,
+            "applicableCategories": ["Interactive Booths", "Sweets and Brews"]
+        }
+    ];
+}
+
+        // Initialize the builder
+        await fetchBundles();
+        await fetchServices();
+        await initializeStripe();
+        
+        // Set up progress bar navigation
+        setupProgressBarNavigation();
+        
+        // Set up guest size adjusters
+        document.getElementById('increase-guests').addEventListener('click', () => {
+            const firstSweetsService = selectedServices.find(s => 
+                s.ServiceType === "Sweets and Brews" && s.pricingTiers
+            );
+            if (firstSweetsService) {
+                const currentIndex = firstSweetsService.pricingTiers.findIndex(
+                    t => t.value === globalGuestSize
+                );
+                if (currentIndex < firstSweetsService.pricingTiers.length - 1) {
+                    globalGuestSize = firstSweetsService.pricingTiers[currentIndex + 1].value;
+                    updateSweetsBrewsPrices();
+                }
+            }
+        });
+        
+        document.getElementById('decrease-guests').addEventListener('click', () => {
+            const firstSweetsService = selectedServices.find(s => 
+                s.ServiceType === "Sweets and Brews" && s.pricingTiers
+            );
+            if (firstSweetsService) {
+                const currentIndex = firstSweetsService.pricingTiers.findIndex(
+                    t => t.value === globalGuestSize
+                );
+                if (currentIndex > 0) {
+                    globalGuestSize = firstSweetsService.pricingTiers[currentIndex - 1].value;
+                    updateSweetsBrewsPrices();
+                }
+            }
+        });
+        
+        // Set up sparklers adjusters
+        document.getElementById('increase-sparklers').addEventListener('click', () => {
+            const sparklersService = selectedServices.find(s => 
+                s.ServiceType === "Scene Setters" && s.slug === "sparklers-box" && s.pricingTiers
+            );
+            if (sparklersService) {
+                const currentIndex = sparklersService.pricingTiers.findIndex(
+                    t => t.value === globalSparklersCount
+                );
+                if (currentIndex < sparklersService.pricingTiers.length - 1) {
+                    globalSparklersCount = sparklersService.pricingTiers[currentIndex + 1].value;
+                    updateSparklersPrices();
+                }
+            }
+        });
+        
+        document.getElementById('decrease-sparklers').addEventListener('click', () => {
+            const sparklersService = selectedServices.find(s => 
+                s.ServiceType === "Scene Setters" && s.slug === "sparklers-box" && s.pricingTiers
+            );
+            if (sparklersService) {
+                const currentIndex = sparklersService.pricingTiers.findIndex(
+                    t => t.value === globalSparklersCount
+                );
+                if (currentIndex > 0) {
+                    globalSparklersCount = sparklersService.pricingTiers[currentIndex - 1].value;
+                    updateSparklersPrices();
+                }
+            }
+        });
+        
+        // Set up photo booth toggle
+        document.getElementById('photo-booth-toggle').addEventListener('change', (e) => {
+            const photoBoothService = selectedServices.find(s => 
+                s.ServiceType === "Interactive Booths" && s.slug === "photo-booth" && s.pricingTiers
+            );
+            if (photoBoothService) {
+                if (e.target.checked) {
+                    // Unlimited Prints selected
+                    photoBoothService.selectedTier = photoBoothService.pricingTiers.find(t => t.value === "unlimited-prints");
+                    photoBoothService.selectedPrice = photoBoothService.pricingTiers.find(t => t.value === "unlimited-prints").price;
+                } else {
+                    // Digital Only selected
+                    photoBoothService.selectedTier = photoBoothService.pricingTiers.find(t => t.value === "digital");
+                    photoBoothService.selectedPrice = photoBoothService.pricingTiers.find(t => t.value === "digital").price;
+                }
+                updateReviewButton();
+            }
+        });
+
+        // Set up back to bundle button
+        document.getElementById('back-to-bundle').addEventListener('click', () => {
+			    clearPromoCode();
+            showStep(1);
+            window.scrollTo(0, 0);
+        });
+
+        // Set up promo code application
+        document.getElementById('apply-promo').addEventListener('click', applyPromoCode);
+        document.getElementById('promo-code').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                applyPromoCode();
+            }
+        });
+    });
+
+    // Apply promo code with all validation checks
+
+// Updated applyPromoCode function
+function applyPromoCode() {
+    const promoCodeInput = document.getElementById('promo-code');
+    const promoCode = promoCodeInput.value.trim().toUpperCase();
+    const errorElement = document.getElementById('promo-error');
+    const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
+    
+    // Reset previous state
+    errorElement.textContent = '';
+    errorElement.classList.remove('invalid');
+    
+    if (!promoCode) {
+        errorElement.textContent = 'Please enter a promo code';
+        errorElement.classList.add('invalid');
+        promoCodeApplied = null;
+        promoDiscount = 0;
+        updatePrices();
+        return;
+    }
+
+    const validCode = validPromoCodes.find(code => code.promoCode.toUpperCase() === promoCode);
+    
+    if (!validCode) {
+        errorElement.textContent = 'Invalid promo code';
+        errorElement.classList.add('invalid');
+        promoCodeApplied = null;
+        promoDiscount = 0;
+        updatePrices();
+        return;
+    }
+
+    // Check if promo code is active
+    if (!validCode.isActive) {
+        errorElement.textContent = 'This promo code is not currently active';
+        errorElement.classList.add('invalid');
+        promoCodeApplied = null;
+        promoDiscount = 0;
+        updatePrices();
+        return;
+    }
+
+    // Check validity dates
+    const today = new Date();
+    if (validCode.validFrom && new Date(validCode.validFrom) > today) {
+        errorElement.textContent = 'This promo code is not valid yet';
+        errorElement.classList.add('invalid');
+        promoCodeApplied = null;
+        promoDiscount = 0;
+        updatePrices();
+        return;
+    }
+    
+    if (validCode.validTo && new Date(validCode.validTo) < today) {
+        errorElement.textContent = 'This promo code has expired';
+        errorElement.classList.add('invalid');
+        promoCodeApplied = null;
+        promoDiscount = 0;
+        updatePrices();
+        return;
+    }
+
+    // Check minimum order value
+    if (validCode.minimumOrderValue && subtotal < validCode.minimumOrderValue) {
+        errorElement.textContent = `Minimum order of $${validCode.minimumOrderValue} required for this promo`;
+        errorElement.classList.add('invalid');
+        promoCodeApplied = null;
+        promoDiscount = 0;
+        updatePrices();
+        return;
+    }
+
+    // Check applicable categories
+    if (validCode.applicableCategories && validCode.applicableCategories.length > 0) {
+        const hasApplicableService = selectedServices.some(service =>
+            validCode.applicableCategories.includes(service.ServiceType)
+        );
+        if (!hasApplicableService) {
+            errorElement.textContent = 'This promo code does not apply to your selected services';
+            errorElement.classList.add('invalid');
+            promoCodeApplied = null;
+            promoDiscount = 0;
+            updatePrices();
+            return;
+        }
+    }
+
+    // Calculate discount
+    if (validCode.discountType === 'percentage') {
+        promoDiscount = subtotal * (validCode.discountValue / 100);
+    } else {
+        promoDiscount = validCode.discountValue;
+    }
+
+    promoCodeApplied = validCode;
+    errorElement.textContent = validCode.description || `Promo code applied: $${promoDiscount.toFixed(2)} off`;
+    errorElement.classList.remove('invalid');
+    updatePrices();
+}
+
+
+    // Set up progress bar navigation
+function setupProgressBarNavigation() {
+    const progressSteps = document.querySelectorAll('#progress-bar div');
+    progressSteps.forEach((step, index) => {
+        step.addEventListener('click', () => {
+            const currentStep = getCurrentStep();
+            if (index < currentStep) {
+                // Clear promo code if going back from step 3
+                if (currentStep === 3) {
+                    clearPromoCode();
+                }
+                showStep(index + 1);
+                window.scrollTo(0, 0);
+            }
+        });
+    });
+}
+
+    // Get current step (1, 2, or 3)
+    function getCurrentStep() {
+        if (document.getElementById('step-3').style.display !== 'none') return 3;
+        if (document.getElementById('step-2').style.display !== 'none') return 2;
+        return 1;
+    }
+
+    // Initialize Stripe
+async function initializeStripe() {
+    try {
+        const response = await fetch(`${config.stripeBackendUrl}/api/config`);
+        const { stripePublicKey } = await response.json();
+        
+        stripe = Stripe(stripePublicKey);
+        
+        // Only create elements when needed
+        return stripe;
+    } catch (error) {
+        console.error('Failed to initialize Stripe:', error);
+        document.getElementById('payment-errors').textContent = 
+            'Payment system unavailable. Please try again later.';
+        throw error;
+    }
+}
+    // Fetch bundles data
+    async function fetchBundles() {
+        try {
+            const res = await fetch('https://raw.githubusercontent.com/bundlebooth/bdb-2.0/main/data/bundles.json');
+            if (!res.ok) throw new Error('Failed to fetch bundles');
+            bundles = await res.json();
+            
+
+            
+            renderBundles();
+        } catch (error) {
+            console.error("Error loading bundles:", error);
+            // Fallback to test bundles if fetch fails
+            bundles = [
+                {
+                    "name": "Wedding Essentials",
+                    "description": "Perfect package for weddings with all the must-have services",
+                    "duration": "3 hours",
+                    "categories": {
+                        "Scene Setters": 2,
+                        "Sweets and Brews": 1,
+                        "Guest Book": 1
+                    }
+                },
+                {
+                    "name": "Corporate Package",
+                    "description": "Professional services for corporate events and galas",
+                    "duration": "4 hours",
+                    "categories": {
+                        "Scene Setters": 1,
+                        "Digital": 2,
+                        "Interactive": 1
+                    }
+                },
+                {
+                    "name": "Birthday Bash",
+                    "description": "Everything you need for an unforgettable birthday party",
+                    "duration": "3 hours",
+                    "categories": {
+                        "Scene Setters": 1,
+                        "Special Effects": 1,
+                        "Interactive": 1
+                    }
+                },
+                {
+                    "name": "✨ Build Your Own Bundle ✨",
+                    "description": "Create a fully custom package with as many services as you like",
+                    "duration": "3 hours",
+                    "categories": {},
+                    "discountPercentage": 0,
+                    "isCustom": true
+                }
+            ];
+            renderBundles();
+        }
+    }
+
+    // Fetch services data
+    async function fetchServices() {
+        try {
+            const res = await fetch('https://bundlebooth.github.io/bdb-2.0/data/individual-services.json');
+            if (!res.ok) throw new Error('Failed to fetch services');
+            const data = await res.json();
+            services = Array.isArray(data) ? data : []; // Ensure services is always an array
+        } catch (error) {
+            console.error("Error loading services:", error);
+            // Fallback data if fetch fails
+            services = [
+                {
+                    "name": "Premium Photo Booth",
+                    "description": "High-quality photo booth with unlimited prints",
+                    "ServiceType": "Interactive Booths",
+                    "slug": "photo-booth",
+                    "price": 1200,
+                    "duration": "4 hours",
+                    "pricingTiers": [
+                        {
+                            "label": "Digital Only",
+                            "value": "digital",
+                            "price": 1200,
+                            "duration": "3 hours"
+                        },
+                        {
+                            "label": "Unlimited Prints",
+                            "value": "unlimited",
+                            "price": 1500,
+                            "duration": "3 hours"
+                        }
+                    ]
+                },
+                {
+                    "name": "Candy Buffet",
+                    "description": "Beautifully arranged candy station with 10 varieties",
+                    "ServiceType": "Sweets and Brews",
+                    "price": 900,
+                    "duration": "Full event",
+                    "pricingTiers": [
+                        {
+                            "label": "50 Guests",
+                            "value": 50,
+                            "price": 900
+                        },
+                        {
+                            "label": "100 Guests",
+                            "value": 100,
+                            "price": 1300
+                        },
+                        {
+                            "label": "150 Guests",
+                            "value": 150,
+                            "price": 1700
+                        },
+                        {
+                            "label": "200 Guests",
+                            "value": 200,
+                            "price": 2100
+                        }
+                    ]
+                },
+                {
+                    "name": "Digital Guest Book",
+                    "description": "Modern alternative to traditional guest books",
+                    "ServiceType": "Guest Book",
+                    "price": 400,
+                    "duration": "Full event"
+                }
+            ];
+        }
+    }
+
+    // Updated renderBundles function to match new layout
+    function renderBundles() {
+        const list = document.getElementById('bundle-list');
+        list.innerHTML = '';
+        
+        bundles.forEach((bundle, index) => {
+            const isSpecial = bundle.Special || bundle.discountPercentage > 0;
+            const div = createBundleDiv(bundle, index, isSpecial);
+            list.appendChild(div);
+        });
+
+        if (bundles.length === 0) {
+            list.innerHTML = '<p>No bundles available at this time.</p>';
+        }
+    }
+
+    // Helper function to create bundle divs with new styling
+    function createBundleDiv(bundle, index, isSpecial) {
+        const div = document.createElement('div');
+        div.className = `bundle-card ${isSpecial ? 'special-bundle' : ''} ${bundle.isCustom ? 'custom-bundle' : ''}`;
+        
+        // Generate category tags with count badges
+        const categoryTags = Object.entries(bundle.categories).map(([category, count]) => {
+            let tagClass = 'tag';
+            if (category.includes('Scene')) tagClass += ' scene-setters';
+            if (category.includes('Sweets')) tagClass += ' sweets-brews';
+            if (category.includes('Interactive')) tagClass += ' interactive';
+            
+            return `
+                <div class="${tagClass}">
+                    <span class="tag-count">${count}</span>
+                    ${category}
+                </div>
+            `;
+        }).join('');
+        
+        // Add special ribbon if applicable
+        const ribbon = isSpecial && bundle.discountPercentage ? 
+            `<div class="corner-ribbon">${bundle.discountPercentage}% OFF</div>` : '';
+            
+        // Add plus symbol for custom bundle
+        const servicesIncludedContent = bundle.isCustom ? 
+    `<div class="plus-symbol">+</div>` : 
+    `<div class="categories-label">Services Includes:</div>
+     <div>${categoryTags}</div>`;
+        
+        div.innerHTML = `
+            ${ribbon}
+            <h3>${bundle.name}</h3>
+            <p>${bundle.description || "No description provided."}</p>
+            ${bundle.duration ? `<p class="bundle-duration">Duration: ${formatDuration(bundle.duration)}</p>` : ''}
+            ${servicesIncludedContent}
+        `;
+        
+        div.addEventListener('click', () => {
+            if (bundle.isCustom) {
+                selectCustomBundle();
+            } else {
+                selectBundle(index);
+            }
+            showStep(2);
+            window.scrollTo(0, 0);
+        });
+        
+        return div;
+    }
+
+    // Handle bundle selection
+    function selectBundle(index) {
+        selectedBundle = bundles[index];
+        document.querySelectorAll('#bundle-list .bundle-card').forEach((el, i) => {
+            el.classList.toggle('selected', i === index);
+        });
+        
+        renderStep2();
+    }
+
+    // Handle custom bundle selection
+    function selectCustomBundle() {
+        selectedBundle = {
+            name: "Custom Bundle",
+            description: "Fully custom bundle",
+            duration: "3 hours",
+            categories: {},
+            discountPercentage: 0,
+            isCustom: true
+        };
+        renderStep2();
+        window.scrollTo(0, 0);
+    }
+
+    // Show step 2 with services
+    function renderStep2() {
+        if (!selectedBundle) return;
+        showStep(2);
+        renderServices();
+    }
+
+    // Updated renderStep3 function to handle dynamic discounts
+    function renderStep3() {
+        showStep(3);
+        window.scrollTo(0, 0);
+        
+        // Update bundle title
+        document.getElementById('bundle-title').textContent = selectedBundle.name;
+        
+        // Render selected services list
+        renderSelectedServicesList();
+        
+        // Initialize calendar with current month
+        renderCalendar(currentDisplayedDate);
+        
+        // Set up event listeners
+        document.getElementById('back-to-services').addEventListener('click', () => {
+			clearPromoCode();
+            showStep(2);
+            window.scrollTo(0, 0);
+        });
+        
+        document.getElementById('submit-booking').addEventListener('click', handleBookingSubmit);
+        document.getElementById('submit-payment').addEventListener('click', handlePaymentSubmit);
+        document.getElementById('new-bundle-button').addEventListener('click', () => {
+			    clearPromoCode();
+            window.location.reload();
+        });
+        
+// Month navigation
+document.getElementById('prev-month').addEventListener('click', () => {
+    const newDate = new Date(currentDisplayedDate);
+    newDate.setMonth(newDate.getMonth() - 1);
+    currentDisplayedDate = newDate;
+    renderCalendar(currentDisplayedDate);
+    updateMonthNavigationButtons();
+});
+        
+document.getElementById('next-month').addEventListener('click', () => {
+    const newDate = new Date(currentDisplayedDate);
+    newDate.setMonth(newDate.getMonth() + 1);
+    currentDisplayedDate = newDate;
+    renderCalendar(currentDisplayedDate);
+    updateMonthNavigationButtons();
+});
+        
+        // Set up phone number formatting
+        const phoneInput = document.getElementById('contact-phone');
+        phoneInput.addEventListener('input', formatPhoneNumber);
+        
+        // Update prices
+        updatePrices();
+    }
+
+function updateMonthNavigationButtons() {
+    const today = new Date();
+    const prevButton = document.getElementById('prev-month');
+    const nextButton = document.getElementById('next-month');
+    
+    // Disable previous button if we're showing the current month
+    prevButton.disabled = 
+        currentDisplayedDate.getMonth() === today.getMonth() && 
+        currentDisplayedDate.getFullYear() === today.getFullYear();
+    
+    // Optionally, you could disable next button after a certain date
+    // For example, disable booking more than 1 year in advance:
+    const maxDate = new Date();
+    maxDate.setFullYear(maxDate.getFullYear() + 1);
+    nextButton.disabled = currentDisplayedDate.getMonth() === maxDate.getMonth() && 
+                         currentDisplayedDate.getFullYear() === maxDate.getFullYear();
+}
+    // Update prices with discounts
+// In the updatePrices() function, replace with:
+function updatePrices() {
+    const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
+    
+    // Get bundle discount (either from bundle data or default 0 for non-custom bundles)
+    const bundleDiscountValue = selectedBundle.isCustom ? 0 : 
+                              (selectedBundle.discountPercentage ? selectedBundle.discountPercentage/100 : 0);
+    
+    const discount = subtotal * bundleDiscountValue;
+    const totalBeforePromo = subtotal - discount;
+    const total = Math.max(0, totalBeforePromo - promoDiscount);
+    
+    // Update price displays
+    document.getElementById('subtotal-price').textContent = `C$${subtotal.toFixed(2)}`;
+    
+    // Show bundle discount only if there is one
+    if (discount > 0) {
+        document.getElementById('discount-row').style.display = 'flex';
+        const discountText = selectedBundle.discountPercentage ? 
+            `Bundle Discount (${selectedBundle.discountPercentage}%):` : 
+            `Bundle Discount:`;
+        document.querySelector('.discount-row span:first-child').textContent = discountText;
+        document.getElementById('discount-amount').textContent = `-C$${discount.toFixed(2)}`;
+    } else {
+        document.getElementById('discount-row').style.display = 'none';
+    }
+    
+    // Show promo discount only if there is one
+    if (promoDiscount > 0 && promoCodeApplied) {
+        document.getElementById('promo-discount-row').style.display = 'flex';
+        document.getElementById('promo-discount-amount').textContent = `-C$${promoDiscount.toFixed(2)}`;
+    } else {
+        document.getElementById('promo-discount-row').style.display = 'none';
+    }
+    
+    document.getElementById('final-total-price').textContent = `C$${total.toFixed(2)}`;
+    
+    // Update payment amount displays
+    document.getElementById('payment-amount').textContent = `$${total.toFixed(2)}`;
+    document.getElementById('payment-info-amount').textContent = `$${total.toFixed(2)}`;
+    document.getElementById('confirmed-amount').textContent = `$${total.toFixed(2)}`;
+}
+
+    // Render the selected services list with durations and options
+    function renderSelectedServicesList() {
+        const servicesList = document.getElementById('selected-services-list');
+        servicesList.innerHTML = '';
+        
+        selectedServices.forEach(service => {
+            const serviceDiv = document.createElement('div');
+            serviceDiv.className = 'service-item';
+            
+            // Add service details
+            let detailsHtml = '';
+            if (service.selectedTier) {
+                detailsHtml = `
+                    <div class="service-details">
+                        ${service.ServiceType === "Sweets and Brews" ? 
+                            `<span>Guests: ${service.selectedTier.value}</span>` : 
+                            service.ServiceType === "Scene Setters" && service.slug === "sparklers-box" ?
+                            `<span>Quantity: ${service.selectedTier.value} sparklers</span>` :
+                            `<span>Option: ${service.selectedTier.label}</span>`}
+                        ${service.selectedTier.duration ? `<span>Duration: ${formatDuration(service.selectedTier.duration)}</span>` : 
+                          service.duration ? `<span>Duration: ${formatDuration(service.duration)}</span>` : ''}
+                    </div>
+                `;
+            } else if (service.duration) {
+                detailsHtml = `
+                    <div class="service-details">
+                        <span>Duration: ${formatDuration(service.duration)}</span>
+                    </div>
+                `;
+            }
+            
+            const categoryClass = service.ServiceType === "Scene Setters" ? 'scene-setters' : 
+                                service.ServiceType === "Sweets and Brews" ? 'sweets-brews' :
+                                service.ServiceType === "Special Effects" ? 'special-effects' :
+                                service.ServiceType === "Guest Book" ? 'guest-book' :
+                                service.ServiceType === "Digital" ? 'digital' :
+                                service.ServiceType === "Interactive Booths" ? 'interactive' : '';
+            
+            serviceDiv.innerHTML = `
+                <div>
+                    <div class="service-name">${service.name} <span class="service-category ${categoryClass}">${service.ServiceType}</span></div>
+                    ${detailsHtml}
+                </div>
+                <div class="service-price">C$${(service.selectedPrice || service.price || 0).toFixed(2)}</div>
+            `;
+            servicesList.appendChild(serviceDiv);
+        });
+    }
+
+    // Format duration text (X hour or X hours)
+    function formatDuration(durationText) {
+        if (!durationText) return '';
+        
+        // If it's already a number, format it directly
+        if (typeof durationText === 'number') {
+            return durationText === 1 ? '1 hour' : `${durationText} hours`;
+        }
+        
+        // Extract number from duration text
+        const hoursMatch = durationText.toString().match(/(\d+)\s*hours?/i) || 
+                          durationText.toString().match(/(\d+)\s*h/i);
+        
+        if (hoursMatch) {
+            const hours = parseInt(hoursMatch[1]);
+            return hours === 1 ? '1 hour' : `${hours} hours`;
+        }
+        
+        return durationText; // Return original if we can't parse
+    }
+
+    // Set up options section in step 2
+    function setupOptionsSection() {
+        const optionsSection = document.getElementById('options-section');
+        const photoBoothOption = document.getElementById('photo-booth-option');
+        const sweetsBrewsOption = document.getElementById('sweets-brews-option');
+        const sparklersOption = document.getElementById('sparklers-option');
+        
+        // Reset options
+        photoBoothOption.style.display = 'none';
+        sweetsBrewsOption.style.display = 'none';
+        sparklersOption.style.display = 'none';
+
+        // Check for Photo Booth (Interactive Booths with slug photo-booth)
+        const hasPhotoBooth = selectedServices.some(service => 
+            service.ServiceType === "Interactive Booths" && 
+            service.slug === "photo-booth" &&
+            service.pricingTiers
+        );
+        
+        // Check for Sweets & Brews
+        const hasSweetsBrews = selectedServices.some(service => 
+            service.ServiceType === "Sweets and Brews" && 
+            service.pricingTiers
+        );
+        
+        // Check for Sparklers (Scene Setters with slug sparklers-box)
+        const hasSparklers = selectedServices.some(service => 
+            service.ServiceType === "Scene Setters" && 
+            service.slug === "sparklers-box" &&
+            service.pricingTiers
+        );
+        
+        if (hasPhotoBooth || hasSweetsBrews || hasSparklers) {
+            optionsSection.style.display = 'block';
+            
+            // Set up Photo Booth options (Digital Only/Unlimited Prints)
+            if (hasPhotoBooth) {
+                photoBoothOption.style.display = 'block';
+                const photoBoothService = selectedServices.find(service => 
+                    service.ServiceType === "Interactive Booths" && 
+                    service.slug === "photo-booth" &&
+                    service.pricingTiers
+                );
+                
+                if (photoBoothService.pricingTiers) {
+                    // Default to Digital Only (first option)
+                    if (!photoBoothService.selectedTier) {
+                        photoBoothService.selectedTier = photoBoothService.pricingTiers[0];
+                        photoBoothService.selectedPrice = photoBoothService.pricingTiers[0].price;
+                    }
+                    
+                    // Set toggle initial state
+                    const toggle = document.getElementById('photo-booth-toggle');
+                    toggle.checked = photoBoothService.selectedTier.value === "unlimited";
+                }
+            }
+            
+            // Set up Sweets & Brews guest size
+            if (hasSweetsBrews) {
+                sweetsBrewsOption.style.display = 'block';
+                // Initialize with first (lowest) tier value
+                const firstServiceWithTiers = selectedServices.find(service => 
+                    service.ServiceType === "Sweets and Brews" &&
+                    service.pricingTiers
+                );
+                if (firstServiceWithTiers?.pricingTiers?.[0]?.value) {
+                    globalGuestSize = firstServiceWithTiers.pricingTiers[0].value;
+                    document.getElementById('guest-size-value').textContent = globalGuestSize;
+                    // Set initial price
+                    firstServiceWithTiers.selectedPrice = firstServiceWithTiers.pricingTiers[0].price;
+                    firstServiceWithTiers.selectedTier = firstServiceWithTiers.pricingTiers[0];
+                }
+                updateSweetsBrewsPrices();
+            }
+            
+            // Set up Sparklers quantity
+            if (hasSparklers) {
+                sparklersOption.style.display = 'block';
+                const sparklersService = selectedServices.find(service => 
+                    service.ServiceType === "Scene Setters" && 
+                    service.slug === "sparklers-box" &&
+                    service.pricingTiers
+                );
+                if (sparklersService?.pricingTiers?.[0]?.value) {
+                    globalSparklersCount = sparklersService.pricingTiers[0].value;
+                    document.getElementById('sparklers-value').textContent = globalSparklersCount;
+                    // Set initial price
+                    sparklersService.selectedPrice = sparklersService.pricingTiers[0].price;
+                    sparklersService.selectedTier = sparklersService.pricingTiers[0];
+                }
+                updateSparklersPrices();
+            }
+        } else {
+            optionsSection.style.display = 'none';
+        }
+    }
+
+    // Update prices for sweets & brews services based on guest size
+    function updateSweetsBrewsPrices() {
+        selectedServices.forEach(service => {
+            if (service.ServiceType === "Sweets and Brews" && service.pricingTiers) {
+                // Find the tier that matches our guest size
+                let selectedTier = null;
+                
+                // First try to find exact match
+                selectedTier = service.pricingTiers.find(tier => tier.value >= globalGuestSize);
+                
+                // If no exact match, use the highest tier
+                if (!selectedTier) {
+                    selectedTier = service.pricingTiers[service.pricingTiers.length - 1];
+                }
+                
+                if (selectedTier) {
+                    service.selectedPrice = selectedTier.price;
+                    service.selectedTier = selectedTier;
+                }
+            }
+        });
+        
+        // Update the guest size display to show the actual selected tier value
+        const firstSweetsService = selectedServices.find(s => 
+            s.ServiceType === "Sweets and Brews" && s.pricingTiers
+        );
+        if (firstSweetsService?.selectedTier) {
+            document.getElementById('guest-size-value').textContent = firstSweetsService.selectedTier.value;
+        }
+        
+        updateReviewButton();
+    }
+    
+    // Update prices for sparklers based on quantity
+    function updateSparklersPrices() {
+        selectedServices.forEach(service => {
+            if (service.ServiceType === "Scene Setters" && service.slug === "sparklers-box" && service.pricingTiers) {
+                // Find the tier that matches our sparklers count
+                let selectedTier = null;
+                
+                // First try to find exact match
+                selectedTier = service.pricingTiers.find(tier => tier.value >= globalSparklersCount);
+                
+                // If no exact match, use the highest tier
+                if (!selectedTier) {
+                    selectedTier = service.pricingTiers[service.pricingTiers.length - 1];
+                }
+                
+                if (selectedTier) {
+                    service.selectedPrice = selectedTier.price;
+                    service.selectedTier = selectedTier;
+                }
+            }
+        });
+        
+        // Update the sparklers count display to show the actual selected tier value
+        const sparklersService = selectedServices.find(s => 
+            s.ServiceType === "Scene Setters" && s.slug === "sparklers-box" && s.pricingTiers
+        );
+        if (sparklersService?.selectedTier) {
+            document.getElementById('sparklers-value').textContent = sparklersService.selectedTier.value;
+        }
+        
+        updateReviewButton();
+    }
+
+    // Update review button with current total
+    function updateReviewButton() {
+        const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
+        const discount = selectedBundle.isCustom ? 0 : subtotal * bundleDiscount;
+        const total = subtotal - discount;
+        
+        document.getElementById('review-selection').textContent = `Review Selection (C$${total.toFixed(2)})`;
+        
+        // Check if all required services are selected
+        const canProceed = checkBundleRequirements();
+        document.getElementById('review-selection').disabled = !canProceed;
+        
+        // Show/hide requirements warning
+        const warningElement = document.getElementById('requirements-warning');
+        if (!canProceed) {
+            warningElement.style.display = 'flex';
+            document.getElementById('review-selection').style.backgroundColor = '#f0f0f0';
+            document.getElementById('review-selection').style.cursor = 'not-allowed';
+        } else {
+            warningElement.style.display = 'none';
+            document.getElementById('review-selection').style.backgroundColor = '';
+            document.getElementById('review-selection').style.cursor = '';
+        }
+    }
+    
+    // Check if all bundle requirements are met
+    function checkBundleRequirements() {
+        if (!selectedBundle) return false;
+        
+        // For custom bundles, require at least one service
+        if (selectedBundle.isCustom) {
+            const warningElement = document.getElementById('requirements-warning');
+            const warningMessage = document.getElementById('warning-message');
+            
+            if (selectedServices.length === 0) {
+                warningMessage.textContent = 'You need to select at least one service';
+                return false;
+            }
+            return true;
+        }
+        
+        // Check each category has required number of services
+        for (const [category, requiredCount] of Object.entries(selectedBundle.categories)) {
+            const selectedCount = selectedServices.filter(s => s.ServiceType === category).length;
+            if (selectedCount < requiredCount) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
+    // Show/hide steps
+// Modified showStep function
+let currentStep = 1;
+function showStep(stepNumber) {
+    if (currentStep === stepNumber) return;
+    
+    currentStep = stepNumber;
+    
+    document.getElementById('step-1').style.display = 'none';
+    document.getElementById('step-2').style.display = 'none';
+    document.getElementById('step-3').style.display = 'none';
+    document.getElementById(`step-${stepNumber}`).style.display = 'block';
+    
+    updateProgressBar(stepNumber);
+    window.scrollTo(0, 0);
+    notifyParentOfStepChange();
+}
+
+    // Render services for selected bundle
+    function renderServices() {
+        const container = document.getElementById('services-container');
+        container.innerHTML = '';
+        selectedServices = [];
+        
+        if (!services.length) {
+            container.innerHTML = '<p>Loading services...</p>';
+            return;
+        }
+
+        // For custom bundle, populate categories with all service types
+        if (selectedBundle.isCustom) {
+            selectedBundle.categories = {};
+            services.forEach(service => {
+                if (!selectedBundle.categories[service.ServiceType]) {
+                    selectedBundle.categories[service.ServiceType] = 999; // Unlimited
+                }
+            });
+        }
+
+        // Get all unique service types in the selected bundle
+        const allowedCategories = Object.keys(selectedBundle.categories);
+        const filteredServices = services.filter(service =>
+            allowedCategories.includes(service.ServiceType)
+        );
+
+        if (filteredServices.length === 0) {
+            container.innerHTML = '<p>No services available for this bundle.</p>';
+            return;
+        }
+
+        // Group services by category
+        const servicesByCategory = {};
+        allowedCategories.forEach(category => {
+            servicesByCategory[category] = filteredServices.filter(
+                service => service.ServiceType === category
+            );
+        });
+
+        // Render each category with its services
+        Object.entries(servicesByCategory).forEach(([category, categoryServices]) => {
+            if (categoryServices.length === 0) return;
+
+            const categoryContainer = document.createElement('div');
+            categoryContainer.className = 'category-services-container';
+            
+            const categoryId = category.toLowerCase().replace(/\s+/g, '-');
+            const selectedCount = selectedServices.filter(s => s.ServiceType === category).length;
+            
+            // For custom bundles, just show count without limit
+            const countText = selectedBundle.isCustom ? 
+                `${selectedCount} selected` : 
+                `${selectedCount} of ${selectedBundle.categories[category]} selected`;
+            
+            categoryContainer.innerHTML = `
+                <div class="category-title">
+                    ${category}
+                    <span>${countText}</span>
+                </div>
+                ${selectedBundle.isCustom ? '' : `
+                <div class="progress-wrapper" id="progress-${categoryId}">
+                    <div class="progress-bar" style="width: ${Math.min((selectedCount / selectedBundle.categories[category]) * 100, 100)}%"></div>
+                </div>
+                `}
+                <div class="services-grid" id="services-${categoryId}">
+                    <!-- Services will be inserted here -->
+                </div>
+            `;
+            
+            container.appendChild(categoryContainer);
+            
+            const servicesGrid = document.getElementById(`services-${categoryId}`);
+            
+            categoryServices.forEach(service => {
+                const div = document.createElement('div');
+                div.className = 'package';
+                
+                // Determine tag class based on service type
+                let tagClass = 'package-type-tag';
+                if (service.ServiceType.includes('Scene')) tagClass += ' scene-setters';
+                if (service.ServiceType.includes('Sweets')) tagClass += ' sweets-brews';
+                if (service.ServiceType.includes('Special Effects')) tagClass += ' special-effects';
+                if (service.ServiceType.includes('Guest Book')) tagClass += ' guest-book';
+                if (service.ServiceType.includes('Digital')) tagClass += ' digital';
+                if (service.ServiceType.includes('Interactive')) tagClass += ' interactive';
+                
+                // Format duration text
+                const durationText = service.duration ? formatDuration(service.duration) : '';
+                
+                // Create features overlay if features exist
+                const featuresOverlay = service.features ? `
+                    <div class="features-overlay" id="features-${service.name.replace(/\s+/g, '-').toLowerCase()}">
+                        <button class="close-overlay">&times;</button>
+                        <h4>${service.name} Features</h4>
+                        <ul>
+                            ${service.features.map(item => `<li>${item}</li>`).join('')}
+                        </ul>
+                    </div>
+                ` : '';
+                
+                // Add "Display Features" link if features exist
+                const featuresLink = service.features ? `
+                    <button class="show-features-toggle" data-service="${service.name.replace(/\s+/g, '-').toLowerCase()}">
+                        Display Features <span class="chevron-icon down">▼</span>
+                    </button>
+                ` : '';
+                
+                div.innerHTML = `
+                    <div class="package-content" style="padding-bottom: 30px;">
+                        <h3>${service.name}</h3>
+                        <span class="${tagClass}">${service.ServiceType}</span>
+                        <p class="description">${service.description || "No description available."}</p>
+                        ${durationText ? `<p><strong>Duration:</strong> ${durationText}</p>` : ''}
+                        ${service.price ? `<p><strong>Price:</strong> C$${service.price.toFixed(2)}</p>` : ''}
+                        ${featuresLink}
+                    </div>
+                    ${featuresOverlay}
+                `;
+                
+                // Add click handler for service selection
+                div.addEventListener('click', (e) => {
+                    // Don't toggle selection if clicking on features link
+                    if (!e.target.classList.contains('show-features-toggle')) {
+                        toggleService(div, service);
+                    }
+                });
+                
+                // Add click handler for features toggle
+                if (service.features) {
+                    const featuresButton = div.querySelector('.show-features-toggle');
+                    featuresButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const overlay = div.querySelector('.features-overlay');
+                        overlay.style.display = 'block';
+                    });
+                    
+                    const closeButton = div.querySelector('.close-overlay');
+                    if (closeButton) {
+                        closeButton.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            const overlay = div.querySelector('.features-overlay');
+                            overlay.style.display = 'none';
+                        });
+                    }
+                }
+                
+                servicesGrid.appendChild(div);
+            });
+        });
+        
+        // Show review button
+        document.getElementById('review-selection').style.display = 'block';
+        document.getElementById('back-to-bundle').style.display = 'block';
+        
+        // Set up review button click handler
+        document.getElementById('review-selection').addEventListener('click', () => {
+            if (checkBundleRequirements()) {
+                renderStep3();
+                window.scrollTo(0, 0);
+            } else {
+                const warningElement = document.getElementById('requirements-warning');
+                warningElement.style.display = 'flex';
+                warningElement.classList.add('shake-warning');
+                setTimeout(() => {
+                    warningElement.classList.remove('shake-warning');
+                }, 500);
+            }
+        });
+        
+        setupOptionsSection();
+    }
+
+    // Toggle service selection
+    function toggleService(el, service) {
+        const idx = selectedServices.findIndex(s => s.name === service.name);
+        const serviceType = service.ServiceType;
+        const limit = selectedBundle.categories[serviceType];
+        const currentCount = getSelectedCount(serviceType);
+
+        if (idx >= 0) {
+            // Deselect service
+            selectedServices.splice(idx, 1);
+            el.classList.remove("selected");
+        } else {
+            // For custom bundles, don't enforce limits
+            if (!selectedBundle.isCustom && currentCount >= limit) {
+                showCompareWarning(serviceType, limit);
+                return;
+            }
+            
+            // For services with pricing tiers, set default selection
+            if (service.pricingTiers && service.pricingTiers.length > 0) {
+                service.selectedPrice = service.pricingTiers[0].price;
+                service.selectedTier = service.pricingTiers[0];
+            }
+            
+            selectedServices.push(service);
+            el.classList.add("selected");
+        }
+        
+        updateAllProgressBars();
+        hideCompareWarning();
+        
+        // Show/hide options section based on selections
+        setupOptionsSection();
+    }
+
+    // Get count of selected services in a category
+    function getSelectedCount(category) {
+        return selectedServices.filter(s => s.ServiceType === category).length;
+    }
+
+    // Update all progress bars
+    function updateAllProgressBars() {
+        if (!selectedBundle) return;
+        
+        Object.entries(selectedBundle.categories).forEach(([category, limit]) => {
+            const categoryId = category.toLowerCase().replace(/\s+/g, '-');
+            const selectedCount = getSelectedCount(category);
+            
+            // Update the count text for all bundles (including custom)
+            const countSpan = document.querySelector(`#services-${categoryId}`)?.closest('.category-services-container')?.querySelector('.category-title span');
+            if (countSpan) {
+                countSpan.textContent = selectedBundle.isCustom ? 
+                    `${selectedCount} selected` : 
+                    `${selectedCount} of ${limit} selected`;
+            }
+            
+            // Skip progress bar for custom bundles
+            if (selectedBundle.isCustom) return;
+            
+            const percent = Math.min((selectedCount / limit) * 100, 100);
+            
+            const progressBar = document.querySelector(`#progress-${categoryId} .progress-bar`);
+            if (progressBar) {
+                progressBar.style.width = `${percent}%`;
+                progressBar.style.backgroundColor = percent === 100 ? '#2ecc71' : '#3498db';
+                progressBar.style.transition = 'width 0.3s ease, background-color 0.3s ease';
+            }
+        });
+    }
+
+    // Show warning when trying to select too many services in a category
+    function showCompareWarning(category, limit) {
+        const warn = document.getElementById("compare-warning");
+        warn.innerHTML = `
+            <svg viewBox="0 0 24 24" width="16" height="16" style="vertical-align:middle;margin-right:8px;">
+                <path fill="#856404" d="M12 2L1 21h22L12 2zm0 4l7.5 13h-15L12 6zm-1 3v6h2V9h-2zm0 8v2h2v-2h-2z"/>
+            </svg>
+            You can only select ${limit} service${limit !== 1 ? 's' : ''} from "${category}"
+        `;
+        warn.style.display = "flex";
+        warn.classList.add('shake-warning');
+        setTimeout(() => {
+            warn.classList.remove('shake-warning');
+        }, 500);
+    }
+
+    // Hide the warning message
+    function hideCompareWarning() {
+        document.getElementById("compare-warning").style.display = "none";
+    }
+
+    // Update progress bar to show current step
+    function updateProgressBar(step) {
+        const progressSteps = document.querySelectorAll('#progress-bar div');
+        progressSteps.forEach((div, index) => {
+            if (index < step) {
+                div.classList.add('completed');
+            } else {
+                div.classList.remove('completed');
+            }
+            
+            if (index === step - 1) {
+                div.classList.add('active');
+            } else {
+                div.classList.remove('active');
+            }
+        });
+    }
+
+    // Show toast message
+    function showToast(message) {
+        const toast = document.getElementById('toast-msg');
+        toast.textContent = message;
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 2500);
+    }
+
+    // Format phone number as +1 (XXX) XXX-XXXX
+    function formatPhoneNumber(e) {
+        let input = e.target.value.replace(/\D/g, '');
+        if (input.length > 0) {
+            input = input.match(/(\d{0,1})(\d{0,3})(\d{0,3})(\d{0,4})/);
+            e.target.value = '+1' + (input[2] ? ' (' + input[2] : '') + (input[3] ? ') ' + input[3] : '') + (input[4] ? '-' + input[4] : '');
+        }
+    }
+
+    // Check if date is available (not in past and at least 2 weeks in advance)
+    function isDateAvailable(date) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const twoWeeksLater = new Date(today);
+        twoWeeksLater.setDate(today.getDate() + 14);
+        
+        return date >= twoWeeksLater;
+    }
+
+    // Render calendar
+function renderCalendar(date) {
+    const month = date.getMonth();
+    const year = date.getFullYear();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Calculate date two weeks from today
+    const twoWeeksLater = new Date(today);
+    twoWeeksLater.setDate(today.getDate() + 14);
+    
+    // Set month/year title
+    document.getElementById('calendar-month-year').textContent = 
+        new Date(year, month).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    
+    // Update month navigation buttons
+    updateMonthNavigationButtons();
+    
+    // Get first day of month and total days
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    
+    // Get days from previous month (disabled)
+    const prevMonthDays = new Date(year, month, 0).getDate();
+    
+    // Clear calendar
+    const calendarDays = document.getElementById('calendar-days');
+    calendarDays.innerHTML = '';
+    
+    // Add days from previous month (disabled)
+    for (let i = 0; i < firstDay; i++) {
+        const dayElement = document.createElement('div');
+        dayElement.className = 'calendar-day unavailable';
+        dayElement.textContent = prevMonthDays - firstDay + i + 1;
+        calendarDays.appendChild(dayElement);
+    }
+    
+    // Add days of current month
+    for (let i = 1; i <= daysInMonth; i++) {
+        const dayDate = new Date(year, month, i);
+        dayDate.setHours(0, 0, 0, 0);
+        const dayElement = document.createElement('div');
+        dayElement.className = 'calendar-day';
+        dayElement.textContent = i;
+        
+        // Mark current day
+        if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+            dayElement.classList.add('current');
+        }
+        
+        // Check if date is available or is exactly two weeks from today
+        if (isDateAvailable(dayDate) || 
+            (dayDate.getDate() === twoWeeksLater.getDate() && 
+             dayDate.getMonth() === twoWeeksLater.getMonth() && 
+             dayDate.getFullYear() === twoWeeksLater.getFullYear())) {
+            dayElement.classList.add('available');
+            
+            // Auto-select two weeks later date if it's in this month
+            if (dayDate.getDate() === twoWeeksLater.getDate() && 
+                dayDate.getMonth() === twoWeeksLater.getMonth() && 
+                dayDate.getFullYear() === twoWeeksLater.getFullYear()) {
+                dayElement.classList.add('selected');
+                selectedDateElement = dayElement;
+                // Load availability for this date
+                loadAvailability(dayDate.toISOString().split('T')[0]);
+                
+                // Update selected date header
+                document.getElementById('selected-date-header').textContent = 
+                    dayDate.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' });
+            }
+            
+            // Add click handler for available days
+            dayElement.addEventListener('click', () => {
+                // Remove previous selection
+                if (selectedDateElement) {
+                    selectedDateElement.classList.remove('selected');
+                    if (selectedDateElement.classList.contains('current')) {
+                        selectedDateElement.classList.add('current');
+                    }
+                }
+                
+                // Select this date
+                dayElement.classList.add('selected');
+                selectedDateElement = dayElement;
+                
+                // Update selected date header
+                document.getElementById('selected-date-header').textContent = 
+                    dayDate.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' });
+                
+                // Load availability
+                loadAvailability(dayDate.toISOString().split('T')[0]);
+            });
+        } else {
+            dayElement.classList.add('unavailable');
+        }
+        
+        calendarDays.appendChild(dayElement);
+    }
+}
+
+    // Load availability
+    async function loadAvailability(date) {
+        try {
+            showCalendarLoading();
+            hideCalendarError();
+            clearTimeSlots();
+            
+            const response = await fetch(`${config.backendUrl}/api/availability?date=${date}`);
+            
+            if (!response.ok) {
+                throw new Error(`Failed to load availability: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            // Validate response structure
+            if (!data.availability || !Array.isArray(data.availability)) {
+                throw new Error('Invalid availability data format');
+            }
+            
+            renderTimeSlots(date, data.availability);
+        } catch (error) {
+            console.error('Availability error:', error);
+            showCalendarError(`Failed to load availability: ${error.message}`);
+        } finally {
+            hideCalendarLoading();
+        }
+    }
+    
+// Updated renderTimeSlots function
+function renderTimeSlots(date, availability = []) {
+    const container = document.getElementById('time-slots-container');
+    container.innerHTML = '';
+
+    // Time slots in EST (what user sees)
+    const timeSlots = [
+        { start: 9, end: 12 },   // 9AM-12PM EST
+        { start: 12, end: 15 },  // 12PM-3PM EST
+        { start: 15, end: 18 },  // 3PM-6PM EST
+        { start: 18, end: 21 },  // 6PM-9PM EST
+        { start: 21, end: 24 }   // 9PM-12AM EST
+    ];
+
+    timeSlots.forEach(slot => {
+        // Create Date objects in local time (EST)
+        const slotStartLocal = new Date(`${date}T${padTime(slot.start)}:00:00`);
+        const slotEndLocal = new Date(`${date}T${padTime(slot.end)}:00:00`);
+
+        // Convert to UTC for API comparison
+        const slotStartUTC = new Date(slotStartLocal);
+        slotStartUTC.setHours(slotStartUTC.getHours() + 4);
+        
+        const slotEndUTC = new Date(slotEndLocal);
+        slotEndUTC.setHours(slotEndUTC.getHours() + 4);
+
+        // Check availability
+        const isBooked = availability.some(apiSlot => {
+            const apiStart = new Date(apiSlot.start);
+            const apiEnd = new Date(apiSlot.end);
+            return (slotStartUTC < apiEnd && slotEndUTC > apiStart);
+        });
+
+        // Format time display
+        const startTimeStr = slotStartLocal.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        const endTimeStr = slotEndLocal.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        const timeDisplay = `${startTimeStr} - ${endTimeStr} EST`;
+
+        // Create slot element
+        const slotElement = document.createElement('div');
+        slotElement.className = `time-slot ${isBooked ? 'booked' : 'available'}`;
+        slotElement.dataset.start = slotStartUTC.toISOString();
+        slotElement.dataset.end = slotEndUTC.toISOString();
+        slotElement.dataset.display = timeDisplay;
+        
+        slotElement.innerHTML = `
+            <div class="slot-time">${timeDisplay}</div>
+            <div class="slot-status">${isBooked ? 'Booked' : 'Available'}</div>
+        `;
+
+        if (!isBooked) {
+            slotElement.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected-slot'));
+                slotElement.classList.add('selected-slot');
+                selectedSlotElement = slotElement;
+            });
+        }
+
+        container.appendChild(slotElement);
+    });
+}
+
+
+    // Helper function to pad time (9 -> "09")
+    function padTime(num) {
+        return num.toString().padStart(2, '0');
+    }
+    
+    function formatTime(date) {
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function showCalendarLoading() {
+        document.getElementById('calendar-loading').style.display = 'block';
+    }
+    
+    function hideCalendarLoading() {
+        document.getElementById('calendar-loading').style.display = 'none';
+    }
+    
+    function showCalendarError(message) {
+        const errorElement = document.getElementById('calendar-error');
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+    }
+    
+    function hideCalendarError() {
+        document.getElementById('calendar-error').style.display = 'none';
+    }
+    
+    function clearTimeSlots() {
+        document.getElementById('time-slots-container').innerHTML = '';
+    }
+	
+function clearPromoCode() {
+    const promoCodeInput = document.getElementById('promo-code');
+    const errorElement = document.getElementById('promo-error');
+    const promoDiscountRow = document.getElementById('promo-discount-row');
+    
+    // Reset all promo-related UI elements
+    promoCodeInput.value = '';
+    errorElement.textContent = '';
+    errorElement.classList.remove('invalid');
+    
+    // Reset promo-related variables
+    promoCodeApplied = null;
+    promoDiscount = 0;
+    
+    // Hide the promo discount row
+    promoDiscountRow.style.display = 'none';
+    
+    // Update prices to reflect removal of promo discount
+    updatePrices();
+}
+
+    // Send email via backend
+    async function sendConfirmationEmail(bookingData) {
+        try {
+            const response = await fetch(config.emailBackendUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    ...bookingData,
+                    services: selectedServices,
+                    subtotal: selectedServices.reduce((sum, service) => sum + service.price, 0),
+                    discount: selectedServices.reduce((sum, service) => sum + service.price, 0) * 0.1,
+                    total: selectedServices.reduce((sum, service) => sum + service.price, 0) * 0.9
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to send confirmation email');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Email error:', error);
+            throw error;
+        }
+    }
+
+    // Handle booking submission
+async function handleBookingSubmit(e) {
+    e.preventDefault();
+    
+    if (!document.getElementById('event-details-form').checkValidity()) {
+        document.getElementById('event-details-form').reportValidity();
+        return;
+    }
+    
+    // Check if a time slot is selected
+    const selectedSlot = document.querySelector('.selected-slot');
+    if (!selectedSlot) {
+        alert('Please select an available time slot');
+        return;
+    }
+    
+    // Show payment form
+    document.getElementById('stripe-payment-form').style.display = 'block';
+    document.getElementById('payment-info').style.display = 'block';
+    document.getElementById('submit-booking').style.display = 'none';
+    
+    // Initialize Stripe elements if not already done
+    if (!cardElement) {
+        const elements = stripe.elements();
+        cardElement = elements.create('card');
+        cardElement.mount('#card-element');
+    }
+}
+
+async function handlePaymentSubmit(e) {
+    e.preventDefault();
+    const button = e.target;
+    const errorDisplay = document.getElementById('payment-errors');
+    const processingMessage = document.getElementById('processing-message');
+    
+    button.disabled = true;
+    button.innerHTML = '<span class="spinner"></span> Processing...';
+    errorDisplay.textContent = '';
+    processingMessage.style.display = 'block';
+
+    try {
+        const selectedSlot = document.querySelector('.selected-slot');
+        if (!selectedSlot) {
+            throw new Error('Please select an available time slot');
+        }
+        
+        const total = parseFloat(document.getElementById('final-total-price').textContent.replace('C$', ''));
+        const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
+        const bundleDiscountValue = selectedBundle.isCustom ? 0 : 
+                                  (selectedBundle.discountPercentage ? selectedBundle.discountPercentage/100 : 0);
+        const discount = subtotal * bundleDiscountValue;
+        
+        const bookingData = {
+            eventName: document.getElementById('event-name').value,
+            eventType: document.getElementById('event-type').value,
+            eventDate: selectedSlot.dataset.start.split('T')[0],
+            timeSlotDisplay: selectedSlot.dataset.display,
+            duration: 3,
+            location: document.getElementById('event-location').value,
+            notes: document.getElementById('special-requests').value,
+            contactName: document.getElementById('contact-name').value,
+            email: document.getElementById('contact-email').value,
+            phone: document.getElementById('contact-phone').value,
+            startTime: selectedSlot.dataset.start,
+            endTime: selectedSlot.dataset.end,
+            services: selectedServices,
+            bundleName: selectedBundle.name,
+            bundleDescription: selectedBundle.description,
+            selectedBundle: {
+                name: selectedBundle.name,
+                isCustom: selectedBundle.isCustom,
+                discountPercentage: selectedBundle.discountPercentage || 0,
+                discountValue: discount
+            },
+            subtotal: subtotal,
+            discount: discount,
+            promoCodeApplied: promoCodeApplied ? {
+                promoCode: promoCodeApplied.promoCode,
+                discountValue: promoDiscount
+            } : null,
+            promoDiscount: promoDiscount,
+            total: total
+        };
+
+            // 3. Process Stripe payment
+            const paymentResponse = await fetch(`${config.stripeBackendUrl}/api/payments/create-payment-intent`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    amount: Math.round(total * 100), // Convert to cents
+                    currency: 'cad'
+                })
+            });
+
+            if (!paymentResponse.ok) throw new Error('Payment setup failed');
+            const { clientSecret } = await paymentResponse.json();
+
+            const { error } = await stripe.confirmCardPayment(clientSecret, {
+                payment_method: {
+                    card: cardElement,
+                    billing_details: {
+                        name: bookingData.contactName,
+                        email: bookingData.email
+                    }
+                }
+            });
+
+            if (error) throw error;
+
+            // 4. Create calendar booking
+            const bookingResponse = await fetch(`${config.backendUrl}/api/bookings`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    start: bookingData.startTime,
+                    end: bookingData.endTime,
+                    name: bookingData.contactName,
+                    email: bookingData.email,
+                    eventDetails: {
+                        eventName: bookingData.eventName,
+                        location: bookingData.location,
+                        notes: bookingData.notes
+                    }
+                })
+            });
+            
+            if (!bookingResponse.ok) {
+                const errorData = await bookingResponse.json();
+                throw new Error(errorData.error || 'Booking failed');
+            }
+
+            // 5. Send confirmation email
+            await sendConfirmationEmail(bookingData);
+            
+            // 6. Show success
+            document.getElementById('stripe-payment-form').style.display = 'none';
+            document.getElementById('event-details-form').style.display = 'none';
+            document.getElementById('back-to-services').style.display = 'none';
+            document.getElementById('sent-email').textContent = bookingData.email;
+            document.getElementById('confirmation-message').style.display = 'block';
+            
+       } catch (error) {
+        console.error('Payment error:', error);
+        errorDisplay.textContent = error.message;
+    } finally {
+        button.disabled = false;
+        button.innerHTML = 'Pay $' + parseFloat(document.getElementById('final-total-price').textContent.replace('C$', '')) + ' Now';
+        processingMessage.style.display = 'none';
+    }
+}
+
+console.log('Script loaded in Step123_Iframe_test.html');
+
+// Modified notifyParentOfStepChange function
+let lastStep = null;
+let lastHeight = 0;
+function notifyParentOfStepChange() {
+    const currentStep = getCurrentStep();
+    const currentHeight = document.body.scrollHeight;
+    
+    // Only send if step changed or height changed significantly (>20px)
+    if (currentStep !== lastStep || Math.abs(currentHeight - lastHeight) > 20) {
+        try {
+            // Determine the correct parent origin
+            let parentOrigin;
+            try {
+                // First try to get the parent's actual origin
+                parentOrigin = window.parent.location.origin;
+            } catch (e) {
+                // Fallback for cross-origin situations
+                parentOrigin = 'https://bundlebooth.ca'; // Your production domain
+            }
+            
+            // Send the message
+            window.parent.postMessage({
+                type: 'stepChanged',
+                step: currentStep,
+                height: currentHeight
+            }, parentOrigin);
+            
+            lastStep = currentStep;
+            lastHeight = currentHeight;
+        } catch (error) {
+            console.error('postMessage failed:', error);
+        }
+    }
+}
+
+
+function scrollToTop() {
+    console.log('Attempting to scroll iframe to top');
+    try {
+        document.body.scrollTop = 0; // For older browsers
+        document.documentElement.scrollTop = 0; // Standard
+        const steps = document.getElementById('steps');
+        if (steps) steps.scrollTop = 0;
+    } catch (e) {
+        console.error('Scroll failed:', e);
+    }
+    setTimeout(() => {
+        console.log('Current scroll position:', window.scrollY || document.body.scrollTop || document.documentElement.scrollTop);
+        console.log('Document height:', document.body.scrollHeight);
+        console.log('Viewport height:', window.innerHeight);
+    }, 500);
+    notifyParentOfStepChange();
+}
+
+console.log('Setting up listeners');
+const progressBar = document.querySelector('#progress-bar');
+if (progressBar) {
+    document.querySelectorAll('#progress-bar div').forEach(step => {
+        step.addEventListener('click', () => {
+            console.log('Progress bar step clicked');
+        });
+    });
+} else {
+    console.warn('Progress bar not found');
+}
+
+const reviewSelection = document.getElementById('review-selection');
+if (reviewSelection) {
+    reviewSelection.addEventListener('click', () => {
+        console.log('Review Selection clicked');
+    });
+} else {
+    console.warn('Review Selection button not found');
+}
+
+const backToBundle = document.getElementById('back-to-bundle');
+if (backToBundle) {
+    backToBundle.addEventListener('click', () => {
+        console.log('Back to Bundle clicked');
+    });
+} else {
+    console.warn('Back to Bundle button not found');
+}
+
+const backToServices = document.getElementById('back-to-services');
+if (backToServices) {
+    backToServices.addEventListener('click', () => {
+        console.log('Back to Services clicked');
+    });
+} else {
+    console.warn('Back to Services button not found');
+}
+
+</script>
+<style>
+body {
+    overflow: auto !important;
+}
+#steps {
+    overflow: auto !important;
+    min-height: 100vh;
+}
+
+</script>
+</body>
+</html>
