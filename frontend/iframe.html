@@ -7,7 +7,7 @@
 <iframe 
   id="bundlebooth-iframe"
   src="https://bundlebooth.github.io/bdb-2.0/frontend/Step123_Iframe_test.html" 
-  style="width: 100%; border: 0; display: block;" 
+  style="width: 100%; border: 0; display: block; margin-top: 20px;" 
   scrolling="no"
   allowfullscreen>
 </iframe>
@@ -33,100 +33,129 @@
     color: #666;
     font-size: 10px;
   }
+  
+  /* Critical CSS fixes */
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
 </style>
 
 <script>
-// Function to adjust iframe height
-function adjustIframeHeight(height) {
+// ===== SCROLL TO IFRAME START POSITION ===== //
+function scrollToIframeStart() {
   const iframe = document.getElementById('bundlebooth-iframe');
-  if (iframe) {
-    iframe.style.height = height + 'px';
-    logMessage(`Iframe height adjusted to: ${height}px`);
+  if (!iframe) {
+    logMessage('Error: Iframe not found', 'error');
+    return;
   }
-}
 
-// Function to scroll to iframe
-function scrollToIframe() {
-  const iframe = document.getElementById('bundlebooth-iframe');
-  if (iframe) {
-    window.scrollTo({
-      top: iframe.offsetTop - 20,
+  // Get iframe's exact start position in document
+  const iframeRect = iframe.getBoundingClientRect();
+  const iframeStartPosition = iframeRect.top + window.pageYOffset;
+  
+  logMessage(`Iframe starts at: ${iframeStartPosition}px`);
+
+  // Scroll parent window to iframe's start position
+  try {
+    window.parent.scrollTo({
+      top: iframeStartPosition,
       behavior: 'smooth'
     });
-    logMessage('Scrolled to iframe');
-  }
-}
-
-// Function to log messages
-function logMessage(message) {
-  const messageLog = document.getElementById('message-log');
-  if (messageLog) {
-    const now = new Date();
-    const timeString = now.toLocaleTimeString();
-    const messageEntry = document.createElement('div');
-    messageEntry.className = 'message-entry';
-    messageEntry.innerHTML = `
-      <div class="message-time">${timeString}</div>
-      <div>${message}</div>
-    `;
-    messageLog.prepend(messageEntry);
+    logMessage(`Scrolled to iframe start position`);
     
-    document.getElementById('iframe-messages').style.display = 'block';
+    // Verify after 300ms
+    setTimeout(() => {
+      const currentPos = window.pageYOffset;
+      if (Math.abs(currentPos - iframeStartPosition) > 5) {
+        window.parent.scrollTo(0, iframeStartPosition);
+        logMessage(`Verified scroll position`);
+      }
+    }, 300);
+    
+  } catch (error) {
+    logMessage(`Scroll error: ${error.message}`, 'error');
+    // Fallback to regular scroll
+    window.scrollTo(0, iframeStartPosition);
   }
 }
 
-// Initial scroll when page loads
-window.addEventListener('DOMContentLoaded', () => {
-  scrollToIframe();
-  logMessage('Page loaded, iframe initialized');
-});
-
-// Handle messages from iframe - COMPLETELY NEW VERSION
+// ===== IFRAME MESSAGE HANDLER ===== //
 window.addEventListener('message', function(event) {
-  // First check if this is a message from our iframe
+  // Security checks
   try {
     const iframe = document.getElementById('bundlebooth-iframe');
-    if (!iframe || event.source !== iframe.contentWindow) {
-      return; // Silently ignore messages not from our iframe
-    }
+    if (!iframe || event.source !== iframe.contentWindow) return;
     
-    // Then verify the origin is either GitHub or your production domain
-    const allowedOrigins = [
+    const validOrigins = [
       'https://bundlebooth.github.io',
       'https://bundlebooth.ca'
     ];
+    if (!validOrigins.includes(event.origin)) return;
     
-    if (!allowedOrigins.includes(event.origin)) {
-      return; // Silently ignore unauthorized messages
-    }
-    
-    // Only process if data is an object with type property
-    if (typeof event.data === 'object' && event.data.type) {
-      logMessage(`Valid message from ${event.origin}: ${event.data.type}`);
+    // Process step changes
+    if (event.data?.type === 'stepChanged') {
+      logMessage(`STEP CHANGE: Step ${event.data.step} | Height: ${event.data.height}px`);
       
-      if (event.data.type === 'stepChanged') {
-        logMessage(`Step changed to ${event.data.step}`);
-        if (event.data.height) {
-          adjustIframeHeight(event.data.height);
-        }
-        scrollToIframe();
+      // Update iframe height first if needed
+      if (event.data.height) {
+        iframe.style.height = `${event.data.height}px`;
       }
+      
+      // Scroll to iframe start position
+      scrollToIframeStart();
+      
+      // Command iframe to scroll its content to top
+      setTimeout(() => {
+        iframe.contentWindow.postMessage({
+          type: 'scrollToTop',
+          timestamp: Date.now()
+        }, event.origin);
+      }, 100);
     }
-  } catch (e) {
-    console.error('Error processing message:', e);
+  } catch (error) {
+    logMessage(`ERROR: ${error.message}`, 'error');
   }
-}, false);
+});
 
-// Add toggle button for messages panel
-const toggleBtn = document.createElement('button');
-toggleBtn.textContent = 'Show Messages';
-toggleBtn.style.position = 'fixed';
-toggleBtn.style.bottom = '20px';
-toggleBtn.style.right = '20px';
-toggleBtn.style.zIndex = '1001';
-toggleBtn.onclick = function() {
-  const panel = document.getElementById('iframe-messages');
-  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-};
-document.body.appendChild(toggleBtn);
+// ===== UTILITIES ===== //
+function logMessage(message, type = 'info') {
+  const colors = {
+    info: 'black',
+    success: 'green',
+    error: 'red'
+  };
+  
+  const log = document.getElementById('message-log');
+  if (!log) return;
+  
+  const entry = document.createElement('div');
+  entry.className = 'message-entry';
+  entry.innerHTML = `
+    <div class="message-time">${new Date().toLocaleTimeString()}</div>
+    <div style="color: ${colors[type] || 'black'}">${message}</div>
+  `;
+  log.prepend(entry);
+  document.getElementById('iframe-messages').style.display = 'block';
+}
+
+// ===== INITIALIZATION ===== //
+window.addEventListener('DOMContentLoaded', () => {
+  // Create debug toggle
+  const debugBtn = document.createElement('button');
+  debugBtn.textContent = 'Toggle Messages';
+  debugBtn.style.position = 'fixed';
+  debugBtn.style.bottom = '20px';
+  debugBtn.style.right = '20px';
+  debugBtn.style.zIndex = '1001';
+  debugBtn.onclick = () => {
+    const panel = document.getElementById('iframe-messages');
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  };
+  document.body.appendChild(debugBtn);
+  
+  // Initial scroll to iframe start position
+  setTimeout(scrollToIframeStart, 500);
+  logMessage('System initialized');
+});
 </script>
