@@ -182,19 +182,19 @@ app.post('/send-booking-email', async (req, res) => {
   <table width="100%" cellspacing="0" cellpadding="0">
     <tr>
       <td align="center">
-        <table width="600" cellspacing="0" cellpadding="0" style="border-collapse: collapse; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+        <table width="600" cellspacing="0" cellpadding="0" style="border-collapse: collapse; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border: 1px solid #e0e0e0;">
           <!-- Header with Logo -->
           <tr>
-            <td style="background-color: #f8f8f8; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
+            <td style="background-color: #ffffff; padding: 20px; text-align: center; border-bottom: 1px solid #e0e0e0;">
               <img src="https://img1.wsimg.com/isteam/ip/e5031132-8c20-44e3-a810-901cf200c927/BundleBooth_Logo_FULL_FINAL%25202%2520large.png" alt="BundleBooth Logo" style="max-width: 300px; height: auto; margin-bottom: 20px;">
-              <div style="font-size: 24px; font-weight: bold; margin-bottom: 10px;">${eventName}</div>
-              <div>Your event booking has been confirmed</div>
+              <div style="font-size: 24px; font-weight: bold; margin-bottom: 10px; color: #333;">${eventName}</div>
+              <div style="color: #666;">Your event booking has been confirmed</div>
             </td>
           </tr>
           
           <!-- Content -->
           <tr>
-            <td style="padding: 20px; background-color: white; border-left: 1px solid #eee; border-right: 1px solid #eee;">
+            <td style="padding: 20px; background-color: white;">
               <h3 style="margin-top: 0;">Contact Information:</h3>
               <div style="margin: 20px 0;">
                 <div style="display: flex; margin-bottom: 10px;">
@@ -240,7 +240,7 @@ app.post('/send-booking-email', async (req, res) => {
               </div>
 
               ${specialRequests ? `
-              <div style="background-color: #f8f8f8; padding: 15px; border-radius: 4px; margin: 15px 0;">
+              <div style="background-color: #f8f8f8; padding: 15px; border-radius: 4px; margin: 15px 0; border: 1px solid #e0e0e0;">
                 <h4 style="margin-top: 0;">Special Requests/Notes:</h4>
                 <p>${specialRequests}</p>
               </div>
@@ -262,14 +262,14 @@ app.post('/send-booking-email', async (req, res) => {
               
               <h3>Services Booked:</h3>
               <table width="100%" cellspacing="0" cellpadding="0" style="border-collapse: collapse; margin: 20px 0;">
-                <tr style="border-bottom: 1px solid #eee;">
+                <tr style="border-bottom: 1px solid #e0e0e0;">
                   <th style="text-align: left; padding: 8px 0;">Service</th>
                   <th style="text-align: left; padding: 8px 0;">Category</th>
                   <th style="text-align: left; padding: 8px 0;">Options</th>
                   <th style="text-align: right; padding: 8px 0;">Price</th>
                 </tr>
                 ${services.map(service => `
-                <tr style="border-bottom: 1px solid #eee;">
+                <tr style="border-bottom: 1px solid #e0e0e0;">
                   <td style="padding: 8px 0;">${service.name}</td>
                   <td style="padding: 8px 0;">${service.ServiceType}</td>
                   <td style="padding: 8px 0;">
@@ -347,7 +347,7 @@ app.post('/send-booking-email', async (req, res) => {
               <p>Thank you for choosing BundleBooth, ${contactName}!</p>
               <p>We'll be in touch soon to confirm the details of your event.</p>
               
-              <div style="background-color: #f8f8f8; padding: 15px; border-radius: 4px; margin: 15px 0;">
+              <div style="background-color: #f8f8f8; padding: 15px; border-radius: 4px; margin: 15px 0; border: 1px solid #e0e0e0;">
                 <h4 style="margin-top: 0;">Important Notes:</h4>
                 <ul style="margin: 0; padding-left: 20px;">
                   <li>Your booking is confirmed. A payment of C$${calculatedTotal.toFixed(2)} was processed.</li>
@@ -357,17 +357,17 @@ app.post('/send-booking-email', async (req, res) => {
                 </ul>
               </div>
 
-              <div style="margin-top: 20px; padding: 10px; background-color: #f0f8ff; border-radius: 4px;">
-                <p><strong>Don't forget to add this event to your calendar!</strong> We've attached an .ics file to this email that you can import into Google Calendar, Outlook, or other calendar applications.</p>
+              <div style="margin-top: 20px; padding: 10px; background-color: #f0f8ff; border-radius: 4px; border: 1px solid #d0e0ff;">
+                <p style="margin: 0;"><strong>Don't forget to add this event to your calendar!</strong> We've attached an .ics file to this email that you can import into Google Calendar, Outlook, or other calendar applications.</p>
               </div>
             </td>
           </tr>
           
           <!-- Footer -->
           <tr>
-            <td style="background-color: #f8f8f8; padding: 20px; text-align: center; border-radius: 0 0 8px 8px; font-size: 14px;">
-              <p>Need to make changes? <a href="mailto:support@bundlebooth.ca" style="color: #4CAF50;">Contact us</a></p>
-              <p>© ${new Date().getFullYear()} Bundle Booth Entertainment. All rights reserved.</p>
+            <td style="background-color: #ffffff; padding: 20px; text-align: center; border-top: 1px solid #e0e0e0; font-size: 14px; color: #666;">
+              <p style="margin: 0 0 10px 0;">Need to make changes? <a href="mailto:support@bundlebooth.ca" style="color: #4CAF50; text-decoration: none;">Contact us</a></p>
+              <p style="margin: 0;">© ${new Date().getFullYear()} Bundle Booth Entertainment. All rights reserved.</p>
             </td>
           </tr>
         </table>
