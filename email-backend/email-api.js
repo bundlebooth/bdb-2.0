@@ -183,35 +183,208 @@ app.post('/send-booking-email', async (req, res) => {
       .email-container {
         width: 100% !important;
       }
-      .content-card {
-        border-radius: 12px !important;
+      .shadow-card {
+        border-radius: 16px !important;
+        margin: 10px !important;
       }
     }
   </style>
 </head>
-<body style="margin: 0; padding: 30px 0; font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f8f8f8;">
+<body style="margin: 0; padding: 40px 0; font-family: 'Arial', sans-serif; line-height: 1.6; color: #333; background-color: #f5f7fa;">
+  <!--[if mso]>
+  <style type="text/css">
+    .shadow-card {
+      box-shadow: none !important;
+      border: 1px solid #ddd !important;
+    }
+  </style>
+  <![endif]-->
   <table width="100%" cellspacing="0" cellpadding="0" style="border-collapse: collapse;">
     <tr>
       <td align="center" style="padding: 20px 0;">
-        <!-- Main Email Container with Enhanced Shadow and Rounded Corners -->
-        <table class="email-container" width="600" cellspacing="0" cellpadding="0" style="border-collapse: collapse; background-color: transparent;">
+        <!-- Modern Card with Enhanced Shadow -->
+        <table width="600" cellspacing="0" cellpadding="0" class="email-container" style="border-collapse: collapse;">
           <tr>
-            <td style="padding: 0;">
-              <div style="background-color: #ffffff; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); overflow: hidden; border: 1px solid rgba(0,0,0,0.05);">
+            <td>
+              <div class="shadow-card" style="background-color: #ffffff; border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.12), 0 5px 15px rgba(0,0,0,0.08); border: none; overflow: hidden;">
                 <!-- Header with Logo -->
-                <div style="background-color: #ffffff; padding: 30px; text-align: center; border-bottom: 1px solid #f0f0f0;">
-                  <img src="https://img1.wsimg.com/isteam/ip/e5031132-8c20-44e3-a810-901cf200c927/BundleBooth_Logo_FULL_FINAL%25202%2520large.png" alt="BundleBooth Logo" style="max-width: 300px; height: auto; margin-bottom: 15px;">
-                  <div style="font-size: 26px; font-weight: bold; margin-bottom: 8px; color: #222;">${eventName}</div>
-                  <div style="color: #666; font-size: 16px;">Your event booking has been confirmed</div>
+                <div style="background-color: #ffffff; padding: 30px; text-align: center; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                  <img src="https://img1.wsimg.com/isteam/ip/e5031132-8c20-44e3-a810-901cf200c927/BundleBooth_Logo_FULL_FINAL%25202%2520large.png" alt="BundleBooth Logo" style="max-width: 280px; height: auto; margin-bottom: 15px;">
+                  <div style="font-size: 28px; font-weight: 700; margin-bottom: 8px; color: #222; letter-spacing: -0.5px;">${eventName}</div>
+                  <div style="color: #666; font-size: 16px; letter-spacing: 0.2px;">Your event booking has been confirmed</div>
                 </div>
                 
-                <!-- Content Card with subtle inner shadow effect -->
-                <div style="padding: 30px; background-color: white; box-shadow: inset 0 1px 3px rgba(0,0,0,0.03);">
-                  <!-- [Rest of your email content remains exactly the same] -->
+                <!-- Content -->
+                <div style="padding: 30px; background-color: white;">
+                  <h3 style="margin-top: 0; font-size: 18px; color: #222; font-weight: 600;">Contact Information:</h3>
+                  <div style="margin: 20px 0;">
+                    <div style="display: flex; margin-bottom: 12px;">
+                      <div style="font-weight: bold; width: 150px;">Your Name:</div>
+                      <div>${contactName}</div>
+                    </div>
+                    <div style="display: flex; margin-bottom: 12px;">
+                      <div style="font-weight: bold; width: 150px;">Email:</div>
+                      <div>${email}</div>
+                    </div>
+                    <div style="display: flex; margin-bottom: 12px;">
+                      <div style="font-weight: bold; width: 150px;">Phone Number:</div>
+                      <div>${phone || 'Not specified'}</div>
+                    </div>
+                  </div>
+
+                  <h3 style="font-size: 18px; color: #222; font-weight: 600;">Event Details:</h3>
+                  <div style="margin: 20px 0;">
+                    <div style="display: flex; margin-bottom: 12px;">
+                      <div style="font-weight: bold; width: 150px;">Event Name:</div>
+                      <div>${eventName}</div>
+                    </div>
+                    <div style="display: flex; margin-bottom: 12px;">
+                      <div style="font-weight: bold; width: 150px;">Event Type:</div>
+                      <div>${eventType || 'Not specified'}</div>
+                    </div>
+                    <div style="display: flex; margin-bottom: 12px;">
+                      <div style="font-weight: bold; width: 150px;">Event Date:</div>
+                      <div>${formattedDate}</div>
+                    </div>
+                    <div style="display: flex; margin-bottom: 12px;">
+                      <div style="font-weight: bold; width: 150px;">Time Slot:</div>
+                      <div>${formattedTimeSlot}</div>
+                    </div>
+                    <div style="display: flex; margin-bottom: 12px;">
+                      <div style="font-weight: bold; width: 150px;">Duration:</div>
+                      <div>${formattedDuration}</div>
+                    </div>
+                    <div style="display: flex; margin-bottom: 12px;">
+                      <div style="font-weight: bold; width: 150px;">Location:</div>
+                      <div>${formattedLocation}</div>
+                    </div>
+                  </div>
+
+                  ${specialRequests ? `
+                  <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin: 25px 0; border: 1px solid rgba(0,0,0,0.05); box-shadow: inset 0 1px 3px rgba(0,0,0,0.03);">
+                    <h4 style="margin-top: 0; font-size: 16px; color: #222; font-weight: 600;">Special Requests/Notes:</h4>
+                    <p style="margin-bottom: 0; color: #555;">${specialRequests}</p>
+                  </div>
+                  ` : ''}
+                  
+                  <h3 style="font-size: 18px; color: #222; font-weight: 600;">Bundle Information:</h3>
+                  <div style="margin: 20px 0;">
+                    <div style="display: flex; margin-bottom: 12px;">
+                      <div style="font-weight: bold; width: 150px;">Bundle Name:</div>
+                      <div>${bundleName || 'Custom Bundle'}</div>
+                    </div>
+                    ${bundleDescription ? `
+                    <div style="display: flex; margin-bottom: 12px;">
+                      <div style="font-weight: bold; width: 150px;">Description:</div>
+                      <div>${bundleDescription}</div>
+                    </div>
+                    ` : ''}
+                  </div>
+                  
+                  <h3 style="font-size: 18px; color: #222; font-weight: 600;">Services Booked:</h3>
+                  <table width="100%" cellspacing="0" cellpadding="0" style="border-collapse: collapse; margin: 20px 0;">
+                    <tr style="border-bottom: 1px solid rgba(0,0,0,0.08);">
+                      <th style="text-align: left; padding: 12px 0; font-weight: bold; color: #555;">Service</th>
+                      <th style="text-align: left; padding: 12px 0; font-weight: bold; color: #555;">Category</th>
+                      <th style="text-align: left; padding: 12px 0; font-weight: bold; color: #555;">Options</th>
+                      <th style="text-align: right; padding: 12px 0; font-weight: bold; color: #555;">Price</th>
+                    </tr>
+                    ${services.map(service => `
+                    <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                      <td style="padding: 12px 0; color: #444;">${service.name}</td>
+                      <td style="padding: 12px 0; color: #444;">${service.ServiceType}</td>
+                      <td style="padding: 12px 0; color: #444;">
+                        ${service.selectedTier ? `
+                          ${service.ServiceType === "Sweets and Brews" ? `Guests: ${service.selectedTier.value}` : ''}
+                          ${service.ServiceType === "Scene Setters" && service.slug === "sparklers-box" ? `Quantity: ${service.selectedTier.value} sparklers` : ''}
+                          ${service.ServiceType === "Interactive Booths" && service.slug === "photo-booth" ? `Option: ${service.selectedTier.label}` : ''}
+                        ` : 'Standard'}
+                      </td>
+                      <td style="padding: 12px 0; text-align: right; color: #444;">C$${(service.selectedPrice || service.price || 0).toFixed(2)}</td>
+                    </tr>
+                    `).join('')}
+                    
+                    <!-- Subtotal -->
+                    <tr>
+                      <td colspan="3" style="padding: 12px 0; text-align: right; font-weight: bold;">Subtotal:</td>
+                      <td style="padding: 12px 0; text-align: right;">C$${calculatedSubtotal.toFixed(2)}</td>
+                    </tr>
+                    
+                    <!-- Bundle Discount -->
+                    ${bundleDiscountValue > 0 ? `
+                    <tr>
+                      <td colspan="3" style="padding: 12px 0; text-align: right; font-weight: bold; color: #27ae60;">
+                        ${bundleDiscountPercentage > 0 ? `Bundle Discount (${bundleDiscountPercentage}%)` : 'Bundle Discount'}:
+                      </td>
+                      <td style="padding: 12px 0; text-align: right; color: #27ae60;">-C$${bundleDiscountValue.toFixed(2)}</td>
+                    </tr>
+                    ` : ''}
+
+                    <!-- Promo Discount -->
+                    ${promoDiscount > 0 ? `
+                    <tr>
+                      <td colspan="3" style="padding: 12px 0; text-align: right; font-weight: bold; color: #27ae60;">
+                        Promo Discount (${promoCode || ''}):
+                      </td>
+                      <td style="padding: 12px 0; text-align: right; color: #27ae60;">-C$${promoDiscount.toFixed(2)}</td>
+                    </tr>
+                    ` : ''}
+                    
+                    <!-- Total -->
+                    <tr style="font-weight: bold; border-top: 2px solid rgba(0,0,0,0.1);">
+                      <td colspan="3" style="padding: 12px 0; text-align: right;">Total:</td>
+                      <td style="padding: 12px 0; text-align: right;">C$${calculatedTotal.toFixed(2)}</td>
+                    </tr>
+                  </table>
+                  
+                  <h3 style="font-size: 18px; color: #222; font-weight: 600;">Payment Information:</h3>
+                  <div style="margin: 20px 0;">
+                    <div style="display: flex; margin-bottom: 12px;">
+                      <div style="font-weight: bold; width: 150px;">Payment Method:</div>
+                      <div>${formattedPaymentMethod}</div>
+                    </div>
+                    <div style="display: flex; margin-bottom: 12px;">
+                      <div style="font-weight: bold; width: 150px;">Amount Paid:</div>
+                      <div>C$${calculatedTotal.toFixed(2)}</div>
+                    </div>
+                    <div style="display: flex; margin-bottom: 12px;">
+                      <div style="font-weight: bold; width: 150px;">Payment Date:</div>
+                      <div>${new Date().toLocaleDateString()}</div>
+                    </div>
+                    ${transactionId ? `
+                    <div style="display: flex; margin-bottom: 12px;">
+                      <div style="font-weight: bold; width: 150px;">Transaction ID:</div>
+                      <div>${transactionId}</div>
+                    </div>
+                    ` : ''}
+                    ${paymentStatus ? `
+                    <div style="display: flex; margin-bottom: 12px;">
+                      <div style="font-weight: bold; width: 150px;">Payment Status:</div>
+                      <div>${paymentStatus}</div>
+                    </div>
+                    ` : ''}
+                  </div>
+                  
+                  <p style="margin-bottom: 15px; color: #555;">Thank you for choosing BundleBooth, ${contactName}!</p>
+                  <p style="margin-bottom: 20px; color: #555;">We'll be in touch soon to confirm the details of your event.</p>
+                  
+                  <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin: 25px 0; border: 1px solid rgba(0,0,0,0.05); box-shadow: inset 0 1px 3px rgba(0,0,0,0.03);">
+                    <h4 style="margin-top: 0; font-size: 16px; color: #222; font-weight: 600;">Important Notes:</h4>
+                    <ul style="margin: 0; padding-left: 20px; color: #555;">
+                      <li style="margin-bottom: 8px;">Your booking is confirmed. A payment of C$${calculatedTotal.toFixed(2)} was processed.</li>
+                      <li style="margin-bottom: 8px;">Final details (guest count, etc.) must be confirmed 14 days before the event.</li>
+                      <li style="margin-bottom: 8px;">For any changes, please contact us at least 7 days before the event.</li>
+                      <li>All times are in Eastern Time Zone (EST)</li>
+                    </ul>
+                  </div>
+
+                  <div style="margin-top: 20px; padding: 18px; background-color: #f0f8ff; border-radius: 10px; border: 1px solid rgba(0,0,0,0.05); box-shadow: inset 0 1px 3px rgba(0,0,0,0.03);">
+                    <p style="margin: 0; font-size: 15px; color: #2c5282;"><strong>Don't forget to add this event to your calendar!</strong> We've attached an .ics file to this email that you can import into Google Calendar, Outlook, or other calendar applications.</p>
+                  </div>
                 </div>
                 
-                <!-- Footer with subtle top shadow -->
-                <div style="background-color: #ffffff; padding: 25px; text-align: center; border-top: 1px solid #f0f0f0; font-size: 14px; color: #666; box-shadow: 0 -1px 3px rgba(0,0,0,0.03);">
+                <!-- Footer -->
+                <div style="background-color: #ffffff; padding: 25px; text-align: center; border-top: 1px solid rgba(0,0,0,0.05); font-size: 14px; color: #666;">
                   <p style="margin: 0 0 10px 0;">Need to make changes? <a href="mailto:support@bundlebooth.ca" style="color: #4CAF50; text-decoration: none; font-weight: bold;">Contact us</a></p>
                   <p style="margin: 0;">© ${new Date().getFullYear()} Bundle Booth Entertainment. All rights reserved.</p>
                 </div>
