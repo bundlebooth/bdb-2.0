@@ -1681,6 +1681,22 @@
     #back-to-bundle:hover {
         background: #e0e0e0;
     }
+	
+	.calendar-error {
+    color: #e74c3c;
+    background-color: #fde8e8;
+    padding: 10px;
+    border-radius: 4px;
+    margin: 10px 0;
+    text-align: center;
+    display: none;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
 </style>
 </head>
@@ -1851,7 +1867,7 @@
             </div>
             
             <div class="time-slot-panel">
-                <div class="time-slot-header" id="selected-date-header">Select a date</div>
+                <div class="time-slot-header" id="selected-date-header">Select a date and time <span class="required-asterisk">*</span></div>
                 <div id="calendar-loading" class="loading">
                     <div class="spinner"></div>
                     <div>Loading availability...</div>
@@ -3550,14 +3566,21 @@ function renderTimeSlots(date, availability = []) {
             <div class="slot-status">${isBooked ? 'Booked' : 'Available'}</div>
         `;
 
-        if (!isBooked) {
-            slotElement.addEventListener('click', (e) => {
-                e.stopPropagation();
-                document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected-slot'));
-                slotElement.classList.add('selected-slot');
-                selectedSlotElement = slotElement;
-            });
+if (!isBooked) {
+    slotElement.addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected-slot'));
+        slotElement.classList.add('selected-slot');
+        selectedSlotElement = slotElement;
+        
+        // Remove any error messages when a slot is selected
+        const timeSlotHeader = document.getElementById('selected-date-header');
+        const existingError = timeSlotHeader.nextElementSibling;
+        if (existingError && existingError.classList.contains('calendar-error')) {
+            existingError.remove();
         }
+    });
+}
 
         container.appendChild(slotElement);
     });
@@ -3678,14 +3701,32 @@ async function handleBookingSubmit(e) {
         }
     });
     
-    if (!isValid) {
-        return;
+    // Check if a time slot is selected
+    const selectedSlot = document.querySelector('.time-slot.selected-slot');
+    if (!selectedSlot) {
+        // Show error message near the time slots
+        const timeSlotHeader = document.getElementById('selected-date-header');
+        const errorElement = document.createElement('div');
+        errorElement.className = 'calendar-error';
+        errorElement.textContent = 'Please select an available time slot';
+        errorElement.style.display = 'block';
+        errorElement.style.marginTop = '10px';
+        
+        // Remove any existing error messages
+        const existingError = timeSlotHeader.nextElementSibling;
+        if (existingError && existingError.classList.contains('calendar-error')) {
+            existingError.remove();
+        }
+        
+        timeSlotHeader.insertAdjacentElement('afterend', errorElement);
+        
+        // Scroll to the calendar section
+        document.querySelector('.calendar-container').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        isValid = false;
     }
     
-    // Check if a time slot is selected
-    const selectedSlot = document.querySelector('.selected-slot');
-    if (!selectedSlot) {
-        alert('Please select an available time slot');
+    if (!isValid) {
         return;
     }
     
