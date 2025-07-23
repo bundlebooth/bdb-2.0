@@ -1646,6 +1646,34 @@
   background: linear-gradient(135deg, #e0f7fa, #ffffff);
 }
 
+    .confirmation-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255,255,255,0.8);
+        backdrop-filter: blur(5px);
+        z-index: 1000;
+        display: none;
+    }
+    .confirmation-message {
+        position: relative;
+        z-index: 1001;
+    }
+    .freeze-ui *:not(.confirmation-message):not(#new-bundle-button) {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+	
+	 #review-selection, #submit-booking {
+        background-color: var(--modern-green);
+        color: white;
+    }
+    #review-selection:hover, #submit-booking:hover {
+        background-color: #1e8449;
+    }
+
 </style>
 </head>
 <body>
@@ -1832,10 +1860,10 @@
                 <h3 class="form-section-title">Contact Information</h3>
                 <form id="event-details-form">
                     <div class="form-row">
-                        <div class="form-group">
-                            <label for="contact-name">Your Name <span class="required-asterisk">*</span></label>
-                            <input type="text" id="contact-name" >
-                        </div>
+						<div class="form-group">
+							<label for="contact-name">Your Name <span class="required-asterisk">*</span></label>
+							<input type="text" id="contact-name" required>
+						</div>
                         <div class="form-group">
                               <label for="contact-phone">Phone Number <span class="required-asterisk">*</span></label>
                             <input type="tel" id="contact-phone" required placeholder="+1 (XXX) XXX-XXXX">
@@ -2217,7 +2245,7 @@ function applyPromoCode() {
     }
 
     promoCodeApplied = validCode;
-    errorElement.textContent = validCode.description || `Promo code applied: $${promoDiscount.toFixed(2)} off`;
+    errorElement.textContent = validCode.description || `Success: Promo code applied!`;
     errorElement.classList.remove('invalid');
     updatePrices();
 }
@@ -2228,6 +2256,11 @@ function setupProgressBarNavigation() {
     const progressSteps = document.querySelectorAll('#progress-bar div');
     progressSteps.forEach((step, index) => {
         step.addEventListener('click', () => {
+            // Don't allow navigation if booking is complete
+            if (document.getElementById('confirmation-message').style.display === 'block') {
+                return;
+            }
+            
             const currentStep = getCurrentStep();
             if (index < currentStep) {
                 // Clear promo code if going back from step 3
@@ -3508,7 +3541,7 @@ async function handleBookingSubmit(e) {
     // Check if a time slot is selected
     const selectedSlot = document.querySelector('.selected-slot');
     if (!selectedSlot) {
-        alert('Please select an available time slot');
+        showToast('Please select an available time slot');
         return;
     }
     
@@ -3636,6 +3669,7 @@ async function handlePaymentSubmit(e) {
             document.getElementById('back-to-services').style.display = 'none';
             document.getElementById('sent-email').textContent = bookingData.email;
             document.getElementById('confirmation-message').style.display = 'block';
+			document.body.classList.add('freeze-ui');
             
        } catch (error) {
         console.error('Payment error:', error);
