@@ -548,18 +548,17 @@
       font-weight: 600;
       color: var(--bb-green);
     }
-    .service-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 12px 0;
-      border-bottom: 1px solid #f5f5f5;
-    }
+.service-item {
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
     .service-item:last-child {
       border-bottom: none;
     }
-    .service-name {
-      font-weight: 500;
-    }
+.service-name {
+    font-weight: 500;
+    margin-bottom: 4px;
+}
     .service-price {
     font-weight: 600;
     color: var(--bb-dark);
@@ -1160,12 +1159,11 @@
       font-size: 13px;
     }
     
-    .service-details {
-      margin-top: 8px;
-      font-size: 13px;
-      color: #666;
-    }
-    
+.service-details {
+    font-size: 14px;
+    color: #666;
+    margin-top: 4px;
+}
     .service-details span {
       display: block;
       margin-bottom: 4px;
@@ -1761,13 +1759,8 @@
     background: #fff;
     border-radius: 12px;
     padding: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    transition: transform 0.3s, box-shadow 0.3s;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    border: 1px solid #eee;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
 }
 
 .service-card:hover {
@@ -1787,12 +1780,11 @@
 }
 
 .addons-toggle {
-    margin-top: auto;
+    margin-top: 15px;
     cursor: pointer;
-    color: var(--bb-accent);
-    font-weight: 500;
+    color: #4b47d4;
+    font-weight: bold;
     padding: 8px 0;
-    text-align: center;
     border-top: 1px dashed #eee;
 }
 
@@ -1807,9 +1799,8 @@
     gap: 8px;
     margin-top: 12px;
     padding: 12px;
-    background: #f8f9fa;
+    background: #f7f7fb;
     border-radius: 8px;
-    border: 1px solid #e9ecef;
 }
 
 .addons-grid.show {
@@ -1817,25 +1808,23 @@
 }
 
 .addon-card {
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    padding: 10px 12px;
+    background: #f9f9fb;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 12px;
     cursor: pointer;
     transition: all 0.2s;
-    display: flex;
-    align-items: center;
 }
 
+
 .addon-card:hover {
-    border-color: var(--bb-accent);
-    background: #f0f8ff;
+    border-color: #6c63ff;
+    background: #f0f0ff;
 }
 
 .addon-card.selected {
-    background: var(--bb-accent);
-    color: white;
-    border-color: var(--bb-accent);
+    border-color: #4b47d4;
+    background: #eaeaff;
 }
 
 .addon-card input {
@@ -2850,48 +2839,71 @@ function updatePrices() {
 }
 
     // Render the selected services list with durations and options
-    function renderSelectedServicesList() {
-        const servicesList = document.getElementById('selected-services-list');
-        servicesList.innerHTML = '';
+function renderSelectedServicesList() {
+    const servicesList = document.getElementById('selected-services-list');
+    servicesList.innerHTML = '';
+    
+    selectedServices.forEach(service => {
+        const serviceDiv = document.createElement('div');
+        serviceDiv.className = 'service-item';
         
-        selectedServices.forEach(service => {
-            const serviceDiv = document.createElement('div');
-            serviceDiv.className = 'service-item';
-            
-            // Add service details
+        // Add service details
         let detailsHtml = '';
         if (service.selectedAddons?.length > 0) {
             detailsHtml = `
                 <div class="service-details">
-                    <span>Add-ons: ${service.selectedAddons.map(a => a.label).join(', ')}</span>
-                    ${service.duration ? `<span>Duration: ${formatDuration(service.duration)}</span>` : ''}
-                </div>
-            `;
-        } else if (service.duration) {
-            detailsHtml = `
-                <div class="service-details">
-                    <span>Duration: ${formatDuration(service.duration)}</span>
+                    <span>Add-ons: ${service.selectedAddons.map(a => `${a.label} (${a.price > 0 ? `+C$${a.price.toFixed(2)}` : 'Included'})`).join(', ')}</span>
                 </div>
             `;
         }
-            
-            const categoryClass = service.ServiceType === "Scene Setters" ? 'scene-setters' : 
-                                service.ServiceType === "Sweets and Brews" ? 'sweets-brews' :
-                                service.ServiceType === "Special Effects" ? 'special-effects' :
-                                service.ServiceType === "Guest Book" ? 'guest-book' :
-                                service.ServiceType === "Digital" ? 'digital' :
-                                service.ServiceType === "Interactive Booths" ? 'interactive' : '';
-            
-            serviceDiv.innerHTML = `
-                <div>
-                    <div class="service-name">${service.name} <span class="service-category ${categoryClass}">${service.ServiceType}</span></div>
-                    ${detailsHtml}
-                </div>
-                <div class="service-price">C$${(service.selectedPrice || service.price || 0).toFixed(2)}</div>
-            `;
-            servicesList.appendChild(serviceDiv);
-        });
+        
+        serviceDiv.innerHTML = `
+            <div>
+                <div class="service-name">${service.name}</div>
+                ${detailsHtml}
+            </div>
+            <div class="service-price">C$${service.price.toFixed(2)}</div>
+        `;
+        servicesList.appendChild(serviceDiv);
+    });
+    
+    // Add addons prices to subtotal calculation
+    updatePrices();
+}
+
+function updateServiceAddons(serviceSlug, tierValue, checkbox) {
+    const service = selectedServices.find(s => s.slug === serviceSlug);
+    if (!service) return;
+
+    // Initialize addons array if it doesn't exist
+    if (!service.selectedAddons) {
+        service.selectedAddons = [];
     }
+
+    const tier = service.pricingTiers.find(t => t.value === tierValue);
+    
+    if (checkbox.checked) {
+        // Add the addon if checked
+        service.selectedAddons.push({
+            label: tier.label,
+            value: tier.value,
+            price: tier.price
+        });
+    } else {
+        // Remove the addon if unchecked
+        service.selectedAddons = service.selectedAddons.filter(
+            addon => addon.value !== tierValue
+        );
+    }
+
+    // Update the addon card visual state
+    const addonCard = checkbox.closest('.addon-card');
+    if (addonCard) {
+        addonCard.classList.toggle('selected', checkbox.checked);
+    }
+
+    updateReviewButton();
+}
 
     // Format duration text (X hour or X hours)
     function formatDuration(durationText) {
@@ -3041,13 +3053,13 @@ function setupOptionsSection() {
         updateReviewButton();
     }
 
-    // Update review button with current total
-// Update review button with current total
+
 // Update review button with current total
 function updateReviewButton() {
-    // Calculate subtotal including any add-ons or tiered pricing
+    // Calculate subtotal including any add-ons
     const subtotal = selectedServices.reduce((sum, service) => {
-        return sum + (service.selectedPrice || service.price || 0);
+        const addonsTotal = service.selectedAddons?.reduce((addonSum, addon) => addonSum + addon.price, 0) || 0;
+        return sum + (service.price || 0) + addonsTotal;
     }, 0);
     
     // Calculate bundle discount (if applicable)
@@ -3206,105 +3218,56 @@ function renderServices() {
             const div = document.createElement('div');
             div.className = 'service-card';
             
-            // Determine if this service is selected
+            // Check if this service is selected
             const isSelected = selectedServices.some(s => s.name === service.name);
             if (isSelected) {
                 div.classList.add('selected');
             }
 
-            // Determine tag class based on service type
-            let tagClass = 'package-type-tag';
-            if (service.ServiceType.includes('Scene')) tagClass += ' scene-setters';
-            if (service.ServiceType.includes('Sweets')) tagClass += ' sweets-brews';
-            if (service.ServiceType.includes('Special Effects')) tagClass += ' special-effects';
-            if (service.ServiceType.includes('Guest Book')) tagClass += ' guest-book';
-            if (service.ServiceType.includes('Digital')) tagClass += ' digital';
-            if (service.ServiceType.includes('Interactive')) tagClass += ' interactive';
-            
-            // Format duration text
-            const durationText = service.duration ? formatDuration(service.duration) : '';
-            
             // Create add-ons section if service has pricing tiers
             let addonsSection = '';
             if (service.pricingTiers && service.pricingTiers.length > 0) {
                 addonsSection = `
                     <div class="addons-toggle" onclick="event.stopPropagation(); toggleAddons(this)">
-                        + Customize Options
+                        + Customize Add-ons
                     </div>
                     <div class="addons-grid">
-                        ${service.pricingTiers.map(tier => `
-                            <label class="addon-card ${isSelected && service.selectedTier?.value === tier.value ? 'selected' : ''}">
-                                <input type="radio" name="${service.slug}-options" 
-                                       value="${tier.value}" 
-                                       ${isSelected && service.selectedTier?.value === tier.value ? 'checked' : ''}
-                                       onchange="updateServiceOption('${service.slug}', this)">
-                                ${tier.label} (${tier.price > 0 ? `+C$${tier.price.toFixed(2)}` : 'Included'})
-                            </label>
-                        `).join('')}
+                        ${service.pricingTiers.map(tier => {
+                            const isAddonSelected = isSelected && 
+                                service.selectedAddons?.some(a => a.value === tier.value);
+                            return `
+                                <label class="addon-card ${isAddonSelected ? 'selected' : ''}">
+                                    <input type="checkbox" 
+                                           class="hidden-checkbox"
+                                           ${isAddonSelected ? 'checked' : ''}
+                                           onchange="updateServiceAddons('${service.slug}', '${tier.value}', this)">
+                                    ${tier.label} ${tier.price > 0 ? `(+C$${tier.price.toFixed(2)})` : ''}
+                                </label>
+                            `;
+                        }).join('')}
                     </div>
                 `;
             }
 
-            // Create features overlay if features exist
-            const featuresOverlay = service.features ? `
-                <div class="features-overlay" id="features-${service.name.replace(/\s+/g, '-').toLowerCase()}">
-                    <button class="close-overlay">&times;</button>
-                    <h4>${service.name} Features</h4>
-                    <ul>
-                        ${service.features.map(item => `<li>${item}</li>`).join('')}
-                    </ul>
-                </div>
-            ` : '';
-            
-            // Add "Display Features" link if features exist
-            const featuresLink = service.features ? `
-                <button class="show-features-toggle" data-service="${service.name.replace(/\s+/g, '-').toLowerCase()}">
-                    Display Features <span class="chevron-icon down">▼</span>
-                </button>
-            ` : '';
-            
             div.innerHTML = `
                 <div class="package-content">
                     <h3>${service.name}</h3>
-                    <span class="${tagClass}">${service.ServiceType}</span>
                     <p>${service.description || "No description available."}</p>
-                    <p class="service-duration"><strong>Duration:</strong> ${durationText}</p>
-                    <p class="service-price">C$${(isSelected ? (service.selectedPrice || service.price || 0) : service.price).toFixed(2)}</p>
-                    ${featuresLink}
+                    <p><strong>Duration:</strong> ${formatDuration(service.duration)}</p>
+                    <p><strong>Price:</strong> C$${service.price.toFixed(2)}</p>
                 </div>
                 ${addonsSection}
-                ${featuresOverlay}
             `;
-            
+
             // Add click handler for service selection
             div.addEventListener('click', (e) => {
-                // Don't toggle if clicking on features button or addons
-                if (e.target.closest('.show-features-toggle') || 
-                    e.target.closest('.addons-toggle') || 
+                // Don't toggle if clicking on addons
+                if (e.target.closest('.addons-toggle') || 
                     e.target.closest('.addon-card')) {
                     return;
                 }
                 toggleService(div, service);
             });
-            
-            // Add click handler for features toggle
-            if (service.features) {
-                const featuresButton = div.querySelector('.show-features-toggle');
-                featuresButton.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const overlay = div.querySelector('.features-overlay');
-                    overlay.style.display = 'block';
-                });
-                
-                const closeButton = div.querySelector('.close-overlay');
-                if (closeButton) {
-                    closeButton.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const overlay = div.querySelector('.features-overlay');
-                        overlay.style.display = 'none';
-                    });
-                }
-            }
             
             servicesGrid.appendChild(div);
         });
