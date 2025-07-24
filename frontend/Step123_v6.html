@@ -1442,35 +1442,34 @@
       height: 100%;
     }
     
-    /* Category Services Container */
-    .category-services-container {
-        background: #fff;
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        position: relative;
-    }
+.category-services-container {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    position: relative;
+    border: 1px solid #eee;
+}
     
-    .category-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 15px;
-      color: var(--bb-blue);
-      padding-bottom: 8px;
-      border-bottom: 1px solid #eee;
-      display: flex;
-      justify-content: space-between;
-    }
+.category-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--bb-blue);
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
     
-    .services-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px;
-      margin-top: 16px;
-      overflow-x: auto;
-      padding-bottom: 10px;
-    }
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
     
     .chevron-icon {
       margin-left: 5px;
@@ -1546,12 +1545,6 @@
           grid-template-columns: 1fr;
       }
       
-      .services-grid {
-          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-          overflow-x: auto;
-          -webkit-overflow-scrolling: touch;
-          scrollbar-width: thin;
-      }
       
       .services-grid::-webkit-scrollbar {
           height: 6px;
@@ -1823,8 +1816,14 @@
 }
 
 .addon-card.selected {
-    border-color: #4b47d4;
-    background: #eaeaff;
+    background: var(--bb-accent);
+    color: white;
+    border-color: var(--bb-accent);
+}
+
+.addon-card.selected:hover {
+    background: var(--bb-accent);
+    opacity: 0.9;
 }
 
 .addon-card input {
@@ -2871,37 +2870,28 @@ function renderSelectedServicesList() {
     updatePrices();
 }
 
+// Change the add-on toggle logic to allow multiple selections
 function updateServiceAddons(serviceSlug, tierValue, checkbox) {
     const service = selectedServices.find(s => s.slug === serviceSlug);
     if (!service) return;
 
-    // Initialize addons array if it doesn't exist
-    if (!service.selectedAddons) {
-        service.selectedAddons = [];
-    }
-
-    const tier = service.pricingTiers.find(t => t.value === tierValue);
+    // Initialize if not exists
+    if (!service.selectedAddons) service.selectedAddons = [];
     
     if (checkbox.checked) {
-        // Add the addon if checked
+        // Add the addon
         service.selectedAddons.push({
-            label: tier.label,
-            value: tier.value,
-            price: tier.price
+            label: checkbox.dataset.label || tierValue,
+            value: tierValue,
+            price: parseFloat(checkbox.dataset.price)
         });
     } else {
-        // Remove the addon if unchecked
+        // Remove the addon
         service.selectedAddons = service.selectedAddons.filter(
             addon => addon.value !== tierValue
         );
     }
-
-    // Update the addon card visual state
-    const addonCard = checkbox.closest('.addon-card');
-    if (addonCard) {
-        addonCard.classList.toggle('selected', checkbox.checked);
-    }
-
+    
     updateReviewButton();
 }
 
@@ -3225,29 +3215,33 @@ function renderServices() {
             }
 
             // Create add-ons section if service has pricing tiers
-            let addonsSection = '';
-            if (service.pricingTiers && service.pricingTiers.length > 0) {
-                addonsSection = `
-                    <div class="addons-toggle" onclick="event.stopPropagation(); toggleAddons(this)">
-                        + Customize Add-ons
-                    </div>
-                    <div class="addons-grid">
-                        ${service.pricingTiers.map(tier => {
-                            const isAddonSelected = isSelected && 
-                                service.selectedAddons?.some(a => a.value === tier.value);
-                            return `
-                                <label class="addon-card ${isAddonSelected ? 'selected' : ''}">
-                                    <input type="checkbox" 
-                                           class="hidden-checkbox"
-                                           ${isAddonSelected ? 'checked' : ''}
-                                           onchange="updateServiceAddons('${service.slug}', '${tier.value}', this)">
-                                    ${tier.label} ${tier.price > 0 ? `(+C$${tier.price.toFixed(2)})` : ''}
-                                </label>
-                            `;
-                        }).join('')}
-                    </div>
+let addonsSection = '';
+if (service.pricingTiers && service.pricingTiers.length > 0) {
+    addonsSection = `
+        <div class="addons-toggle" onclick="event.stopPropagation(); toggleAddons(this)">
+            + Customize Options
+        </div>
+        <div class="addons-grid">
+            ${service.pricingTiers.map(tier => {
+                const isAddonSelected = isSelected && 
+                    service.selectedAddons?.some(a => a.value === tier.value);
+                return `
+                    <label class="addon-card ${isAddonSelected ? 'selected' : ''}">
+                        <input type="checkbox" 
+                               class="hidden-checkbox"
+                               data-service="${service.slug}"
+                               data-value="${tier.value}"
+                               data-price="${tier.price}"
+                               data-label="${tier.label}"
+                               ${isAddonSelected ? 'checked' : ''}
+                               onchange="updateServiceAddons('${service.slug}', '${tier.value}', this)">
+                        ${tier.label} ${tier.price > 0 ? `(+C$${tier.price.toFixed(2)})` : ''}
+                    </label>
                 `;
-            }
+            }).join('')}
+        </div>
+    `;
+}
 
             div.innerHTML = `
                 <div class="package-content">
@@ -3260,14 +3254,18 @@ function renderServices() {
             `;
 
             // Add click handler for service selection
-            div.addEventListener('click', (e) => {
-                // Don't toggle if clicking on addons
-                if (e.target.closest('.addons-toggle') || 
-                    e.target.closest('.addon-card')) {
-                    return;
-                }
-                toggleService(div, service);
-            });
+div.addEventListener('click', (e) => {
+    // Don't toggle if clicking on addons
+    if (e.target.closest('.addons-toggle') || e.target.closest('.addon-card')) {
+        const checkbox = e.target.closest('.addon-card')?.querySelector('input');
+        if (checkbox) {
+            checkbox.checked = !checkbox.checked;
+            updateServiceAddons(service.slug, checkbox.dataset.value, checkbox);
+        }
+        return;
+    }
+    toggleService(div, service);
+});
             
             servicesGrid.appendChild(div);
         });
@@ -3298,10 +3296,21 @@ function toggleAddons(toggleElement) {
     const grid = toggleElement.nextElementSibling;
     grid.classList.toggle('show');
     
+    // Update the toggle text
+    if (grid.classList.contains('show')) {
+        toggleElement.textContent = '- Hide Options';
+    } else {
+        toggleElement.textContent = '+ Customize Options';
+    }
+    
     // Close other open addons grids
     document.querySelectorAll('.addons-grid').forEach(otherGrid => {
         if (otherGrid !== grid) {
             otherGrid.classList.remove('show');
+            const otherToggle = otherGrid.previousElementSibling;
+            if (otherToggle && otherToggle.classList.contains('addons-toggle')) {
+                otherToggle.textContent = '+ Customize Options';
+            }
         }
     });
 }
