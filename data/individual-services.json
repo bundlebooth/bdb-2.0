@@ -5,28 +5,22 @@
     "ServiceType": "Interactive Booths",
     "description": "The photo booth experience adds a vibrant touch to any event, creating instant, tangible memories for your guests. All photos delivered digitally.",
     "duration": 3,
-    "price": 650,
-    "basePrice": 0,
+    "price": 600,
     "pricingTiers": [
       {
-        "label": "Digital Only",
-        "value": "digital",
-        "price": 650
-      },
-      {
-        "label": "Unlimited 4x6 Prints",
+        "label": "Unlimited Prints",
         "value": "unlimited-prints",
-        "price": 150
-      },
-      {
-        "label": "Extra Hour",
-        "value": "extra-hour",
-        "price": 150
+        "price": 100
       },
       {
         "label": "Custom Backdrop",
         "value": "custom-backdrop",
-        "price": 125
+        "price": 100
+      },
+	  {
+        "label": "Flower Backdrop",
+        "value": "flower-backdrop",
+        "price": 100
       },
       {
         "label": "Premium Props Package",
@@ -45,7 +39,7 @@
       }
     ],
     "currency": "CAD",
-    "Sale": "Y",
+    "Sale": "N",
     "features": [
       "Sleek modern booth",
       "Unlimited digital photo sessions",
@@ -67,18 +61,7 @@
     "description": "Elevate your event with the sophistication of our 360 Video Booth experience. Guests are invited to step onto a sleek platform as a rotating camera captures elegant, slow-motion videos from every angle.",
     "duration": 3,
     "price": 950,
-    "basePrice": 600,
     "pricingTiers": [
-      {
-        "label": "Standard",
-        "value": "standard",
-        "price": 950
-      },
-      {
-        "label": "Extra Hour",
-        "value": "extra-hour",
-        "price": 200
-      },
       {
         "label": "Red Carpet Setup",
         "value": "red-carpet",
@@ -91,7 +74,7 @@
       }
     ],
     "currency": "CAD",
-    "Sale": "Y",
+    "Sale": "N",
     "features": [
       "360 platform with HD slow-motion video capture",
       "Studio lighting setup",
@@ -111,13 +94,7 @@
     "description": "The Audio Guest Book offers a timeless and personal way to capture heartfelt moments. Guests simply pick up the vintage-style phone and leave a message.",
     "duration": 3,
     "price": 400,
-    "basePrice": 350,
     "pricingTiers": [
-      {
-        "label": "Standard",
-        "value": "standard",
-        "price": 400
-      },
       {
         "label": "Playback Speaker",
         "value": "playback-speaker",
@@ -126,11 +103,11 @@
       {
         "label": "Custom Vinyl Wrap",
         "value": "vinyl-wrap",
-        "price": 75
+        "price": 100
       }
     ],
     "currency": "CAD",
-    "Sale": "Y",
+    "Sale": "N",
     "features": [
       "Phone recording device",
       "Custom welcome message",
@@ -149,17 +126,11 @@
     "description": "Bring the allure of a fashion magazine cover to your next event with our Magazine Photo Booth Box. Guests pose inside a life-sized, custom-branded magazine frame.",
     "duration": 3,
     "price": 700,
-    "basePrice": 600,
     "pricingTiers": [
       {
-        "label": "Standard",
-        "value": "standard",
-        "price": 700
-      },
-      {
-        "label": "8x10 Instant Prints",
-        "value": "8x10-prints",
-        "price": 200
+        "label": "Unlimited Prints",
+        "value": "unlimited-prints",
+        "price": 100
       },
       {
         "label": "Custom Magazine Template",
@@ -168,7 +139,7 @@
       }
     ],
     "currency": "CAD",
-    "Sale": "Y",
+    "Sale": "N",
     "features": [
       "Sleek modern booth",
       "Unlimited digital photo sessions",
@@ -190,7 +161,6 @@
     "description": "Bring the caf\u00e9 experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
     "duration": 3,
     "price": 700,
-    "basePrice": 0,
     "pricingTiers": [
       {
         "label": "50 Guests",
@@ -211,15 +181,10 @@
         "label": "200 Guests",
         "value": 200,
         "price": 2050
-      },
-      {
-        "label": "Cold Brew/Nitro Add-on",
-        "value": "cold-brew",
-        "price": 100
       }
     ],
     "currency": "CAD",
-    "Sale": "Y",
+    "Sale": "N",
     "features": [],
     "dateAdded": "07-01-2025",
     "New": "N"
@@ -231,7 +196,6 @@
     "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings\u2014from fresh fruits and whipped cream to chocolate drizzle and syrups.",
     "duration": 3,
     "price": 800,
-    "basePrice": 0,
     "pricingTiers": [
       {
         "label": "50 Guests",
@@ -260,7 +224,7 @@
       }
     ],
     "currency": "CAD",
-    "Sale": "Y",
+    "Sale": "N",
     "features": [
       "Freshly made Belgian or bubble waffles",
       "Choice of toppings (syrups, fruits, sprinkles, etc.)",
@@ -280,7 +244,6 @@
     "description": "Add a fresh, healthy twist to your event with our vibrant Smoothie Booth! We blend delicious smoothies with real fruits, natural ingredients and a variety of add-ins.",
     "duration": 3,
     "price": 900,
-    "basePrice": 0,
     "pricingTiers": [
       {
         "label": "50 Guests",
@@ -309,7 +272,7 @@
       }
     ],
     "currency": "CAD",
-    "Sale": "Y",
+    "Sale": "N",
     "features": [
       "Made-to-order smoothies",
       "Selection of fruits and flavors",
@@ -329,7 +292,6 @@
     "description": "Light up your celebration with our elegant Sparkler Boxes! A stylish station offering guests premium sparklers for that magical photo moment or grand finale.",
     "duration": 1,
     "price": 400,
-    "basePrice": 0,
     "pricingTiers": [
       {
         "label": "2 Sparklers",
@@ -353,7 +315,7 @@
       }
     ],
     "currency": "CAD",
-    "Sale": "Y",
+    "Sale": "N",
     "features": [],
     "dateAdded": "07-01-2025",
     "New": "N"
@@ -365,7 +327,6 @@
     "description": "Create a stunning, cinematic atmosphere with our Dry Ice Fog Effect! This low-lying fog adds a magical touch to first dances, stage entrances, or any moment you want to make unforgettable.",
     "duration": 1,
     "price": 550,
-    "basePrice": 400,
     "pricingTiers": [
       {
         "label": "Standard",
@@ -379,7 +340,7 @@
       }
     ],
     "currency": "CAD",
-    "Sale": "Y",
+    "Sale": "N",
     "features": [
       "Low-lying fog machine using dry ice",
       "Perfect for first dance 'dancing on a cloud' effect",
@@ -398,7 +359,6 @@
     "description": "Make your first dance truly unforgettable with our Laser First Dance Experience! Set beneath a canopy of synchronized laser lights and dreamy effects.",
     "duration": 1,
     "price": 900,
-    "basePrice": 900,
     "pricingTiers": [
       {
         "label": "Standard",
@@ -417,7 +377,7 @@
       }
     ],
     "currency": "CAD",
-    "Sale": "Y",
+    "Sale": "N",
     "features": [
       "Custom laser light show synced to music",
       "Name/date projection options",
