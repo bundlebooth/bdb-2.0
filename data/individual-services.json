@@ -165,22 +165,22 @@
       {
         "label": "50 Guests",
         "value": 50,
-        "price": 850
+        "price": 0
       },
       {
         "label": "100 Guests",
         "value": 100,
-        "price": 1250
+        "price": 400
       },
       {
         "label": "150 Guests",
         "value": 150,
-        "price": 1650
+        "price": 800
       },
       {
         "label": "200 Guests",
         "value": 200,
-        "price": 2050
+        "price": 1200
       }
     ],
     "currency": "CAD",
@@ -200,22 +200,22 @@
       {
         "label": "50 Guests",
         "value": 50,
-        "price": 850
+        "price": 0
       },
       {
         "label": "100 Guests",
         "value": 100,
-        "price": 1250
+        "price": 400
       },
       {
         "label": "150 Guests",
         "value": 150,
-        "price": 1650
+        "price": 800
       },
       {
         "label": "200 Guests",
         "value": 200,
-        "price": 2050
+        "price": 1200
       },
       {
         "label": "Nutella Bar Add-on",
@@ -248,22 +248,22 @@
       {
         "label": "50 Guests",
         "value": 50,
-        "price": 900
+        "price": 0
       },
       {
         "label": "100 Guests",
         "value": 100,
-        "price": 1350
+        "price": 400
       },
       {
         "label": "150 Guests",
         "value": 150,
-        "price": 1750
+        "price": 800
       },
       {
         "label": "200 Guests",
         "value": 200,
-        "price": 2150
+        "price": 1200
       },
       {
         "label": "Superfood Boosts",
@@ -296,17 +296,17 @@
       {
         "label": "2 Sparklers",
         "value": 2,
-        "price": 500
+        "price": 0
       },
       {
         "label": "4 Sparklers",
         "value": 4,
-        "price": 700
+        "price": 300
       },
       {
         "label": "6 Sparklers",
         "value": 6,
-        "price": 900
+        "price": 600
       },
       {
         "label": "Timed Cue Operator",
@@ -363,7 +363,7 @@
       {
         "label": "Standard",
         "value": "standard",
-        "price": 900
+        "price": 0
       },
       {
         "label": "Name/Date Projection",
