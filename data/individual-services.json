@@ -1,40 +1,55 @@
 [
-  {
-    "name": "📸 Photo Booth",
-    "slug": "photo-booth",
-    "ServiceType": "Interactive Booths",
-    "description": "The photo booth experience adds a vibrant touch to any event, creating instant, tangible memories for your guests. All photos delivered digitally.",
-    "duration": 3,
-    "price": 500,
-    "basePrice": 0,
-    "pricingTiers": [
-      {
-        "label": "Digital Only",
-        "value": "digital",
-        "price": 500
-      },
-      {
-        "label": "Unlimited Prints",
-        "value": "unlimited-prints",
-        "price": 600
-      }
-    ],
-    "currency": "CAD",
-    "Sale": "Y",
-    "features": [
-      "Sleek modern booth",
-      "Unlimited digital photo sessions",
-      "On-site attendant",
-      "Custom photo overlay",
-      "Choice of backdrop",
-      "Fun prop set",
-      "Instant sharing via Airdrop/SMS/Email",
-      "Online gallery for download",
-      "Optional 4x6 printing (if included in package)"
-    ],
-    "dateAdded": "07-01-2025",
-    "New": "N"
-  },
+{
+  "name": "📸 Photo Booth",
+  "slug": "photo-booth",
+  "ServiceType": "Interactive Booths",
+  "description": "The photo booth experience adds a vibrant touch to any event, creating instant, tangible memories for your guests. All photos delivered digitally.",
+  "duration": 3,
+  "price": 600,
+  "basePrice": 0,
+  "pricingTiers": [
+    {
+      "label": "Unlimited Prints",
+      "value": "unlimited-prints",
+      "price": 100
+    },
+    {
+      "label": "Flower Backdrop",
+      "value": "flower-backdrop",
+      "price": 100
+    },
+    {
+      "label": "Premium Props",
+      "value": "premium-props",
+      "price": 75
+    },
+    {
+      "label": "Online Gallery with Branding",
+      "value": "gallery-branding",
+      "price": 50
+    },
+    {
+      "label": "GIF/BoomeRang Add-on",
+      "value": "gif-addon",
+      "price": 50
+    }
+  ],
+  "currency": "CAD",
+  "Sale": "Y",
+  "features": [
+    "Sleek modern booth",
+    "Unlimited digital photo sessions",
+    "On-site attendant",
+    "Custom photo overlay",
+    "Choice of backdrop",
+    "Fun prop set",
+    "Instant sharing via Airdrop/SMS/Email",
+    "Online gallery for download",
+    "Optional 4x6 printing (if included in package)"
+  ],
+  "dateAdded": "07-01-2025",
+  "New": "N"
+},
   {
     "name": "🎥 360 Video Booth",
     "slug": "360-video-booth",
