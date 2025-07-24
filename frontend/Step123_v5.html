@@ -2930,6 +2930,8 @@ function setupOptionsSection() {
                     service.selectedTier = selectedTier;
                 }
             }
+			
+			updateReviewButton(); // Add this line
         });
         
         // Update the guest size display to show the actual selected tier value
@@ -2963,6 +2965,8 @@ function setupOptionsSection() {
                     service.selectedTier = selectedTier;
                 }
             }
+			
+			updateReviewButton(); // Add this line
         });
         
         // Update the sparklers count display to show the actual selected tier value
@@ -2977,29 +2981,41 @@ function setupOptionsSection() {
     }
 
     // Update review button with current total
-    function updateReviewButton() {
-        const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
-        const discount = selectedBundle.isCustom ? 0 : subtotal * bundleDiscount;
-        const total = subtotal - discount;
-        
-        document.getElementById('review-selection').textContent = `Review Selection (C$${total.toFixed(2)})`;
-        
-        // Check if all required services are selected
-        const canProceed = checkBundleRequirements();
-        document.getElementById('review-selection').disabled = !canProceed;
-        
-        // Show/hide requirements warning
-        const warningElement = document.getElementById('requirements-warning');
-        if (!canProceed) {
-            warningElement.style.display = 'flex';
-            document.getElementById('review-selection').style.backgroundColor = '#f0f0f0';
-            document.getElementById('review-selection').style.cursor = 'not-allowed';
-        } else {
-            warningElement.style.display = 'none';
-            document.getElementById('review-selection').style.backgroundColor = '';
-            document.getElementById('review-selection').style.cursor = '';
-        }
+// Update review button with current total
+// Update review button with current total
+function updateReviewButton() {
+    // Calculate subtotal including any add-ons or tiered pricing
+    const subtotal = selectedServices.reduce((sum, service) => {
+        return sum + (service.selectedPrice || service.price || 0);
+    }, 0);
+    
+    // Calculate bundle discount (if applicable)
+    const bundleDiscountValue = selectedBundle.isCustom ? 0 : 
+        (selectedBundle.discountPercentage ? selectedBundle.discountPercentage/100 : bundleDiscount);
+    const discount = subtotal * bundleDiscountValue;
+    
+    // Calculate final total
+    const total = Math.max(0, subtotal - discount);
+    
+    // Update button text
+    document.getElementById('review-selection').textContent = `Review Selection (C$${total.toFixed(2)})`;
+    
+    // Check if all required services are selected
+    const canProceed = checkBundleRequirements();
+    document.getElementById('review-selection').disabled = !canProceed;
+    
+    // Show/hide requirements warning
+    const warningElement = document.getElementById('requirements-warning');
+    if (!canProceed) {
+        warningElement.style.display = 'flex';
+        document.getElementById('review-selection').style.backgroundColor = '#f0f0f0';
+        document.getElementById('review-selection').style.cursor = 'not-allowed';
+    } else {
+        warningElement.style.display = 'none';
+        document.getElementById('review-selection').style.backgroundColor = '';
+        document.getElementById('review-selection').style.cursor = '';
     }
+}
     
     // Check if all bundle requirements are met
     function checkBundleRequirements() {
@@ -3200,8 +3216,9 @@ if (service.features) {
         });
         
         // Show review button
-        document.getElementById('review-selection').style.display = 'block';
-        document.getElementById('back-to-bundle').style.display = 'block';
+    document.getElementById('review-selection').style.display = 'block';
+    document.getElementById('review-selection').textContent = 'Review Selection (C$0.00)';
+    document.getElementById('back-to-bundle').style.display = 'block';
         
         // Set up review button click handler
         document.getElementById('review-selection').addEventListener('click', () => {
@@ -3242,10 +3259,13 @@ function toggleService(el, service) {
         // Clone the service object to avoid reference issues
         const selectedService = JSON.parse(JSON.stringify(service));
         
-        // Set default pricing tier if service has tiers
+        // Set default pricing (base price) if service has tiers
         if (selectedService.pricingTiers && selectedService.pricingTiers.length > 0) {
-            selectedService.selectedTier = selectedService.pricingTiers[0];
-            selectedService.selectedPrice = selectedService.pricingTiers[0].price;
+            // Start with base price, not first tier
+            selectedService.selectedPrice = selectedService.price || selectedService.pricingTiers[0].price;
+            selectedService.selectedTier = null; // No tier selected initially
+        } else {
+            selectedService.selectedPrice = selectedService.price;
         }
         
         selectedServices.push(selectedService);
@@ -4027,10 +4047,10 @@ function updateServiceAddons(serviceSlug, checkbox) {
     const service = selectedServices.find(s => s.slug === serviceSlug);
     if (!service) return;
     
-    if (!service.selectedAddons) {
-        service.selectedAddons = [];
-    }
+    // Initialize if not exists
+    if (!service.selectedAddons) service.selectedAddons = [];
     
+    // Update addons array
     if (checkbox.checked) {
         service.selectedAddons.push({
             label: checkbox.nextElementSibling.textContent.split('(+')[0].trim(),
@@ -4043,9 +4063,12 @@ function updateServiceAddons(serviceSlug, checkbox) {
         );
     }
     
-    // Calculate total price for this service
+    // Recalculate total price (base price + all addons)
     service.selectedPrice = service.price + 
         (service.selectedAddons?.reduce((sum, addon) => sum + addon.price, 0) || 0);
+    
+    updateReviewButton();
+    updatePrices();
 }
 
 console.log('Setting up listeners');
