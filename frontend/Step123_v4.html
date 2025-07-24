@@ -2160,12 +2160,11 @@ try {
         });
 
         // Set up back to bundle button
-        document.getElementById('back-to-bundle').addEventListener('click', () => {
-			    clearPromoCode();
-            showStep(1);
-            window.scrollTo(0, 0);
-        });
-
+document.getElementById('back-to-bundle').addEventListener('click', () => {
+    resetAllFormFields();
+    showStep(1);
+    window.scrollTo(0, 0);
+});
         // Set up promo code application
         document.getElementById('apply-promo').addEventListener('click', applyPromoCode);
         document.getElementById('promo-code').addEventListener('keypress', (e) => {
@@ -2616,12 +2615,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
         
         // Set up event listeners
-        document.getElementById('back-to-services').addEventListener('click', () => {
-			clearPromoCode();
-            showStep(2);
-            window.scrollTo(0, 0);
-        });
-        
+document.getElementById('back-to-services').addEventListener('click', () => {
+    resetAllFormFields();
+    showStep(2);
+    window.scrollTo(0, 0);
+});
         document.getElementById('submit-booking').addEventListener('click', handleBookingSubmit);
         document.getElementById('submit-payment').addEventListener('click', handlePaymentSubmit);
 		document.getElementById('confirmation-blur').style.display = 'none';
@@ -2635,8 +2633,8 @@ document.getElementById('new-bundle-button').addEventListener('click', () => {
     document.getElementById('promo-code').value = '';
     document.getElementById('promo-error').textContent = '';
     
-    // Reset form fields
-    document.getElementById('event-details-form').reset();
+    // Reset all form fields
+    resetAllFormFields();
     
     // Hide confirmation elements
     document.getElementById('confirmation-overlay').style.display = 'none';
@@ -3042,6 +3040,11 @@ function updatePrices() {
 let currentStep = 1;
 function showStep(stepNumber) {
     if (currentStep === stepNumber) return;
+    
+    // If we're leaving step 2 or 3, reset all form fields
+    if (currentStep === 2 || currentStep === 3) {
+        resetAllFormFields();
+    }
     
     currentStep = stepNumber;
     
@@ -3986,6 +3989,44 @@ function scrollToTop() {
         console.log('Viewport height:', window.innerHeight);
     }, 500);
     notifyParentOfStepChange();
+}
+
+function resetAllFormFields() {
+    // Reset promo code fields
+    document.getElementById('promo-code').value = '';
+    document.getElementById('promo-error').textContent = '';
+    document.getElementById('promo-error').classList.remove('invalid');
+    promoCodeApplied = null;
+    promoDiscount = 0;
+    
+    // Reset event details form
+    document.getElementById('event-details-form').reset();
+    
+    // Reset payment form
+    if (cardElement) {
+        cardElement.unmount();
+        cardElement = null;
+    }
+    document.getElementById('payment-errors').textContent = '';
+    document.getElementById('stripe-payment-form').style.display = 'none';
+    document.getElementById('payment-info').style.display = 'none';
+    document.getElementById('submit-booking').style.display = 'block';
+    document.getElementById('processing-message').style.display = 'none';
+    
+    // Reset calendar selections
+    if (selectedDateElement) {
+        selectedDateElement.classList.remove('selected');
+        selectedDateElement = null;
+    }
+    if (selectedSlotElement) {
+        selectedSlotElement.classList.remove('selected-slot');
+        selectedSlotElement = null;
+    }
+    document.getElementById('selected-date-header').textContent = 'Select a date and time';
+    clearTimeSlots();
+    
+    // Update prices to reflect removed promo
+    updatePrices();
 }
 
 console.log('Setting up listeners');
