@@ -561,8 +561,15 @@
       font-weight: 500;
     }
     .service-price {
-      color: var(--bb-dark);
-    }
+    font-weight: 600;
+    color: var(--bb-dark);
+    margin-top: 8px;
+}
+
+.service-duration {
+    color: #666;
+    font-size: 0.9em;
+}
     .total-row {
       display: flex;
       justify-content: space-between;
@@ -1752,13 +1759,26 @@
 
 .service-card {
     background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.05);
-    padding: 1.5rem;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
     position: relative;
     display: flex;
     flex-direction: column;
-    margin-bottom: 1.5rem;
+    height: 100%;
+    border: 1px solid #eee;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.service-card.selected {
+    background-color: rgba(52, 152, 219, 0.1);
+    border-color: var(--bb-accent);
+    box-shadow: 0 0 0 2px var(--bb-accent);
 }
 
 .service-card h3 {
@@ -1769,21 +1789,27 @@
 .addons-toggle {
     margin-top: auto;
     cursor: pointer;
-    color: #4b47d4;
-    font-weight: bold;
+    color: var(--bb-accent);
+    font-weight: 500;
     padding: 8px 0;
+    text-align: center;
+    border-top: 1px dashed #eee;
 }
 
+.addons-toggle:hover {
+    text-decoration: underline;
+}
+
+
 .addons-grid {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-    margin-top: 1rem;
-    max-height: 150px;
-    overflow-y: auto;
-    background: #f7f7fb;
-    border-radius: 6px;
-    padding: 0.5rem;
     display: none;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
 }
 
 .addons-grid.show {
@@ -1791,22 +1817,29 @@
 }
 
 .addon-card {
-    background: #f9f9fb;
-    border: 2px solid transparent;
-    border-radius: 8px;
-    padding: 0.75rem;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 10px 12px;
     cursor: pointer;
-    transition: 0.2s;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
 }
 
 .addon-card:hover {
-    border-color: #6c63ff;
-    background: #f0f0ff;
+    border-color: var(--bb-accent);
+    background: #f0f8ff;
 }
 
 .addon-card.selected {
-    border-color: #4b47d4;
-    background: #eaeaff;
+    background: var(--bb-accent);
+    color: white;
+    border-color: var(--bb-accent);
+}
+
+.addon-card input {
+    margin-right: 8px;
 }
 
 .hidden-checkbox {
@@ -3096,175 +3129,239 @@ function showStep(stepNumber) {
 }
 
     // Render services for selected bundle
-    function renderServices() {
-        const container = document.getElementById('services-container');
-        container.innerHTML = '';
-        selectedServices = [];
-        
-        if (!services.length) {
-            container.innerHTML = '<p>Loading services...</p>';
-            return;
-        }
+function renderServices() {
+    const container = document.getElementById('services-container');
+    container.innerHTML = '';
+    selectedServices = [];
+    
+    if (!services.length) {
+        container.innerHTML = '<p>Loading services...</p>';
+        return;
+    }
 
-        // For custom bundle, populate categories with all service types
-        if (selectedBundle.isCustom) {
-            selectedBundle.categories = {};
-            services.forEach(service => {
-                if (!selectedBundle.categories[service.ServiceType]) {
-                    selectedBundle.categories[service.ServiceType] = 999; // Unlimited
-                }
-            });
-        }
-
-        // Get all unique service types in the selected bundle
-        const allowedCategories = Object.keys(selectedBundle.categories);
-        const filteredServices = services.filter(service =>
-            allowedCategories.includes(service.ServiceType)
-        );
-
-        if (filteredServices.length === 0) {
-            container.innerHTML = '<p>No services available for this bundle.</p>';
-            return;
-        }
-
-        // Group services by category
-        const servicesByCategory = {};
-        allowedCategories.forEach(category => {
-            servicesByCategory[category] = filteredServices.filter(
-                service => service.ServiceType === category
-            );
+    // For custom bundle, populate categories with all service types
+    if (selectedBundle.isCustom) {
+        selectedBundle.categories = {};
+        services.forEach(service => {
+            if (!selectedBundle.categories[service.ServiceType]) {
+                selectedBundle.categories[service.ServiceType] = 999; // Unlimited
+            }
         });
+    }
 
-        // Render each category with its services
-        Object.entries(servicesByCategory).forEach(([category, categoryServices]) => {
-            if (categoryServices.length === 0) return;
+    // Get all unique service types in the selected bundle
+    const allowedCategories = Object.keys(selectedBundle.categories);
+    const filteredServices = services.filter(service =>
+        allowedCategories.includes(service.ServiceType)
+    );
 
-            const categoryContainer = document.createElement('div');
-            categoryContainer.className = 'category-services-container';
+    if (filteredServices.length === 0) {
+        container.innerHTML = '<p>No services available for this bundle.</p>';
+        return;
+    }
+
+    // Group services by category
+    const servicesByCategory = {};
+    allowedCategories.forEach(category => {
+        servicesByCategory[category] = filteredServices.filter(
+            service => service.ServiceType === category
+        );
+    });
+
+    // Render each category with its services
+    Object.entries(servicesByCategory).forEach(([category, categoryServices]) => {
+        if (categoryServices.length === 0) return;
+
+        const categoryContainer = document.createElement('div');
+        categoryContainer.className = 'category-services-container';
+        
+        const categoryId = category.toLowerCase().replace(/\s+/g, '-');
+        const selectedCount = selectedServices.filter(s => s.ServiceType === category).length;
+        
+        // For custom bundles, just show count without limit
+        const countText = selectedBundle.isCustom ? 
+            `${selectedCount} selected` : 
+            `${selectedCount} of ${selectedBundle.categories[category]} selected`;
+        
+        categoryContainer.innerHTML = `
+            <div class="category-title">
+                ${category}
+                <span>${countText}</span>
+            </div>
+            ${selectedBundle.isCustom ? '' : `
+            <div class="progress-wrapper" id="progress-${categoryId}">
+                <div class="progress-bar" style="width: ${Math.min((selectedCount / selectedBundle.categories[category]) * 100, 100)}%"></div>
+            </div>
+            `}
+            <div class="services-grid" id="services-${categoryId}">
+                <!-- Services will be inserted here -->
+            </div>
+        `;
+        
+        container.appendChild(categoryContainer);
+        
+        const servicesGrid = document.getElementById(`services-${categoryId}`);
+        
+        categoryServices.forEach(service => {
+            const div = document.createElement('div');
+            div.className = 'service-card';
             
-            const categoryId = category.toLowerCase().replace(/\s+/g, '-');
-            const selectedCount = selectedServices.filter(s => s.ServiceType === category).length;
+            // Determine if this service is selected
+            const isSelected = selectedServices.some(s => s.name === service.name);
+            if (isSelected) {
+                div.classList.add('selected');
+            }
+
+            // Determine tag class based on service type
+            let tagClass = 'package-type-tag';
+            if (service.ServiceType.includes('Scene')) tagClass += ' scene-setters';
+            if (service.ServiceType.includes('Sweets')) tagClass += ' sweets-brews';
+            if (service.ServiceType.includes('Special Effects')) tagClass += ' special-effects';
+            if (service.ServiceType.includes('Guest Book')) tagClass += ' guest-book';
+            if (service.ServiceType.includes('Digital')) tagClass += ' digital';
+            if (service.ServiceType.includes('Interactive')) tagClass += ' interactive';
             
-            // For custom bundles, just show count without limit
-            const countText = selectedBundle.isCustom ? 
-                `${selectedCount} selected` : 
-                `${selectedCount} of ${selectedBundle.categories[category]} selected`;
+            // Format duration text
+            const durationText = service.duration ? formatDuration(service.duration) : '';
             
-            categoryContainer.innerHTML = `
-                <div class="category-title">
-                    ${category}
-                    <span>${countText}</span>
+            // Create add-ons section if service has pricing tiers
+            let addonsSection = '';
+            if (service.pricingTiers && service.pricingTiers.length > 0) {
+                addonsSection = `
+                    <div class="addons-toggle" onclick="event.stopPropagation(); toggleAddons(this)">
+                        + Customize Options
+                    </div>
+                    <div class="addons-grid">
+                        ${service.pricingTiers.map(tier => `
+                            <label class="addon-card ${isSelected && service.selectedTier?.value === tier.value ? 'selected' : ''}">
+                                <input type="radio" name="${service.slug}-options" 
+                                       value="${tier.value}" 
+                                       ${isSelected && service.selectedTier?.value === tier.value ? 'checked' : ''}
+                                       onchange="updateServiceOption('${service.slug}', this)">
+                                ${tier.label} (${tier.price > 0 ? `+C$${tier.price.toFixed(2)}` : 'Included'})
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            // Create features overlay if features exist
+            const featuresOverlay = service.features ? `
+                <div class="features-overlay" id="features-${service.name.replace(/\s+/g, '-').toLowerCase()}">
+                    <button class="close-overlay">&times;</button>
+                    <h4>${service.name} Features</h4>
+                    <ul>
+                        ${service.features.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
                 </div>
-                ${selectedBundle.isCustom ? '' : `
-                <div class="progress-wrapper" id="progress-${categoryId}">
-                    <div class="progress-bar" style="width: ${Math.min((selectedCount / selectedBundle.categories[category]) * 100, 100)}%"></div>
+            ` : '';
+            
+            // Add "Display Features" link if features exist
+            const featuresLink = service.features ? `
+                <button class="show-features-toggle" data-service="${service.name.replace(/\s+/g, '-').toLowerCase()}">
+                    Display Features <span class="chevron-icon down">▼</span>
+                </button>
+            ` : '';
+            
+            div.innerHTML = `
+                <div class="package-content">
+                    <h3>${service.name}</h3>
+                    <span class="${tagClass}">${service.ServiceType}</span>
+                    <p>${service.description || "No description available."}</p>
+                    <p class="service-duration"><strong>Duration:</strong> ${durationText}</p>
+                    <p class="service-price">C$${(isSelected ? (service.selectedPrice || service.price || 0) : service.price).toFixed(2)}</p>
+                    ${featuresLink}
                 </div>
-                `}
-                <div class="services-grid" id="services-${categoryId}">
-                    <!-- Services will be inserted here -->
-                </div>
+                ${addonsSection}
+                ${featuresOverlay}
             `;
             
-            container.appendChild(categoryContainer);
-            
-            const servicesGrid = document.getElementById(`services-${categoryId}`);
-            
-            categoryServices.forEach(service => {
-                const div = document.createElement('div');
-                div.className = 'service-card';
-                
-                // Determine tag class based on service type
-                let tagClass = 'package-type-tag';
-                if (service.ServiceType.includes('Scene')) tagClass += ' scene-setters';
-                if (service.ServiceType.includes('Sweets')) tagClass += ' sweets-brews';
-                if (service.ServiceType.includes('Special Effects')) tagClass += ' special-effects';
-                if (service.ServiceType.includes('Guest Book')) tagClass += ' guest-book';
-                if (service.ServiceType.includes('Digital')) tagClass += ' digital';
-                if (service.ServiceType.includes('Interactive')) tagClass += ' interactive';
-                
-                // Format duration text
-                const durationText = service.duration ? formatDuration(service.duration) : '';
-                
-                // Create features overlay if features exist
-                const featuresOverlay = service.features ? `
-                    <div class="features-overlay" id="features-${service.name.replace(/\s+/g, '-').toLowerCase()}">
-                        <button class="close-overlay">&times;</button>
-                        <h4>${service.name} Features</h4>
-                        <ul>
-                            ${service.features.map(item => `<li>${item}</li>`).join('')}
-                        </ul>
-                    </div>
-                ` : '';
-                
-                // Add "Display Features" link if features exist
-                const featuresLink = service.features ? `
-                    <button class="show-features-toggle" data-service="${service.name.replace(/\s+/g, '-').toLowerCase()}">
-                        Display Features <span class="chevron-icon down">▼</span>
-                    </button>
-                ` : '';
-                
-                div.innerHTML = `
-                    <div class="package-content">
-                        <h3>${service.name}</h3>
-                        <span class="${tagClass}">${service.ServiceType}</span>
-                        <p>${service.description || "No description available."}</p>
-                        ${durationText ? `<p><strong>Duration:</strong> ${durationText}</p>` : ''}
-                        ${service.price ? `<p><strong>Price:</strong> C$${service.price.toFixed(2)}</p>` : ''}
-                        ${featuresLink}
-                    </div>
-                    ${featuresOverlay}
-                `;
-                
-                // Add click handler for service selection
-div.addEventListener('click', () => {
-    toggleService(div, service);
-});
-                
-                // Add click handler for features toggle
-if (service.features) {
-    const featuresButton = div.querySelector('.show-features-toggle');
-    featuresButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const overlay = div.querySelector('.features-overlay');
-        overlay.style.display = 'block';
-    });
-                    
-                    const closeButton = div.querySelector('.close-overlay');
-                    if (closeButton) {
-                        closeButton.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            const overlay = div.querySelector('.features-overlay');
-                            overlay.style.display = 'none';
-                        });
-                    }
+            // Add click handler for service selection
+            div.addEventListener('click', (e) => {
+                // Don't toggle if clicking on features button or addons
+                if (e.target.closest('.show-features-toggle') || 
+                    e.target.closest('.addons-toggle') || 
+                    e.target.closest('.addon-card')) {
+                    return;
                 }
-                
-                servicesGrid.appendChild(div);
+                toggleService(div, service);
             });
+            
+            // Add click handler for features toggle
+            if (service.features) {
+                const featuresButton = div.querySelector('.show-features-toggle');
+                featuresButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const overlay = div.querySelector('.features-overlay');
+                    overlay.style.display = 'block';
+                });
+                
+                const closeButton = div.querySelector('.close-overlay');
+                if (closeButton) {
+                    closeButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const overlay = div.querySelector('.features-overlay');
+                        overlay.style.display = 'none';
+                    });
+                }
+            }
+            
+            servicesGrid.appendChild(div);
         });
-        
-        // Show review button
+    });
+    
+    // Show review button
     document.getElementById('review-selection').style.display = 'block';
     document.getElementById('review-selection').textContent = 'Review Selection (C$0.00)';
     document.getElementById('back-to-bundle').style.display = 'block';
+    
+    // Set up review button click handler
+    document.getElementById('review-selection').addEventListener('click', () => {
+        if (checkBundleRequirements()) {
+            renderStep3();
+            window.scrollTo(0, 0);
+        } else {
+            const warningElement = document.getElementById('requirements-warning');
+            warningElement.style.display = 'flex';
+            warningElement.classList.add('shake-warning');
+            setTimeout(() => {
+                warningElement.classList.remove('shake-warning');
+            }, 500);
+        }
+    });
+}
+
+function toggleAddons(toggleElement) {
+    const grid = toggleElement.nextElementSibling;
+    grid.classList.toggle('show');
+    
+    // Close other open addons grids
+    document.querySelectorAll('.addons-grid').forEach(otherGrid => {
+        if (otherGrid !== grid) {
+            otherGrid.classList.remove('show');
+        }
+    });
+}
+
+function updateServiceOption(serviceSlug, optionInput) {
+    const service = selectedServices.find(s => s.slug === serviceSlug);
+    if (!service) return;
+    
+    const selectedTier = service.pricingTiers.find(t => t.value === optionInput.value);
+    if (selectedTier) {
+        service.selectedTier = selectedTier;
+        service.selectedPrice = selectedTier.price;
         
-        // Set up review button click handler
-        document.getElementById('review-selection').addEventListener('click', () => {
-            if (checkBundleRequirements()) {
-                renderStep3();
-                window.scrollTo(0, 0);
-            } else {
-                const warningElement = document.getElementById('requirements-warning');
-                warningElement.style.display = 'flex';
-                warningElement.classList.add('shake-warning');
-                setTimeout(() => {
-                    warningElement.classList.remove('shake-warning');
-                }, 500);
-            }
-        });
+        // Update the card display
+        const card = optionInput.closest('.service-card');
+        if (card) {
+            card.querySelector('.service-price').textContent = `C$${selectedTier.price.toFixed(2)}`;
+        }
         
-        setupOptionsSection();
+        updatePrices();
+        updateReviewButton();
     }
+}
 
     // Toggle service selection
 function toggleService(el, service) {
@@ -3276,7 +3373,7 @@ function toggleService(el, service) {
     if (idx >= 0) {
         // Deselect service
         selectedServices.splice(idx, 1);
-       el.classList.remove("selected");
+        el.classList.remove("selected");
     } else {
         // For custom bundles, don't enforce limits
         if (!selectedBundle.isCustom && currentCount >= limit) {
@@ -3291,7 +3388,7 @@ function toggleService(el, service) {
         if (selectedService.pricingTiers && selectedService.pricingTiers.length > 0) {
             // Start with base price, not first tier
             selectedService.selectedPrice = selectedService.price || selectedService.pricingTiers[0].price;
-            selectedService.selectedTier = null; // No tier selected initially
+            selectedService.selectedTier = selectedService.pricingTiers[0]; // Select first tier by default
         } else {
             selectedService.selectedPrice = selectedService.price;
         }
@@ -3304,8 +3401,10 @@ function toggleService(el, service) {
     hideCompareWarning();
     updateReviewButton();
     
-    // Show/hide options section based on selections
-    setupOptionsSection();
+    // Close any open addons grids
+    document.querySelectorAll('.addons-grid').forEach(grid => {
+        grid.classList.remove('show');
+    });
 }
 
     // Get count of selected services in a category
@@ -4097,6 +4196,26 @@ function updateServiceAddons(serviceSlug, checkbox) {
     
     updateReviewButton();
     updatePrices();
+}
+
+function updateServiceOption(serviceSlug, optionInput) {
+    const service = selectedServices.find(s => s.slug === serviceSlug);
+    if (!service) return;
+    
+    const selectedTier = service.pricingTiers.find(t => t.value === optionInput.value);
+    if (selectedTier) {
+        service.selectedTier = selectedTier;
+        service.selectedPrice = selectedTier.price;
+        
+        // Update the card display
+        const card = optionInput.closest('.service-card');
+        if (card) {
+            card.querySelector('.service-price').textContent = `C$${selectedTier.price.toFixed(2)}`;
+        }
+        
+        updatePrices();
+        updateReviewButton();
+    }
 }
 
 console.log('Setting up listeners');
