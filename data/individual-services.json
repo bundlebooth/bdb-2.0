@@ -1,106 +1,49 @@
 [
-{
-  "name": "📸 Photo Booth",
-  "slug": "photo-booth",
-  "ServiceType": "Interactive Booths",
-  "description": "The photo booth experience adds a vibrant touch to any event, creating instant, tangible memories for your guests. All photos delivered digitally.",
-  "duration": 3,
-  "price": 600,
-  "basePrice": 0,
-  "pricingTiers": [
-    {
-      "label": "Unlimited Prints",
-      "value": "unlimited-prints",
-      "price": 100
-    },
-    {
-      "label": "Flower Backdrop",
-      "value": "flower-backdrop",
-      "price": 100
-    },
-    {
-      "label": "Premium Props",
-      "value": "premium-props",
-      "price": 75
-    },
-    {
-      "label": "Online Gallery with Branding",
-      "value": "gallery-branding",
-      "price": 50
-    },
-    {
-      "label": "GIF/BoomeRang Add-on",
-      "value": "gif-addon",
-      "price": 50
-    }
-  ],
-  "currency": "CAD",
-  "Sale": "Y",
-  "features": [
-    "Sleek modern booth",
-    "Unlimited digital photo sessions",
-    "On-site attendant",
-    "Custom photo overlay",
-    "Choice of backdrop",
-    "Fun prop set",
-    "Instant sharing via Airdrop/SMS/Email",
-    "Online gallery for download",
-    "Optional 4x6 printing (if included in package)"
-  ],
-  "dateAdded": "07-01-2025",
-  "New": "N"
-},
   {
-    "name": "🎥 360 Video Booth",
-    "slug": "360-video-booth",
+    "name": "\ud83d\udcf8 Photo Booth",
+    "slug": "photo-booth",
     "ServiceType": "Interactive Booths",
-    "description": "Elevate your event with the sophistication of our 360 Video Booth experience. Guests are invited to step onto a sleek platform as a rotating camera captures elegant, slow-motion videos from every angle.",
+    "description": "The photo booth experience adds a vibrant touch to any event, creating instant, tangible memories for your guests. All photos delivered digitally.",
     "duration": 3,
-    "price": 600,
-    "basePrice": 600,
-    "currency": "CAD",
-    "Sale": "Y",
-    "features": [
-      "360 platform with HD slow-motion video capture",
-      "Studio lighting setup",
-      "On-site attendant",
-      "Custom video overlay",
-      "Fun prop set",
-      "Instant sharing via Airdrop/SMS/Email",
-      "Online gallery for download"
+    "price": 650,
+    "basePrice": 0,
+    "pricingTiers": [
+      {
+        "label": "Digital Only",
+        "value": "digital",
+        "price": 650
+      },
+      {
+        "label": "Unlimited 4x6 Prints",
+        "value": "unlimited-prints",
+        "price": 150
+      },
+      {
+        "label": "Extra Hour",
+        "value": "extra-hour",
+        "price": 150
+      },
+      {
+        "label": "Custom Backdrop",
+        "value": "custom-backdrop",
+        "price": 125
+      },
+      {
+        "label": "Premium Props Package",
+        "value": "premium-props",
+        "price": 75
+      },
+      {
+        "label": "Online Gallery with Branding",
+        "value": "gallery-branding",
+        "price": 50
+      },
+      {
+        "label": "GIF/BoomeRang Add-on",
+        "value": "gif-addon",
+        "price": 50
+      }
     ],
-    "dateAdded": "07-01-2025",
-    "New": "N"
-  },
-  {
-    "name": "☎️ Audio Guest Book",
-    "slug": "audio-guest-book",
-    "ServiceType": "Interactive Booths",
-    "description": "The Audio Guest Book offers a timeless and personal way to capture heartfelt moments. Guests simply pick up the vintage-style phone and leave a message.",
-    "duration": 3,
-    "price": 350,
-    "basePrice": 350,
-    "currency": "CAD",
-    "Sale": "Y",
-    "features": [
-      "Phone recording device",
-      "Custom welcome message",
-      "Unlimited voice recordings",
-      "USB or digital download of all audio messages",
-      "Tabletop setup with décor",
-      "Signage with instructions for guests"
-    ],
-    "dateAdded": "07-01-2025",
-    "New": "N"
-  },
-  {
-    "name": "⭐️ Magazine Photo Booth",
-    "slug": "magazine-photo-booth",
-    "ServiceType": "Interactive Booths",
-    "description": "Bring the allure of a fashion magazine cover to your next event with our Magazine Photo Booth Box. Guests pose inside a life-sized, custom-branded magazine frame.",
-    "duration": 3,
-    "price": 600,
-    "basePrice": 600,
     "currency": "CAD",
     "Sale": "Y",
     "features": [
@@ -118,10 +61,133 @@
     "New": "N"
   },
   {
-    "name": "☕️ Espresso Booth",
+    "name": "\ud83c\udfa5 360 Video Booth",
+    "slug": "360-video-booth",
+    "ServiceType": "Interactive Booths",
+    "description": "Elevate your event with the sophistication of our 360 Video Booth experience. Guests are invited to step onto a sleek platform as a rotating camera captures elegant, slow-motion videos from every angle.",
+    "duration": 3,
+    "price": 950,
+    "basePrice": 600,
+    "currency": "CAD",
+    "Sale": "Y",
+    "features": [
+      "360 platform with HD slow-motion video capture",
+      "Studio lighting setup",
+      "On-site attendant",
+      "Custom video overlay",
+      "Fun prop set",
+      "Instant sharing via Airdrop/SMS/Email",
+      "Online gallery for download"
+    ],
+    "dateAdded": "07-01-2025",
+    "New": "N",
+    "pricingTiers": [
+      {
+        "label": "Standard",
+        "value": "standard",
+        "price": 950
+      },
+      {
+        "label": "Extra Hour",
+        "value": "extra-hour",
+        "price": 200
+      },
+      {
+        "label": "Red Carpet Setup",
+        "value": "red-carpet",
+        "price": 75
+      },
+      {
+        "label": "Custom Video Overlay",
+        "value": "custom-overlay",
+        "price": 100
+      }
+    ]
+  },
+  {
+    "name": "\u260e\ufe0f Audio Guest Book",
+    "slug": "audio-guest-book",
+    "ServiceType": "Interactive Booths",
+    "description": "The Audio Guest Book offers a timeless and personal way to capture heartfelt moments. Guests simply pick up the vintage-style phone and leave a message.",
+    "duration": 3,
+    "price": 400,
+    "basePrice": 350,
+    "currency": "CAD",
+    "Sale": "Y",
+    "features": [
+      "Phone recording device",
+      "Custom welcome message",
+      "Unlimited voice recordings",
+      "USB or digital download of all audio messages",
+      "Tabletop setup with d\u00e9cor",
+      "Signage with instructions for guests"
+    ],
+    "dateAdded": "07-01-2025",
+    "New": "N",
+    "pricingTiers": [
+      {
+        "label": "Standard",
+        "value": "standard",
+        "price": 400
+      },
+      {
+        "label": "Playback Speaker",
+        "value": "playback-speaker",
+        "price": 50
+      },
+      {
+        "label": "Custom Vinyl Wrap",
+        "value": "vinyl-wrap",
+        "price": 75
+      }
+    ]
+  },
+  {
+    "name": "\u2b50\ufe0f Magazine Photo Booth",
+    "slug": "magazine-photo-booth",
+    "ServiceType": "Interactive Booths",
+    "description": "Bring the allure of a fashion magazine cover to your next event with our Magazine Photo Booth Box. Guests pose inside a life-sized, custom-branded magazine frame.",
+    "duration": 3,
+    "price": 700,
+    "basePrice": 600,
+    "currency": "CAD",
+    "Sale": "Y",
+    "features": [
+      "Sleek modern booth",
+      "Unlimited digital photo sessions",
+      "On-site attendant",
+      "Custom photo overlay",
+      "Choice of backdrop",
+      "Fun prop set",
+      "Instant sharing via Airdrop/SMS/Email",
+      "Online gallery for download",
+      "Optional 4x6 printing (if included in package)"
+    ],
+    "dateAdded": "07-01-2025",
+    "New": "N",
+    "pricingTiers": [
+      {
+        "label": "Standard",
+        "value": "standard",
+        "price": 700
+      },
+      {
+        "label": "8x10 Instant Prints",
+        "value": "8x10-prints",
+        "price": 200
+      },
+      {
+        "label": "Custom Magazine Template",
+        "value": "custom-template",
+        "price": 100
+      }
+    ]
+  },
+  {
+    "name": "\u2615\ufe0f Espresso Booth",
     "slug": "espresso-booth",
     "ServiceType": "Sweets and Brews",
-    "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
+    "description": "Bring the caf\u00e9 experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
     "duration": 3,
     "price": 700,
     "basePrice": 0,
@@ -129,22 +195,27 @@
       {
         "label": "50 Guests",
         "value": 50,
-        "price": 700
+        "price": 850
       },
       {
         "label": "100 Guests",
         "value": 100,
-        "price": 1100
+        "price": 1250
       },
       {
         "label": "150 Guests",
         "value": 150,
-        "price": 1500
+        "price": 1650
       },
       {
         "label": "200 Guests",
         "value": 200,
-        "price": 1900
+        "price": 2050
+      },
+      {
+        "label": "Cold Brew/Nitro Add-on",
+        "value": "cold-brew",
+        "price": 100
       }
     ],
     "currency": "CAD",
@@ -154,10 +225,10 @@
     "New": "N"
   },
   {
-    "name": "🧇 Waffle Booth",
+    "name": "\ud83e\uddc7 Waffle Booth",
     "slug": "waffle-booth",
     "ServiceType": "Sweets and Brews",
-    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings—from fresh fruits and whipped cream to chocolate drizzle and syrups.",
+    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings\u2014from fresh fruits and whipped cream to chocolate drizzle and syrups.",
     "duration": 3,
     "price": 800,
     "basePrice": 0,
@@ -165,22 +236,27 @@
       {
         "label": "50 Guests",
         "value": 50,
-        "price": 800
+        "price": 850
       },
       {
         "label": "100 Guests",
         "value": 100,
-        "price": 1200
+        "price": 1250
       },
       {
         "label": "150 Guests",
         "value": 150,
-        "price": 1600
+        "price": 1650
       },
       {
         "label": "200 Guests",
         "value": 200,
-        "price": 2000
+        "price": 2050
+      },
+      {
+        "label": "Nutella Bar Add-on",
+        "value": "nutella-bar",
+        "price": 50
       }
     ],
     "currency": "CAD",
@@ -198,7 +274,7 @@
     "New": "N"
   },
   {
-    "name": "🍹 Smoothie Booth",
+    "name": "\ud83c\udf79 Smoothie Booth",
     "slug": "smoothie-booth",
     "ServiceType": "Sweets and Brews",
     "description": "Add a fresh, healthy twist to your event with our vibrant Smoothie Booth! We blend delicious smoothies with real fruits, natural ingredients and a variety of add-ins.",
@@ -214,17 +290,22 @@
       {
         "label": "100 Guests",
         "value": 100,
-        "price": 1300
+        "price": 1350
       },
       {
         "label": "150 Guests",
         "value": 150,
-        "price": 1700
+        "price": 1750
       },
       {
         "label": "200 Guests",
         "value": 200,
-        "price": 2100
+        "price": 2150
+      },
+      {
+        "label": "Superfood Boosts",
+        "value": "superfood-boosts",
+        "price": 50
       }
     ],
     "currency": "CAD",
@@ -242,7 +323,7 @@
     "New": "N"
   },
   {
-    "name": "✨ Sparklers Box",
+    "name": "\u2728 Sparklers Box",
     "slug": "sparklers-box",
     "ServiceType": "Scene Setters",
     "description": "Light up your celebration with our elegant Sparkler Boxes! A stylish station offering guests premium sparklers for that magical photo moment or grand finale.",
@@ -253,17 +334,22 @@
       {
         "label": "2 Sparklers",
         "value": 2,
-        "price": 400
+        "price": 500
       },
       {
         "label": "4 Sparklers",
         "value": 4,
-        "price": 600
+        "price": 700
       },
       {
         "label": "6 Sparklers",
         "value": 6,
-        "price": 800
+        "price": 900
+      },
+      {
+        "label": "Timed Cue Operator",
+        "value": "operator",
+        "price": 100
       }
     ],
     "currency": "CAD",
@@ -273,12 +359,12 @@
     "New": "N"
   },
   {
-    "name": "☁️ Dry Ice Fog",
+    "name": "\u2601\ufe0f Dry Ice Fog",
     "slug": "dry-ice-fog",
     "ServiceType": "Scene Setters",
     "description": "Create a stunning, cinematic atmosphere with our Dry Ice Fog Effect! This low-lying fog adds a magical touch to first dances, stage entrances, or any moment you want to make unforgettable.",
     "duration": 1,
-    "price": 400,
+    "price": 550,
     "basePrice": 400,
     "currency": "CAD",
     "Sale": "Y",
@@ -291,10 +377,22 @@
       "Stunning visual for photos/videos"
     ],
     "dateAdded": "07-01-2025",
-    "New": "N"
+    "New": "N",
+    "pricingTiers": [
+      {
+        "label": "Standard",
+        "value": "standard",
+        "price": 550
+      },
+      {
+        "label": "Fog Refill",
+        "value": "fog-refill",
+        "price": 125
+      }
+    ]
   },
   {
-    "name": "🪩 Laser First Dance",
+    "name": "\ud83e\udea9 Laser First Dance",
     "slug": "laser-first-dance",
     "ServiceType": "Scene Setters",
     "description": "Make your first dance truly unforgettable with our Laser First Dance Experience! Set beneath a canopy of synchronized laser lights and dreamy effects.",
@@ -312,6 +410,23 @@
       "Can be personalized (colors, patterns, text)"
     ],
     "dateAdded": "07-01-2025",
-    "New": "N"
+    "New": "N",
+    "pricingTiers": [
+      {
+        "label": "Standard",
+        "value": "standard",
+        "price": 900
+      },
+      {
+        "label": "Name/Date Projection",
+        "value": "projection",
+        "price": 100
+      },
+      {
+        "label": "Audio-Synced Show",
+        "value": "synced-show",
+        "price": 150
+      }
+    ]
   }
 ]
