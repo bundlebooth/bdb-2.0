@@ -68,19 +68,6 @@
     "duration": 3,
     "price": 950,
     "basePrice": 600,
-    "currency": "CAD",
-    "Sale": "Y",
-    "features": [
-      "360 platform with HD slow-motion video capture",
-      "Studio lighting setup",
-      "On-site attendant",
-      "Custom video overlay",
-      "Fun prop set",
-      "Instant sharing via Airdrop/SMS/Email",
-      "Online gallery for download"
-    ],
-    "dateAdded": "07-01-2025",
-    "New": "N",
     "pricingTiers": [
       {
         "label": "Standard",
@@ -102,7 +89,20 @@
         "value": "custom-overlay",
         "price": 100
       }
-    ]
+    ],
+    "currency": "CAD",
+    "Sale": "Y",
+    "features": [
+      "360 platform with HD slow-motion video capture",
+      "Studio lighting setup",
+      "On-site attendant",
+      "Custom video overlay",
+      "Fun prop set",
+      "Instant sharing via Airdrop/SMS/Email",
+      "Online gallery for download"
+    ],
+    "dateAdded": "07-01-2025",
+    "New": "N"
   },
   {
     "name": "\u260e\ufe0f Audio Guest Book",
@@ -112,18 +112,6 @@
     "duration": 3,
     "price": 400,
     "basePrice": 350,
-    "currency": "CAD",
-    "Sale": "Y",
-    "features": [
-      "Phone recording device",
-      "Custom welcome message",
-      "Unlimited voice recordings",
-      "USB or digital download of all audio messages",
-      "Tabletop setup with d\u00e9cor",
-      "Signage with instructions for guests"
-    ],
-    "dateAdded": "07-01-2025",
-    "New": "N",
     "pricingTiers": [
       {
         "label": "Standard",
@@ -140,7 +128,19 @@
         "value": "vinyl-wrap",
         "price": 75
       }
-    ]
+    ],
+    "currency": "CAD",
+    "Sale": "Y",
+    "features": [
+      "Phone recording device",
+      "Custom welcome message",
+      "Unlimited voice recordings",
+      "USB or digital download of all audio messages",
+      "Tabletop setup with d\u00e9cor",
+      "Signage with instructions for guests"
+    ],
+    "dateAdded": "07-01-2025",
+    "New": "N"
   },
   {
     "name": "\u2b50\ufe0f Magazine Photo Booth",
@@ -150,21 +150,6 @@
     "duration": 3,
     "price": 700,
     "basePrice": 600,
-    "currency": "CAD",
-    "Sale": "Y",
-    "features": [
-      "Sleek modern booth",
-      "Unlimited digital photo sessions",
-      "On-site attendant",
-      "Custom photo overlay",
-      "Choice of backdrop",
-      "Fun prop set",
-      "Instant sharing via Airdrop/SMS/Email",
-      "Online gallery for download",
-      "Optional 4x6 printing (if included in package)"
-    ],
-    "dateAdded": "07-01-2025",
-    "New": "N",
     "pricingTiers": [
       {
         "label": "Standard",
@@ -181,7 +166,22 @@
         "value": "custom-template",
         "price": 100
       }
-    ]
+    ],
+    "currency": "CAD",
+    "Sale": "Y",
+    "features": [
+      "Sleek modern booth",
+      "Unlimited digital photo sessions",
+      "On-site attendant",
+      "Custom photo overlay",
+      "Choice of backdrop",
+      "Fun prop set",
+      "Instant sharing via Airdrop/SMS/Email",
+      "Online gallery for download",
+      "Optional 4x6 printing (if included in package)"
+    ],
+    "dateAdded": "07-01-2025",
+    "New": "N"
   },
   {
     "name": "\u2615\ufe0f Espresso Booth",
@@ -366,18 +366,6 @@
     "duration": 1,
     "price": 550,
     "basePrice": 400,
-    "currency": "CAD",
-    "Sale": "Y",
-    "features": [
-      "Low-lying fog machine using dry ice",
-      "Perfect for first dance 'dancing on a cloud' effect",
-      "No smoke alarms triggered",
-      "Technician on site to manage fog timing",
-      "Requires proper ventilation access",
-      "Stunning visual for photos/videos"
-    ],
-    "dateAdded": "07-01-2025",
-    "New": "N",
     "pricingTiers": [
       {
         "label": "Standard",
@@ -389,7 +377,19 @@
         "value": "fog-refill",
         "price": 125
       }
-    ]
+    ],
+    "currency": "CAD",
+    "Sale": "Y",
+    "features": [
+      "Low-lying fog machine using dry ice",
+      "Perfect for first dance 'dancing on a cloud' effect",
+      "No smoke alarms triggered",
+      "Technician on site to manage fog timing",
+      "Requires proper ventilation access",
+      "Stunning visual for photos/videos"
+    ],
+    "dateAdded": "07-01-2025",
+    "New": "N"
   },
   {
     "name": "\ud83e\udea9 Laser First Dance",
@@ -399,18 +399,6 @@
     "duration": 1,
     "price": 900,
     "basePrice": 900,
-    "currency": "CAD",
-    "Sale": "Y",
-    "features": [
-      "Custom laser light show synced to music",
-      "Name/date projection options",
-      "Operator to manage timing and effects",
-      "Works best in dim/dark environments",
-      "Adds wow-factor to first dance",
-      "Can be personalized (colors, patterns, text)"
-    ],
-    "dateAdded": "07-01-2025",
-    "New": "N",
     "pricingTiers": [
       {
         "label": "Standard",
@@ -427,6 +415,18 @@
         "value": "synced-show",
         "price": 150
       }
-    ]
+    ],
+    "currency": "CAD",
+    "Sale": "Y",
+    "features": [
+      "Custom laser light show synced to music",
+      "Name/date projection options",
+      "Operator to manage timing and effects",
+      "Works best in dim/dark environments",
+      "Adds wow-factor to first dance",
+      "Can be personalized (colors, patterns, text)"
+    ],
+    "dateAdded": "07-01-2025",
+    "New": "N"
   }
 ]
