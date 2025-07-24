@@ -2188,6 +2188,16 @@ function applyPromoCode() {
     errorElement.textContent = '';
     errorElement.classList.remove('invalid');
     
+    // First check if this is a special discounted bundle
+    if (selectedBundle && selectedBundle.Special) {
+        errorElement.textContent = 'Promo codes cannot be applied to discounted bundles.';
+        errorElement.classList.add('invalid');
+        promoCodeApplied = null;
+        promoDiscount = 0;
+        updatePrices();
+        return;
+    }
+    
     if (!promoCode) {
         errorElement.textContent = 'Please enter a promo code';
         errorElement.classList.add('invalid');
