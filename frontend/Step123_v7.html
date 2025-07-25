@@ -1737,7 +1737,7 @@
 
     /* Add this to your existing CSS */
     .scroll-to-options-arrow {
-        position: fixed;
+        position: absolute;
         bottom: 20px;
         right: 20px;
         width: 40px;
@@ -1777,7 +1777,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1 TEST4: Choose a Bundle</div>
+        <div class="active">Step 1 TEST 5: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
@@ -2663,28 +2663,17 @@ scrollArrow.innerHTML = '↓';
 document.body.appendChild(scrollArrow);
 
 function scrollToOptions() {
-    console.log('scrollToOptions called');
     const optionsSection = document.getElementById('options-section');
-    if (!optionsSection) {
-        console.error('Options section not found');
-        return;
-    }
-    
-    // Get position relative to document (accounts for current scroll)
+    if (!optionsSection) return;
+
     const rect = optionsSection.getBoundingClientRect();
-    const targetPosition = rect.top + window.pageYOffset - 20;
-    
-    // Use window.scrollTo for consistent behavior across devices
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const targetY = rect.top + scrollTop - 20; // Adjust offset as needed
+
     window.scrollTo({
-        top: targetPosition,
+        top: targetY,
         behavior: 'smooth'
     });
-    
-    // Special handling for iOS to ensure smooth scrolling
-    if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-        document.body.style.overflow = 'auto';
-        document.body.style.webkitOverflowScrolling = 'touch';
-    }
 }
 
 // Handle both click and touch events
@@ -2702,7 +2691,7 @@ style.textContent = `
         touch-action: manipulation;
         cursor: pointer;
         -webkit-tap-highlight-color: transparent;
-        position: fixed;
+        position: absolute;
         bottom: 20px;
         right: 20px;
         width: 40px;
@@ -3400,22 +3389,20 @@ if (service.features) {
     }
 	
 	   // Function to position the scroll arrow next to the selected service
-function positionScrollArrow(serviceElement) {
-    const scrollArrow = document.querySelector('.scroll-to-options-arrow');
-    if (!scrollArrow) return;
-    
-    // Get position relative to document (accounts for current scroll)
-    const rect = serviceElement.getBoundingClientRect();
-    const arrowTop = rect.top + window.pageYOffset + (rect.height / 2) - 20;
-    
-    // Position fixed to viewport but calculate based on document position
-    scrollArrow.style.position = 'fixed';
-    scrollArrow.style.top = `${Math.max(20, arrowTop - window.pageYOffset)}px`;
-    scrollArrow.style.right = '20px';
-    
-    // Make arrow visible
-    scrollArrow.classList.add('visible');
-}
+    function positionScrollArrow(serviceElement) {
+        const scrollArrow = document.querySelector('.scroll-to-options-arrow');
+        if (!scrollArrow) return;
+        
+        // Get position of the service element
+        const rect = serviceElement.getBoundingClientRect();
+        
+        // Position the arrow to the right of the service card
+        scrollArrow.style.right = '20px';
+        scrollArrow.style.top = `${rect.top + window.scrollY + (rect.height / 2) - 20}px`;
+        
+        // Make arrow visible
+        scrollArrow.classList.add('visible');
+    }
 
     // Update scroll arrow visibility based on selections
     function updateScrollArrowVisibility() {
