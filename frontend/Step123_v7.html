@@ -1769,10 +1769,6 @@
         transform: translateY(-2px) scale(1.05);
     }
 	
-	#options-section {
-    -webkit-overflow-scrolling: touch; /* Enables smooth scrolling on iOS */
-    overflow-y: auto;
-}
 
 </style>
 </head>
@@ -2667,43 +2663,32 @@ scrollArrow.innerHTML = '↓';
 document.body.appendChild(scrollArrow);
 
 function scrollToOptions() {
+    console.log('scrollToOptions called');
     const optionsSection = document.getElementById('options-section');
-    if (!optionsSection) return;
-
-    // Calculate position relative to document
-    const rect = optionsSection.getBoundingClientRect();
-    const scrollPosition = rect.top + window.pageYOffset - 20; // 20px offset
+    if (!optionsSection) {
+        console.error('Options section not found');
+        return;
+    }
+    console.log('Options section found, attempting scroll');
     
-    // Use requestAnimationFrame for smoother animation
-    const start = window.pageYOffset;
-    const change = scrollPosition - start;
-    const startTime = performance.now();
-    const duration = 300; // milliseconds
-
-    function animateScroll(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        const ease = easeInOutQuad(progress);
-        window.scrollTo(0, start + (change * ease));
-        
-        if (progress < 1) {
-            requestAnimationFrame(animateScroll);
-        }
-    }
-
-    // Easing function for smooth scroll
-    function easeInOutQuad(t) {
-        return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-    }
-
-    requestAnimationFrame(animateScroll);
+    // Try both methods
+    optionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    
+    setTimeout(() => {
+        const rect = optionsSection.getBoundingClientRect();
+        window.scrollTo({
+            top: rect.top + window.scrollY - 20,
+            behavior: 'smooth'
+        });
+    }, 100);
 }
 
 // Handle both click and touch events
+scrollArrow.addEventListener('click', scrollToOptions);
 scrollArrow.addEventListener('touchstart', function(e) {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default touch behavior
     scrollToOptions();
-}, { passive: false }); 
+});
 });
 
 // Add CSS improvements
