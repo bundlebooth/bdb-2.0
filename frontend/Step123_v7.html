@@ -2693,34 +2693,7 @@ scrollArrow.addEventListener('touchstart', function(e) {
 
 // Add CSS improvements
 const style = document.createElement('style');
-style.textContent = `
-    .scroll-to-options-arrow {
-        touch-action: manipulation;
-        cursor: pointer;
-        -webkit-tap-highlight-color: transparent;
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 40px;
-        height: 40px;
-        background-color: var(--bb-accent);
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        z-index: 999;
-        opacity: 0;
-        transform: translateY(20px);
-        transition: all 0.3s ease;
-    }
-    .scroll-to-options-arrow.visible {
-        opacity: 1;
-        transform: translateY(0);
-    }
-`;
-document.head.appendChild(style);
+
 
 // Function to show/hide the scroll arrow based on selected services
 function updateScrollArrowVisibility() {
