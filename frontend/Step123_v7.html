@@ -2663,21 +2663,18 @@ scrollArrow.innerHTML = '↓';
 document.body.appendChild(scrollArrow);
 
 function scrollToOptions() {
-    console.log('scrollToOptions called');
     const optionsSection = document.getElementById('options-section');
-    if (!optionsSection) {
-        console.error('Options section not found');
-        return;
-    }
-    console.log('Options section found, attempting scroll');
+    if (!optionsSection) return;
     
-    setTimeout(() => {
-        const rect = optionsSection.getBoundingClientRect();
-        window.scrollTo({
-            top: rect.top + window.scrollY - 20,
-            behavior: 'smooth'
-        });
-    }, 100);
+    // Calculate the position relative to the document
+    const rect = optionsSection.getBoundingClientRect();
+    const scrollPosition = rect.top + window.pageYOffset - 20; // 20px offset
+    
+    // Use smooth scrolling
+    window.scrollTo({
+        top: scrollPosition,
+        behavior: 'smooth'
+    });
 }
 
 // Handle both click and touch events
