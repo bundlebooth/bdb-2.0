@@ -2671,9 +2671,6 @@ function scrollToOptions() {
     }
     console.log('Options section found, attempting scroll');
     
-    // Try both methods
-    optionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    
     setTimeout(() => {
         const rect = optionsSection.getBoundingClientRect();
         window.scrollTo({
