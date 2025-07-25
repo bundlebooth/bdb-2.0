@@ -1451,7 +1451,19 @@
     position: relative;
     border: 1px solid #eee;
 }
+
+.category-container {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    position: relative;
+    border: 1px solid #eee;
+    width: 100%;
+}
     
+	
 .category-title {
     font-size: 1.2rem;
     font-weight: 600;
@@ -1872,25 +1884,51 @@
 		</div>
     </div>
     
-    <div class="step" id="step-2" style="display:none;">
-	    <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
-        <h2 style="margin-bottom:16px;">Step 2: Select Your Services</h2>
-        <p class="step-description">Choose the services you want to include in your bundle</p>
-        <div id="compare-warning" class="compare-message" style="display:none;"></div>
-        <div id="services-container"></div>
-        
-        <div id="requirements-warning" class="requirements-warning" style="display:none;">
-            <svg viewBox="0 0 24 24" width="16" height="16" style="vertical-align:middle;margin-right:8px;">
-                <path fill="#856404" d="M12 2L1 21h22L12 2zm0 4l7.5 13h-15L12 6zm-1 3v6h2V9h-2zm0 8v2h2v-2h-2z"/>
-            </svg>
-            <span id="warning-message">You have not selected all the required services for this bundle. Please select the remaining services to proceed.</span>
+<div class="step" id="step-2" style="display:none;">
+    <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
+    <h2 style="margin-bottom:16px;">Step 2: Select Your Services</h2>
+    <p class="step-description">Choose the services you want to include in your bundle</p>
+    <div id="compare-warning" class="compare-message" style="display:none;"></div>
+    
+    <!-- Interactive Booths Container -->
+    <div class="category-container" id="interactive-booths-container">
+        <div class="category-title">
+            Interactive Booths
+            <span>0 selected</span>
         </div>
-        
-        <div class="button-container">
-            <button id="back-to-bundle" class="book-now-button">&lt; Review Bundle</button>
-            <button id="review-selection" class="book-now-button">Review Selection</button>
-        </div>
+        <div class="services-grid" id="services-interactive-booths"></div>
     </div>
+    
+    <!-- Sweets and Brews Container -->
+    <div class="category-container" id="sweets-brews-container">
+        <div class="category-title">
+            Sweets and Brews
+            <span>0 selected</span>
+        </div>
+        <div class="services-grid" id="services-sweets-brews"></div>
+    </div>
+    
+    <!-- Scene Setters Container -->
+    <div class="category-container" id="scene-setters-container">
+        <div class="category-title">
+            Scene Setters
+            <span>0 selected</span>
+        </div>
+        <div class="services-grid" id="services-scene-setters"></div>
+    </div>
+    
+    <div id="requirements-warning" class="requirements-warning" style="display:none;">
+        <svg viewBox="0 0 24 24" width="16" height="16" style="vertical-align:middle;margin-right:8px;">
+            <path fill="#856404" d="M12 2L1 21h22L12 2zm0 4l7.5 13h-15L12 6zm-1 3v6h2V9h-2zm0 8v2h2v-2h-2z"/>
+        </svg>
+        <span id="warning-message">You have not selected all the required services for this bundle. Please select the remaining services to proceed.</span>
+    </div>
+    
+    <div class="button-container">
+        <button id="back-to-bundle" class="book-now-button">&lt; Review Bundle</button>
+        <button id="review-selection" class="book-now-button">Review Selection</button>
+    </div>
+</div>
     
     <div class="step" id="step-3" style="display:none;">
 	<a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
@@ -3132,12 +3170,17 @@ function showStep(stepNumber) {
 
     // Render services for selected bundle
 function renderServices() {
-    const container = document.getElementById('services-container');
-    container.innerHTML = '';
+    // Clear all category containers
+    document.querySelectorAll('.category-container').forEach(container => {
+        container.querySelector('.services-grid').innerHTML = '';
+    });
+    
     selectedServices = [];
     
     if (!services.length) {
-        container.innerHTML = '<p>Loading services...</p>';
+        document.querySelectorAll('.category-container').forEach(container => {
+            container.querySelector('.services-grid').innerHTML = '<p>Loading services...</p>';
+        });
         return;
     }
 
@@ -3158,7 +3201,9 @@ function renderServices() {
     );
 
     if (filteredServices.length === 0) {
-        container.innerHTML = '<p>No services available for this bundle.</p>';
+        document.querySelectorAll('.category-container').forEach(container => {
+            container.querySelector('.services-grid').innerHTML = '<p>No services available for this bundle.</p>';
+        });
         return;
     }
 
@@ -3174,35 +3219,25 @@ function renderServices() {
     Object.entries(servicesByCategory).forEach(([category, categoryServices]) => {
         if (categoryServices.length === 0) return;
 
-        const categoryContainer = document.createElement('div');
-        categoryContainer.className = 'category-services-container';
-        
         const categoryId = category.toLowerCase().replace(/\s+/g, '-');
+        const container = document.getElementById(`${categoryId}-container`);
+        const servicesGrid = container.querySelector('.services-grid');
         const selectedCount = selectedServices.filter(s => s.ServiceType === category).length;
         
-        // For custom bundles, just show count without limit
+        // Update count text
         const countText = selectedBundle.isCustom ? 
             `${selectedCount} selected` : 
             `${selectedCount} of ${selectedBundle.categories[category]} selected`;
         
-        categoryContainer.innerHTML = `
-            <div class="category-title">
-                ${category}
-                <span>${countText}</span>
-            </div>
-            ${selectedBundle.isCustom ? '' : `
-            <div class="progress-wrapper" id="progress-${categoryId}">
-                <div class="progress-bar" style="width: ${Math.min((selectedCount / selectedBundle.categories[category]) * 100, 100)}%"></div>
-            </div>
-            `}
-            <div class="services-grid" id="services-${categoryId}">
-                <!-- Services will be inserted here -->
-            </div>
-        `;
+        container.querySelector('.category-title span').textContent = countText;
         
-        container.appendChild(categoryContainer);
-        
-        const servicesGrid = document.getElementById(`services-${categoryId}`);
+        // Add progress bar for non-custom bundles
+        if (!selectedBundle.isCustom) {
+            const progressBar = document.createElement('div');
+            progressBar.className = 'progress-wrapper';
+            progressBar.innerHTML = `<div class="progress-bar" style="width: ${Math.min((selectedCount / selectedBundle.categories[category]) * 100, 100)}%"></div>`;
+            container.insertBefore(progressBar, servicesGrid);
+        }
         
         categoryServices.forEach(service => {
             const div = document.createElement('div');
@@ -3215,33 +3250,33 @@ function renderServices() {
             }
 
             // Create add-ons section if service has pricing tiers
-let addonsSection = '';
-if (service.pricingTiers && service.pricingTiers.length > 0) {
-    addonsSection = `
-        <div class="addons-toggle" onclick="event.stopPropagation(); toggleAddons(this)">
-            + Customize Options
-        </div>
-        <div class="addons-grid">
-            ${service.pricingTiers.map(tier => {
-                const isAddonSelected = isSelected && 
-                    service.selectedAddons?.some(a => a.value === tier.value);
-                return `
-                    <label class="addon-card ${isAddonSelected ? 'selected' : ''}">
-                        <input type="checkbox" 
-                               class="hidden-checkbox"
-                               data-service="${service.slug}"
-                               data-value="${tier.value}"
-                               data-price="${tier.price}"
-                               data-label="${tier.label}"
-                               ${isAddonSelected ? 'checked' : ''}
-                               onchange="updateServiceAddons('${service.slug}', '${tier.value}', this)">
-                        ${tier.label} ${tier.price > 0 ? `(+C$${tier.price.toFixed(2)})` : ''}
-                    </label>
+            let addonsSection = '';
+            if (service.pricingTiers && service.pricingTiers.length > 0) {
+                addonsSection = `
+                    <div class="addons-toggle" onclick="event.stopPropagation(); toggleAddons(this)">
+                        + Customize Options
+                    </div>
+                    <div class="addons-grid">
+                        ${service.pricingTiers.map(tier => {
+                            const isAddonSelected = isSelected && 
+                                service.selectedAddons?.some(a => a.value === tier.value);
+                            return `
+                                <label class="addon-card ${isAddonSelected ? 'selected' : ''}">
+                                    <input type="checkbox" 
+                                           class="hidden-checkbox"
+                                           data-service="${service.slug}"
+                                           data-value="${tier.value}"
+                                           data-price="${tier.price}"
+                                           data-label="${tier.label}"
+                                           ${isAddonSelected ? 'checked' : ''}
+                                           onchange="updateServiceAddons('${service.slug}', '${tier.value}', this)">
+                                    ${tier.label} ${tier.price > 0 ? `(+C$${tier.price.toFixed(2)})` : ''}
+                                </label>
+                            `;
+                        }).join('')}
+                    </div>
                 `;
-            }).join('')}
-        </div>
-    `;
-}
+            }
 
             div.innerHTML = `
                 <div class="package-content">
@@ -3254,18 +3289,18 @@ if (service.pricingTiers && service.pricingTiers.length > 0) {
             `;
 
             // Add click handler for service selection
-div.addEventListener('click', (e) => {
-    // Don't toggle if clicking on addons
-    if (e.target.closest('.addons-toggle') || e.target.closest('.addon-card')) {
-        const checkbox = e.target.closest('.addon-card')?.querySelector('input');
-        if (checkbox) {
-            checkbox.checked = !checkbox.checked;
-            updateServiceAddons(service.slug, checkbox.dataset.value, checkbox);
-        }
-        return;
-    }
-    toggleService(div, service);
-});
+            div.addEventListener('click', (e) => {
+                // Don't toggle if clicking on addons
+                if (e.target.closest('.addons-toggle') || e.target.closest('.addon-card')) {
+                    const checkbox = e.target.closest('.addon-card')?.querySelector('input');
+                    if (checkbox) {
+                        checkbox.checked = !checkbox.checked;
+                        updateServiceAddons(service.slug, checkbox.dataset.value, checkbox);
+                    }
+                    return;
+                }
+                toggleService(div, service);
+            });
             
             servicesGrid.appendChild(div);
         });
