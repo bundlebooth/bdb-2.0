@@ -2696,21 +2696,6 @@ scrollArrow.addEventListener('touchstart', function(e) {
 const style = document.createElement('style');
 
 
-// Function to show/hide the scroll arrow based on selected services
-function updateScrollArrowVisibility() {
-if (scrollArrow) {
-    // Handle click (desktop) and touch (mobile) events
-    scrollArrow.addEventListener('click', function(e) {
-        e.preventDefault();
-        scrollToOptions();
-    });
-    
-    scrollArrow.addEventListener('touchstart', function(e) {
-        e.preventDefault();
-        scrollToOptions();
-    }, { passive: false }); // Important for preventing default touch behavior
-}
-
     // Updated renderStep3 function to handle dynamic discounts
     function renderStep3() {
         showStep(3);
@@ -3390,22 +3375,6 @@ if (service.features) {
         scrollArrow.classList.add('visible');
     }
 
-    // Update scroll arrow visibility based on selections
-    function updateScrollArrowVisibility() {
-        const scrollArrow = document.querySelector('.scroll-to-options-arrow');
-        if (!scrollArrow) return;
-        
-        if (selectedServices.length > 0) {
-            // Find the last selected service to position the arrow
-            const selectedElements = document.querySelectorAll('.package.selected');
-            if (selectedElements.length > 0) {
-                const lastSelected = selectedElements[selectedElements.length - 1];
-                positionScrollArrow(lastSelected);
-            }
-        } else {
-            scrollArrow.classList.remove('visible');
-        }
-    }
 
 
     // Get count of selected services in a category
