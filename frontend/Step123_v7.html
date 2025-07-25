@@ -1737,7 +1737,7 @@
 
     /* Add this to your existing CSS */
     .scroll-to-options-arrow {
-        position: absolute;
+        position: fixed;
         bottom: 20px;
         right: 20px;
         width: 40px;
@@ -1777,7 +1777,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1 TEST 5: Choose a Bundle</div>
+        <div class="active">Step 1: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
@@ -2663,15 +2663,21 @@ scrollArrow.innerHTML = '↓';
 document.body.appendChild(scrollArrow);
 
 function scrollToOptions() {
+    console.log('scrollToOptions called');
     const optionsSection = document.getElementById('options-section');
-    if (!optionsSection) return;
+    if (!optionsSection) {
+        console.error('Options section not found');
+        return;
+    }
+    console.log('Options section found, attempting scroll');
 
+    // Calculate the target scroll position
     const rect = optionsSection.getBoundingClientRect();
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const targetY = rect.top + scrollTop - 20; // Adjust offset as needed
-
+    const scrollPosition = rect.top + window.scrollY - 20; // -20 for offset
+    
+    // Smooth scroll using window.scrollTo
     window.scrollTo({
-        top: targetY,
+        top: scrollPosition,
         behavior: 'smooth'
     });
 }
@@ -2691,7 +2697,7 @@ style.textContent = `
         touch-action: manipulation;
         cursor: pointer;
         -webkit-tap-highlight-color: transparent;
-        position: absolute;
+        position: fixed;
         bottom: 20px;
         right: 20px;
         width: 40px;
