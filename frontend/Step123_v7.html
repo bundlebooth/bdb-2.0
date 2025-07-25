@@ -1777,14 +1777,14 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1: Choose a Bundle</div>
+        <div class="active">Step 1 TEST2: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
     
     <div class="step" id="step-1">
         <div class="step-1-container">
-            <h2 style="margin-bottom:16px;">Step 1 TEST1: Choose a Bundle</h2>
+            <h2 style="margin-bottom:16px;">Step 1: Choose a Bundle</h2>
             <p class="step-description">Select from our pre-designed bundles or create your own custom package</p>
             
             <!-- Custom bundle banner at the top -->
@@ -2696,15 +2696,7 @@ scrollArrow.addEventListener('touchstart', function(e) {
 const style = document.createElement('style');
 
 
-// Function to show/hide the scroll arrow based on selected services
-function updateScrollArrowVisibility() {
-    const scrollArrow = document.querySelector('.scroll-to-options-arrow');
-    if (selectedServices.length > 0) {
-        scrollArrow.classList.add('visible');
-    } else {
-        scrollArrow.classList.remove('visible');
-    }
-}
+
 
     // Updated renderStep3 function to handle dynamic discounts
     function renderStep3() {
@@ -3369,6 +3361,38 @@ if (service.features) {
         setupOptionsSection();
     }
 	
+	   // Function to position the scroll arrow next to the selected service
+    function positionScrollArrow(serviceElement) {
+        const scrollArrow = document.querySelector('.scroll-to-options-arrow');
+        if (!scrollArrow) return;
+        
+        // Get position of the service element
+        const rect = serviceElement.getBoundingClientRect();
+        
+        // Position the arrow to the right of the service card
+        scrollArrow.style.right = '20px';
+        scrollArrow.style.top = `${rect.top + window.scrollY + (rect.height / 2) - 20}px`;
+        
+        // Make arrow visible
+        scrollArrow.classList.add('visible');
+    }
+
+    // Update scroll arrow visibility based on selections
+    function updateScrollArrowVisibility() {
+        const scrollArrow = document.querySelector('.scroll-to-options-arrow');
+        if (!scrollArrow) return;
+        
+        if (selectedServices.length > 0) {
+            // Find the last selected service to position the arrow
+            const selectedElements = document.querySelectorAll('.package.selected');
+            if (selectedElements.length > 0) {
+                const lastSelected = selectedElements[selectedElements.length - 1];
+                positionScrollArrow(lastSelected);
+            }
+        } else {
+            scrollArrow.classList.remove('visible');
+        }
+    }
 
 
     // Get count of selected services in a category
