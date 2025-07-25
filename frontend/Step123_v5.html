@@ -1754,6 +1754,9 @@
         opacity: 0;
         transform: translateY(20px);
         transition: all 0.3s ease;
+		touch-action: manipulation; /* Improves touch responsiveness */
+		cursor: pointer;
+		-webkit-tap-highlight-color: transparent; /* Removes tap highlight on iOS */
     }
     
     .scroll-to-options-arrow.visible {
@@ -2662,8 +2665,16 @@ document.body.appendChild(scrollArrow);
 function scrollToOptions() {
     const optionsSection = document.getElementById('options-section');
     if (optionsSection) {
+        // Use this approach for better mobile compatibility
+        const rect = optionsSection.getBoundingClientRect();
+        window.scrollTo({
+            top: rect.top + window.scrollY - 20, // 20px offset
+            behavior: 'smooth'
+        });
+        
+        // Alternatively, try this for iOS:
         optionsSection.scrollIntoView({ 
-            behavior: 'smooth', 
+            behavior: 'auto', // 'smooth' might not work on all iOS versions
             block: 'start' 
         });
     }
@@ -2672,7 +2683,7 @@ function scrollToOptions() {
 // Handle both click and touch events
 scrollArrow.addEventListener('click', scrollToOptions);
 scrollArrow.addEventListener('touchstart', function(e) {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default touch behavior
     scrollToOptions();
 });
 });
