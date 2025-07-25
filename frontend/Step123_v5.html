@@ -2669,6 +2669,13 @@ document.addEventListener('DOMContentLoaded', () => {
             updateReviewButton(); // Ensure the review button reflects the current state
         }
     });
+	scrollArrow.addEventListener('touchstart', (e) => {
+    e.preventDefault(); // Prevent default touch behavior
+    const optionsSection = document.getElementById('options-section');
+    if (optionsSection) {
+        optionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+});
 });
 
 // Function to show/hide the scroll arrow based on selected services
@@ -3377,20 +3384,6 @@ if (service.features) {
         }
     }
 
-    // Initialize the arrow in DOMContentLoaded
-    document.addEventListener('DOMContentLoaded', () => {
-        const scrollArrow = document.createElement('div');
-        scrollArrow.className = 'scroll-to-options-arrow';
-        scrollArrow.innerHTML = '↓';
-        document.body.appendChild(scrollArrow);
-
-        scrollArrow.addEventListener('click', () => {
-            const optionsSection = document.getElementById('options-section');
-            if (optionsSection) {
-                optionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        });
-    });
 
     // Get count of selected services in a category
     function getSelectedCount(category) {
