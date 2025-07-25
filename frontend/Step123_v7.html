@@ -2663,25 +2663,26 @@ scrollArrow.innerHTML = '↓';
 document.body.appendChild(scrollArrow);
 
 function scrollToOptions() {
-    console.log('scrollToOptions called');
     const optionsSection = document.getElementById('options-section');
-    if (!optionsSection) {
-        console.error('Options section not found');
-        return;
+    if (!optionsSection) return;
+
+    // Get the position relative to the document
+    const rect = optionsSection.getBoundingClientRect();
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const elementTop = rect.top + scrollTop;
+    
+    // Use window.scrollTo for consistent behavior across devices
+    window.scrollTo({
+        top: elementTop - 20, // 20px offset
+        behavior: 'smooth'
+    });
+    
+    // Add a fallback for older browsers
+    if (typeof window.scrollTo !== 'function') {
+        document.documentElement.scrollTop = elementTop - 20;
     }
-    console.log('Options section found, attempting scroll');
-    
-    // Try both methods
-    optionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    
-    setTimeout(() => {
-        const rect = optionsSection.getBoundingClientRect();
-        window.scrollTo({
-            top: rect.top + window.scrollY - 20,
-            behavior: 'smooth'
-        });
-    }, 100);
 }
+
 
 // Handle both click and touch events
 scrollArrow.addEventListener('click', scrollToOptions);
@@ -2697,12 +2698,17 @@ const style = document.createElement('style');
 
 // Function to show/hide the scroll arrow based on selected services
 function updateScrollArrowVisibility() {
-    const scrollArrow = document.querySelector('.scroll-to-options-arrow');
-    if (selectedServices.length > 0) {
-        scrollArrow.classList.add('visible');
-    } else {
-        scrollArrow.classList.remove('visible');
-    }
+if (scrollArrow) {
+    // Handle click (desktop) and touch (mobile) events
+    scrollArrow.addEventListener('click', function(e) {
+        e.preventDefault();
+        scrollToOptions();
+    });
+    
+    scrollArrow.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        scrollToOptions();
+    }, { passive: false }); // Important for preventing default touch behavior
 }
 
     // Updated renderStep3 function to handle dynamic discounts
