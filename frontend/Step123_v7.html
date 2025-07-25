@@ -1750,7 +1750,7 @@
         justify-content: center;
         cursor: pointer;
         box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        z-index: 999;
+        z-index: 9999;
         opacity: 0;
         transform: translateY(20px);
         transition: all 0.3s ease;
@@ -2657,32 +2657,47 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-const scrollArrow = document.createElement('div');
-scrollArrow.className = 'scroll-to-options-arrow';
-scrollArrow.innerHTML = '↓';
-document.body.appendChild(scrollArrow);
+    const scrollArrow = document.createElement('div');
+    scrollArrow.className = 'scroll-to-options-arrow';
+    scrollArrow.innerHTML = '↓';
+    document.body.appendChild(scrollArrow);
 
-function scrollToOptions() {
-    const optionsSection = document.getElementById('options-section');
-    if (!optionsSection) return;
-    
-    // Calculate the position relative to the document
-    const rect = optionsSection.getBoundingClientRect();
-    const scrollPosition = rect.top + window.pageYOffset - 20; // 20px offset
-    
-    // Use smooth scrolling
+    function scrollToOptions() {
+        const optionsSection = document.getElementById('options-section');
+        if (!optionsSection) return;
+        
+        const rect = optionsSection.getBoundingClientRect();
+        const scrollPosition = rect.top + window.pageYOffset - 20;
+        
         window.scrollTo({
-            top: rect.top + window.scrollY - 20,
+            top: scrollPosition,
             behavior: 'smooth'
         });
-}
+    }
 
-// Handle both click and touch events
-scrollArrow.addEventListener('click', scrollToOptions);
-scrollArrow.addEventListener('touchstart', function(e) {
-    e.preventDefault(); // Prevent default touch behavior
-    scrollToOptions();
-});
+    // Click handler
+    scrollArrow.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        scrollToOptions();
+    });
+
+    // Touch handler
+    scrollArrow.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        scrollToOptions();
+    }, { passive: false });
+
+    // Update arrow visibility
+    function updateArrowVisibility() {
+        const arrow = document.querySelector('.scroll-to-options-arrow');
+        if (selectedServices.length > 0) {
+            arrow.classList.add('visible');
+        } else {
+            arrow.classList.remove('visible');
+        }
+    }
 });
 
 // Add CSS improvements
