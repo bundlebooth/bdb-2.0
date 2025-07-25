@@ -1777,7 +1777,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1: Choose a Bundle</div>
+        <div class="active">Step 1 TEST6: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
@@ -2670,12 +2670,14 @@ function scrollToOptions() {
         return;
     }
     console.log('Options section found, attempting scroll');
-
-    // Calculate the target scroll position
-    const rect = optionsSection.getBoundingClientRect();
-    const scrollPosition = rect.top + window.scrollY - 20; // -20 for offset
     
-    // Smooth scroll using window.scrollTo
+    // Get the position of the options section
+    const rect = optionsSection.getBoundingClientRect();
+    
+    // Calculate the scroll position accounting for current scroll position
+    const scrollPosition = rect.top + window.scrollY - 20; // 20px offset from top
+    
+    // Scroll to the calculated position
     window.scrollTo({
         top: scrollPosition,
         behavior: 'smooth'
