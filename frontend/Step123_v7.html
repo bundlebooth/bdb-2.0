@@ -1777,7 +1777,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1 TEST13: Choose a Bundle</div>
+        <div class="active">Step 1 TEST 14: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
@@ -2663,13 +2663,33 @@ scrollArrow.innerHTML = '↓';
 document.body.appendChild(scrollArrow);
 
 function scrollToOptions() {
-    console.log('scrollToOptions called');
     const optionsSection = document.getElementById('options-section');
+    if (!optionsSection) return;
 
-    
-    // Try both methods
-    optionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    
+    // First try the standard method
+    try {
+        optionsSection.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start',
+            inline: 'nearest'
+        });
+    } catch (e) {
+        console.log('Standard scroll failed, using fallback');
+    }
+
+    // Then ensure it worked with the more reliable method
+    setTimeout(() => {
+        const rect = optionsSection.getBoundingClientRect();
+        const scrollPosition = rect.top + window.scrollY - 20;
+        
+        // Check if we're already at the right position
+        if (Math.abs(window.scrollY - scrollPosition) > 5) {
+            window.scrollTo({
+                top: scrollPosition,
+                behavior: 'smooth'
+            });
+        }
+    }, 100);
 }
 
 // Handle both click and touch events
