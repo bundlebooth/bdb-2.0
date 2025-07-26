@@ -1171,7 +1171,6 @@
       background: #f8f9fa;
       border-radius: 8px;
       border: 1px solid #e9ecef;
-	  scroll-margin-top: 20px; 
     }
     
     .options-section h4 {
@@ -1739,7 +1738,7 @@
     /* Add this to your existing CSS */
     .scroll-to-options-arrow {
         position: fixed;
-        bottom: 70px;
+        bottom: 20px;
         right: 20px;
         width: 40px;
         height: 40px;
@@ -1759,17 +1758,6 @@
 		cursor: pointer;
 		-webkit-tap-highlight-color: transparent; /* Removes tap highlight on iOS */
     }
-	
-@media (max-width: 768px) {
-    .scroll-to-options-arrow {
-        bottom: 80px; /* Adjust for mobile browsers with bottom nav */
-    }
-    
-    /* Ensure the target section has enough padding */
-    .options-section {
-        padding-top: 30px;
-        margin-bottom: 30px;
-    }
     
     .scroll-to-options-arrow.visible {
         opacity: 1;
@@ -1781,6 +1769,56 @@
         transform: translateY(-2px) scale(1.05);
     }
 	
+	/* New styles for the scroll-to-top arrow */
+.scroll-to-top-arrow {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background-color: var(--bb-accent);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    z-index: 999;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.scroll-to-top-arrow.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.scroll-to-top-arrow:hover {
+    background-color: var(--bb-hover-grey);
+    transform: translateY(-2px) scale(1.05);
+}
+
+.scroll-arrow-label {
+    position: absolute;
+    right: 50px;
+    white-space: nowrap;
+    background: var(--bb-dark);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.scroll-to-options-arrow:hover .scroll-arrow-label,
+.scroll-to-top-arrow:hover .scroll-arrow-label {
+    opacity: 1;
+}
 
 </style>
 </head>
@@ -1789,7 +1827,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1 TEST 8: Choose a Bundle</div>
+        <div class="active">Step 1: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
@@ -2059,7 +2097,7 @@
     <button class="close-btn" onclick="document.getElementById('greeting-popup').style.display='none';">×</button>
     ✨<strong>New Features Update (v2.01)</strong>:<br/>
     • ⚖️ <strong>Compare Packages</strong> — select 2 or more to view them side by side<br/>
-    • <span class="inline-icon"><svg fill="black" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7a3.18 3.18 0 000-1.39l7.13-4.15A3.004 3.004 0 1014 4a3 3 0 002.88 2.06c.31 0 .62-.05.91-.14l.02.01L9.66 11.2a3 3 0 100 1.6l7.14 4.17c-.3.09-.61.13-.93.13A3 3 0 1018 16.08z"></path></svg></span><strong>Share Button</strong> — send packages via WhatsApp, SMS, or Email (mobile &amp; desktop friendly)
+    • <span class="inline-icon"><svg fill="black" viewbox="0 0 24 24" xmlns="http://www3.org/2000/svg"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7a3.18 3.18 0 000-1.39l7.13-4.15A3.004 3.004 0 1014 4a3 3 0 002.88 2.06c.31 0 .62-.05.91-.14l.02.01L9.66 11.2a3 3 0 100 1.6l7.14 4.17c-.3.09-.61.13-.93.13A3 3 0 1018 16.08z"></path></svg></span><strong>Share Button</strong> — send packages via WhatsApp, SMS, or Email (mobile &amp; desktop friendly)
 </div>
 
 <script>
@@ -2256,7 +2294,57 @@ document.getElementById('back-to-bundle').addEventListener('click', () => {
                 applyPromoCode();
             }
         });
+        
+        // Create scroll-to-top arrow (initially hidden)
+        const scrollToTopArrow = document.createElement('div');
+        scrollToTopArrow.className = 'scroll-to-top-arrow';
+        scrollToTopArrow.innerHTML = '↑ <span class="scroll-arrow-label">Services Selection</span>';
+        document.body.appendChild(scrollToTopArrow);
+        
+        // Set up click handler for scroll-to-top arrow
+        scrollToTopArrow.addEventListener('click', scrollToTop);
+        
+        // Set up intersection observer to show/hide arrows based on scroll position
+        setupScrollArrowsObserver();
     });
+
+    // Set up intersection observer to manage scroll arrows
+    function setupScrollArrowsObserver() {
+        const optionsSection = document.getElementById('options-section');
+        const servicesContainer = document.getElementById('services-container');
+        
+        if (!optionsSection || !servicesContainer) return;
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const scrollToOptions = document.querySelector('.scroll-to-options-arrow');
+                const scrollToTop = document.querySelector('.scroll-to-top-arrow');
+                
+                if (entry.target === optionsSection) {
+                    // Options section visibility changed
+                    if (entry.isIntersecting) {
+                        // Options section is visible - show scroll-to-top arrow
+                        scrollToTop.classList.add('visible');
+                        if (scrollToOptions) scrollToOptions.classList.remove('visible');
+                    } else {
+                        // Options section is not visible - hide scroll-to-top arrow
+                        scrollToTop.classList.remove('visible');
+                    }
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        observer.observe(optionsSection);
+        if (servicesContainer) observer.observe(servicesContainer);
+    }
+
+    // Scroll to top of page
+    function scrollToTop() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
 
     // Apply promo code with all validation checks
 
@@ -2671,44 +2759,29 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
 const scrollArrow = document.createElement('div');
 scrollArrow.className = 'scroll-to-options-arrow';
-scrollArrow.innerHTML = '↓';
+scrollArrow.innerHTML = '↓ <span class="scroll-arrow-label">Addons and Options</span>';
 document.body.appendChild(scrollArrow);
 
 function scrollToOptions() {
+    console.log('scrollToOptions called');
     const optionsSection = document.getElementById('options-section');
-    if (!optionsSection) return;
-    
-    // Get the position relative to the iframe
-    const rect = optionsSection.getBoundingClientRect();
-    
-    // Scroll the iframe itself
-    try {
-        // First try standard scrolling
-        optionsSection.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'start' 
-        });
-        
-        // Then adjust with a slight delay to ensure it works on mobile
-        setTimeout(() => {
-            // Calculate position accounting for any fixed headers in parent
-            const scrollPosition = rect.top + window.scrollY - 20;
-            
-            // Try both methods to maximize compatibility
-            window.scrollTo({
-                top: scrollPosition,
-                behavior: 'smooth'
-            });
-            
-            // Also notify parent iframe to adjust if needed
-            notifyParentOfScroll(scrollPosition);
-        }, 100);
-    } catch (e) {
-        console.error('Scroll failed:', e);
+    if (!optionsSection) {
+        console.error('Options section not found');
+        return;
     }
+    console.log('Options section found, attempting scroll');
+    
+    // Try both methods
+    optionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    
+    setTimeout(() => {
+        const rect = optionsSection.getBoundingClientRect();
+        window.scrollTo({
+            top: rect.top + window.scrollY - 20,
+            behavior: 'smooth'
+        });
+    }, 100);
 }
-
-
 
 // Handle both click and touch events
 scrollArrow.addEventListener('click', scrollToOptions);
@@ -4299,3 +4372,37 @@ body {
 </script>
 </body>
 </html>
+
+let lastStep = null;
+let lastHeight = 0;
+function notifyParentOfStepChange() {
+    const currentStep = getCurrentStep();
+    const currentHeight = document.body.scrollHeight;
+    
+    // Only send if step changed or height changed significantly (>20px)
+    if (currentStep !== lastStep || Math.abs(currentHeight - lastHeight) > 20) {
+        try {
+            // Determine the correct parent origin
+            let parentOrigin;
+            try {
+                // First try to get the parent's actual origin
+                parentOrigin = window.parent.location.origin;
+            } catch (e) {
+                // Fallback for cross-origin situations
+                parentOrigin = 'https://bundlebooth.ca'; // Your production domain
+            }
+            
+            // Send the message
+            window.parent.postMessage({
+                type: 'stepChanged',
+                step: currentStep,
+                height: currentHeight
+            }, parentOrigin);
+            
+            lastStep = currentStep;
+            lastHeight = currentHeight;
+        } catch (error) {
+            console.error('postMessage failed:', error);
+        }
+    }
+}
