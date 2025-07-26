@@ -1777,7 +1777,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1 TEST9: Choose a Bundle</div>
+        <div class="active">Step 1 TEST10: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
@@ -2682,20 +2682,8 @@ function scrollToOptions() {
 }
 
 // Handle both click and touch events
-scrollArrow.addEventListener('click', function(e) {
-    e.preventDefault();
-    scrollToOptions();
-});
-
-scrollArrow.addEventListener('touchstart', function(e) {
-    e.preventDefault();
-    scrollToOptions();
-});
-
-// Make sure touch events don't trigger both touch and click handlers
-scrollArrow.addEventListener('touchend', function(e) {
-    e.preventDefault();
-});
+scrollArrow.addEventListener('click', scrollToOptions);
+scrollArrow.addEventListener('touchstart', scrollToOptions);
 });
 
 // Add CSS improvements
