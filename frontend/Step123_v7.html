@@ -1736,34 +1736,38 @@
 }
 
     /* Add this to your existing CSS */
-.scroll-to-options-arrow {
-  position: fixed;
-  width: 50px;
-  height: 50px;
-  background-color: #3498db;
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-  z-index: 9999;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.3s ease;
-}
-
-.scroll-to-options-arrow.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
+    .scroll-to-options-arrow {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        background-color: var(--bb-accent);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        z-index: 999;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+		touch-action: manipulation; /* Improves touch responsiveness */
+		cursor: pointer;
+		-webkit-tap-highlight-color: transparent; /* Removes tap highlight on iOS */
+    }
     
+    .scroll-to-options-arrow.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
     
-.scroll-to-options-arrow:hover {
-    background-color: var(--bb-hover-grey);
-    transform: translateY(-2px) scale(1.05);
-}
+    .scroll-to-options-arrow:hover {
+        background-color: var(--bb-hover-grey);
+        transform: translateY(-2px) scale(1.05);
+    }
 	
 
 </style>
@@ -1773,7 +1777,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1 TEST 21: Choose a Bundle</div>
+        <div class="active">Step 1: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
@@ -2652,87 +2656,81 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 500);
 });
 
-// Scroll arrow implementation
 document.addEventListener('DOMContentLoaded', () => {
-  const scrollArrow = document.createElement('div');
-  scrollArrow.className = 'scroll-to-options-arrow';
-  scrollArrow.innerHTML = '↓';
-  document.body.appendChild(scrollArrow);
-// Replace the existing scrollToOptions function with this updated version
-function scrollToOptions() {
-    const optionsSection = document.getElementById('options-section');
-    if (!optionsSection) return;
+const scrollArrow = document.createElement('div');
+scrollArrow.className = 'scroll-to-options-arrow';
+scrollArrow.innerHTML = '↓';
+document.body.appendChild(scrollArrow);
 
-    // Calculate position relative to document
-    const rect = optionsSection.getBoundingClientRect();
-    const targetPosition = rect.top + window.pageYOffset;
+function scrollToOptions() {
+    console.log('scrollToOptions called');
+    const optionsSection = document.getElementById('options-section');
+    if (!optionsSection) {
+        console.error('Options section not found');
+        return;
+    }
+    console.log('Options section found, attempting scroll');
     
-    // First try to scroll the parent window (for all devices)
-    try {
-        window.parent.postMessage({
-            type: 'scrollToPosition',
-            position: targetPosition,
-            elementId: 'options-section'
-        }, '*'); // Using '*' for broader compatibility
-        
-        // Fallback to internal scroll if parent doesn't respond
-        setTimeout(() => {
-            if (!window.scrollPositionUpdated) {
-                window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                });
-            }
-            window.scrollPositionUpdated = false;
-        }, 100);
-    } catch (e) {
-        // If postMessage fails, use internal scroll
+    // Try both methods
+    optionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    
+    setTimeout(() => {
+        const rect = optionsSection.getBoundingClientRect();
         window.scrollTo({
-            top: targetPosition,
+            top: rect.top + window.scrollY - 20,
             behavior: 'smooth'
         });
-    }
+    }, 100);
 }
 
-// Add this to your parent page code (outside the iframe):
-window.addEventListener('message', function(event) {
-    if (event.data.type === 'scrollToPosition') {
-        window.scrollPositionUpdated = true;
-        window.scrollTo({
-            top: event.data.position,
-            behavior: 'smooth'
-        });
-        
-        // If we have an element ID, also focus it for accessibility
-        if (event.data.elementId) {
-            const element = document.getElementById(event.data.elementId);
-            if (element) {
-                element.focus();
-                element.setAttribute('tabindex', '-1'); // Make focusable if needed
-            }
-        }
-    }
+// Handle both click and touch events
+scrollArrow.addEventListener('click', scrollToOptions);
+scrollArrow.addEventListener('touchstart', function(e) {
+    e.preventDefault(); // Prevent default touch behavior
+    scrollToOptions();
+});
 });
 
-  // Update arrow visibility
-  window.updateScrollArrowVisibility = function() {
-    const scrollArrow = document.querySelector('.scroll-to-options-arrow');
-    if (!scrollArrow) return;
-    
-    if (selectedServices.length > 0) {
-      scrollArrow.classList.add('visible');
-      const selectedElements = document.querySelectorAll('.package.selected');
-      if (selectedElements.length > 0) {
-        const lastSelected = selectedElements[selectedElements.length - 1];
-        const rect = lastSelected.getBoundingClientRect();
-        scrollArrow.style.top = `${rect.bottom + window.pageYOffset - 30}px`;
-        scrollArrow.style.right = '20px';
-      }
-    } else {
-      scrollArrow.classList.remove('visible');
+// Add CSS improvements
+const style = document.createElement('style');
+style.textContent = `
+    .scroll-to-options-arrow {
+        touch-action: manipulation;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        background-color: var(--bb-accent);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        z-index: 999;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
     }
-  };
-});
+    .scroll-to-options-arrow.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+`;
+document.head.appendChild(style);
+
+// Function to show/hide the scroll arrow based on selected services
+function updateScrollArrowVisibility() {
+    const scrollArrow = document.querySelector('.scroll-to-options-arrow');
+    if (selectedServices.length > 0) {
+        scrollArrow.classList.add('visible');
+    } else {
+        scrollArrow.classList.remove('visible');
+    }
+}
 
     // Updated renderStep3 function to handle dynamic discounts
     function renderStep3() {
