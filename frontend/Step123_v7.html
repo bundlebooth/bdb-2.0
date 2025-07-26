@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width,initial-scale=1,maximum-scale=0,user-scalable=no" name="viewport"/>
 <meta http-equiv="Permissions-Policy" content="payment=(self 'https://bundlebooth.ca')">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5.0, minimum-scale=1">
 <title>BundleBooth Custom Builder</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
 <script src="https://js.stripe.com/v3/"></script>
@@ -3051,16 +3050,21 @@ function setupOptionsSection() {
                     const scrollBtn = serviceCard.querySelector('.scroll-to-options-btn');
                     if (scrollBtn) {
                         scrollBtn.dataset.optionsId = `options-${service.slug}`;
-                        scrollBtn.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            const optionsElement = document.getElementById(scrollBtn.dataset.optionsId);
-                            if (optionsElement) {
-                                optionsElement.scrollIntoView({ 
-                                    behavior: 'smooth', 
-                                    block: 'start' 
-                                });
-                            }
-                        });
+function handleScrollButtonClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const optionsElement = document.getElementById(this.dataset.optionsId);
+    if (optionsElement) {
+        optionsElement.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+        });
+    }
+}
+
+// Add multiple event listeners
+scrollBtn.addEventListener('click', handleScrollButtonClick);
+scrollBtn.addEventListener('touchend', handleScrollButtonClick);
                     }
                 }
             }
