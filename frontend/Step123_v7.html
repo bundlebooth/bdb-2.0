@@ -2052,29 +2052,55 @@
 
 <script>
     // Configuration
-    const config = {
+const config = {
         backendUrl: 'https://bdb-2-0-calendar-api-backend.onrender.com',
         emailBackendUrl: 'https://bdb-2-0-brevo-email-backend.onrender.com/send-booking-email',
         stripeBackendUrl: 'https://bdb-2-0-stripe-api-backend.onrender.com',
-           workingHours: { 
-        start: 13, // 9 AM EST = 13 UTC (during daylight time)
-        end: 28    // 12 AM EST = 4 AM UTC (next day)
-    },
-    slotDuration: 180
+        workingHours: { 
+            start: 13, // 9 AM EST = 13 UTC (during daylight time)
+            end: 28    // 12 AM EST = 4 AM UTC (next day)
+        },
+        slotDuration: 180
     };
-	
-	 const parentOrigin = 'https://bundlebooth.ca' !== window.parent.location 
-        ? 'https://bundlebooth.ca' 
-        : window.location.origin;
-    
+
+    // ===== IFRAME COMMUNICATION SETUP ===== //
+    const parentOrigin = (function() {
+        try {
+            // Try to get parent origin directly
+            return window.parent.location.origin;
+        } catch (e) {
+            // Fallback for cross-origin iframes
+            return 'https://bundlebooth.ca';
+        }
+    })();
+
+    let lastReportedHeight = 0;
     function reportHeightToParent() {
-        const height = document.body.scrollHeight;
-        window.parent.postMessage({
-            type: 'heightUpdate',
-            height: height
-        }, parentOrigin);
+        try {
+            const currentHeight = Math.max(
+                document.documentElement.scrollHeight,
+                document.body.scrollHeight
+            );
+            
+            // Only report if height changed significantly (>10px)
+            if (Math.abs(currentHeight - lastReportedHeight) > 10) {
+                window.parent.postMessage({
+                    type: 'heightUpdate',
+                    height: currentHeight,
+                    step: getCurrentStep()
+                }, parentOrigin);
+                lastReportedHeight = currentHeight;
+            }
+        } catch (error) {
+            console.error('Error reporting height:', error);
+        }
     }
 
+    function getCurrentStep() {
+        if (document.getElementById('step-3').style.display !== 'none') return 3;
+        if (document.getElementById('step-2').style.display !== 'none') return 2;
+        return 1;
+    }
 
     // Global variables
     let servicesIncluded = {};
