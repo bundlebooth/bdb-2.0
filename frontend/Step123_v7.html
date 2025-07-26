@@ -1171,6 +1171,8 @@
       background: #f8f9fa;
       border-radius: 8px;
       border: 1px solid #e9ecef;
+      position: relative;
+      scroll-margin-top: 20px;
     }
     
     .options-section h4 {
@@ -1735,10 +1737,10 @@
     border-color: var(--bb-accent);
 }
 
-    /* Add this to your existing CSS */
+    /* Updated scroll arrow styles */
     .scroll-to-options-arrow {
         position: fixed;
-        bottom: 20px;
+        bottom: 80px; /* Position above the scroll-to-top arrow */
         right: 20px;
         width: 40px;
         height: 40px;
@@ -1748,15 +1750,14 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        cursor: pointer;
         box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         z-index: 999;
         opacity: 0;
         transform: translateY(20px);
         transition: all 0.3s ease;
-		touch-action: manipulation; /* Improves touch responsiveness */
-		cursor: pointer;
-		-webkit-tap-highlight-color: transparent; /* Removes tap highlight on iOS */
+        cursor: pointer;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
     }
     
     .scroll-to-options-arrow.visible {
@@ -1766,10 +1767,28 @@
     
     .scroll-to-options-arrow:hover {
         background-color: var(--bb-hover-grey);
-        transform: translateY(-2px) scale(1.05);
+        transform: translateY(0) scale(1.05);
     }
-	
-	/* New styles for the scroll-to-top arrow */
+    
+    .scroll-arrow-label {
+        position: absolute;
+        right: 50px;
+        white-space: nowrap;
+        background: var(--bb-dark);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .scroll-to-options-arrow:hover .scroll-arrow-label,
+    .scroll-to-top-arrow:hover .scroll-arrow-label {
+        opacity: 1;
+    }
+    
+    /* New styles for the scroll-to-top arrow */
 .scroll-to-top-arrow {
     position: fixed;
     bottom: 20px;
@@ -1800,24 +1819,6 @@
 .scroll-to-top-arrow:hover {
     background-color: var(--bb-hover-grey);
     transform: translateY(-2px) scale(1.05);
-}
-
-.scroll-arrow-label {
-    position: absolute;
-    right: 50px;
-    white-space: nowrap;
-    background: var(--bb-dark);
-    color: white;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 12px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.scroll-to-options-arrow:hover .scroll-arrow-label,
-.scroll-to-top-arrow:hover .scroll-arrow-label {
-    opacity: 1;
 }
 
 </style>
@@ -2097,7 +2098,7 @@
     <button class="close-btn" onclick="document.getElementById('greeting-popup').style.display='none';">×</button>
     ✨<strong>New Features Update (v2.01)</strong>:<br/>
     • ⚖️ <strong>Compare Packages</strong> — select 2 or more to view them side by side<br/>
-    • <span class="inline-icon"><svg fill="black" viewbox="0 0 24 24" xmlns="http://www3.org/2000/svg"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7a3.18 3.18 0 000-1.39l7.13-4.15A3.004 3.004 0 1014 4a3 3 0 002.88 2.06c.31 0 .62-.05.91-.14l.02.01L9.66 11.2a3 3 0 100 1.6l7.14 4.17c-.3.09-.61.13-.93.13A3 3 0 1018 16.08z"></path></svg></span><strong>Share Button</strong> — send packages via WhatsApp, SMS, or Email (mobile &amp; desktop friendly)
+    • <span class="inline-icon"><svg fill="black" viewbox="0 0 24 24" xmlns="http://www3.org/0/svg"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7a3.18 3.18 0 000-1.39l7.13-4.15A3.004 3.004 0 1014 4a3 3 0 002.88 2.06c.31 0 .62-.05.91-.14l.02.01L9.66 11.2a3 3 0 100 1.6l7.14 4.17c-.3.09-.61.13-.93.13A3 3 0 1018 16.08z"></path></svg></span><strong>Share Button</strong> — send packages via WhatsApp, SMS, or Email (mobile &amp; desktop friendly)
 </div>
 
 <script>
@@ -2304,6 +2305,15 @@ document.getElementById('back-to-bundle').addEventListener('click', () => {
         // Set up click handler for scroll-to-top arrow
         scrollToTopArrow.addEventListener('click', scrollToTop);
         
+        // Create scroll-to-options arrow (initially hidden)
+        const scrollToOptionsArrow = document.createElement('div');
+        scrollToOptionsArrow.className = 'scroll-to-options-arrow';
+        scrollToOptionsArrow.innerHTML = '↓ <span class="scroll-arrow-label">Options Section</span>';
+        document.body.appendChild(scrollToOptionsArrow);
+        
+        // Set up click handler for scroll-to-options arrow
+        scrollToOptionsArrow.addEventListener('click', scrollToOptions);
+        
         // Set up intersection observer to show/hide arrows based on scroll position
         setupScrollArrowsObserver();
     });
@@ -2323,12 +2333,18 @@ document.getElementById('back-to-bundle').addEventListener('click', () => {
                 if (entry.target === optionsSection) {
                     // Options section visibility changed
                     if (entry.isIntersecting) {
-                        // Options section is visible - show scroll-to-top arrow
-                        scrollToTop.classList.add('visible');
-                        if (scrollToOptions) scrollToOptions.classList.remove('visible');
+                        // Options section is visible - hide scroll-to-options arrow
+                        scrollToOptions.classList.remove('visible');
+                        
+                        // Show scroll-to-top arrow if we're scrolled down
+                        if (window.scrollY > 200) {
+                            scrollToTop.classList.add('visible');
+                        }
                     } else {
-                        // Options section is not visible - hide scroll-to-top arrow
-                        scrollToTop.classList.remove('visible');
+                        // Options section is not visible - show scroll-to-options arrow
+                        if (selectedServices.length > 0 && window.scrollY > 200) {
+                            scrollToOptions.classList.add('visible');
+                        }
                     }
                 }
             });
@@ -2336,6 +2352,47 @@ document.getElementById('back-to-bundle').addEventListener('click', () => {
         
         observer.observe(optionsSection);
         if (servicesContainer) observer.observe(servicesContainer);
+        
+        // Also show/hide based on window scroll
+        window.addEventListener('scroll', function() {
+            const scrollToOptions = document.querySelector('.scroll-to-options-arrow');
+            const scrollToTop = document.querySelector('.scroll-to-top-arrow');
+            const optionsSection = document.getElementById('options-section');
+            
+            if (!optionsSection) return;
+            
+            const rect = optionsSection.getBoundingClientRect();
+            const isOptionsVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
+            
+            if (isOptionsVisible) {
+                scrollToOptions.classList.remove('visible');
+            } else if (selectedServices.length > 0 && window.scrollY > 200) {
+                scrollToOptions.classList.add('visible');
+            }
+            
+            // Show/hide scroll-to-top arrow
+            if (window.scrollY > 200) {
+                scrollToTop.classList.add('visible');
+            } else {
+                scrollToTop.classList.remove('visible');
+            }
+        });
+    }
+
+    // Scroll to options section
+    function scrollToOptions() {
+        const optionsSection = document.getElementById('options-section');
+        if (!optionsSection) return;
+        
+        // Calculate position with offset
+        const rect = optionsSection.getBoundingClientRect();
+        const scrollPosition = rect.top + window.scrollY - 20;
+        
+        // Smooth scroll
+        window.scrollTo({
+            top: scrollPosition,
+            behavior: 'smooth'
+        });
     }
 
     // Scroll to top of page
@@ -2346,117 +2403,130 @@ document.getElementById('back-to-bundle').addEventListener('click', () => {
         });
     }
 
+    // Update arrow visibility when services are selected/deselected
+    function updateScrollArrowVisibility() {
+        const scrollArrow = document.querySelector('.scroll-to-options-arrow');
+        if (selectedServices.length > 0 && window.scrollY > 200) {
+            const optionsSection = document.getElementById('options-section');
+            const rect = optionsSection.getBoundingClientRect();
+            const isOptionsVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
+            
+            if (!isOptionsVisible) {
+                scrollArrow.classList.add('visible');
+            }
+        } else {
+            scrollArrow.classList.remove('visible');
+        }
+    }
+
     // Apply promo code with all validation checks
-
-// Updated applyPromoCode function
-function applyPromoCode() {
-    const promoCodeInput = document.getElementById('promo-code');
-    const promoCode = promoCodeInput.value.trim().toUpperCase();
-    const errorElement = document.getElementById('promo-error');
-    const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
-    
-    // Reset previous state
-    errorElement.textContent = '';
-    errorElement.classList.remove('invalid');
-    
-    // First check if this is a special discounted bundle
-    if (selectedBundle && selectedBundle.Special) {
-        errorElement.textContent = 'Promo codes cannot be applied to discounted bundles.';
-        errorElement.classList.add('invalid');
-        promoCodeApplied = null;
-        promoDiscount = 0;
-        updatePrices();
-        return;
-    }
-    
-    if (!promoCode) {
-        errorElement.textContent = 'Please enter a promo code';
-        errorElement.classList.add('invalid');
-        promoCodeApplied = null;
-        promoDiscount = 0;
-        updatePrices();
-        return;
-    }
-
-    const validCode = validPromoCodes.find(code => code.promoCode.toUpperCase() === promoCode);
-    
-    if (!validCode) {
-        errorElement.textContent = 'Invalid promo code';
-        errorElement.classList.add('invalid');
-        promoCodeApplied = null;
-        promoDiscount = 0;
-        updatePrices();
-        return;
-    }
-
-    // Check if promo code is active
-    if (!validCode.isActive) {
-        errorElement.textContent = 'This promo code is not currently active';
-        errorElement.classList.add('invalid');
-        promoCodeApplied = null;
-        promoDiscount = 0;
-        updatePrices();
-        return;
-    }
-
-    // Check validity dates
-    const today = new Date();
-    if (validCode.validFrom && new Date(validCode.validFrom) > today) {
-        errorElement.textContent = 'This promo code is not valid yet';
-        errorElement.classList.add('invalid');
-        promoCodeApplied = null;
-        promoDiscount = 0;
-        updatePrices();
-        return;
-    }
-    
-    if (validCode.validTo && new Date(validCode.validTo) < today) {
-        errorElement.textContent = 'This promo code has expired';
-        errorElement.classList.add('invalid');
-        promoCodeApplied = null;
-        promoDiscount = 0;
-        updatePrices();
-        return;
-    }
-
-    // Check minimum order value
-    if (validCode.minimumOrderValue && subtotal < validCode.minimumOrderValue) {
-        errorElement.textContent = `Minimum order of $${validCode.minimumOrderValue} required for this promo`;
-        errorElement.classList.add('invalid');
-        promoCodeApplied = null;
-        promoDiscount = 0;
-        updatePrices();
-        return;
-    }
-
-    // Check applicable categories
-    if (validCode.applicableCategories && validCode.applicableCategories.length > 0) {
-        const hasApplicableService = selectedServices.some(service =>
-            validCode.applicableCategories.includes(service.ServiceType)
-        );
-        if (!hasApplicableService) {
-            errorElement.textContent = 'This promo code does not apply to your selected services';
+    function applyPromoCode() {
+        const promoCodeInput = document.getElementById('promo-code');
+        const promoCode = promoCodeInput.value.trim().toUpperCase();
+        const errorElement = document.getElementById('promo-error');
+        const subtotal = selectedServices.reduce((sum, service) => sum + (service.selectedPrice || service.price || 0), 0);
+        
+        // Reset previous state
+        errorElement.textContent = '';
+        errorElement.classList.remove('invalid');
+        
+        // First check if this is a special discounted bundle
+        if (selectedBundle && selectedBundle.Special) {
+            errorElement.textContent = 'Promo codes cannot be applied to discounted bundles.';
             errorElement.classList.add('invalid');
             promoCodeApplied = null;
             promoDiscount = 0;
             updatePrices();
             return;
         }
+        
+        if (!promoCode) {
+            errorElement.textContent = 'Please enter a promo code';
+            errorElement.classList.add('invalid');
+            promoCodeApplied = null;
+            promoDiscount = 0;
+            updatePrices();
+            return;
+        }
+
+        const validCode = validPromoCodes.find(code => code.promoCode.toUpperCase() === promoCode);
+        
+        if (!validCode) {
+            errorElement.textContent = 'Invalid promo code';
+            errorElement.classList.add('invalid');
+            promoCodeApplied = null;
+            promoDiscount = 0;
+            updatePrices();
+            return;
+        }
+
+        // Check if promo code is active
+        if (!validCode.isActive) {
+            errorElement.textContent = 'This promo code is not currently active';
+            errorElement.classList.add('invalid');
+            promoCodeApplied = null;
+            promoDiscount = 0;
+            updatePrices();
+            return;
+        }
+
+        // Check validity dates
+        const today = new Date();
+        if (validCode.validFrom && new Date(validCode.validFrom) > today) {
+            errorElement.textContent = 'This promo code is not valid yet';
+            errorElement.classList.add('invalid');
+            promoCodeApplied = null;
+            promoDiscount = 0;
+            updatePrices();
+            return;
+        }
+        
+        if (validCode.validTo && new Date(validCode.validTo) < today) {
+            errorElement.textContent = 'This promo code has expired';
+            errorElement.classList.add('invalid');
+            promoCodeApplied = null;
+            promoDiscount = 0;
+            updatePrices();
+            return;
+        }
+
+        // Check minimum order value
+        if (validCode.minimumOrderValue && subtotal < validCode.minimumOrderValue) {
+            errorElement.textContent = `Minimum order of $${validCode.minimumOrderValue} required for this promo`;
+            errorElement.classList.add('invalid');
+            promoCodeApplied = null;
+            promoDiscount = 0;
+            updatePrices();
+            return;
+        }
+
+        // Check applicable categories
+        if (validCode.applicableCategories && validCode.applicableCategories.length > 0) {
+            const hasApplicableService = selectedServices.some(service =>
+                validCode.applicableCategories.includes(service.ServiceType)
+            );
+            if (!hasApplicableService) {
+                errorElement.textContent = 'This promo code does not apply to your selected services';
+                errorElement.classList.add('invalid');
+                promoCodeApplied = null;
+                promoDiscount = 0;
+                updatePrices();
+                return;
+            }
+        }
+
+        // Calculate discount
+        if (validCode.discountType === 'percentage') {
+            promoDiscount = subtotal * (validCode.discountValue / 100);
+        } else {
+            promoDiscount = validCode.discountValue;
+        }
+
+        promoCodeApplied = validCode;
+        errorElement.textContent = validCode.description || `Promo code applied: $${promoDiscount.toFixed(2)} off`;
+        errorElement.classList.remove('invalid');
+        updatePrices();
     }
-
-    // Calculate discount
-    if (validCode.discountType === 'percentage') {
-        promoDiscount = subtotal * (validCode.discountValue / 100);
-    } else {
-        promoDiscount = validCode.discountValue;
-    }
-
-    promoCodeApplied = validCode;
-    errorElement.textContent = validCode.description || `Promo code applied: $${promoDiscount.toFixed(2)} off`;
-    errorElement.classList.remove('invalid');
-    updatePrices();
-}
-
 
     // Set up progress bar navigation
     function setupProgressBarNavigation() {
@@ -2755,82 +2825,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 500);
 });
-
-document.addEventListener('DOMContentLoaded', () => {
-const scrollArrow = document.createElement('div');
-scrollArrow.className = 'scroll-to-options-arrow';
-scrollArrow.innerHTML = '↓ <span class="scroll-arrow-label">Addons and Options</span>';
-document.body.appendChild(scrollArrow);
-
-function scrollToOptions() {
-    console.log('scrollToOptions called');
-    const optionsSection = document.getElementById('options-section');
-    if (!optionsSection) {
-        console.error('Options section not found');
-        return;
-    }
-    console.log('Options section found, attempting scroll');
-    
-    // Try both methods
-    optionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    
-    setTimeout(() => {
-        const rect = optionsSection.getBoundingClientRect();
-        window.scrollTo({
-            top: rect.top + window.scrollY - 20,
-            behavior: 'smooth'
-        });
-    }, 100);
-}
-
-// Handle both click and touch events
-scrollArrow.addEventListener('click', scrollToOptions);
-scrollArrow.addEventListener('touchstart', function(e) {
-    e.preventDefault(); // Prevent default touch behavior
-    scrollToOptions();
-});
-});
-
-// Add CSS improvements
-const style = document.createElement('style');
-style.textContent = `
-    .scroll-to-options-arrow {
-        touch-action: manipulation;
-        cursor: pointer;
-        -webkit-tap-highlight-color: transparent;
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 40px;
-        height: 40px;
-        background-color: var(--bb-accent);
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        z-index: 999;
-        opacity: 0;
-        transform: translateY(20px);
-        transition: all 0.3s ease;
-    }
-    .scroll-to-options-arrow.visible {
-        opacity: 1;
-        transform: translateY(0);
-    }
-`;
-document.head.appendChild(style);
-
-// Function to show/hide the scroll arrow based on selected services
-function updateScrollArrowVisibility() {
-    const scrollArrow = document.querySelector('.scroll-to-options-arrow');
-    if (selectedServices.length > 0) {
-        scrollArrow.classList.add('visible');
-    } else {
-        scrollArrow.classList.remove('visible');
-    }
-}
 
     // Updated renderStep3 function to handle dynamic discounts
     function renderStep3() {
@@ -3513,20 +3507,29 @@ if (service.features) {
 
     // Update scroll arrow visibility based on selections
     function updateScrollArrowVisibility() {
-        const scrollArrow = document.querySelector('.scroll-to-options-arrow');
-        if (!scrollArrow) return;
-        
-        if (selectedServices.length > 0) {
-            // Find the last selected service to position the arrow
-            const selectedElements = document.querySelectorAll('.package.selected');
-            if (selectedElements.length > 0) {
-                const lastSelected = selectedElements[selectedElements.length - 1];
-                positionScrollArrow(lastSelected);
+    const scrollArrow = document.querySelector('.scroll-to-options-arrow');
+    if (selectedServices.length > 0) {
+        scrollArrow.classList.add('visible');
+        // Check current position to set correct direction
+        const optionsSection = document.getElementById('options-section');
+        if (optionsSection) {
+            const rect = optionsSection.getBoundingClientRect();
+            const isOptionsVisible = rect.top <= window.innerHeight && rect.bottom >= 0;
+            
+            if (isOptionsVisible) {
+                scrollArrow.classList.remove('down');
+                scrollArrow.classList.add('up');
+                scrollArrow.querySelector('.arrow-text').textContent = 'Services Selection';
+            } else {
+                scrollArrow.classList.remove('up');
+                scrollArrow.classList.add('down');
+                scrollArrow.querySelector('.arrow-text').textContent = 'Addons and Options';
             }
-        } else {
-            scrollArrow.classList.remove('visible');
         }
+    } else {
+        scrollArrow.classList.remove('visible');
     }
+}
 
 
     // Get count of selected services in a category
