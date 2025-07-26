@@ -2658,33 +2658,61 @@ document.addEventListener('DOMContentLoaded', () => {
   scrollArrow.className = 'scroll-to-options-arrow';
   scrollArrow.innerHTML = '↓';
   document.body.appendChild(scrollArrow);
-
-  function scrollToOptions() {
+// Replace the existing scrollToOptions function with this updated version
+function scrollToOptions() {
     const optionsSection = document.getElementById('options-section');
     if (!optionsSection) return;
 
-    // Calculate position relative to iframe
+    // Calculate position relative to document
     const rect = optionsSection.getBoundingClientRect();
     const targetPosition = rect.top + window.pageYOffset;
     
-    // Send scroll request to parent
-    window.parent.postMessage({
-      type: 'scrollToPosition',
-      position: targetPosition
-    }, 'https://bundlebooth.github.io');
-    
-    // Scroll internally as fallback
-    window.scrollTo({
-      top: targetPosition,
-      behavior: 'smooth'
-    });
-  }
+    // First try to scroll the parent window (for all devices)
+    try {
+        window.parent.postMessage({
+            type: 'scrollToPosition',
+            position: targetPosition,
+            elementId: 'options-section'
+        }, '*'); // Using '*' for broader compatibility
+        
+        // Fallback to internal scroll if parent doesn't respond
+        setTimeout(() => {
+            if (!window.scrollPositionUpdated) {
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+            }
+            window.scrollPositionUpdated = false;
+        }, 100);
+    } catch (e) {
+        // If postMessage fails, use internal scroll
+        window.scrollTo({
+            top: targetPosition,
+            behavior: 'smooth'
+        });
+    }
+}
 
-  // Single event handler for all devices
-  scrollArrow.addEventListener('click', (e) => {
-    e.preventDefault();
-    scrollToOptions();
-  });
+// Add this to your parent page code (outside the iframe):
+window.addEventListener('message', function(event) {
+    if (event.data.type === 'scrollToPosition') {
+        window.scrollPositionUpdated = true;
+        window.scrollTo({
+            top: event.data.position,
+            behavior: 'smooth'
+        });
+        
+        // If we have an element ID, also focus it for accessibility
+        if (event.data.elementId) {
+            const element = document.getElementById(event.data.elementId);
+            if (element) {
+                element.focus();
+                element.setAttribute('tabindex', '-1'); // Make focusable if needed
+            }
+        }
+    }
+});
 
   // Update arrow visibility
   window.updateScrollArrowVisibility = function() {
