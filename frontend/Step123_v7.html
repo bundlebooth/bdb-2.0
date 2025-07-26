@@ -2052,55 +2052,16 @@
 
 <script>
     // Configuration
-const config = {
+    const config = {
         backendUrl: 'https://bdb-2-0-calendar-api-backend.onrender.com',
         emailBackendUrl: 'https://bdb-2-0-brevo-email-backend.onrender.com/send-booking-email',
         stripeBackendUrl: 'https://bdb-2-0-stripe-api-backend.onrender.com',
-        workingHours: { 
-            start: 13, // 9 AM EST = 13 UTC (during daylight time)
-            end: 28    // 12 AM EST = 4 AM UTC (next day)
-        },
-        slotDuration: 180
+           workingHours: { 
+        start: 13, // 9 AM EST = 13 UTC (during daylight time)
+        end: 28    // 12 AM EST = 4 AM UTC (next day)
+    },
+    slotDuration: 180
     };
-
-    // ===== IFRAME COMMUNICATION SETUP ===== //
-    const parentOrigin = (function() {
-        try {
-            // Try to get parent origin directly
-            return window.parent.location.origin;
-        } catch (e) {
-            // Fallback for cross-origin iframes
-            return 'https://bundlebooth.ca';
-        }
-    })();
-
-    let lastReportedHeight = 0;
-    function reportHeightToParent() {
-        try {
-            const currentHeight = Math.max(
-                document.documentElement.scrollHeight,
-                document.body.scrollHeight
-            );
-            
-            // Only report if height changed significantly (>10px)
-            if (Math.abs(currentHeight - lastReportedHeight) > 10) {
-                window.parent.postMessage({
-                    type: 'heightUpdate',
-                    height: currentHeight,
-                    step: getCurrentStep()
-                }, parentOrigin);
-                lastReportedHeight = currentHeight;
-            }
-        } catch (error) {
-            console.error('Error reporting height:', error);
-        }
-    }
-
-    function getCurrentStep() {
-        if (document.getElementById('step-3').style.display !== 'none') return 3;
-        if (document.getElementById('step-2').style.display !== 'none') return 2;
-        return 1;
-    }
 
     // Global variables
     let servicesIncluded = {};
@@ -2134,20 +2095,6 @@ let selectedSlotElement = null; // To track the currently selected time slot
             popup.style.opacity = '0';
         }, 10000);
         
-		  // Initialize iframe-parent communication
-        window.addEventListener('message', function(event) {
-            // Security check
-            if (event.origin !== parentOrigin && 
-                !event.origin.startsWith('http://localhost')) return;
-            
-            if (event.data?.type === 'getInitialHeight') {
-                reportHeightToParent();
-            }
-        });
-        
-        // Send initial height after slight delay
-        setTimeout(reportHeightToParent, 300);
-		
         // Load services included data
         try {
             const res = await fetch("https://bundlebooth.github.io/bdb-2.0/data/individual-services.json");
@@ -2655,7 +2602,6 @@ async function initializeStripe() {
         });
         
         renderStep2();
-        setTimeout(reportHeightToParent, 100); // Add this line
     }
 
     // Handle custom bundle selection
@@ -2670,7 +2616,6 @@ async function initializeStripe() {
         };
         renderStep2();
         window.scrollTo(0, 0);
-		setTimeout(reportHeightToParent, 100); // Add this line
     }
 
     // Show step 2 with services
@@ -3231,7 +3176,6 @@ function showStep(stepNumber) {
     updateProgressBar(stepNumber);
     window.scrollTo(0, 0);
     notifyParentOfStepChange();
-	setTimeout(reportHeightToParent, 300); // Add this line
 }
 
     // Render services for selected bundle
@@ -4314,19 +4258,6 @@ if (backToServices) {
 } else {
     console.warn('Back to Services button not found');
 }
-
-    // Handle window resize
-    let resizeTimeout;
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(reportHeightToParent, 200);
-    });
-
-    // Notify parent that iframe is ready
-    window.parent.postMessage({ 
-        type: 'iframeReady',
-        version: '2.0' 
-    }, parentOrigin);
 
 </script>
 <style>
