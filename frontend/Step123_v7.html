@@ -1777,14 +1777,14 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1 TEST 1: Choose a Bundle</div>
+        <div class="active">Step 1: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
     
     <div class="step" id="step-1">
         <div class="step-1-container">
-            <h2 style="margin-bottom:16px;">Step 1: Choose a Bundle</h2>
+            <h2 style="margin-bottom:16px;">Step 1 TEST2: Choose a Bundle</h2>
             <p class="step-description">Select from our pre-designed bundles or create your own custom package</p>
             
             <!-- Custom bundle banner at the top -->
@@ -2654,44 +2654,72 @@ document.addEventListener('DOMContentLoaded', () => {
             preloadCalendarData().catch(e => console.error('Preload failed:', e));
         }
     }, 500);
+	
+	    // Update the scroll arrow click/touch handlers
+    const scrollArrow = document.querySelector('.scroll-to-options-arrow');
+    if (scrollArrow) {
+        // Remove existing event listeners
+        scrollArrow.replaceWith(scrollArrow.cloneNode(true));
+        
+        // Get new reference after clone
+        const newScrollArrow = document.querySelector('.scroll-to-options-arrow');
+        
+        // Add unified handler that works for both click and touch
+        newScrollArrow.addEventListener('click', function(e) {
+            e.preventDefault();
+            scrollToOptions();
+        });
+        
+        // For touch devices, ensure passive is false so we can preventDefault
+        newScrollArrow.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            scrollToOptions();
+        }, { passive: false });
+    }
+
 });
 
 // Modified scroll to options function that works with parent window
 function scrollToOptions() {
     try {
-        // First try to get the parent's actual origin
-        let parentOrigin;
-        try {
-            parentOrigin = window.parent.location.origin;
-        } catch (e) {
-            // Fallback for cross-origin situations
-            parentOrigin = 'https://bundlebooth.ca'; // Your production domain
-        }
-
-        // Calculate the position of the options section within the iframe
+        // Get the options section element
         const optionsSection = document.getElementById('options-section');
-        if (!optionsSection) {
-            console.error('Options section not found');
-            return;
-        }
-
-        // Get the position of the options section relative to the iframe
-        const rect = optionsSection.getBoundingClientRect();
+        if (!optionsSection) return;
         
-        // Send message to parent window to scroll to this position
-        window.parent.postMessage({
-            type: 'scrollToElement',
-            elementId: 'options-section',
-            offset: rect.top + window.scrollY - 100 // 100px offset from top
-        }, parentOrigin);
+        // Calculate the position of the options section within the iframe
+        const rect = optionsSection.getBoundingClientRect();
+        const scrollPosition = rect.top + window.scrollY - 100; // 100px offset from top
+        
+        // Try to scroll the parent window first
+        try {
+            // Determine the parent origin (with fallback for cross-origin)
+            let parentOrigin;
+            try {
+                parentOrigin = window.parent.location.origin;
+            } catch (e) {
+                parentOrigin = 'https://bundlebooth.ca'; // Your production domain
+            }
+            
+            // Send message to parent window to scroll to this position
+            window.parent.postMessage({
+                type: 'scrollToElement',
+                scrollPosition: scrollPosition
+            }, parentOrigin);
+            
+            // If we get here, the message was sent successfully
+            return;
+        } catch (parentError) {
+            console.log('Parent scroll failed, falling back to iframe scroll');
+        }
+        
+        // Fallback: Scroll within the iframe if parent scroll fails
+        window.scrollTo({
+            top: scrollPosition,
+            behavior: 'smooth'
+        });
         
     } catch (error) {
         console.error('Error in scrollToOptions:', error);
-        // Fallback to regular scroll if message fails
-        const optionsSection = document.getElementById('options-section');
-        if (optionsSection) {
-            optionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
     }
 }
 
