@@ -2656,32 +2656,50 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 500);
 });
 
-document.addEventListener('DOMContentLoaded', () => {
+// Modified scroll to options function that works with parent window
+function scrollToOptions() {
+    try {
+        // First try to get the parent's actual origin
+        let parentOrigin;
+        try {
+            parentOrigin = window.parent.location.origin;
+        } catch (e) {
+            // Fallback for cross-origin situations
+            parentOrigin = 'https://bundlebooth.ca'; // Your production domain
+        }
+
+        // Calculate the position of the options section within the iframe
+        const optionsSection = document.getElementById('options-section');
+        if (!optionsSection) {
+            console.error('Options section not found');
+            return;
+        }
+
+        // Get the position of the options section relative to the iframe
+        const rect = optionsSection.getBoundingClientRect();
+        
+        // Send message to parent window to scroll to this position
+        window.parent.postMessage({
+            type: 'scrollToElement',
+            elementId: 'options-section',
+            offset: rect.top + window.scrollY - 100 // 100px offset from top
+        }, parentOrigin);
+        
+    } catch (error) {
+        console.error('Error in scrollToOptions:', error);
+        // Fallback to regular scroll if message fails
+        const optionsSection = document.getElementById('options-section');
+        if (optionsSection) {
+            optionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+}
+
+// Create scroll arrow element
 const scrollArrow = document.createElement('div');
 scrollArrow.className = 'scroll-to-options-arrow';
 scrollArrow.innerHTML = '↓';
 document.body.appendChild(scrollArrow);
-
-function scrollToOptions() {
-    console.log('scrollToOptions called');
-    const optionsSection = document.getElementById('options-section');
-    if (!optionsSection) {
-        console.error('Options section not found');
-        return;
-    }
-    console.log('Options section found, attempting scroll');
-    
-    // Try both methods
-    optionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    
-    setTimeout(() => {
-        const rect = optionsSection.getBoundingClientRect();
-        window.scrollTo({
-            top: rect.top + window.scrollY - 20,
-            behavior: 'smooth'
-        });
-    }, 100);
-}
 
 // Handle both click and touch events
 scrollArrow.addEventListener('click', scrollToOptions);
@@ -2689,42 +2707,12 @@ scrollArrow.addEventListener('touchstart', function(e) {
     e.preventDefault(); // Prevent default touch behavior
     scrollToOptions();
 });
-});
-
-// Add CSS improvements
-const style = document.createElement('style');
-style.textContent = `
-    .scroll-to-options-arrow {
-        touch-action: manipulation;
-        cursor: pointer;
-        -webkit-tap-highlight-color: transparent;
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 40px;
-        height: 40px;
-        background-color: var(--bb-accent);
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        z-index: 999;
-        opacity: 0;
-        transform: translateY(20px);
-        transition: all 0.3s ease;
-    }
-    .scroll-to-options-arrow.visible {
-        opacity: 1;
-        transform: translateY(0);
-    }
-`;
-document.head.appendChild(style);
 
 // Function to show/hide the scroll arrow based on selected services
 function updateScrollArrowVisibility() {
     const scrollArrow = document.querySelector('.scroll-to-options-arrow');
+    if (!scrollArrow) return;
+    
     if (selectedServices.length > 0) {
         scrollArrow.classList.add('visible');
     } else {
