@@ -1736,38 +1736,29 @@
 }
 
     /* Add this to your existing CSS */
-/* Add this to your iframe CSS */
 .scroll-to-options-arrow {
-    position: fixed !important;
-    width: 50px !important;
-    height: 50px !important;
-    background-color: var(--bb-accent) !important;
-    color: white !important;
-    border-radius: 50% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    cursor: pointer !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
-    z-index: 2147483647 !important; /* Maximum possible z-index */
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.3s ease !important;
-    -webkit-tap-highlight-color: transparent !important;
-    touch-action: none !important;
-    pointer-events: auto !important;
+  position: fixed;
+  width: 50px;
+  height: 50px;
+  background-color: #3498db;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  z-index: 9999;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
 }
 
-/* Add this to your parent page CSS */
-#bundlebooth-iframe {
-    pointer-events: auto !important;
-    overflow: hidden !important;
+.scroll-to-options-arrow.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
     
-    .scroll-to-options-arrow.visible {
-        opacity: 1;
-        transform: translateY(0);
-    }
     
 .scroll-to-options-arrow:hover {
     background-color: var(--bb-hover-grey);
@@ -1782,7 +1773,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1 TEST 19: Choose a Bundle</div>
+        <div class="active">Step 1 TEST 20: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
@@ -2661,84 +2652,58 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 500);
 });
 
+// Scroll arrow implementation
 document.addEventListener('DOMContentLoaded', () => {
-    const scrollArrow = document.createElement('div');
-    scrollArrow.className = 'scroll-to-options-arrow';
-    scrollArrow.innerHTML = '↓';
-    document.body.appendChild(scrollArrow);
+  const scrollArrow = document.createElement('div');
+  scrollArrow.className = 'scroll-to-options-arrow';
+  scrollArrow.innerHTML = '↓';
+  document.body.appendChild(scrollArrow);
 
-    function scrollParentWindow(position) {
-        // Method 1: postMessage (primary method)
-        window.parent.postMessage({
-            type: 'scrollIframeContent',
-            position: position,
-            iframeId: 'bundlebooth-iframe',
-            source: 'iframe-content'
-        }, '*');
-        
-        // Method 2: Direct parent access fallback
-        try {
-            window.parent.scrollTo({
-                top: position,
-                behavior: 'smooth'
-            });
-        } catch (e) {}
+  function scrollToOptions() {
+    const optionsSection = document.getElementById('options-section');
+    if (!optionsSection) return;
+
+    // Calculate position relative to iframe
+    const rect = optionsSection.getBoundingClientRect();
+    const targetPosition = rect.top + window.pageYOffset;
+    
+    // Send scroll request to parent
+    window.parent.postMessage({
+      type: 'scrollToPosition',
+      position: targetPosition
+    }, 'https://bundlebooth.github.io');
+    
+    // Scroll internally as fallback
+    window.scrollTo({
+      top: targetPosition,
+      behavior: 'smooth'
+    });
+  }
+
+  // Single event handler for all devices
+  scrollArrow.addEventListener('click', (e) => {
+    e.preventDefault();
+    scrollToOptions();
+  });
+
+  // Update arrow visibility
+  window.updateScrollArrowVisibility = function() {
+    const scrollArrow = document.querySelector('.scroll-to-options-arrow');
+    if (!scrollArrow) return;
+    
+    if (selectedServices.length > 0) {
+      scrollArrow.classList.add('visible');
+      const selectedElements = document.querySelectorAll('.package.selected');
+      if (selectedElements.length > 0) {
+        const lastSelected = selectedElements[selectedElements.length - 1];
+        const rect = lastSelected.getBoundingClientRect();
+        scrollArrow.style.top = `${rect.bottom + window.pageYOffset - 30}px`;
+        scrollArrow.style.right = '20px';
+      }
+    } else {
+      scrollArrow.classList.remove('visible');
     }
-
-    function scrollToOptions() {
-        const optionsSection = document.getElementById('options-section');
-        if (!optionsSection) return;
-
-        // Calculate absolute document position
-        const rect = optionsSection.getBoundingClientRect();
-        const iframeRect = document.body.getBoundingClientRect();
-        const absolutePosition = rect.top + window.pageYOffset;
-        
-        // Calculate position in parent document
-        const parentPosition = absolutePosition + iframeRect.top;
-        
-        // Scroll parent window to this position
-        scrollParentWindow(parentPosition);
-        
-        // Also scroll internally as fallback
-        window.scrollTo({
-            top: absolutePosition,
-            behavior: 'smooth'
-        });
-    }
-
-    // Unified event handler
-    function handleScrollAction(e) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        scrollToOptions();
-        return false;
-    }
-
-    // Add all relevant event listeners
-    scrollArrow.addEventListener('click', handleScrollAction);
-    scrollArrow.addEventListener('touchstart', handleScrollAction, {passive: false});
-    scrollArrow.addEventListener('pointerdown', handleScrollAction);
-
-    // Update arrow visibility
-    window.updateScrollArrowVisibility = function() {
-        const scrollArrow = document.querySelector('.scroll-to-options-arrow');
-        if (!scrollArrow) return;
-        
-        if (selectedServices.length > 0) {
-            scrollArrow.classList.add('visible');
-            // Position near last selected service
-            const selectedElements = document.querySelectorAll('.package.selected');
-            if (selectedElements.length > 0) {
-                const lastSelected = selectedElements[selectedElements.length - 1];
-                const rect = lastSelected.getBoundingClientRect();
-                scrollArrow.style.top = `${rect.bottom + window.pageYOffset - 30}px`;
-                scrollArrow.style.right = '20px';
-            }
-        } else {
-            scrollArrow.classList.remove('visible');
-        }
-    };
+  };
 });
 
     // Updated renderStep3 function to handle dynamic discounts
