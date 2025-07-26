@@ -1777,7 +1777,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1: Choose a Bundle</div>
+        <div class="active">Step 1 TEST9: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
@@ -2669,25 +2669,32 @@ function scrollToOptions() {
         console.error('Options section not found');
         return;
     }
-    console.log('Options section found, attempting scroll');
     
-    // Try both methods
-    optionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Get the position relative to the document
+    const rect = optionsSection.getBoundingClientRect();
+    const scrollPosition = rect.top + window.pageYOffset - 20;
     
-    setTimeout(() => {
-        const rect = optionsSection.getBoundingClientRect();
-        window.scrollTo({
-            top: rect.top + window.scrollY - 20,
-            behavior: 'smooth'
-        });
-    }, 100);
+    // Use window.scrollTo for consistent behavior across devices
+    window.scrollTo({
+        top: scrollPosition,
+        behavior: 'smooth'
+    });
 }
 
 // Handle both click and touch events
-scrollArrow.addEventListener('click', scrollToOptions);
-scrollArrow.addEventListener('touchstart', function(e) {
-    e.preventDefault(); // Prevent default touch behavior
+scrollArrow.addEventListener('click', function(e) {
+    e.preventDefault();
     scrollToOptions();
+});
+
+scrollArrow.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    scrollToOptions();
+});
+
+// Make sure touch events don't trigger both touch and click handlers
+scrollArrow.addEventListener('touchend', function(e) {
+    e.preventDefault();
 });
 });
 
