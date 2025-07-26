@@ -1777,7 +1777,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1 TEST10: Choose a Bundle</div>
+        <div class="active">Step 1 TEST11: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
@@ -2665,25 +2665,25 @@ document.body.appendChild(scrollArrow);
 function scrollToOptions() {
     console.log('scrollToOptions called');
     const optionsSection = document.getElementById('options-section');
-    if (!optionsSection) {
-        console.error('Options section not found');
-        return;
-    }
     
-    // Get the position relative to the document
-    const rect = optionsSection.getBoundingClientRect();
-    const scrollPosition = rect.top + window.pageYOffset - 20;
+    // Try both methods
+    optionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     
-    // Use window.scrollTo for consistent behavior across devices
-    window.scrollTo({
-        top: scrollPosition,
-        behavior: 'smooth'
-    });
+    setTimeout(() => {
+        const rect = optionsSection.getBoundingClientRect();
+        window.scrollTo({
+            top: rect.top + window.scrollY - 20,
+            behavior: 'smooth'
+        });
+    }, 100);
 }
 
 // Handle both click and touch events
 scrollArrow.addEventListener('click', scrollToOptions);
-scrollArrow.addEventListener('touchstart', scrollToOptions);
+scrollArrow.addEventListener('touchstart', function(e) {
+    e.preventDefault(); // Prevent default touch behavior
+    scrollToOptions();
+});
 });
 
 // Add CSS improvements
