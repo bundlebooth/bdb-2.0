@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,maximum-scale=0,user-scalable=no" name="viewport"/>
 <meta http-equiv="Permissions-Policy" content="payment=(self 'https://bundlebooth.ca')">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5.0, minimum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>BundleBooth Custom Builder</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
 <script src="https://js.stripe.com/v3/"></script>
@@ -1734,62 +1735,40 @@
     border-color: var(--bb-accent);
 }
 
-css
-
-
-.scroll-to-options-btn {
-    position: absolute;
-    right: 15px;
-    bottom: 15px;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: var(--bb-accent);
-    color: white;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    z-index: 5;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-	touch-action: manipulation; /* Improve touch responsiveness */
-}
+    /* Add this to your existing CSS */
+    .scroll-to-options-arrow {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        background-color: var(--bb-accent);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        z-index: 999;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+		touch-action: manipulation; /* Improves touch responsiveness */
+		cursor: pointer;
+		-webkit-tap-highlight-color: transparent; /* Removes tap highlight on iOS */
+    }
     
-.scroll-to-options-btn:hover {
-    background: var(--bb-hover-grey);
-    transform: translateY(-2px);
-}
-    
-.scroll-to-options-btn .label {
-    position: absolute;
-    white-space: nowrap;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: -25px;
-    font-size: 0.7rem;
-    color: var(--bb-accent);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-    
-    .scroll-to-options-btn:hover .label {
+    .scroll-to-options-arrow.visible {
         opacity: 1;
+        transform: translateY(0);
     }
     
-    .scroll-to-options-btn.up .chevron {
-        transform: rotate(180deg);
+    .scroll-to-options-arrow:hover {
+        background-color: var(--bb-hover-grey);
+        transform: translateY(-2px) scale(1.05);
     }
-    
-    @media (max-width: 768px) {
-        .scroll-to-options-btn {
-            width: 32px;
-            height: 32px;
-            right: 10px;
-            bottom: 10px;
-        }
-    }
+	
 
 </style>
 </head>
@@ -1798,7 +1777,7 @@ css
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1 TEST6: Choose a Bundle</div>
+        <div class="active">Step 1: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
@@ -2379,8 +2358,6 @@ function applyPromoCode() {
 }
 
 
-
-
     // Set up progress bar navigation
     function setupProgressBarNavigation() {
         const progressSteps = document.querySelectorAll('#progress-bar div');
@@ -2394,82 +2371,6 @@ function applyPromoCode() {
                 }
             });
         });
-    }
-
-
-    let lastServiceScrollPosition = 0;
-    let currentScrolledService = null;
-    
-    // Modify toggleService function to handle scroll button
-function toggleService(el, service) {
-    const idx = selectedServices.findIndex(s => s.name === service.name);
-    const serviceType = service.ServiceType;
-    const limit = selectedBundle.categories[serviceType];
-    const currentCount = getSelectedCount(serviceType);
-
-    if (idx >= 0) {
-        // Deselect service
-        selectedServices.splice(idx, 1);
-        el.classList.remove("selected");
-        const scrollBtn = el.querySelector('.scroll-to-options-btn');
-        if (scrollBtn) scrollBtn.style.display = 'none';
-    } else {
-        // For custom bundles, don't enforce limits
-        if (!selectedBundle.isCustom && currentCount >= limit) {
-            showCompareWarning(serviceType, limit);
-            return;
-        }
-        
-        // Clone the service object
-        const selectedService = JSON.parse(JSON.stringify(service));
-        selectedServices.push(selectedService);
-        el.classList.add("selected");
-        
-        // Show scroll button
-        const scrollBtn = el.querySelector('.scroll-to-options-btn');
-        if (scrollBtn) {
-            scrollBtn.style.display = 'flex';
-            scrollBtn.dataset.optionsId = `options-${service.slug}`;
-            
-            // Remove any existing event listeners first
-            scrollBtn.replaceWith(scrollBtn.cloneNode(true));
-            const newScrollBtn = el.querySelector('.scroll-to-options-btn');
-            
-            // Add both click and touch handlers
-            newScrollBtn.addEventListener('click', handleScrollButtonClick);
-            newScrollBtn.addEventListener('touchend', handleScrollButtonClick);
-        }
-    }
-    
-    updateAllProgressBars();
-    hideCompareWarning();
-    updateReviewButton();
-    setupOptionsSection();
-}
-    function handleScrollToOptions(btn, serviceEl) {
-        const optionsSection = document.getElementById('options-section');
-        
-        if (btn.classList.contains('up')) {
-            // Scroll back to service
-            serviceEl.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'center' 
-            });
-            btn.classList.remove('up');
-            btn.querySelector('.label').textContent = 'Add-ons & Options';
-        } else {
-            // Scroll to options
-            optionsSection.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
-            });
-            btn.classList.add('up');
-            btn.querySelector('.label').textContent = 'Back to Services';
-            
-            // Store reference for scrolling back
-            currentScrolledService = serviceEl;
-            lastServiceScrollPosition = serviceEl.getBoundingClientRect().top + window.scrollY;
-        }
     }
 
     // Get current step (1, 2, or 3)
@@ -2755,6 +2656,82 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 500);
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+const scrollArrow = document.createElement('div');
+scrollArrow.className = 'scroll-to-options-arrow';
+scrollArrow.innerHTML = '↓';
+document.body.appendChild(scrollArrow);
+
+function scrollToOptions() {
+    console.log('scrollToOptions called');
+    const optionsSection = document.getElementById('options-section');
+    if (!optionsSection) {
+        console.error('Options section not found');
+        return;
+    }
+    console.log('Options section found, attempting scroll');
+    
+    // Try both methods
+    optionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    
+    setTimeout(() => {
+        const rect = optionsSection.getBoundingClientRect();
+        window.scrollTo({
+            top: rect.top + window.scrollY - 20,
+            behavior: 'smooth'
+        });
+    }, 100);
+}
+
+// Handle both click and touch events
+scrollArrow.addEventListener('click', scrollToOptions);
+scrollArrow.addEventListener('touchstart', function(e) {
+    e.preventDefault(); // Prevent default touch behavior
+    scrollToOptions();
+});
+});
+
+// Add CSS improvements
+const style = document.createElement('style');
+style.textContent = `
+    .scroll-to-options-arrow {
+        touch-action: manipulation;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        background-color: var(--bb-accent);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        z-index: 999;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+    }
+    .scroll-to-options-arrow.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+`;
+document.head.appendChild(style);
+
+// Function to show/hide the scroll arrow based on selected services
+function updateScrollArrowVisibility() {
+    const scrollArrow = document.querySelector('.scroll-to-options-arrow');
+    if (selectedServices.length > 0) {
+        scrollArrow.classList.add('visible');
+    } else {
+        scrollArrow.classList.remove('visible');
+    }
+}
+
     // Updated renderStep3 function to handle dynamic discounts
     function renderStep3() {
         showStep(3);
@@ -2988,7 +2965,6 @@ function updatePrices() {
     }
 
     // Set up options section in step 2
-// In the setupOptionsSection function, ensure the options section has proper IDs:
 function setupOptionsSection() {
     const optionsSection = document.getElementById('options-section');
     optionsSection.innerHTML = '<h4>Options & Add-ons</h4>';
@@ -3008,12 +2984,11 @@ function setupOptionsSection() {
             if (service.pricingTiers && service.pricingTiers.length > 0) {
                 const serviceOptions = document.createElement('div');
                 serviceOptions.className = 'service-options-group';
-                serviceOptions.id = `options-${service.slug}`; // Important: match this ID with the scroll button's data attribute
                 serviceOptions.innerHTML = `
                     <div class="option-group-title">
                         ${service.name} Options
                     </div>
-                    <div class="option-options">
+                    <div class="option-options" id="options-${service.slug}">
                         <!-- Add-ons will be inserted here -->
                     </div>
                 `;
@@ -3042,24 +3017,11 @@ function setupOptionsSection() {
                     
                     optionsContainer.appendChild(optionDiv);
                 });
-                
-                // Link the options container to the service
-                optionsContainer.dataset.serviceSlug = service.slug;
-                
-                // Find the scroll button for this service and link it
-                const serviceCard = document.querySelector(`.package[data-service="${service.slug}"]`);
-                if (serviceCard) {
-                    const scrollBtn = serviceCard.querySelector('.scroll-to-options-btn');
-                    if (scrollBtn) {
-                        scrollBtn.dataset.optionsId = `options-${service.slug}`;
-                    }
-                }
             }
         });
     }
 }
-
-  // Update prices for sweets & brews services based on guest size
+    // Update prices for sweets & brews services based on guest size
     function updateSweetsBrewsPrices() {
         selectedServices.forEach(service => {
             if (service.ServiceType === "Sweets and Brews" && service.pricingTiers) {
@@ -3324,22 +3286,17 @@ function showStep(stepNumber) {
                     </button>
                 ` : '';
                 
-div.innerHTML = `
-    <div class="package-content" style="padding-bottom: 30px;">
-        <h3>${service.name}</h3>
-        <span class="${tagClass}">${service.ServiceType}</span>
-        <p class="description">${service.description || "No description available."}</p>
-        ${durationText ? `<p><strong>Duration:</strong> ${durationText}</p>` : ''}
-        ${service.price ? `<p><strong>Price:</strong> C$${service.price.toFixed(2)}</p>` : ''}
-        ${featuresLink}
-    </div>
-    ${featuresOverlay}
-    <button class="scroll-to-options-btn" data-service="${service.slug}">
-        <span class="chevron">▼</span>
-        <span class="label">Add-ons & Options</span>
-    </button>
-</div>
-`;
+                div.innerHTML = `
+                    <div class="package-content" style="padding-bottom: 30px;">
+                        <h3>${service.name}</h3>
+                        <span class="${tagClass}">${service.ServiceType}</span>
+                        <p class="description">${service.description || "No description available."}</p>
+                        ${durationText ? `<p><strong>Duration:</strong> ${durationText}</p>` : ''}
+                        ${service.price ? `<p><strong>Price:</strong> C$${service.price.toFixed(2)}</p>` : ''}
+                        ${featuresLink}
+                    </div>
+                    ${featuresOverlay}
+                `;
                 
                 // Add click handler for service selection
 div.addEventListener('click', () => {
@@ -3392,6 +3349,86 @@ if (service.features) {
         setupOptionsSection();
     }
 
+    // Toggle service selection
+ function toggleService(el, service) {
+        const idx = selectedServices.findIndex(s => s.name === service.name);
+        const serviceType = service.ServiceType;
+        const limit = selectedBundle.categories[serviceType];
+        const currentCount = getSelectedCount(serviceType);
+
+        if (idx >= 0) {
+            // Deselect service
+            selectedServices.splice(idx, 1);
+            el.classList.remove("selected");
+            updateScrollArrowVisibility(); // Hide arrow when deselected
+        } else {
+            // For custom bundles, don't enforce limits
+            if (!selectedBundle.isCustom && currentCount >= limit) {
+                showCompareWarning(serviceType, limit);
+                return;
+            }
+            
+            // Clone the service object to avoid reference issues
+            const selectedService = JSON.parse(JSON.stringify(service));
+            
+            // Set default pricing (base price) if service has tiers
+            if (selectedService.pricingTiers && selectedService.pricingTiers.length > 0) {
+                // Start with base price, not first tier
+                selectedService.selectedPrice = selectedService.price || selectedService.pricingTiers[0].price;
+                selectedService.selectedTier = null; // No tier selected initially
+            } else {
+                selectedService.selectedPrice = selectedService.price;
+            }
+            
+            selectedServices.push(selectedService);
+            el.classList.add("selected");
+            
+            // Position the arrow next to the selected service
+            positionScrollArrow(el);
+        }
+        
+        updateAllProgressBars();
+        hideCompareWarning();
+        updateReviewButton();
+        
+        // Show/hide options section based on selections
+        setupOptionsSection();
+    }
+	
+	   // Function to position the scroll arrow next to the selected service
+    function positionScrollArrow(serviceElement) {
+        const scrollArrow = document.querySelector('.scroll-to-options-arrow');
+        if (!scrollArrow) return;
+        
+        // Get position of the service element
+        const rect = serviceElement.getBoundingClientRect();
+        
+        // Position the arrow to the right of the service card
+        scrollArrow.style.right = '20px';
+        scrollArrow.style.top = `${rect.top + window.scrollY + (rect.height / 2) - 20}px`;
+        
+        // Make arrow visible
+        scrollArrow.classList.add('visible');
+    }
+
+    // Update scroll arrow visibility based on selections
+    function updateScrollArrowVisibility() {
+        const scrollArrow = document.querySelector('.scroll-to-options-arrow');
+        if (!scrollArrow) return;
+        
+        if (selectedServices.length > 0) {
+            // Find the last selected service to position the arrow
+            const selectedElements = document.querySelectorAll('.package.selected');
+            if (selectedElements.length > 0) {
+                const lastSelected = selectedElements[selectedElements.length - 1];
+                positionScrollArrow(lastSelected);
+            }
+        } else {
+            scrollArrow.classList.remove('visible');
+        }
+    }
+
+
     // Get count of selected services in a category
     function getSelectedCount(category) {
         return selectedServices.filter(s => s.ServiceType === category).length;
@@ -3426,38 +3463,6 @@ if (service.features) {
             }
         });
     }
-	
-function handleScrollButtonClick(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    const optionsId = this.dataset.optionsId;
-    if (!optionsId) return;
-    
-    const optionsElement = document.getElementById(optionsId);
-    if (optionsElement) {
-        // Calculate position with some offset
-        const elementPosition = optionsElement.getBoundingClientRect().top + window.pageYOffset;
-        const offsetPosition = elementPosition - 100; // 100px offset from top
-        
-        // Smooth scroll to the options section
-        window.scrollTo({
-            top: offsetPosition,
-            behavior: 'smooth'
-        });
-        
-        // Highlight the options section briefly
-        optionsElement.style.boxShadow = '0 0 0 2px var(--bb-accent)';
-        setTimeout(() => {
-            optionsElement.style.boxShadow = 'none';
-        }, 1000);
-        
-        // Add focus for better accessibility
-        optionsElement.setAttribute('tabindex', '-1');
-        optionsElement.focus();
-    }
-}
-	
 
     // Show warning when trying to select too many services in a category
     function showCompareWarning(category, limit) {
