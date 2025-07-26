@@ -1776,7 +1776,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1 TEST 16: Choose a Bundle</div>
+        <div class="active">Step 1 TEST 17: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
@@ -2665,39 +2665,48 @@ document.addEventListener('DOMContentLoaded', () => {
         const optionsSection = document.getElementById('options-section');
         if (!optionsSection) return;
 
-        // Get the position of the options section relative to the document
+        // Get the absolute position of the options section
         const rect = optionsSection.getBoundingClientRect();
-        const scrollPosition = rect.top + window.pageYOffset - 20;
+        const absoluteTop = rect.top + window.pageYOffset;
         
-        // Use window.scrollTo for consistent behavior across all devices
-        window.scrollTo({
-            top: scrollPosition,
-            behavior: 'smooth'
-        });
+        // Send message to parent window to scroll
+        if (window.parent !== window) {
+            // For iframe environment
+            window.parent.postMessage({
+                type: 'scrollToPosition',
+                position: absoluteTop,
+                elementId: 'options-section'
+            }, '*');
+        } else {
+            // For standalone testing
+            window.scrollTo({
+                top: absoluteTop,
+                behavior: 'smooth'
+            });
+        }
     }
 
-    // Handle both click and touch events the same way
-    scrollArrow.addEventListener('click', (e) => {
+    // Unified event handler
+    function handleScrollClick(e) {
         e.preventDefault();
+        e.stopPropagation();
         scrollToOptions();
-    });
-    
-    scrollArrow.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        scrollToOptions();
-    });
+        return false;
+    }
+
+    // Handle all pointer events the same way
+    scrollArrow.addEventListener('click', handleScrollClick);
+    scrollArrow.addEventListener('touchstart', handleScrollClick);
+    scrollArrow.addEventListener('pointerdown', handleScrollClick);
 
 
 
     // Update arrow visibility based on selected services
+    // Update arrow visibility
     function updateScrollArrowVisibility() {
-        const scrollArrow = document.querySelector('.scroll-to-options-arrow');
-        if (!scrollArrow) return;
-        
         if (selectedServices.length > 0) {
             scrollArrow.classList.add('visible');
-            
-            // Position the arrow near the last selected service
+            // Position near last selected service
             const selectedElements = document.querySelectorAll('.package.selected');
             if (selectedElements.length > 0) {
                 const lastSelected = selectedElements[selectedElements.length - 1];
@@ -2710,8 +2719,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Call this whenever services are selected/deselected
     window.updateScrollArrowVisibility = updateScrollArrowVisibility;
+});
+
+// Add this to the parent window's code (host page):
+window.addEventListener('message', function(event) {
+    if (event.data.type === 'scrollToPosition') {
+        window.scrollTo({
+            top: event.data.position,
+            behavior: 'smooth'
+        });
+    }
 });
 
     // Updated renderStep3 function to handle dynamic discounts
