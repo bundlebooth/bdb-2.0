@@ -1171,6 +1171,7 @@
       background: #f8f9fa;
       border-radius: 8px;
       border: 1px solid #e9ecef;
+	  scroll-margin-top: 20px; 
     }
     
     .options-section h4 {
@@ -1738,7 +1739,7 @@
     /* Add this to your existing CSS */
     .scroll-to-options-arrow {
         position: fixed;
-        bottom: 20px;
+        bottom: 70px;
         right: 20px;
         width: 40px;
         height: 40px;
@@ -1757,6 +1758,17 @@
 		touch-action: manipulation; /* Improves touch responsiveness */
 		cursor: pointer;
 		-webkit-tap-highlight-color: transparent; /* Removes tap highlight on iOS */
+    }
+	
+@media (max-width: 768px) {
+    .scroll-to-options-arrow {
+        bottom: 80px; /* Adjust for mobile browsers with bottom nav */
+    }
+    
+    /* Ensure the target section has enough padding */
+    .options-section {
+        padding-top: 30px;
+        margin-bottom: 30px;
     }
     
     .scroll-to-options-arrow.visible {
@@ -1777,7 +1789,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1: Choose a Bundle</div>
+        <div class="active">Step 1 TEST 8: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
@@ -2663,25 +2675,40 @@ scrollArrow.innerHTML = '↓';
 document.body.appendChild(scrollArrow);
 
 function scrollToOptions() {
-    console.log('scrollToOptions called');
     const optionsSection = document.getElementById('options-section');
-    if (!optionsSection) {
-        console.error('Options section not found');
-        return;
-    }
-    console.log('Options section found, attempting scroll');
+    if (!optionsSection) return;
     
-    // Try both methods
-    optionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Get the position relative to the iframe
+    const rect = optionsSection.getBoundingClientRect();
     
-    setTimeout(() => {
-        const rect = optionsSection.getBoundingClientRect();
-        window.scrollTo({
-            top: rect.top + window.scrollY - 20,
-            behavior: 'smooth'
+    // Scroll the iframe itself
+    try {
+        // First try standard scrolling
+        optionsSection.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
         });
-    }, 100);
+        
+        // Then adjust with a slight delay to ensure it works on mobile
+        setTimeout(() => {
+            // Calculate position accounting for any fixed headers in parent
+            const scrollPosition = rect.top + window.scrollY - 20;
+            
+            // Try both methods to maximize compatibility
+            window.scrollTo({
+                top: scrollPosition,
+                behavior: 'smooth'
+            });
+            
+            // Also notify parent iframe to adjust if needed
+            notifyParentOfScroll(scrollPosition);
+        }, 100);
+    } catch (e) {
+        console.error('Scroll failed:', e);
+    }
 }
+
+
 
 // Handle both click and touch events
 scrollArrow.addEventListener('click', scrollToOptions);
