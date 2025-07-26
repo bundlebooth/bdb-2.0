@@ -1754,6 +1754,7 @@ css
     transition: all 0.3s ease;
     z-index: 5;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+	touch-action: manipulation; /* Improve touch responsiveness */
 }
     
 .scroll-to-options-btn:hover {
@@ -1797,7 +1798,7 @@ css
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1 TEST5: Choose a Bundle</div>
+        <div class="active">Step 1 TEST6: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
@@ -2428,16 +2429,15 @@ function toggleService(el, service) {
         const scrollBtn = el.querySelector('.scroll-to-options-btn');
         if (scrollBtn) {
             scrollBtn.style.display = 'flex';
-            scrollBtn.onclick = (e) => {
-                e.stopPropagation();
-                const optionsSection = document.getElementById('options-section');
-                if (optionsSection) {
-                    optionsSection.scrollIntoView({ 
-                        behavior: 'smooth', 
-                        block: 'start' 
-                    });
-                }
-            };
+            scrollBtn.dataset.optionsId = `options-${service.slug}`;
+            
+            // Remove any existing event listeners first
+            scrollBtn.replaceWith(scrollBtn.cloneNode(true));
+            const newScrollBtn = el.querySelector('.scroll-to-options-btn');
+            
+            // Add both click and touch handlers
+            newScrollBtn.addEventListener('click', handleScrollButtonClick);
+            newScrollBtn.addEventListener('touchend', handleScrollButtonClick);
         }
     }
     
@@ -2988,6 +2988,7 @@ function updatePrices() {
     }
 
     // Set up options section in step 2
+// In the setupOptionsSection function, ensure the options section has proper IDs:
 function setupOptionsSection() {
     const optionsSection = document.getElementById('options-section');
     optionsSection.innerHTML = '<h4>Options & Add-ons</h4>';
@@ -3007,11 +3008,12 @@ function setupOptionsSection() {
             if (service.pricingTiers && service.pricingTiers.length > 0) {
                 const serviceOptions = document.createElement('div');
                 serviceOptions.className = 'service-options-group';
+                serviceOptions.id = `options-${service.slug}`; // Important: match this ID with the scroll button's data attribute
                 serviceOptions.innerHTML = `
                     <div class="option-group-title">
                         ${service.name} Options
                     </div>
-                    <div class="option-options" id="options-${service.slug}">
+                    <div class="option-options">
                         <!-- Add-ons will be inserted here -->
                     </div>
                 `;
@@ -3050,21 +3052,6 @@ function setupOptionsSection() {
                     const scrollBtn = serviceCard.querySelector('.scroll-to-options-btn');
                     if (scrollBtn) {
                         scrollBtn.dataset.optionsId = `options-${service.slug}`;
-function handleScrollButtonClick(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    const optionsElement = document.getElementById(this.dataset.optionsId);
-    if (optionsElement) {
-        optionsElement.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'start' 
-        });
-    }
-}
-
-// Add multiple event listeners
-scrollBtn.addEventListener('click', handleScrollButtonClick);
-scrollBtn.addEventListener('touchend', handleScrollButtonClick);
                     }
                 }
             }
@@ -3439,6 +3426,38 @@ if (service.features) {
             }
         });
     }
+	
+function handleScrollButtonClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const optionsId = this.dataset.optionsId;
+    if (!optionsId) return;
+    
+    const optionsElement = document.getElementById(optionsId);
+    if (optionsElement) {
+        // Calculate position with some offset
+        const elementPosition = optionsElement.getBoundingClientRect().top + window.pageYOffset;
+        const offsetPosition = elementPosition - 100; // 100px offset from top
+        
+        // Smooth scroll to the options section
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+        });
+        
+        // Highlight the options section briefly
+        optionsElement.style.boxShadow = '0 0 0 2px var(--bb-accent)';
+        setTimeout(() => {
+            optionsElement.style.boxShadow = 'none';
+        }, 1000);
+        
+        // Add focus for better accessibility
+        optionsElement.setAttribute('tabindex', '-1');
+        optionsElement.focus();
+    }
+}
+	
 
     // Show warning when trying to select too many services in a category
     function showCompareWarning(category, limit) {
