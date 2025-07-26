@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,maximum-scale=0,user-scalable=no" name="viewport"/>
 <meta http-equiv="Permissions-Policy" content="payment=(self 'https://bundlebooth.ca')">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>BundleBooth Custom Builder</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
 <script src="https://js.stripe.com/v3/"></script>
@@ -49,11 +49,13 @@
       min-height: 100vh;
       flex-wrap: nowrap
     }
-main {
-    -webkit-overflow-scrolling: touch; /* For smooth scrolling on iOS */
-    overflow-y: auto;
-    overscroll-behavior: contain; /* Prevent overscroll effects */
-}
+    main {
+      flex: 1;
+      padding: 24px 20px;
+      overflow-y: auto;
+      background: var(--bb-light);
+      position: relative
+    }
     
     /* UPDATED STEP 1 STYLES */
     .step-1-container {
@@ -1734,30 +1736,28 @@ main {
 }
 
     /* Add this to your existing CSS */
-.scroll-to-options-arrow {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 40px;
-    height: 40px;
-    background-color: var(--bb-accent);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;fbody {
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    z-index: 999;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.3s ease;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-    /* Add these for mobile compatibility */
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-}
+    .scroll-to-options-arrow {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        background-color: var(--bb-accent);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        z-index: 999;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+		touch-action: manipulation; /* Improves touch responsiveness */
+		cursor: pointer;
+		-webkit-tap-highlight-color: transparent; /* Removes tap highlight on iOS */
+    }
     
     .scroll-to-options-arrow.visible {
         opacity: 1;
@@ -1777,7 +1777,7 @@ main {
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1 TEST 7: Choose a Bundle</div>
+        <div class="active">Step 1: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
@@ -2663,16 +2663,24 @@ scrollArrow.innerHTML = '↓';
 document.body.appendChild(scrollArrow);
 
 function scrollToOptions() {
+    console.log('scrollToOptions called');
     const optionsSection = document.getElementById('options-section');
-    if (!optionsSection) return;
+    if (!optionsSection) {
+        console.error('Options section not found');
+        return;
+    }
+    console.log('Options section found, attempting scroll');
     
-    // Use smooth scroll on desktop, instant on mobile
-    const behavior = window.innerWidth <= 768 ? 'auto' : 'smooth';
+    // Try both methods
+    optionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     
-    optionsSection.scrollIntoView({
-        behavior: behavior,
-        block: 'start'
-    });
+    setTimeout(() => {
+        const rect = optionsSection.getBoundingClientRect();
+        window.scrollTo({
+            top: rect.top + window.scrollY - 20,
+            behavior: 'smooth'
+        });
+    }, 100);
 }
 
 // Handle both click and touch events
@@ -2680,15 +2688,8 @@ scrollArrow.addEventListener('click', scrollToOptions);
 scrollArrow.addEventListener('touchstart', function(e) {
     e.preventDefault(); // Prevent default touch behavior
     scrollToOptions();
-}, { passive: false });
 });
-
-document.addEventListener('touchmove', function(e) {
-    if (e.target.classList.contains('scroll-to-options-arrow')) {
-        e.preventDefault();
-    }
-}, { passive: false });
-
+});
 
 // Add CSS improvements
 const style = document.createElement('style');
