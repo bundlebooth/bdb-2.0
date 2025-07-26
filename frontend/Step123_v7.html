@@ -4371,41 +4371,6 @@ body {
     overflow: auto !important;
     min-height: 100vh;
 }
-
-</script>
+</style>
 </body>
 </html>
-
-let lastStep = null;
-let lastHeight = 0;
-function notifyParentOfStepChange() {
-    const currentStep = getCurrentStep();
-    const currentHeight = document.body.scrollHeight;
-    
-    // Only send if step changed or height changed significantly (>20px)
-    if (currentStep !== lastStep || Math.abs(currentHeight - lastHeight) > 20) {
-        try {
-            // Determine the correct parent origin
-            let parentOrigin;
-            try {
-                // First try to get the parent's actual origin
-                parentOrigin = window.parent.location.origin;
-            } catch (e) {
-                // Fallback for cross-origin situations
-                parentOrigin = 'https://bundlebooth.ca'; // Your production domain
-            }
-            
-            // Send the message
-            window.parent.postMessage({
-                type: 'stepChanged',
-                step: currentStep,
-                height: currentHeight
-            }, parentOrigin);
-            
-            lastStep = currentStep;
-            lastHeight = currentHeight;
-        } catch (error) {
-            console.error('postMessage failed:', error);
-        }
-    }
-}
