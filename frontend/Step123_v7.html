@@ -1830,7 +1830,7 @@
     
     <div class="step" id="step-1">
         <div class="step-1-container">
-            <h2 style="margin-bottom:16px;">Step 1 TEST100: Choose a Bundle</h2>
+            <h2 style="margin-bottom:16px;">Step 1: Choose a Bundle</h2>
             <p class="step-description">Select from our pre-designed bundles or create your own custom package</p>
             
             <!-- Custom bundle banner at the top -->
@@ -4267,26 +4267,27 @@ function updateServiceAddons(serviceSlug, checkbox) {
 }
 
 
-  // Create the scroll up arrow
-const scrollUpArrow = document.createElement('div');
-scrollUpArrow.className = 'scroll-to-services-arrow';
-scrollUpArrow.innerHTML = '↑';
-document.body.appendChild(scrollUpArrow);
+    // Add the new arrow element
+    const scrollUpArrow = document.createElement('div');
+    scrollUpArrow.className = 'scroll-to-services-arrow';
+    scrollUpArrow.innerHTML = '↑';
+    document.body.appendChild(scrollUpArrow);
 
-// Improved scroll function with better mobile support
+    // Scroll up to services function
 function scrollToServices() {
-    // Try multiple methods to ensure it works across devices
+    // Try multiple scrolling methods with timeouts between them
     const header = document.querySelector('h2');
+    const scrollOptions = {
+        behavior: 'smooth',
+        block: 'start'
+    };
     
-    // Method 1: Standard scrollIntoView with options
+    // Method 1: Standard scrollIntoView
     if (header) {
-        header.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'start' 
-        });
+        header.scrollIntoView(scrollOptions);
     }
     
-    // Method 2: Fallback for older browsers
+    // Method 2: Window scroll
     setTimeout(() => {
         window.scrollTo({
             top: 0,
@@ -4294,23 +4295,18 @@ function scrollToServices() {
         });
     }, 300);
     
-    // Method 3: Mobile-specific fallbacks
+    // Method 3: Mobile fallbacks
     setTimeout(() => {
         document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
     }, 600);
 }
 
-// Improved event listeners
-scrollUpArrow.addEventListener('click', scrollToServices);
-
-// Better touch event handling
-scrollUpArrow.addEventListener('touchstart', function(e) {
+  scrollUpArrow.addEventListener('touchstart', function(e) {
     e.preventDefault();
     e.stopPropagation();
     scrollToServices();
 }, { passive: false }); // Important for preventing default scroll behavior
-
 
     // Updated function to handle both arrows
     function updateScrollArrowsVisibility() {
