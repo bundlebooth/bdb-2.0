@@ -4267,27 +4267,26 @@ function updateServiceAddons(serviceSlug, checkbox) {
 }
 
 
-    // Add the new arrow element
-    const scrollUpArrow = document.createElement('div');
-    scrollUpArrow.className = 'scroll-to-services-arrow';
-    scrollUpArrow.innerHTML = '↑';
-    document.body.appendChild(scrollUpArrow);
+  // Create the scroll up arrow
+const scrollUpArrow = document.createElement('div');
+scrollUpArrow.className = 'scroll-to-services-arrow';
+scrollUpArrow.innerHTML = '↑';
+document.body.appendChild(scrollUpArrow);
 
-    // Scroll up to services function
+// Improved scroll function with better mobile support
 function scrollToServices() {
-    // Try multiple scrolling methods with timeouts between them
+    // Try multiple methods to ensure it works across devices
     const header = document.querySelector('h2');
-    const scrollOptions = {
-        behavior: 'smooth',
-        block: 'start'
-    };
     
-    // Method 1: Standard scrollIntoView
+    // Method 1: Standard scrollIntoView with options
     if (header) {
-        header.scrollIntoView(scrollOptions);
+        header.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+        });
     }
     
-    // Method 2: Window scroll
+    // Method 2: Fallback for older browsers
     setTimeout(() => {
         window.scrollTo({
             top: 0,
@@ -4295,18 +4294,23 @@ function scrollToServices() {
         });
     }, 300);
     
-    // Method 3: Mobile fallbacks
+    // Method 3: Mobile-specific fallbacks
     setTimeout(() => {
         document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
     }, 600);
 }
 
-  scrollUpArrow.addEventListener('touchstart', function(e) {
+// Improved event listeners
+scrollUpArrow.addEventListener('click', scrollToServices);
+
+// Better touch event handling
+scrollUpArrow.addEventListener('touchstart', function(e) {
     e.preventDefault();
     e.stopPropagation();
     scrollToServices();
 }, { passive: false }); // Important for preventing default scroll behavior
+
 
     // Updated function to handle both arrows
     function updateScrollArrowsVisibility() {
