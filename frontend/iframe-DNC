@@ -103,11 +103,11 @@ window.addEventListener('message', function(event) {
       
       // Calculate the absolute position in the parent document
       const iframeRect = iframe.getBoundingClientRect();
-      const absolutePosition = iframeRect.top + event.data.position;
+      const absolutePosition = iframeRect.top + event.data.position + 950;
       
       // Scroll parent to this position
-      window.scrollTo({
-        top: 2000,
+      window.parent.scrollTo({
+        top: absolutePosition,
         behavior: 'smooth'
       });
 	  console.log('Iframe: Recieved..');
