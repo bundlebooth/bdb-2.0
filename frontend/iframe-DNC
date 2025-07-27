@@ -1,28 +1,28 @@
 <iframe 
   id="bundlebooth-iframe"
-  src="https://bundlebooth.github.io/bdb-2.0/frontend/Step123.html" 
+  src="https://bundlebooth.github.io/bdb-2.0/frontend/Step123_v7.html" 
   style="width: 100%; border: 0; display: block;" 
   scrolling="no"
-  allow="payment *"
-  allowfullscreen
-  sandbox="allow-scripts allow-forms allow-same-origin allow-popups allow-modals"
-  referrerpolicy="strict-origin-when-cross-origin"
-></iframe>
+  allowfullscreen>
+</iframe>
 
 <style>
-  /* Responsive height adjustments */
+  /* Critical CSS fixes */
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Default desktop height */
   #bundlebooth-iframe {
-    /* Default desktop height */
     height: 2300px;
-    min-height: 2300px;
-    overflow: hidden;
+    transition: height 0.3s ease;
   }
 
   /* Tablet */
   @media (max-width: 768px) {
     #bundlebooth-iframe {
       height: 2800px;
-      min-height: 2800px;
     }
   }
 
@@ -30,50 +30,94 @@
   @media (max-width: 480px) {
     #bundlebooth-iframe {
       height: 5900px;
-      min-height: 5900px;
     }
-  }
-
-  /* Loading state (optional) */
-  .iframe-loading {
-    position: relative;
-  }
-  .iframe-loading::after {
-    content: "Loading booking system...";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 1.2rem;
-    color: #666;
   }
 </style>
 
 <script>
-  // Optional: Add loading state and auto-height adjustment
-  document.addEventListener('DOMContentLoaded', function() {
-    const iframe = document.getElementById('bundlebooth-iframe');
+// ===== SCROLL TO IFRAME START POSITION ===== //
+function scrollToIframeStart() {
+  const iframe = document.getElementById('bundlebooth-iframe');
+  if (!iframe) return;
+
+  // Determine start position based on screen size
+  const isMobile = window.matchMedia('(max-width: 480px)').matches;
+  const iframeStartPosition = isMobile ? 1100 : 900;
+
+  // Scroll parent window to iframe's start position
+  try {
+    window.parent.scrollTo({
+      top: iframeStartPosition,
+      behavior: 'smooth'
+    });
     
-    // Add loading class initially
-    iframe.parentElement.classList.add('iframe-loading');
-    
-    // Handle when iframe loads
-    iframe.onload = function() {
-      iframe.parentElement.classList.remove('iframe-loading');
-      
-      try {
-        // Optional: Adjust height based on content
-        window.addEventListener('message', function(e) {
-          if (e.data && e.data.type === 'iframeHeight') {
-            iframe.style.height = e.data.height + 'px';
-          }
-        });
-        
-        // Request initial height
-        iframe.contentWindow.postMessage({ type: 'getHeight' }, '*');
-      } catch(e) {
-        console.log('Safe cross-origin error:', e);
+    // Verify after 300ms
+    setTimeout(() => {
+      const currentPos = window.pageYOffset;
+      if (Math.abs(currentPos - iframeStartPosition) > 5) {
+        window.parent.scrollTo(0, iframeStartPosition);
       }
-    };
-  });
+    }, 300);
+    
+  } catch (error) {
+    // Fallback to regular scroll
+    window.scrollTo(0, iframeStartPosition);
+  }
+}
+
+// ===== IFRAME MESSAGE HANDLER ===== //
+window.addEventListener('message', function(event) {
+  // Security checks
+  try {
+    const iframe = document.getElementById('bundlebooth-iframe');
+    if (!iframe || event.source !== iframe.contentWindow) return;
+    
+    const validOrigins = [
+      'https://bundlebooth.github.io',
+      'https://bundlebooth.ca'
+    ];
+    if (!validOrigins.includes(event.origin)) return;
+    
+    // Process step changes
+    if (event.data?.type === 'stepChanged') {
+      // Update iframe height if provided
+      if (event.data.height) {
+        iframe.style.height = `${event.data.height}px`;
+      }
+      
+      // Scroll to iframe start position
+      scrollToIframeStart();
+      
+      // Command iframe to scroll its content to top
+      setTimeout(() => {
+        iframe.contentWindow.postMessage({
+          type: 'scrollToTop',
+          timestamp: Date.now()
+        }, event.origin);
+      }, 100);
+    }
+    // Add this new case for scrolling to specific positions
+    else if (event.data?.type === 'scrollToPosition') {
+      const iframe = document.getElementById('bundlebooth-iframe');
+      if (!iframe) return;
+      
+      // Calculate the absolute position in the parent document
+      const iframeRect = iframe.getBoundingClientRect();
+      const absolutePosition = iframeRect.top + event.data.position;
+      
+      // Scroll parent to this position
+      window.scrollTo({
+        top: 2000,
+        behavior: 'smooth'
+      });
+	  console.log('Iframe: Recieved..');
+	   console.log("iframeRect: " + iframeRect);
+	    console.log("absolutePosition: " + absolutePosition);
+		
+    }
+  } catch (error) {
+    console.error('Iframe message error:', error);
+	
+  }
+});
 </script>
