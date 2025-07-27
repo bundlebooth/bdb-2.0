@@ -1789,6 +1789,7 @@
         transition: all 0.3s ease;
         touch-action: manipulation;
         -webkit-tap-highlight-color: transparent;
+		    pointer-events: auto !important;
     }
 	
 	
@@ -1801,6 +1802,19 @@
         background-color: var(--bb-hover-grey);
         transform: translateY(-2px) scale(1.05);
     }
+	
+	html, body {
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Make top anchor minimally visible for scrolling */
+#top-anchor {
+    position: absolute;
+    top: 0;
+    height: 1px;
+    width: 1px;
+}
 	
 
 </style>
@@ -4254,39 +4268,33 @@ function updateServiceAddons(serviceSlug, checkbox) {
 }
 
 
-    // Add the new arrow element
-    const scrollUpArrow = document.createElement('div');
-    scrollUpArrow.className = 'scroll-to-services-arrow';
-    scrollUpArrow.innerHTML = '↑';
-    document.body.appendChild(scrollUpArrow);
+// Create the scroll up arrow
+const scrollUpArrow = document.createElement('div');
+scrollUpArrow.className = 'scroll-to-services-arrow';
+scrollUpArrow.innerHTML = '↑';
+document.body.appendChild(scrollUpArrow);
 
-    // Scroll up to services function
-    function scrollToServices() {
-        console.log('scrollToServices called');
-        const topAnchor = document.getElementById('top-anchor');
-        if (!topAnchor) {
-            console.error('Top anchor not found');
-            return;
-        }
-        
-        // Try both methods
-        topAnchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        
-        setTimeout(() => {
-            const rect = topAnchor.getBoundingClientRect();
-            window.scrollTo({
-                top: rect.top + window.scrollY - 20,
-                behavior: 'smooth'
-            });
-        }, 100);
+// Improved scroll function with better mobile support
+function scrollToServices() {
+    // Try multiple methods to ensure it works across devices
+    const header = document.querySelector('h2');
+    
+    // Method 1: Standard scrollIntoView with options
+    if (header) {
+        header.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+        });
     }
 
-    // Handle both click and touch events for scroll up
-    document.querySelector('.scroll-to-services-arrow').addEventListener('click', scrollToServices);
-    document.querySelector('.scroll-to-services-arrow').addEventListener('touchstart', function(e) {
-        e.preventDefault();
-        scrollToServices();
-    });
+	// Handle both click and touch events
+scrollUpArrow.addEventListener('click', scrollToOptions);
+scrollUpArrow.addEventListener('touchstart', function(e) {
+    e.preventDefault(); // Prevent default touch behavior
+    scrollToServices();
+});
+});
+	
 
     // Updated function to handle both arrows
     function updateScrollArrowsVisibility() {
