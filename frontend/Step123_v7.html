@@ -1513,9 +1513,15 @@
     
     /* Responsive adjustments */
     @media (max-width: 768px) {
-      .action-buttons {
-        flex-direction: column;
-      }
+        .scroll-to-services-arrow {
+            bottom: 80px; /* Give more space from bottom */
+            right: 15px;
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+        }
+    }
+	
       .action-buttons button {
         width: 100%;
       }
@@ -1769,9 +1775,9 @@
         transform: translateY(-2px) scale(1.05);
     }
 	
-	    .scroll-to-services-arrow {
+   .scroll-to-services-arrow {
         position: fixed;
-        bottom: 70px;
+        bottom: 70px; /* Positioned above the down arrow */
         right: 20px;
         width: 40px;
         height: 40px;
@@ -1787,12 +1793,12 @@
         opacity: 0;
         transform: translateY(20px);
         transition: all 0.3s ease;
-        touch-action: manipulation;
-        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation; /* Improves touch responsiveness */
+        -webkit-tap-highlight-color: transparent; /* Removes tap highlight on iOS */
     }
 	
 	
-    .scroll-to-services-arrow.visible {
+   .scroll-to-services-arrow.visible {
         opacity: 1;
         transform: translateY(0);
     }
@@ -1802,20 +1808,20 @@
         transform: translateY(-2px) scale(1.05);
     }
 	
-	html, body {
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
+	@media (max-width: 768px) {
+    .scroll-to-services-arrow {
+        bottom: 80px; /* Give more space from bottom */
+        right: 15px;
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
 }
-
-/* Make top anchor minimally visible for scrolling */
-#top-anchor {
-    position: absolute;
-    top: 0;
-    height: 1px;
-    width: 1px;
+    .scroll-to-services-arrow:active {
+        transform: scale(0.95) translateY(0);
+        background-color: var(--bb-hover-grey);
+    }	
 }
-	
-
 </style>
 </head>
 <body>
@@ -1823,7 +1829,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1 TEST26: Choose a Bundle</div>
+        <div class="active">Step 1 TEST12: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
@@ -4272,29 +4278,33 @@ function updateServiceAddons(serviceSlug, checkbox) {
     scrollUpArrow.className = 'scroll-to-services-arrow';
     scrollUpArrow.innerHTML = '↑';
     document.body.appendChild(scrollUpArrow);
+	
 
     // Scroll up to services function
 function scrollToServices() {
-    // 1. Try scrolling to the actual header instead of invisible anchor
-    const header = document.querySelector('h2');
-    if (header) {
-        header.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'start'
-        });
-        return;
-    }
-
-    // 2. Fallback: Scroll to top with multiple approaches
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    
-    // 3. Mobile browser fallback
-    setTimeout(() => {
-        if (window.pageYOffset > 10) {
-            document.documentElement.scrollTop = 0;
-            document.body.scrollTop = 0;
+    console.log('Scroll to services triggered');
+    const topAnchor = document.getElementById('top-anchor');
+    if (topAnchor) {
+        // Modern smooth scroll with fallback
+        try {
+            topAnchor.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start'
+            });
+        } catch (e) {
+            // Fallback for older browsers
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         }
-    }, 300);
+    } else {
+        // Ultimate fallback
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
 }
 
     // Handle both click and touch events for scroll up
@@ -4304,32 +4314,46 @@ function scrollToServices() {
         scrollToServices();
     });
 
-    // Updated function to handle both arrows
-    function updateScrollArrowsVisibility() {
-        const scrollDownArrow = document.querySelector('.scroll-to-options-arrow');
-        const scrollUpArrow = document.querySelector('.scroll-to-services-arrow');
-        
-        if (selectedServices.length > 0) {
-            // Show down arrow when services are selected but not at bottom
-            const isAtBottom = (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100;
-            scrollDownArrow.classList.toggle('visible', !isAtBottom);
-            
-            // Show up arrow when user has scrolled down to options
-            const optionsSection = document.getElementById('options-section');
-            if (optionsSection) {
-                const optionsRect = optionsSection.getBoundingClientRect();
-                const isOptionsVisible = optionsRect.top < window.innerHeight && optionsRect.bottom >= 0;
-                scrollUpArrow.classList.toggle('visible', isOptionsVisible);
-            }
-        } else {
-            scrollDownArrow.classList.remove('visible');
-            scrollUpArrow.classList.remove('visible');
-        }
+    // Update visibility logic to match scroll down arrow
+function updateScrollArrowsVisibility() {
+    const scrollUpArrow = document.querySelector('.scroll-to-services-arrow');
+    const scrollDownArrow = document.querySelector('.scroll-to-options-arrow');
+    
+    if (!scrollUpArrow || !scrollDownArrow) return;
+    
+    // Show up arrow when user has scrolled past first screen
+    const isPastFirstScreen = window.scrollY > window.innerHeight * 0.3;
+    scrollUpArrow.classList.toggle('visible', isPastFirstScreen);
+    
+    // Show down arrow when services are selected but not at bottom
+    if (selectedServices.length > 0) {
+        const isAtBottom = (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100;
+        scrollDownArrow.classList.toggle('visible', !isAtBottom);
+    } else {
+        scrollDownArrow.classList.remove('visible');
     }
+}
 
-    // Add scroll event listener
+// Initialize event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    const scrollUpArrow = document.querySelector('.scroll-to-services-arrow');
+    
+    // Click handler
+    scrollUpArrow.addEventListener('click', scrollToServices);
+    
+    // Touch handler with proper passive option
+    scrollUpArrow.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        scrollToServices();
+    }, { passive: false });
+    
+    // Track scroll events
     window.addEventListener('scroll', updateScrollArrowsVisibility);
-
+    window.addEventListener('resize', updateScrollArrowsVisibility);
+    
+    // Initial update
+    updateScrollArrowsVisibility();
+});
 
 
 
@@ -4370,6 +4394,16 @@ if (backToServices) {
     });
 } else {
     console.warn('Back to Services button not found');
+}
+
+</script>
+<style>
+body {
+    overflow: auto !important;
+}
+#steps {
+    overflow: auto !important;
+    min-height: 100vh;
 }
 
 </script>
