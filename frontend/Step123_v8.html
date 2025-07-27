@@ -1777,7 +1777,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1 TEST 8: Choose a Bundle</div>
+        <div class="active">Step 1 TEST9: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
@@ -2075,20 +2075,26 @@ const config = {
     })();
 
     let heightReportTimeout;
-function reportHeightToParent() {
-    clearTimeout(heightReportTimeout);
-    heightReportTimeout = setTimeout(() => {
-        const height = document.documentElement.scrollHeight;
-        // Only report if height changed
-        if (Math.abs(height - lastReportedHeight) > 5) {
-            window.parent.postMessage({
-                type: 'heightUpdate',
-                height: height
-            }, parentOrigin);
-            lastReportedHeight = height;
+    function reportHeightToParent() {
+        try {
+            const currentHeight = Math.max(
+                document.documentElement.scrollHeight,
+                document.body.scrollHeight
+            );
+            
+            // Only report if height changed significantly (>10px)
+            if (Math.abs(currentHeight - lastReportedHeight) > 10) {
+                window.parent.postMessage({
+                    type: 'heightUpdate',
+                    height: currentHeight,
+                    step: getCurrentStep()
+                }, parentOrigin);
+                lastReportedHeight = currentHeight;
+            }
+        } catch (error) {
+            console.error('Error reporting height:', error);
         }
-    }, 50); // Reduced from 300ms to 50ms
-}
+    }
 
     function getCurrentStep() {
         if (document.getElementById('step-3').style.display !== 'none') return 3;
@@ -2122,9 +2128,6 @@ let selectedSlotElement = null; // To track the currently selected time slot
     // Initialize the builder when DOM is loaded
     document.addEventListener("DOMContentLoaded", async () => {
         // Show greeting popup
-		requestAnimationFrame(() => {
-        reportHeightToParent();
-    });
         const popup = document.getElementById('greeting-popup');
         popup.classList.add('show');
         setTimeout(() => {
@@ -2714,27 +2717,25 @@ scrollArrow.className = 'scroll-to-options-arrow';
 scrollArrow.innerHTML = '↓';
 document.body.appendChild(scrollArrow);
 
-function scrollToIframe() {
-    const iframe = document.getElementById('bundlebooth-iframe');
-    if (!iframe) return;
-
-    // Mobile-friendly scroll with touch support
-    const iframeTop = iframe.getBoundingClientRect().top + window.pageYOffset;
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+function scrollToOptions() {
+    console.log('scrollToOptions called');
+    const optionsSection = document.getElementById('options-section');
+    if (!optionsSection) {
+        console.error('Options section not found');
+        return;
+    }
+    console.log('Options section found, attempting scroll');
     
-    if (isMobile) {
-        // Smooth scroll for mobile with passive event
-        window.scroll({
-            top: iframeTop - 20,
-            behavior: 'auto' // Changed from 'smooth' for better mobile performance
-        });
-    } else {
-        // Standard smooth scroll for desktop
+    // Try both methods
+    optionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    
+    setTimeout(() => {
+        const rect = optionsSection.getBoundingClientRect();
         window.scrollTo({
-            top: iframeTop - 20,
+            top: rect.top + window.scrollY - 20,
             behavior: 'smooth'
         });
-    }
+    }, 100);
 }
 
 // Handle both click and touch events
