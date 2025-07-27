@@ -1810,14 +1810,14 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1: Choose a Bundle</div>
+        <div class="active">Step 1 TEST24: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
     
     <div class="step" id="step-1">
         <div class="step-1-container">
-            <h2 style="margin-bottom:16px;">Step 1 TEST23: Choose a Bundle</h2>
+            <h2 style="margin-bottom:16px;">Step 1: Choose a Bundle</h2>
             <p class="step-description">Select from our pre-designed bundles or create your own custom package</p>
             
             <!-- Custom bundle banner at the top -->
@@ -4268,7 +4268,7 @@ function updateServiceAddons(serviceSlug, checkbox) {
             console.error('Top anchor not found');
             return;
         }
-        
+         console.log('Top Anchor section found, attempting scroll');
         // Try both methods
         topAnchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
         
