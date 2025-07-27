@@ -1778,7 +1778,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
 <div id="progress-bar">
-<div class="active">Step 1 OOP: Choose a Bundle</div>
+<div class="active">Step 1: Choose a Bundle</div>
 <div>Step 2: Select Services</div>
 <div>Step 3: Review &amp; Book</div>
 </div>
@@ -4304,7 +4304,7 @@ if (backToServices) {
     position: absolute;
     top: -30px;
     right: 20px;
-    background-color: rgba(44, 62, 80, .1);
+    background-color: var(--bb-accent);
     color: var(--bb-blue);
     border: none;
     padding: 10px 16px;
@@ -4313,6 +4313,12 @@ if (backToServices) {
     font-weight: 400;
     cursor: pointer;
     transition: all 0.25s;
+	color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    font-weight: bold;
+
 }
 #scroll-up-to-step2-btn:hover {
     background-color: var(--bb-hover-grey);
