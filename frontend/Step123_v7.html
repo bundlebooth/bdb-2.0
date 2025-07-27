@@ -1778,7 +1778,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
 <div id="progress-bar">
-<div class="active">Step 1 PLEASE FINAL: Choose a Bundle</div>
+<div class="active">Step 1: Choose a Bundle</div>
 <div>Step 2: Select Services</div>
 <div>Step 3: Review &amp; Book</div>
 </div>
@@ -4254,6 +4254,30 @@ if (backToServices) {
     background-color: var(--bb-hover-grey);
 }
 </style>
+
+
+<style>
+#scroll-to-step2-btn {
+    position: absolute;
+    top: -30px;
+    right: 20px;
+    z-index: 1000;
+    background-color: var(--bb-accent);
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 50%;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    transition: background-color 0.3s ease;
+    line-height: 1;
+}
+#scroll-to-step2-btn:hover {
+    background-color: var(--bb-hover-grey);
+}
+</style>
 <script>
 function insertStep2Button() {
     const optionsSection = document.getElementById("options-section");
@@ -4261,7 +4285,7 @@ function insertStep2Button() {
 
     const button = document.createElement("button");
     button.id = "scroll-to-step2-btn";
-    button.innerText = "↑ Back to Services";
+    button.innerText = "↑";
     button.onclick = function () {
         const step2 = document.getElementById("step-2");
         if (step2) step2.scrollIntoView({ behavior: 'smooth' });
@@ -4270,7 +4294,6 @@ function insertStep2Button() {
     optionsSection.insertBefore(button, optionsSection.firstChild);
 }
 
-// Observe when options-section becomes visible
 const observer = new MutationObserver(() => {
     const options = document.getElementById("options-section");
     if (options && window.getComputedStyle(options).display !== "none") {
