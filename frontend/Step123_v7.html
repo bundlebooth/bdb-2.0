@@ -1778,7 +1778,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
 <div id="progress-bar">
-<div class="active">Step 1 BLAH: Choose a Bundle</div>
+<div class="active">Step 1: STEP CHANGED Choose a Bundle</div>
 <div>Step 2: Select Services</div>
 <div>Step 3: Review &amp; Book</div>
 </div>
@@ -4261,33 +4261,97 @@ if (backToServices) {
     transform: translateY(0);
 }
 </style>
-<script>
-function insertReturnToStep2Button() {
-    const optionsSection = document.getElementById("options-section");
-    if (!optionsSection || document.getElementById("return-to-step2-btn")) return;
+<style>
+#scroll-to-options-arrow {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background-color: var(--bb-accent);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    z-index: 999;
+}
+#scroll-to-options-arrow.show {
+    display: flex;
+}
+#scroll-up-to-step2-btn {
+    position: absolute;
+    top: -30px;
+    right: 20px;
+    background-color: rgba(44, 62, 80, .1);
+    color: var(--bb-blue);
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.25s;
+}
+#scroll-up-to-step2-btn:hover {
+    background-color: var(--bb-hover-grey);
+    color: #fff;
+    transform: translateY(-2px);
+}
+#scroll-up-to-step2-btn:active {
+    background-color: var(--bb-dark);
+    color: #fff;
+    transform: translateY(0);
+}
+</style>
+<!-- Arrow to scroll to options -->
+<button id="scroll-to-options-arrow" title="Go to Options">↓</button>
 
-    const button = document.createElement("button");
-    button.id = "return-to-step2-btn";
-    button.innerText = "↑";
-    button.onclick = function () {
-        if (typeof showStep === "function") {
+
+<script>
+function insertScrollBackButton() {
+    const optionsSection = document.getElementById("options-section");
+    if (!optionsSection || document.getElementById("scroll-up-to-step2-btn")) return;
+
+    const btn = document.createElement("button");
+    btn.id = "scroll-up-to-step2-btn";
+    btn.innerText = "↑";
+    btn.onclick = () => {
+        if (typeof notifyParentOfStepChange === "function") {
+            notifyParentOfStepChange(2);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        } else if (typeof showStep === "function") {
             showStep(2);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 0, behavior: "smooth" });
         }
     };
+
     optionsSection.style.position = "relative";
-    optionsSection.insertBefore(button, optionsSection.firstChild);
+    optionsSection.insertBefore(btn, optionsSection.firstChild);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
     const observer = new MutationObserver(() => {
         const options = document.getElementById("options-section");
-        if (options && window.getComputedStyle(options).display !== "none") {
-            insertReturnToStep2Button();
+        const step2 = document.getElementById("step-2");
+        if (
+            step2 && step2.style.display !== "none" &&
+            options && getComputedStyle(options).display !== "none"
+        ) {
+            insertScrollBackButton();
         }
     });
 
-    observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true
+    });
 });
 </script>
 </body></html>
