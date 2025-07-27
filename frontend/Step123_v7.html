@@ -1736,55 +1736,38 @@
 }
 
     /* Add this to your existing CSS */
-.scroll-to-options-arrow {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 40px;
-    height: 40px;
-    background-color: var(--bb-accent);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    z-index: 999;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.3s ease;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-}
+    .scroll-to-options-arrow {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        background-color: var(--bb-accent);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        z-index: 999;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+		touch-action: manipulation; /* Improves touch responsiveness */
+		cursor: pointer;
+		-webkit-tap-highlight-color: transparent; /* Removes tap highlight on iOS */
+    }
     
     .scroll-to-options-arrow.visible {
         opacity: 1;
         transform: translateY(0);
     }
     
-.scroll-to-options-arrow:hover {
-    background-color: var(--bb-hover-grey);
-    transform: translateY(-2px) scale(1.05);
-}
-
-@media (max-width: 768px) {
-    .scroll-to-options-arrow {
-        position: fixed;
-        bottom: auto;
-        top: 50%;
-        right: 10px;
-        transform: translateY(-50%) translateY(20px);
-    }
-    
-    .scroll-to-options-arrow.visible {
-        transform: translateY(-50%) translateY(0);
-    }
-    
     .scroll-to-options-arrow:hover {
-        transform: translateY(-50%) translateY(-2px) scale(1.05);
+        background-color: var(--bb-hover-grey);
+        transform: translateY(-2px) scale(1.05);
     }
-}
 	
 
 </style>
@@ -2674,133 +2657,27 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    const scrollArrow = document.createElement('div');
-    scrollArrow.className = 'scroll-to-options-arrow';
-    scrollArrow.innerHTML = '↓';
-    document.body.appendChild(scrollArrow);
-	
-	
-	
-	   function toggleArrowVisibility() {
-        const optionsSection = document.getElementById('options-section');
-        if (!optionsSection || window.innerWidth > 768) {
-            scrollArrow.classList.remove('visible');
-            return;
-        }
-
-        // Only show in step 2
-        if (getCurrentStep() === 2) {
-            scrollArrow.classList.add('visible');
-        } else {
-            scrollArrow.classList.remove('visible');
-        }
-    }
-	
-	    let isAtOptions = false;
-    let currentServiceAnchor = null;
-	
-	
-    function toggleArrowDirection() {
-        const optionsSection = document.getElementById('options-section');
-        if (!optionsSection) return;
-
-        const optionsRect = optionsSection.getBoundingClientRect();
-        isAtOptions = window.scrollY + window.innerHeight >= optionsRect.bottom;
-        
-        scrollArrow.innerHTML = isAtOptions ? '↑' : '↓';
-        
-        // Position arrow near relevant service options if we have one
-        if (currentServiceAnchor) {
-            const anchorRect = currentServiceAnchor.getBoundingClientRect();
-            scrollArrow.style.top = `${anchorRect.top + window.scrollY + (anchorRect.height / 2) - 20}px`;
-            scrollArrow.style.right = '20px';
-        }
-    }
-	
-	function toggleArrowDirection() {
-        const optionsSection = document.getElementById('options-section');
-        if (!optionsSection) return;
-
-        const optionsRect = optionsSection.getBoundingClientRect();
-        isAtOptions = window.scrollY + window.innerHeight >= optionsRect.bottom;
-        
-        scrollArrow.innerHTML = isAtOptions ? '↑' : '↓';
-        
-        // Position arrow near relevant service options if we have one
-        if (currentServiceAnchor) {
-            const anchorRect = currentServiceAnchor.getBoundingClientRect();
-            scrollArrow.style.top = `${anchorRect.top + window.scrollY + (anchorRect.height / 2) - 20}px`;
-            scrollArrow.style.right = '20px';
-        }
-    }
-	
- function scrollToTarget() {
-        if (isAtOptions) {
-            // Scroll to top
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        } else {
-            // Scroll to options section of the selected service
-            const optionsSection = document.getElementById('options-section');
-            if (optionsSection) {
-                optionsSection.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'start' 
-                });
-            }
-        }
-    }
-	
-	 // Update arrow when scrolling
-    window.addEventListener('scroll', toggleArrowDirection);
-	 // Handle click/touch
-    scrollArrow.addEventListener('click', scrollToTarget);
-    scrollArrow.addEventListener('touchstart', function(e) {
-        e.preventDefault();
-        scrollToTarget();
-    });
-	   // When a service is selected, set the anchor point
-    document.addEventListener('click', function(e) {
-        if (e.target.closest('.package.selected')) {
-            const serviceDiv = e.target.closest('.package.selected');
-            const serviceName = serviceDiv.querySelector('h3').textContent;
-            currentServiceAnchor = document.querySelector(`.service-options-group:has(.option-group-title:contains("${serviceName}"))`);
-            
-            if (!currentServiceAnchor) {
-                currentServiceAnchor = document.getElementById('options-section');
-            }
-            
-            toggleArrowDirection();
-            scrollArrow.classList.add('visible');
-        }
-    });
-
-
-
-
-	
+const scrollArrow = document.createElement('div');
+scrollArrow.className = 'scroll-to-options-arrow';
+scrollArrow.innerHTML = '↓';
+document.body.appendChild(scrollArrow);
 
 function scrollToOptions() {
-    console.log('scrollToOptions called');
     const optionsSection = document.getElementById('options-section');
-    if (!optionsSection) {
-        console.error('Options section not found');
-        return;
-    }
-    console.log('Options section found, attempting scroll');
-    
-    // Try both methods
-    optionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    
-    setTimeout(() => {
+    if (optionsSection) {
+        // Use this approach for better mobile compatibility
         const rect = optionsSection.getBoundingClientRect();
         window.scrollTo({
-            top: rect.top + window.scrollY - 20,
+            top: rect.top + window.scrollY - 20, // 20px offset
             behavior: 'smooth'
         });
-    }, 100);
+        
+        // Alternatively, try this for iOS:
+        optionsSection.scrollIntoView({ 
+            behavior: 'auto', // 'smooth' might not work on all iOS versions
+            block: 'start' 
+        });
+    }
 }
 
 // Handle both click and touch events
@@ -3296,16 +3173,6 @@ function showStep(stepNumber) {
     updateProgressBar(stepNumber);
     window.scrollTo(0, 0);
     notifyParentOfStepChange();
-    
-    // Update scroll arrow visibility
-    const scrollArrow = document.querySelector('.scroll-to-options-arrow');
-    if (scrollArrow) {
-        if (stepNumber === 2 && window.innerWidth <= 768) {
-            scrollArrow.classList.add('visible');
-        } else {
-            scrollArrow.classList.remove('visible');
-        }
-    }
 }
 
     // Render services for selected bundle
