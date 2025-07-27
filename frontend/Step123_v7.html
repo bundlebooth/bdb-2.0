@@ -1810,7 +1810,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1 TEST24: Choose a Bundle</div>
+        <div class="active">Step 1 TEST25: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
@@ -4268,13 +4268,16 @@ function updateServiceAddons(serviceSlug, checkbox) {
             console.error('Top anchor not found');
             return;
         }
-         console.log('Top Anchor section found, attempting scroll');
+        console.log('Options section found, attempting scroll');
         // Try both methods
         topAnchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
         
         setTimeout(() => {
             const rect = topAnchor.getBoundingClientRect();
-            window.scrollTo(0,0);
+            window.scrollTo({
+                top: rect.top + window.scrollY - 20,
+                behavior: 'smooth'
+            });
         }, 100);
     }
 
