@@ -1778,13 +1778,13 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
 <div id="progress-bar">
-<div class="active">Step 1: Choose a Bundle</div>
+<div class="active">Step 1 BLAH: Choose a Bundle</div>
 <div>Step 2: Select Services</div>
 <div>Step 3: Review &amp; Book</div>
 </div>
 <div class="step" id="step-1">
 <div class="step-1-container">
-<h2 style="margin-bottom:16px;">Step 1 TEST FINAL: Choose a Bundle</h2>
+<h2 style="margin-bottom:16px;">Step 1: Choose a Bundle</h2>
 <p class="step-description">Select from our pre-designed bundles or create your own custom package</p>
 <!-- Custom bundle banner at the top -->
 <div class="summary-card">
@@ -4235,104 +4235,59 @@ if (backToServices) {
 </script>
 <style></style>
 <style>
-#scroll-to-step2-btn {
+#return-to-step2-btn {
     position: absolute;
     top: -30px;
     right: 20px;
     z-index: 1000;
-    background-color: var(--bb-accent);
-    color: white;
+    background-color: rgba(44, 62, 80, .1);
+    color: var(--bb-blue);
     border: none;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-weight: 600;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 400;
     cursor: pointer;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-    transition: background-color 0.3s ease;
+    transition: all 0.25s;
 }
-#scroll-to-step2-btn:hover {
+#return-to-step2-btn:hover {
     background-color: var(--bb-hover-grey);
+    color: #fff;
+    transform: translateY(-2px);
 }
-</style>
-<style>
-#scroll-to-step2-btn {
-    position: absolute;
-    top: -30px;
-    right: 20px;
-    z-index: 1000;
-    background-color: var(--bb-accent);
-    color: white;
-    border: none;
-    padding: 8px 14px;
-    border-radius: 50%;
-    font-size: 20px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-    transition: background-color 0.3s ease;
-    line-height: 1;
-}
-#scroll-to-step2-btn:hover {
-    background-color: var(--bb-hover-grey);
-}
-</style>
-
-
-<style>
-#scroll-to-step2-btn {
-    position: absolute;
-    top: -30px;
-    right: 20px;
-    z-index: 1000;
-    background-color: var(--bb-accent);
-    color: white;
-    border: none;
-    padding: 8px 14px;
-    border-radius: 50%;
-    font-size: 20px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-    transition: background-color 0.3s ease;
-    line-height: 1;
-    touch-action: manipulation;
-}
-#scroll-to-step2-btn:hover {
-    background-color: var(--bb-hover-grey);
+#return-to-step2-btn:active {
+    background-color: var(--bb-dark);
+    color: #fff;
+    transform: translateY(0);
 }
 </style>
 <script>
-function insertStep2Button() {
+function insertReturnToStep2Button() {
     const optionsSection = document.getElementById("options-section");
-    if (!optionsSection || document.getElementById("scroll-to-step2-btn")) return;
+    if (!optionsSection || document.getElementById("return-to-step2-btn")) return;
 
     const button = document.createElement("button");
-    button.id = "scroll-to-step2-btn";
+    button.id = "return-to-step2-btn";
     button.innerText = "↑";
     button.onclick = function () {
-        const step2 = document.getElementById("step-2");
-        if (step2) {
-            // Scroll the top of the window to step2
-            const rect = step2.getBoundingClientRect();
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            window.scrollTo({ top: rect.top + scrollTop - 20, behavior: 'smooth' });
+        if (typeof showStep === "function") {
+            showStep(2);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };
     optionsSection.style.position = "relative";
     optionsSection.insertBefore(button, optionsSection.firstChild);
 }
 
-const observer = new MutationObserver(() => {
-    const options = document.getElementById("options-section");
-    if (options && window.getComputedStyle(options).display !== "none") {
-        insertStep2Button();
-    }
-});
 document.addEventListener("DOMContentLoaded", () => {
-    const target = document.getElementById("step-2");
-    if (target) {
-        observer.observe(target, { childList: true, subtree: true, attributes: true, attributeFilter: ["style", "class"] });
-    }
+    const observer = new MutationObserver(() => {
+        const options = document.getElementById("options-section");
+        if (options && window.getComputedStyle(options).display !== "none") {
+            insertReturnToStep2Button();
+        }
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true });
 });
 </script>
 </body></html>
