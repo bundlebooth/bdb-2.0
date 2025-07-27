@@ -1778,7 +1778,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
 <div id="progress-bar">
-<div class="active">Step 1a: Choose a Bundle</div>
+<div class="active">Step 1 OOP: Choose a Bundle</div>
 <div>Step 2: Select Services</div>
 <div>Step 3: Review &amp; Book</div>
 </div>
@@ -2653,7 +2653,7 @@ function scrollToOptions() {
             position: scrollPosition,
             element: 'options-section'
         }, 'https://bundlebooth.ca'); // Use your domain here
-		console.log(called made from Parent: Scrolltoposition);
+		console.log('called made from Parent: Scrolltoposition');
     } catch (error) {
         console.error('Error sending scroll message:', error);
         // Fallback to local scroll if parent communication fails
@@ -2669,7 +2669,7 @@ scrollArrow.addEventListener('click', scrollToOptions);
 scrollArrow.addEventListener('touchstart', function(e) {
     e.preventDefault(); // Prevent default touch behavior
     scrollToOptions();
-	console.log(scrollArrow.addEventListener recieved);
+	
 });
 });
 
