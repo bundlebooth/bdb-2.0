@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,maximum-scale=0,user-scalable=no" name="viewport"/>
 <meta http-equiv="Permissions-Policy" content="payment=(self 'https://bundlebooth.ca')">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>BundleBooth Custom Builder</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
 <script src="https://js.stripe.com/v3/"></script>
@@ -1788,7 +1789,6 @@
         transition: all 0.3s ease;
         touch-action: manipulation;
         -webkit-tap-highlight-color: transparent;
-		    pointer-events: auto !important;
     }
 	
 	
@@ -1823,7 +1823,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1 TEST191: Choose a Bundle</div>
+        <div class="active">Step 1 TEST26: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
@@ -4267,50 +4267,42 @@ function updateServiceAddons(serviceSlug, checkbox) {
 }
 
 
-// Create the scroll up arrow
-const scrollUpArrow = document.createElement('div');
-scrollUpArrow.className = 'scroll-to-services-arrow';
-scrollUpArrow.innerHTML = '↑';
-document.body.appendChild(scrollUpArrow);
+    // Add the new arrow element
+    const scrollUpArrow = document.createElement('div');
+    scrollUpArrow.className = 'scroll-to-services-arrow';
+    scrollUpArrow.innerHTML = '↑';
+    document.body.appendChild(scrollUpArrow);
 
-// Improved scroll function with better mobile support
+    // Scroll up to services function
 function scrollToServices() {
-    // Try multiple methods to ensure it works across devices
+    // 1. Try scrolling to the actual header instead of invisible anchor
     const header = document.querySelector('h2');
-    
-    // Method 1: Standard scrollIntoView with options
     if (header) {
         header.scrollIntoView({ 
             behavior: 'smooth', 
-            block: 'start' 
+            block: 'start'
         });
+        return;
     }
+
+    // 2. Fallback: Scroll to top with multiple approaches
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     
-    // Method 2: Fallback for older browsers
+    // 3. Mobile browser fallback
     setTimeout(() => {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
+        if (window.pageYOffset > 10) {
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
+        }
     }, 300);
-    
-    // Method 3: Mobile-specific fallbacks
-    setTimeout(() => {
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
-    }, 600);
 }
 
-// Improved event listeners
-scrollUpArrow.addEventListener('click', scrollToServices);
-
-// Better touch event handling
-scrollUpArrow.addEventListener('touchstart', function(e) {
-    e.preventDefault();
-    scrollToServices();
-}); 
-
-
+    // Handle both click and touch events for scroll up
+    document.querySelector('.scroll-to-services-arrow').addEventListener('click', scrollToServices);
+    document.querySelector('.scroll-to-services-arrow').addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        scrollToServices();
+    });
 
     // Updated function to handle both arrows
     function updateScrollArrowsVisibility() {
