@@ -1778,7 +1778,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
 <div id="progress-bar">
-<div class="active">Step 1 NOTIFY: Choose a Bundle</div>
+<div class="active">Step 1 FINAL NOT: Choose a Bundle</div>
 <div>Step 2: Select Services</div>
 <div>Step 3: Review &amp; Book</div>
 </div>
@@ -4324,8 +4324,8 @@ function insertScrollBackButton() {
     btn.onclick = () => {
         console.log("↑ Button clicked: attempting to notify parent of step change to Step 2");
         if (typeof notifyParentOfStepChange === "function") {
-            notifyParentOfStepChange(2);
-            console.log("notifyParentOfStepChange(2) called successfully");
+            notifyParentOfStepChange();
+            console.log("notifyParentOfStepChange() called successfully");
             window.scrollTo({ top: 0, behavior: "smooth" });
         } else {
             console.warn("notifyParentOfStepChange is not defined, falling back to showStep(2)");
