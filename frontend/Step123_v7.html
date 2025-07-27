@@ -1512,16 +1512,10 @@
     }
     
     /* Responsive adjustments */
-@media (max-width: 768px) {
-    .scroll-to-services-arrow {
-        bottom: 80px;
-        right: 15px;
-        width: 50px;
-        height: 50px;
-        font-size: 20px;
-    }
-}
-	
+    @media (max-width: 768px) {
+      .action-buttons {
+        flex-direction: column;
+      }
       .action-buttons button {
         width: 100%;
       }
@@ -1775,31 +1769,30 @@
         transform: translateY(-2px) scale(1.05);
     }
 	
-.scroll-to-services-arrow {
-    position: fixed;
-    bottom: 70px; /* Only difference is position - above down arrow */
-    right: 20px;
-    width: 40px;
-    height: 40px;
-    background-color: var(--bb-accent);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    z-index: 999;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.3s ease;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-}
-
+	    .scroll-to-services-arrow {
+        position: fixed;
+        bottom: 70px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        background-color: var(--bb-accent);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        z-index: 999;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+    }
 	
 	
-   .scroll-to-services-arrow.visible {
+    .scroll-to-services-arrow.visible {
         opacity: 1;
         transform: translateY(0);
     }
@@ -1809,20 +1802,7 @@
         transform: translateY(-2px) scale(1.05);
     }
 	
-	@media (max-width: 768px) {
-    .scroll-to-services-arrow {
-        bottom: 80px; /* Give more space from bottom */
-        right: 15px;
-        width: 50px;
-        height: 50px;
-        font-size: 20px;
-    }
-}
-    .scroll-to-services-arrow:active {
-        transform: scale(0.95) translateY(0);
-        background-color: var(--bb-hover-grey);
-    }	
-}
+
 </style>
 </head>
 <body>
@@ -1830,14 +1810,14 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1 TEST12: Choose a Bundle</div>
+        <div class="active">Step 1: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
     
     <div class="step" id="step-1">
         <div class="step-1-container">
-            <h2 style="margin-bottom:16px;">Step 1 TEST22: Choose a Bundle</h2>
+            <h2 style="margin-bottom:16px;">Step 1: Choose a Bundle</h2>
             <p class="step-description">Select from our pre-designed bundles or create your own custom package</p>
             
             <!-- Custom bundle banner at the top -->
@@ -4279,34 +4259,27 @@ function updateServiceAddons(serviceSlug, checkbox) {
     scrollUpArrow.className = 'scroll-to-services-arrow';
     scrollUpArrow.innerHTML = '↑';
     document.body.appendChild(scrollUpArrow);
-	
 
     // Scroll up to services function
-function scrollToServices() {
-    // EXACT SAME LOGIC AS SCROLL DOWN BUT SCROLLS TO TOP
-    const servicesContainer = document.getElementById('services-container');
-    if (servicesContainer) {
-        servicesContainer.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'start' 
-        });
+    function scrollToServices() {
+        console.log('scrollToServices called');
+        const topAnchor = document.getElementById('top-anchor');
+        if (!topAnchor) {
+            console.error('Top anchor not found');
+            return;
+        }
         
-        // Fallback for older browsers
+        // Try both methods
+        topAnchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
         setTimeout(() => {
-            const rect = servicesContainer.getBoundingClientRect();
+            const rect = topAnchor.getBoundingClientRect();
             window.scrollTo({
                 top: rect.top + window.scrollY - 20,
                 behavior: 'smooth'
             });
         }, 100);
-    } else {
-        // Ultimate fallback
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
     }
-}
 
     // Handle both click and touch events for scroll up
     document.querySelector('.scroll-to-services-arrow').addEventListener('click', scrollToServices);
@@ -4315,50 +4288,33 @@ function scrollToServices() {
         scrollToServices();
     });
 
-    // Update visibility logic to match scroll down arrow
-function updateScrollArrowsVisibility() {
-    const scrollUpArrow = document.querySelector('.scroll-to-services-arrow');
-    const scrollDownArrow = document.querySelector('.scroll-to-options-arrow');
-    
-    if (!scrollUpArrow || !scrollDownArrow) return;
-    
-    // Show up arrow when user has scrolled past first screen
-    const isPastFirstScreen = window.scrollY > window.innerHeight * 0.3;
-    scrollUpArrow.classList.toggle('visible', isPastFirstScreen);
-    
-    // Show down arrow when services are selected but not at bottom
-    if (selectedServices.length > 0) {
-        const isAtBottom = (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100;
-        scrollDownArrow.classList.toggle('visible', !isAtBottom);
-    } else {
-        scrollDownArrow.classList.remove('visible');
-    }
-}
-
-// Initialize event listeners
-document.addEventListener('DOMContentLoaded', () => {
-    if (!document.querySelector('.scroll-to-services-arrow')) {
-        const arrow = document.createElement('div');
-        arrow.className = 'scroll-to-services-arrow';
-        arrow.innerHTML = '↑';
-        document.body.appendChild(arrow);
+    // Updated function to handle both arrows
+    function updateScrollArrowsVisibility() {
+        const scrollDownArrow = document.querySelector('.scroll-to-options-arrow');
+        const scrollUpArrow = document.querySelector('.scroll-to-services-arrow');
         
-        // Add event listeners - SAME AS WORKING VERSION
-        arrow.addEventListener('click', scrollToServices);
-        arrow.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            scrollToServices();
-        });
-    }
-    
-    // Show arrow when user scrolls down
-    window.addEventListener('scroll', function() {
-        const arrow = document.querySelector('.scroll-to-services-arrow');
-        if (arrow) {
-            arrow.classList.toggle('visible', window.scrollY > 300);
+        if (selectedServices.length > 0) {
+            // Show down arrow when services are selected but not at bottom
+            const isAtBottom = (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100;
+            scrollDownArrow.classList.toggle('visible', !isAtBottom);
+            
+            // Show up arrow when user has scrolled down to options
+            const optionsSection = document.getElementById('options-section');
+            if (optionsSection) {
+                const optionsRect = optionsSection.getBoundingClientRect();
+                const isOptionsVisible = optionsRect.top < window.innerHeight && optionsRect.bottom >= 0;
+                scrollUpArrow.classList.toggle('visible', isOptionsVisible);
+            }
+        } else {
+            scrollDownArrow.classList.remove('visible');
+            scrollUpArrow.classList.remove('visible');
         }
-    });
-});
+    }
+
+    // Add scroll event listener
+    window.addEventListener('scroll', updateScrollArrowsVisibility);
+
+
 
 
 console.log('Setting up listeners');
@@ -4411,5 +4367,35 @@ body {
 }
 
 </script>
+
+<div class="scroll-to-services-arrow" id="scroll-up-arrow" title="Back to Services">
+  ↑
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const scrollUpArrow = document.getElementById('scroll-up-arrow');
+  const optionsSection = document.getElementById('options-section');
+  const servicesSection = document.getElementById('services-container');
+
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY || window.pageYOffset;
+    const optionsTop = optionsSection?.offsetTop || 0;
+    if (scrollTop > optionsTop - 300) {
+      scrollUpArrow.classList.add('visible');
+    } else {
+      scrollUpArrow.classList.remove('visible');
+    }
+  });
+
+  scrollUpArrow.addEventListener('click', () => {
+    if (servicesSection) {
+      servicesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+
 </body>
 </html>
