@@ -1784,7 +1784,7 @@
 </div>
 <div class="step" id="step-1">
 <div class="step-1-container">
-<h2 style="margin-bottom:16px;">Step 1: Choose a Bundle</h2>
+<h2 style="margin-bottom:16px;">Step 1 TEST FINAL: Choose a Bundle</h2>
 <p class="step-description">Select from our pre-designed bundles or create your own custom package</p>
 <!-- Custom bundle banner at the top -->
 <div class="summary-card">
@@ -4254,8 +4254,6 @@ if (backToServices) {
     background-color: var(--bb-hover-grey);
 }
 </style>
-
-
 <style>
 #scroll-to-step2-btn {
     position: absolute;
@@ -4278,6 +4276,31 @@ if (backToServices) {
     background-color: var(--bb-hover-grey);
 }
 </style>
+
+
+<style>
+#scroll-to-step2-btn {
+    position: absolute;
+    top: -30px;
+    right: 20px;
+    z-index: 1000;
+    background-color: var(--bb-accent);
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 50%;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    transition: background-color 0.3s ease;
+    line-height: 1;
+    touch-action: manipulation;
+}
+#scroll-to-step2-btn:hover {
+    background-color: var(--bb-hover-grey);
+}
+</style>
 <script>
 function insertStep2Button() {
     const optionsSection = document.getElementById("options-section");
@@ -4288,7 +4311,12 @@ function insertStep2Button() {
     button.innerText = "↑";
     button.onclick = function () {
         const step2 = document.getElementById("step-2");
-        if (step2) step2.scrollIntoView({ behavior: 'smooth' });
+        if (step2) {
+            // Scroll the top of the window to step2
+            const rect = step2.getBoundingClientRect();
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            window.scrollTo({ top: rect.top + scrollTop - 20, behavior: 'smooth' });
+        }
     };
     optionsSection.style.position = "relative";
     optionsSection.insertBefore(button, optionsSection.firstChild);
