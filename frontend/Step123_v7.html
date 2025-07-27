@@ -1823,14 +1823,14 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1 TEST99: Choose a Bundle</div>
+        <div class="active">Step 1 TEST191: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
     
     <div class="step" id="step-1">
         <div class="step-1-container">
-            <h2 style="margin-bottom:16px;">Step 1 TEST101: Choose a Bundle</h2>
+            <h2 style="margin-bottom:16px;">Step 1: Choose a Bundle</h2>
             <p class="step-description">Select from our pre-designed bundles or create your own custom package</p>
             
             <!-- Custom bundle banner at the top -->
@@ -4301,13 +4301,17 @@ function scrollToServices() {
     }, 600);
 }
 
-// Handle both click and touch events
-scrollUpArrow.addEventListener('click', scrollToOptions);
+// Improved event listeners
+scrollUpArrow.addEventListener('click', scrollToServices);
+
+// Better touch event handling
 scrollUpArrow.addEventListener('touchstart', function(e) {
-    e.preventDefault(); // Prevent default touch behavior
-    scrollToOptions();
-});
-});
+    e.preventDefault();
+    scrollToServices();
+}); 
+
+
+
     // Updated function to handle both arrows
     function updateScrollArrowsVisibility() {
         const scrollDownArrow = document.querySelector('.scroll-to-options-arrow');
