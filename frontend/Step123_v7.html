@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,maximum-scale=0,user-scalable=no" name="viewport"/>
 <meta http-equiv="Permissions-Policy" content="payment=(self 'https://bundlebooth.ca')">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>BundleBooth Custom Builder</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
 <script src="https://js.stripe.com/v3/"></script>
@@ -1768,53 +1769,6 @@
         transform: translateY(-2px) scale(1.05);
     }
 	
-	    .scroll-to-services-arrow {
-        position: fixed;
-        bottom: 70px;
-        right: 20px;
-        width: 40px;
-        height: 40px;
-        background-color: var(--bb-accent);
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        z-index: 999;
-        opacity: 0;
-        transform: translateY(20px);
-        transition: all 0.3s ease;
-        touch-action: manipulation;
-        -webkit-tap-highlight-color: transparent;
-		    pointer-events: auto !important;
-    }
-	
-	
-    .scroll-to-services-arrow.visible {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    .scroll-to-services-arrow:hover {
-        background-color: var(--bb-hover-grey);
-        transform: translateY(-2px) scale(1.05);
-    }
-	
-	html, body {
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-}
-
-/* Make top anchor minimally visible for scrolling */
-#top-anchor {
-    position: absolute;
-    top: 0;
-    height: 1px;
-    width: 1px;
-}
-	
 
 </style>
 </head>
@@ -1823,7 +1777,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1 TEST191: Choose a Bundle</div>
+        <div class="active">Step 1: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
@@ -2703,10 +2657,96 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-const scrollArrow = document.createElement('div');
-scrollArrow.className = 'scroll-to-options-arrow';
-scrollArrow.innerHTML = '↓';
-document.body.appendChild(scrollArrow);
+    const scrollArrow = document.createElement('div');
+    scrollArrow.className = 'scroll-to-options-arrow';
+    scrollArrow.innerHTML = '↓';
+    document.body.appendChild(scrollArrow);
+	
+	    let isAtOptions = false;
+    let currentServiceAnchor = null;
+	
+	
+    function toggleArrowDirection() {
+        const optionsSection = document.getElementById('options-section');
+        if (!optionsSection) return;
+
+        const optionsRect = optionsSection.getBoundingClientRect();
+        isAtOptions = window.scrollY + window.innerHeight >= optionsRect.bottom;
+        
+        scrollArrow.innerHTML = isAtOptions ? '↑' : '↓';
+        
+        // Position arrow near relevant service options if we have one
+        if (currentServiceAnchor) {
+            const anchorRect = currentServiceAnchor.getBoundingClientRect();
+            scrollArrow.style.top = `${anchorRect.top + window.scrollY + (anchorRect.height / 2) - 20}px`;
+            scrollArrow.style.right = '20px';
+        }
+    }
+	
+	function toggleArrowDirection() {
+        const optionsSection = document.getElementById('options-section');
+        if (!optionsSection) return;
+
+        const optionsRect = optionsSection.getBoundingClientRect();
+        isAtOptions = window.scrollY + window.innerHeight >= optionsRect.bottom;
+        
+        scrollArrow.innerHTML = isAtOptions ? '↑' : '↓';
+        
+        // Position arrow near relevant service options if we have one
+        if (currentServiceAnchor) {
+            const anchorRect = currentServiceAnchor.getBoundingClientRect();
+            scrollArrow.style.top = `${anchorRect.top + window.scrollY + (anchorRect.height / 2) - 20}px`;
+            scrollArrow.style.right = '20px';
+        }
+    }
+	
+ function scrollToTarget() {
+        if (isAtOptions) {
+            // Scroll to top
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        } else {
+            // Scroll to options section of the selected service
+            const optionsSection = document.getElementById('options-section');
+            if (optionsSection) {
+                optionsSection.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }
+        }
+    }
+	
+	 // Update arrow when scrolling
+    window.addEventListener('scroll', toggleArrowDirection);
+	 // Handle click/touch
+    scrollArrow.addEventListener('click', scrollToTarget);
+    scrollArrow.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        scrollToTarget();
+    });
+	   // When a service is selected, set the anchor point
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.package.selected')) {
+            const serviceDiv = e.target.closest('.package.selected');
+            const serviceName = serviceDiv.querySelector('h3').textContent;
+            currentServiceAnchor = document.querySelector(`.service-options-group:has(.option-group-title:contains("${serviceName}"))`);
+            
+            if (!currentServiceAnchor) {
+                currentServiceAnchor = document.getElementById('options-section');
+            }
+            
+            toggleArrowDirection();
+            scrollArrow.classList.add('visible');
+        }
+    });
+
+
+
+
+	
 
 function scrollToOptions() {
     console.log('scrollToOptions called');
@@ -3406,7 +3446,7 @@ if (service.features) {
             // Deselect service
             selectedServices.splice(idx, 1);
             el.classList.remove("selected");
-            updateScrollArrowsVisibility(); // Hide arrow when deselected
+            updateScrollArrowVisibility(); // Hide arrow when deselected
         } else {
             // For custom bundles, don't enforce limits
             if (!selectedBundle.isCustom && currentCount >= limit) {
@@ -4266,82 +4306,6 @@ function updateServiceAddons(serviceSlug, checkbox) {
     updatePrices();
 }
 
-
-// Create the scroll up arrow
-const scrollUpArrow = document.createElement('div');
-scrollUpArrow.className = 'scroll-to-services-arrow';
-scrollUpArrow.innerHTML = '↑';
-document.body.appendChild(scrollUpArrow);
-
-// Improved scroll function with better mobile support
-function scrollToServices() {
-    // Try multiple methods to ensure it works across devices
-    const header = document.querySelector('h2');
-    
-    // Method 1: Standard scrollIntoView with options
-    if (header) {
-        header.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'start' 
-        });
-    }
-    
-    // Method 2: Fallback for older browsers
-    setTimeout(() => {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    }, 300);
-    
-    // Method 3: Mobile-specific fallbacks
-    setTimeout(() => {
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
-    }, 600);
-}
-
-// Improved event listeners
-scrollUpArrow.addEventListener('click', scrollToServices);
-
-// Better touch event handling
-scrollUpArrow.addEventListener('touchstart', function(e) {
-    e.preventDefault();
-    scrollToServices();
-});
-
-
-
-
-    // Updated function to handle both arrows
-    function updateScrollArrowsVisibility() {
-        const scrollDownArrow = document.querySelector('.scroll-to-options-arrow');
-        const scrollUpArrow = document.querySelector('.scroll-to-services-arrow');
-        
-        if (selectedServices.length > 0) {
-            // Show down arrow when services are selected but not at bottom
-            const isAtBottom = (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100;
-            scrollDownArrow.classList.toggle('visible', !isAtBottom);
-            
-            // Show up arrow when user has scrolled down to options
-            const optionsSection = document.getElementById('options-section');
-            if (optionsSection) {
-                const optionsRect = optionsSection.getBoundingClientRect();
-                const isOptionsVisible = optionsRect.top < window.innerHeight && optionsRect.bottom >= 0;
-                scrollUpArrow.classList.toggle('visible', isOptionsVisible);
-            }
-        } else {
-            scrollDownArrow.classList.remove('visible');
-            scrollUpArrow.classList.remove('visible');
-        }
-    }
-
-    // Add scroll event listener
-    window.addEventListener('scroll', updateScrollArrowsVisibility);
-
-
-
-
 console.log('Setting up listeners');
 const progressBar = document.querySelector('#progress-bar');
 if (progressBar) {
@@ -4379,6 +4343,16 @@ if (backToServices) {
     });
 } else {
     console.warn('Back to Services button not found');
+}
+
+</script>
+<style>
+body {
+    overflow: auto !important;
+}
+#steps {
+    overflow: auto !important;
+    min-height: 100vh;
 }
 
 </script>
