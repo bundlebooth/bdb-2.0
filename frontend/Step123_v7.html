@@ -1778,7 +1778,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
 <div id="progress-bar">
-<div class="active">Step 1 FINAL NOT: Choose a Bundle</div>
+<div class="active">Step 1 TRYY: Choose a Bundle</div>
 <div>Step 2: Select Services</div>
 <div>Step 3: Review &amp; Book</div>
 </div>
@@ -4079,31 +4079,38 @@ function notifyParentOfStepChange() {
     const currentStep = getCurrentStep();
     const currentHeight = document.body.scrollHeight;
     
-    // Only send if step changed or height changed significantly (>20px)
-    if (currentStep !== lastStep || Math.abs(currentHeight - lastHeight) > 20) {
-        try {
-            // Determine the correct parent origin
-            let parentOrigin;
-            try {
-                // First try to get the parent's actual origin
-                parentOrigin = window.parent.location.origin;
-            } catch (e) {
-                // Fallback for cross-origin situations
-                parentOrigin = 'https://bundlebooth.ca'; // Your production domain
-            }
-            
-            // Send the message
-            window.parent.postMessage({
-                type: 'stepChanged',
-                step: currentStep,
-                height: currentHeight
-            }, parentOrigin);
-            
-            lastStep = currentStep;
-            lastHeight = currentHeight;
-        } catch (error) {
-            console.error('postMessage failed:', error);
+    try {
+        // 1. Always notify parent of height changes
+        const parentOrigin = (() => {
+            try { return window.parent.location.origin; } 
+            catch { return 'https://bundlebooth.ca'; } // Cross-origin fallback
+        })();
+        
+        window.parent.postMessage({
+            type: 'stepChanged',
+            step: currentStep,
+            height: currentHeight
+        }, parentOrigin);
+
+        // 2. Only scroll to top inside iframe WHEN STEP IS THE SAME
+        if (currentStep === lastStep) {
+            // Target the first meaningful element or fallback to body
+            const scrollTarget = document.querySelector('[data-scroll-top]') || 
+                               document.body.firstElementChild || 
+                               document.body;
+            scrollTarget.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start' // Aligns to top
+            });
+			 console.log('Step is the same');
         }
+        
+        // Update tracking variables
+        lastStep = currentStep;
+        lastHeight = currentHeight;
+        
+    } catch (error) {
+        console.error('Step notification error:', error);
     }
 }
 
