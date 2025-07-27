@@ -1817,7 +1817,7 @@
     
     <div class="step" id="step-1">
         <div class="step-1-container">
-            <h2 style="margin-bottom:16px;">Step 1: Choose a Bundle</h2>
+            <h2 style="margin-bottom:16px;">Step 1 TEST23: Choose a Bundle</h2>
             <p class="step-description">Select from our pre-designed bundles or create your own custom package</p>
             
             <!-- Custom bundle banner at the top -->
@@ -4274,10 +4274,7 @@ function updateServiceAddons(serviceSlug, checkbox) {
         
         setTimeout(() => {
             const rect = topAnchor.getBoundingClientRect();
-            window.scrollTo({
-                top: rect.top + window.scrollY - 20,
-                behavior: 'smooth'
-            });
+            window.scrollTo(0,0);
         }, 100);
     }
 
@@ -4357,45 +4354,5 @@ if (backToServices) {
 }
 
 </script>
-<style>
-body {
-    overflow: auto !important;
-}
-#steps {
-    overflow: auto !important;
-    min-height: 100vh;
-}
-
-</script>
-
-<div class="scroll-to-services-arrow" id="scroll-up-arrow" title="Back to Services">
-  ↑
-</div>
-
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  const scrollUpArrow = document.getElementById('scroll-up-arrow');
-  const optionsSection = document.getElementById('options-section');
-  const servicesSection = document.getElementById('services-container');
-
-  window.addEventListener('scroll', () => {
-    const scrollTop = window.scrollY || window.pageYOffset;
-    const optionsTop = optionsSection?.offsetTop || 0;
-    if (scrollTop > optionsTop - 300) {
-      scrollUpArrow.classList.add('visible');
-    } else {
-      scrollUpArrow.classList.remove('visible');
-    }
-  });
-
-  scrollUpArrow.addEventListener('click', () => {
-    if (servicesSection) {
-      servicesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  });
-});
-</script>
-
 </body>
 </html>
