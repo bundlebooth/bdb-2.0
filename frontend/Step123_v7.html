@@ -1830,7 +1830,7 @@
     
     <div class="step" id="step-1">
         <div class="step-1-container">
-            <h2 style="margin-bottom:16px;">Step 1 TEST100: Choose a Bundle</h2>
+            <h2 style="margin-bottom:16px;">Step 1 TEST101: Choose a Bundle</h2>
             <p class="step-description">Select from our pre-designed bundles or create your own custom package</p>
             
             <!-- Custom bundle banner at the top -->
@@ -4267,7 +4267,7 @@ function updateServiceAddons(serviceSlug, checkbox) {
 }
 
 
-  // Create the scroll up arrow
+// Create the scroll up arrow
 const scrollUpArrow = document.createElement('div');
 scrollUpArrow.className = 'scroll-to-services-arrow';
 scrollUpArrow.innerHTML = '↑';
@@ -4301,17 +4301,13 @@ function scrollToServices() {
     }, 600);
 }
 
-// Improved event listeners
-scrollUpArrow.addEventListener('click', scrollToServices);
-
-// Better touch event handling
+// Handle both click and touch events
+scrollUpArrow.addEventListener('click', scrollToOptions);
 scrollUpArrow.addEventListener('touchstart', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    scrollToServices();
-}, { passive: false }); // Important for preventing default scroll behavior
-
-
+    e.preventDefault(); // Prevent default touch behavior
+    scrollToOptions();
+});
+});
     // Updated function to handle both arrows
     function updateScrollArrowsVisibility() {
         const scrollDownArrow = document.querySelector('.scroll-to-options-arrow');
