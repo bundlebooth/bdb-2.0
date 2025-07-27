@@ -4367,5 +4367,35 @@ body {
 }
 
 </script>
+
+<div class="scroll-to-services-arrow" id="scroll-up-arrow" title="Back to Services">
+  ↑
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const scrollUpArrow = document.getElementById('scroll-up-arrow');
+  const optionsSection = document.getElementById('options-section');
+  const servicesSection = document.getElementById('services-container');
+
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY || window.pageYOffset;
+    const optionsTop = optionsSection?.offsetTop || 0;
+    if (scrollTop > optionsTop - 300) {
+      scrollUpArrow.classList.add('visible');
+    } else {
+      scrollUpArrow.classList.remove('visible');
+    }
+  });
+
+  scrollUpArrow.addEventListener('click', () => {
+    if (servicesSection) {
+      servicesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+
 </body>
 </html>
