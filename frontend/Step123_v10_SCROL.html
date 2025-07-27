@@ -1778,7 +1778,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
 <div id="progress-bar">
-<div class="active">Step 1 TRYY: Choose a Bundle</div>
+<div class="active">Step 1 OOP: Choose a Bundle</div>
 <div>Step 2: Select Services</div>
 <div>Step 3: Review &amp; Book</div>
 </div>
@@ -2640,18 +2640,26 @@ document.body.appendChild(scrollArrow);
 
 function scrollToOptions() {
     const optionsSection = document.getElementById('options-section');
-    if (optionsSection) {
-        // Use this approach for better mobile compatibility
-        const rect = optionsSection.getBoundingClientRect();
+    if (!optionsSection) return;
+    
+    // Calculate the position relative to the iframe document
+    const rect = optionsSection.getBoundingClientRect();
+    const scrollPosition = rect.top + window.scrollY - 20; // 20px offset
+    
+    try {
+        // Notify parent window of the scroll position
+        window.parent.postMessage({
+            type: 'scrollToPosition',
+            position: scrollPosition,
+            element: 'options-section'
+        }, 'https://bundlebooth.ca'); // Use your domain here
+		console.log('called made from Parent: Scrolltoposition');
+    } catch (error) {
+        console.error('Error sending scroll message:', error);
+        // Fallback to local scroll if parent communication fails
         window.scrollTo({
-            top: rect.top + window.scrollY - 20, // 20px offset
+            top: scrollPosition,
             behavior: 'smooth'
-        });
-        
-        // Alternatively, try this for iOS:
-        optionsSection.scrollIntoView({ 
-            behavior: 'auto', // 'smooth' might not work on all iOS versions
-            block: 'start' 
         });
     }
 }
@@ -2661,6 +2669,7 @@ scrollArrow.addEventListener('click', scrollToOptions);
 scrollArrow.addEventListener('touchstart', function(e) {
     e.preventDefault(); // Prevent default touch behavior
     scrollToOptions();
+	
 });
 });
 
