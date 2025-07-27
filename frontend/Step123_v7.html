@@ -1512,15 +1512,15 @@
     }
     
     /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .scroll-to-services-arrow {
-            bottom: 80px; /* Give more space from bottom */
-            right: 15px;
-            width: 50px;
-            height: 50px;
-            font-size: 20px;
-        }
+@media (max-width: 768px) {
+    .scroll-to-services-arrow {
+        bottom: 80px;
+        right: 15px;
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
     }
+}
 	
       .action-buttons button {
         width: 100%;
@@ -1775,27 +1775,28 @@
         transform: translateY(-2px) scale(1.05);
     }
 	
-   .scroll-to-services-arrow {
-        position: fixed;
-        bottom: 70px; /* Positioned above the down arrow */
-        right: 20px;
-        width: 40px;
-        height: 40px;
-        background-color: var(--bb-accent);
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        z-index: 999;
-        opacity: 0;
-        transform: translateY(20px);
-        transition: all 0.3s ease;
-        touch-action: manipulation; /* Improves touch responsiveness */
-        -webkit-tap-highlight-color: transparent; /* Removes tap highlight on iOS */
-    }
+.scroll-to-services-arrow {
+    position: fixed;
+    bottom: 70px; /* Only difference is position - above down arrow */
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background-color: var(--bb-accent);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    z-index: 999;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
 	
 	
    .scroll-to-services-arrow.visible {
@@ -1836,7 +1837,7 @@
     
     <div class="step" id="step-1">
         <div class="step-1-container">
-            <h2 style="margin-bottom:16px;">Step 1: Choose a Bundle</h2>
+            <h2 style="margin-bottom:16px;">Step 1 TEST22: Choose a Bundle</h2>
             <p class="step-description">Select from our pre-designed bundles or create your own custom package</p>
             
             <!-- Custom bundle banner at the top -->
@@ -4282,22 +4283,22 @@ function updateServiceAddons(serviceSlug, checkbox) {
 
     // Scroll up to services function
 function scrollToServices() {
-    console.log('Scroll to services triggered');
-    const topAnchor = document.getElementById('top-anchor');
-    if (topAnchor) {
-        // Modern smooth scroll with fallback
-        try {
-            topAnchor.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start'
-            });
-        } catch (e) {
-            // Fallback for older browsers
+    // EXACT SAME LOGIC AS SCROLL DOWN BUT SCROLLS TO TOP
+    const servicesContainer = document.getElementById('services-container');
+    if (servicesContainer) {
+        servicesContainer.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+        });
+        
+        // Fallback for older browsers
+        setTimeout(() => {
+            const rect = servicesContainer.getBoundingClientRect();
             window.scrollTo({
-                top: 0,
+                top: rect.top + window.scrollY - 20,
                 behavior: 'smooth'
             });
-        }
+        }, 100);
     } else {
         // Ultimate fallback
         window.scrollTo({
@@ -4336,25 +4337,28 @@ function updateScrollArrowsVisibility() {
 
 // Initialize event listeners
 document.addEventListener('DOMContentLoaded', () => {
-    const scrollUpArrow = document.querySelector('.scroll-to-services-arrow');
+    if (!document.querySelector('.scroll-to-services-arrow')) {
+        const arrow = document.createElement('div');
+        arrow.className = 'scroll-to-services-arrow';
+        arrow.innerHTML = '↑';
+        document.body.appendChild(arrow);
+        
+        // Add event listeners - SAME AS WORKING VERSION
+        arrow.addEventListener('click', scrollToServices);
+        arrow.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            scrollToServices();
+        });
+    }
     
-    // Click handler
-    scrollUpArrow.addEventListener('click', scrollToServices);
-    
-    // Touch handler with proper passive option
-    scrollUpArrow.addEventListener('touchstart', function(e) {
-        e.preventDefault();
-        scrollToServices();
-    }, { passive: false });
-    
-    // Track scroll events
-    window.addEventListener('scroll', updateScrollArrowsVisibility);
-    window.addEventListener('resize', updateScrollArrowsVisibility);
-    
-    // Initial update
-    updateScrollArrowsVisibility();
+    // Show arrow when user scrolls down
+    window.addEventListener('scroll', function() {
+        const arrow = document.querySelector('.scroll-to-services-arrow');
+        if (arrow) {
+            arrow.classList.toggle('visible', window.scrollY > 300);
+        }
+    });
 });
-
 
 
 console.log('Setting up listeners');
