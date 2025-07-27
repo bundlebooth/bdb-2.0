@@ -1824,7 +1824,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1 TEST10: Choose a Bundle</div>
+        <div class="active">Step 1: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
@@ -4306,13 +4306,14 @@ function scrollToServices() {
 
     // Updated function to handle both arrows
     function updateScrollArrowsVisibility() {
-        const scrollDownArrow = document.querySelector('.scroll-to-options-arrow');
-        const scrollUpArrow = document.querySelector('.scroll-to-services-arrow');
-		scrollUpArrow.addEventListener('touchstart', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    scrollToServices();
-}, { passive: false }); // Important for preventing default behavior
+    const scrollUpArrow = document.querySelector('.scroll-to-services-arrow');
+    const optionsSection = document.getElementById('options-section');
+    
+    if (optionsSection) {
+        const optionsRect = optionsSection.getBoundingClientRect();
+        const isOptionsVisible = optionsRect.top < window.innerHeight;
+        scrollUpArrow.classList.toggle('visible', isOptionsVisible);
+    }
         
         if (selectedServices.length > 0) {
             // Show down arrow when services are selected but not at bottom
