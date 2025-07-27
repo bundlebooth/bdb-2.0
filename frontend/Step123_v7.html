@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width,initial-scale=1,maximum-scale=0,user-scalable=no" name="viewport"/>
 <meta http-equiv="Permissions-Policy" content="payment=(self 'https://bundlebooth.ca')">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
 <title>BundleBooth Custom Builder</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
 <script src="https://js.stripe.com/v3/"></script>
@@ -1789,6 +1788,7 @@
         transition: all 0.3s ease;
         touch-action: manipulation;
         -webkit-tap-highlight-color: transparent;
+		    pointer-events: auto !important;
     }
 	
 	
@@ -1802,6 +1802,19 @@
         transform: translateY(-2px) scale(1.05);
     }
 	
+	html, body {
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Make top anchor minimally visible for scrolling */
+#top-anchor {
+    position: absolute;
+    top: 0;
+    height: 1px;
+    width: 1px;
+}
+	
 
 </style>
 </head>
@@ -1810,7 +1823,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1: Choose a Bundle</div>
+        <div class="active">Step 1 TEST191: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
@@ -4254,39 +4267,51 @@ function updateServiceAddons(serviceSlug, checkbox) {
 }
 
 
-    // Add the new arrow element
-    const scrollUpArrow = document.createElement('div');
-    scrollUpArrow.className = 'scroll-to-services-arrow';
-    scrollUpArrow.innerHTML = '↑';
-    document.body.appendChild(scrollUpArrow);
+// Create the scroll up arrow
+const scrollUpArrow = document.createElement('div');
+scrollUpArrow.className = 'scroll-to-services-arrow';
+scrollUpArrow.innerHTML = '↑';
+document.body.appendChild(scrollUpArrow);
 
-    // Scroll up to services function
-    function scrollToServices() {
-        console.log('scrollToServices called');
-        const topAnchor = document.getElementById('top-anchor');
-        if (!topAnchor) {
-            console.error('Top anchor not found');
-            return;
-        }
-        
-        // Try both methods
-        topAnchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        
-        setTimeout(() => {
-            const rect = topAnchor.getBoundingClientRect();
-            window.scrollTo({
-                top: rect.top + window.scrollY - 20,
-                behavior: 'smooth'
-            });
-        }, 100);
+// Improved scroll function with better mobile support
+function scrollToServices() {
+    // Try multiple methods to ensure it works across devices
+    const header = document.querySelector('h2');
+    
+    // Method 1: Standard scrollIntoView with options
+    if (header) {
+        header.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+        });
     }
+    
+    // Method 2: Fallback for older browsers
+    setTimeout(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }, 300);
+    
+    // Method 3: Mobile-specific fallbacks
+    setTimeout(() => {
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+    }, 600);
+}
 
-    // Handle both click and touch events for scroll up
-    document.querySelector('.scroll-to-services-arrow').addEventListener('click', scrollToServices);
-    document.querySelector('.scroll-to-services-arrow').addEventListener('touchstart', function(e) {
-        e.preventDefault();
-        scrollToServices();
-    });
+// Improved event listeners
+scrollUpArrow.addEventListener('click', scrollToServices);
+
+// Better touch event handling
+scrollUpArrow.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    scrollToServices();
+});
+
+
+
 
     // Updated function to handle both arrows
     function updateScrollArrowsVisibility() {
@@ -4354,16 +4379,6 @@ if (backToServices) {
     });
 } else {
     console.warn('Back to Services button not found');
-}
-
-</script>
-<style>
-body {
-    overflow: auto !important;
-}
-#steps {
-    overflow: auto !important;
-    min-height: 100vh;
 }
 
 </script>
