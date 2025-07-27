@@ -1769,6 +1769,39 @@
         transform: translateY(-2px) scale(1.05);
     }
 	
+	    .scroll-to-services-arrow {
+        position: fixed;
+        bottom: 70px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        background-color: var(--bb-accent);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        z-index: 999;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+    }
+	
+	
+    .scroll-to-services-arrow.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .scroll-to-services-arrow:hover {
+        background-color: var(--bb-hover-grey);
+        transform: translateY(-2px) scale(1.05);
+    }
+	
 
 </style>
 </head>
@@ -3360,7 +3393,7 @@ if (service.features) {
             // Deselect service
             selectedServices.splice(idx, 1);
             el.classList.remove("selected");
-            updateScrollArrowVisibility(); // Hide arrow when deselected
+            updateScrollArrowsVisibility(); // Hide arrow when deselected
         } else {
             // For custom bundles, don't enforce limits
             if (!selectedBundle.isCustom && currentCount >= limit) {
@@ -4219,6 +4252,70 @@ function updateServiceAddons(serviceSlug, checkbox) {
     updateReviewButton();
     updatePrices();
 }
+
+
+    // Add the new arrow element
+    const scrollUpArrow = document.createElement('div');
+    scrollUpArrow.className = 'scroll-to-services-arrow';
+    scrollUpArrow.innerHTML = '↑';
+    document.body.appendChild(scrollUpArrow);
+
+    // Scroll up to services function
+    function scrollToServices() {
+        console.log('scrollToServices called');
+        const topAnchor = document.getElementById('top-anchor');
+        if (!topAnchor) {
+            console.error('Top anchor not found');
+            return;
+        }
+        
+        // Try both methods
+        topAnchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        setTimeout(() => {
+            const rect = topAnchor.getBoundingClientRect();
+            window.scrollTo({
+                top: rect.top + window.scrollY - 20,
+                behavior: 'smooth'
+            });
+        }, 100);
+    }
+
+    // Handle both click and touch events for scroll up
+    document.querySelector('.scroll-to-services-arrow').addEventListener('click', scrollToServices);
+    document.querySelector('.scroll-to-services-arrow').addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        scrollToServices();
+    });
+
+    // Updated function to handle both arrows
+    function updateScrollArrowsVisibility() {
+        const scrollDownArrow = document.querySelector('.scroll-to-options-arrow');
+        const scrollUpArrow = document.querySelector('.scroll-to-services-arrow');
+        
+        if (selectedServices.length > 0) {
+            // Show down arrow when services are selected but not at bottom
+            const isAtBottom = (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100;
+            scrollDownArrow.classList.toggle('visible', !isAtBottom);
+            
+            // Show up arrow when user has scrolled down to options
+            const optionsSection = document.getElementById('options-section');
+            if (optionsSection) {
+                const optionsRect = optionsSection.getBoundingClientRect();
+                const isOptionsVisible = optionsRect.top < window.innerHeight && optionsRect.bottom >= 0;
+                scrollUpArrow.classList.toggle('visible', isOptionsVisible);
+            }
+        } else {
+            scrollDownArrow.classList.remove('visible');
+            scrollUpArrow.classList.remove('visible');
+        }
+    }
+
+    // Add scroll event listener
+    window.addEventListener('scroll', updateScrollArrowsVisibility);
+
+
+
 
 console.log('Setting up listeners');
 const progressBar = document.querySelector('#progress-bar');
