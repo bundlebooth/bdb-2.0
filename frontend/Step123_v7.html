@@ -1736,30 +1736,33 @@
 }
 
     /* Add this to your existing CSS */
-.scroll-to-options-arrow {
-    position: fixed;
-    right: 20px;
-    width: 40px;
-    height: 40px;
-    background-color: var(--bb-accent);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    z-index: 999;
-    opacity: 0;
-    transform: translateY(0); /* Changed from translateY(20px) */
-    transition: opacity 0.3s ease;
-    cursor: pointer;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-}
+    .scroll-to-options-arrow {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        background-color: var(--bb-accent);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        z-index: 999;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+		touch-action: manipulation; /* Improves touch responsiveness */
+		cursor: pointer;
+		-webkit-tap-highlight-color: transparent; /* Removes tap highlight on iOS */
+    }
     
-.scroll-to-options-arrow.visible {
-    opacity: 1;
-}
+    .scroll-to-options-arrow.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
     
     .scroll-to-options-arrow:hover {
         background-color: var(--bb-hover-grey);
@@ -1774,7 +1777,7 @@
 <main>
 <a id="top-anchor" style="position: absolute; top: 0; visibility: hidden;"></a>
     <div id="progress-bar">
-        <div class="active">Step 1: TEST 11: Choose a Bundle</div>
+        <div class="active">Step 1: Choose a Bundle</div>
         <div>Step 2: Select Services</div>
         <div>Step 3: Review & Book</div>
     </div>
@@ -2663,45 +2666,39 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentServiceAnchor = null;
 	
 	
-function toggleArrowDirection() {
-    const optionsSection = document.getElementById('options-section');
-    if (!optionsSection) return;
+    function toggleArrowDirection() {
+        const optionsSection = document.getElementById('options-section');
+        if (!optionsSection) return;
 
-    const optionsRect = optionsSection.getBoundingClientRect();
-    isAtOptions = window.scrollY + window.innerHeight >= optionsRect.top + 100; // Adjusted threshold
-    
-    scrollArrow.innerHTML = isAtOptions ? '↑' : '↓';
-    
-    // When in options section, position next to service title
-    if (isAtOptions && currentServiceAnchor) {
-        const titleElement = currentServiceAnchor.querySelector('.option-group-title');
-        if (titleElement) {
-            const titleRect = titleElement.getBoundingClientRect();
-            scrollArrow.style.top = `${titleRect.top + window.scrollY + (titleRect.height / 2) - 20}px`;
+        const optionsRect = optionsSection.getBoundingClientRect();
+        isAtOptions = window.scrollY + window.innerHeight >= optionsRect.bottom;
+        
+        scrollArrow.innerHTML = isAtOptions ? '↑' : '↓';
+        
+        // Position arrow near relevant service options if we have one
+        if (currentServiceAnchor) {
+            const anchorRect = currentServiceAnchor.getBoundingClientRect();
+            scrollArrow.style.top = `${anchorRect.top + window.scrollY + (anchorRect.height / 2) - 20}px`;
             scrollArrow.style.right = '20px';
         }
     }
-}
 	
-function toggleArrowDirection() {
-    const optionsSection = document.getElementById('options-section');
-    if (!optionsSection) return;
+	function toggleArrowDirection() {
+        const optionsSection = document.getElementById('options-section');
+        if (!optionsSection) return;
 
-    const optionsRect = optionsSection.getBoundingClientRect();
-    isAtOptions = window.scrollY + window.innerHeight >= optionsRect.top + 100; // Adjusted threshold
-    
-    scrollArrow.innerHTML = isAtOptions ? '↑' : '↓';
-    
-    // When in options section, position next to service title
-    if (isAtOptions && currentServiceAnchor) {
-        const titleElement = currentServiceAnchor.querySelector('.option-group-title');
-        if (titleElement) {
-            const titleRect = titleElement.getBoundingClientRect();
-            scrollArrow.style.top = `${titleRect.top + window.scrollY + (titleRect.height / 2) - 20}px`;
+        const optionsRect = optionsSection.getBoundingClientRect();
+        isAtOptions = window.scrollY + window.innerHeight >= optionsRect.bottom;
+        
+        scrollArrow.innerHTML = isAtOptions ? '↑' : '↓';
+        
+        // Position arrow near relevant service options if we have one
+        if (currentServiceAnchor) {
+            const anchorRect = currentServiceAnchor.getBoundingClientRect();
+            scrollArrow.style.top = `${anchorRect.top + window.scrollY + (anchorRect.height / 2) - 20}px`;
             scrollArrow.style.right = '20px';
         }
     }
-}
 	
  function scrollToTarget() {
         if (isAtOptions) {
@@ -2783,30 +2780,31 @@ scrollArrow.addEventListener('touchstart', function(e) {
 // Add CSS improvements
 const style = document.createElement('style');
 style.textContent = `
-.scroll-to-options-arrow {
-    position: fixed;
-    right: 20px;
-    width: 40px;
-    height: 40px;
-    background-color: var(--bb-accent);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    z-index: 999;
-    opacity: 0;
-    transform: translateY(0); /* Changed from translateY(20px) */
-    transition: opacity 0.3s ease;
-    cursor: pointer;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-}
-	
-.scroll-to-options-arrow.visible {
-    opacity: 1;
-}
+    .scroll-to-options-arrow {
+        touch-action: manipulation;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        background-color: var(--bb-accent);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        z-index: 999;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+    }
+    .scroll-to-options-arrow.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
 `;
 document.head.appendChild(style);
 
