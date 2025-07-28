@@ -302,12 +302,19 @@
       {
         "label": "6 Sparklers",
         "value": "6-sparklers",
-        "price": 600
+        "price": 500
       }
     ],
     "currency": "CAD",
     "Sale": "N",
-    "features": [],
+    "features": [
+      "20‑inch to 36‑inch handheld sparklers, burn ~1–3 minutes each",
+      "Wire-core construction for almost smokeless gold spark",
+      "Matching decorative tags or sign (e.g. 'Let Love Sparkle')",
+      "Buckets or holders for display",
+      "Quantity bundles (e.g. 48, 72, 150 sparklers)",
+      "Photo‑friendly packaging and styling"
+    ],
     "dateAdded": "07-01-2025",
     "New": "N"
   },
@@ -317,12 +324,12 @@
     "ServiceType": "Scene Setters",
     "description": "Create a stunning, cinematic atmosphere with our Dry Ice Fog Effect! This low-lying fog adds a magical touch to first dances, stage entrances, or any moment you want to make unforgettable.",
     "duration": 1,
-    "price": 550,
+    "price": 400,
     "pricingTiers": [
       {
-        "label": "Standard",
-        "value": "standard",
-        "price": 0
+        "label": "Color Tinted Fog",
+        "value": "colored-fog",
+        "price": 200
       }
     ],
     "currency": "CAD",
@@ -347,9 +354,19 @@
     "price": 900,
     "pricingTiers": [
       {
-        "label": "Standard",
-        "value": "standard",
-        "price": 0
+        "label": "Custom Color Scheme",
+        "value": "custom-color-scheme",
+        "price": 100
+      },
+      {
+        "label": "Personalized Text Projection",
+        "value": "laser-text-projection",
+        "price": 150
+      },
+      {
+        "label": "Fog Effect Add-On",
+        "value": "fog-effect",
+        "price": 250
       }
     ],
     "currency": "CAD",
