@@ -167,32 +167,35 @@
     "ServiceType": "Sweets and Brews",
     "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
     "duration": 3,
-    "price": 700,
-    "pricingTiers": [
-      {
-        "label": "50 Guests",
-        "value": 50,
-        "price": 0
-      },
-      {
-        "label": "100 Guests",
-        "value": 100,
-        "price": 400
-      },
-      {
-        "label": "150 Guests",
-        "value": 150,
-        "price": 800
-      },
-      {
-        "label": "200 Guests",
-        "value": 200,
-        "price": 1200
-      }
-    ],
+    "price": 1500,
+  "pricingTiers": [
+   {
+      "label": "Espresso Drinks & Coffee",
+      "value": "espresso-coffee-drinks",
+      "price": 0
+    },
+    {
+      "label": "Matcha",
+      "value": "matcha",
+      "price": 200
+    },
+    {
+      "label": "Iced Drinks (Iced Lattés & Matchas)",
+      "value": "branding-signage",
+      "price": 200
+    }
+  ]
     "currency": "CAD",
     "Sale": "N",
-    "features": [],
+    "features": [
+	  "Espresso and Coffee Options",
+	  "Modern self-contained espresso station",
+	  "Professional barista on-site",
+	  "Unlimited servings during service time",
+	  "Choice of regular and decaf beans",
+	  "Dairy and non-dairy milk options",
+	  "Eco-friendly disposable cups, lids, and stirrers",
+    ],
     "dateAdded": "07-01-2025",
     "New": "N"
   },
