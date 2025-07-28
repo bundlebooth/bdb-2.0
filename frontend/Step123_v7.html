@@ -2585,12 +2585,12 @@ async function initializeStripe() {
         }).join('');
         
         // Add special ribbon if applicable
-        const ribbon = isSpecial ? 
-        `<div class="corner-ribbon">${
-            bundle.discountType === 'fixed' ? 
-            `C$${bundle.discountAmount} OFF` : 
-            `${bundle.discountAmount || bundle.discountPercentage}% OFF`
-        }</div>` : '';
+const ribbon = isSpecial ? 
+    `<div class="corner-ribbon">${
+        bundle.discountType === 'Fixed' ? 
+        `$${bundle.discountAmount} OFF` : 
+        `${bundle.discountAmount || bundle.discountPercentage}% OFF`
+    }</div>` : '';
             
         // Add plus symbol for custom bundle
         const servicesIncludedContent = bundle.isCustom ? 
@@ -2892,16 +2892,13 @@ function updatePrices() {
     
     // Calculate bundle discount based on type
     let bundleDiscountValue = 0;
-    if (selectedBundle.Special) {
-        if (selectedBundle.discountType === 'percentage') {
-            bundleDiscountValue = subtotal * (selectedBundle.discountAmount / 100);
-        } else if (selectedBundle.discountType === 'fixed') {
-            bundleDiscountValue = selectedBundle.discountAmount;
-        }
-    } else if (!selectedBundle.isCustom) {
-        // Default bundle discount (percentage)
-        bundleDiscountValue = subtotal * (selectedBundle.discountPercentage ? selectedBundle.discountPercentage/100 : 0);
-    }
+if (selectedBundle.Special) {
+    bundleDiscountValue = selectedBundle.discountType === 'Fixed' ? 
+        selectedBundle.discountAmount : 
+        subtotal * (selectedBundle.discountAmount / 100);
+} else if (!selectedBundle.isCustom) {
+    bundleDiscountValue = subtotal * (selectedBundle.discountPercentage ? selectedBundle.discountPercentage/100 : 0);
+}
     
     const totalBeforePromo = Math.max(0, subtotal - bundleDiscountValue);
     const total = Math.max(0, totalBeforePromo - promoDiscount);
@@ -2912,17 +2909,17 @@ function updatePrices() {
     // Show bundle discount only if there is one
     if (bundleDiscountValue > 0) {
         document.getElementById('discount-row').style.display = 'flex';
-        let discountText;
-        if (selectedBundle.Special && selectedBundle.discountType === 'fixed') {
-            discountText = `Bundle Discount (C$${selectedBundle.discountAmount.toFixed(2)} off):`;
-        } else if (selectedBundle.Special && selectedBundle.discountType === 'percentage') {
-            discountText = `Bundle Discount (${selectedBundle.discountAmount}%):`;
-        } else {
-            discountText = selectedBundle.discountPercentage ? 
-                `Bundle Discount (${selectedBundle.discountPercentage}%):` : 
-                `Bundle Discount:`;
-        }
-        document.querySelector('.discount-row span:first-child').textContent = discountText;
+let discountText;
+if (selectedBundle.Special) {
+    discountText = selectedBundle.discountType === 'Fixed' ?
+        `Bundle Discount ($${selectedBundle.discountAmount} OFF)` :
+        `Bundle Discount (${selectedBundle.discountAmount}%)`;
+} else {
+    discountText = selectedBundle.discountPercentage ? 
+        `Bundle Discount (${selectedBundle.discountPercentage}%)` : 
+        `Bundle Discount`;
+}
+document.querySelector('.discount-row span:first-child').textContent = discountText;
         document.getElementById('discount-amount').textContent = `-C$${bundleDiscountValue.toFixed(2)}`;
     } else {
         document.getElementById('discount-row').style.display = 'none';
