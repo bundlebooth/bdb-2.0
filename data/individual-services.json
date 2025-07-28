@@ -167,7 +167,7 @@
     "ServiceType": "Sweets and Brews",
     "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
     "duration": 3,
-    "price": 1500,
+    "price": 1300,
     "pricingTiers": [
       {
         "label": "Espresso Drinks & Coffee (Standard)",
@@ -214,11 +214,6 @@
     "price": 1000,
     "pricingTiers": [
       {
-        "label": "Branded serving trays",
-        "value": "branded-serving-trays",
-        "price": 100
-      },
-      {
         "label": "Nutella Bar Add-on",
         "value": "nutella-bar",
         "price": 100
@@ -227,6 +222,10 @@
         "label": "Premium Toppings Bar (Caramel, Honey, Seasonal Berries)",
         "value": "premium-toppings",
         "price": 150
+      },       {
+        "label": "Branded serving trays",
+        "value": "branded-serving-trays",
+        "price": 100
       }
     ],
     "currency": "CAD",
@@ -249,10 +248,10 @@
     "ServiceType": "Sweets and Brews",
     "description": "Add a fresh, healthy twist to your event with our vibrant Smoothie Booth! We blend delicious smoothies with real fruits, natural ingredients and a variety of add-ins.",
     "duration": 3,
-    "price": 900,
+    "price": 1100,
     "pricingTiers": [
       {
-        "label": "Tropical Fruit Add-on (Mango, Pineapple, Passionfruit)",
+        "label": "Tropical Fruit Smoothies (Mango, Pineapple, Passionfruit)",
         "value": "tropical-fruit",
         "price": 200
       },
@@ -366,7 +365,7 @@
       {
         "label": "Fog Effect Add-On",
         "value": "fog-effect",
-        "price": 250
+        "price": 350
       }
     ],
     "currency": "CAD",
