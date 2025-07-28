@@ -696,9 +696,7 @@
 
 
 .confirmation-message h3 {
-    margin-top: 0;
-    color: var(--bb-green);
-    font-size: 1.5rem;
+    color: var(--bb-dark); /* Change from --bb-green to --bb-dark */
 }
 
 .confirmation-message p {
@@ -716,8 +714,8 @@
 
 #new-bundle-button {
     margin-top: 20px;
-    background: var(--bb-accent);
-    color: white;
+    background: rgba(44, 62, 80, .1); /* Change from --bb-accent to standard button color */
+    color: var(--bb-blue);
 }
 
 #new-bundle-button:hover {
@@ -2828,12 +2826,7 @@ document.getElementById('new-bundle-button').addEventListener('click', () => {
     document.getElementById('confirmation-message').style.display = 'none';
     
     // Show step 1 and hide others
-    document.getElementById('step-1').style.display = 'block';
-    document.getElementById('step-2').style.display = 'none';
-    document.getElementById('step-3').style.display = 'none';
-    
-    // Reset progress bar
-    updateProgressBar(1);
+    showStep(1); // Use showStep function to properly handle the transition
     
     // Re-render bundles
     renderBundles();
@@ -2843,8 +2836,6 @@ document.getElementById('new-bundle-button').addEventListener('click', () => {
     document.getElementById('payment-info').style.display = 'none';
     document.getElementById('submit-booking').style.display = 'block';
     
-    // Scroll to top
-    window.scrollTo(0, 0);
 });
         
 // Month navigation
