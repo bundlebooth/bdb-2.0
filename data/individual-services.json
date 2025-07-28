@@ -11,15 +11,15 @@
         "label": "Unlimited Prints",
         "value": "unlimited-prints",
         "price": 100
+      },	
+	  {
+        "label": "Floral Decor",
+        "value": "floral-decor",
+        "price": 100
       },
       {
         "label": "Custom Backdrop",
         "value": "custom-backdrop",
-        "price": 100
-      },
-	  {
-        "label": "Flower Backdrop",
-        "value": "flower-backdrop",
         "price": 100
       },
       {
@@ -31,25 +31,19 @@
         "label": "Online Gallery with Branding",
         "value": "gallery-branding",
         "price": 50
-      },
-      {
-        "label": "GIF/BoomeRang Add-on",
-        "value": "gif-addon",
-        "price": 50
       }
     ],
     "currency": "CAD",
     "Sale": "N",
     "features": [
       "Sleek modern booth",
+	  "White Backdrop",
       "Unlimited digital photo sessions",
       "On-site attendant",
       "Custom photo overlay",
-      "Choice of backdrop",
       "Fun prop set",
-      "Instant sharing via Airdrop/SMS/Email",
+      "Instant Sharing (Text/Airdrop/QR)",
       "Online gallery for download",
-      "Optional 4x6 printing (if included in package)"
     ],
     "dateAdded": "07-01-2025",
     "New": "N"
@@ -60,7 +54,7 @@
     "ServiceType": "Interactive Booths",
     "description": "Elevate your event with the sophistication of our 360 Video Booth experience. Guests are invited to step onto a sleek platform as a rotating camera captures elegant, slow-motion videos from every angle.",
     "duration": 3,
-    "price": 950,
+    "price": 600,
     "pricingTiers": [
       {
         "label": "Red Carpet Setup",
@@ -71,7 +65,12 @@
         "label": "Custom Video Overlay",
         "value": "custom-overlay",
         "price": 100
-      }
+      },
+	  {
+      "label": "Instant Sharing (Text/Airdrop/QR)",
+      "value": "sharing-station",
+      "price": 80
+	  }
     ],
     "currency": "CAD",
     "Sale": "N",
@@ -95,26 +94,39 @@
     "duration": 3,
     "price": 400,
     "pricingTiers": [
-      {
-        "label": "Playback Speaker",
-        "value": "playback-speaker",
-        "price": 50
-      },
-      {
-        "label": "Custom Vinyl Wrap",
-        "value": "vinyl-wrap",
-        "price": 100
-      }
+	  {
+		"label": "Custom Display Stand",
+		"value": "signage",
+		"price": 50
+	  },
+	  {
+		"label": "Personalized Welcome Message",
+		"value": "welcome-message",
+		"price": 50
+	  },
+	  {
+		"label": "Tabletop decor",
+		"value": "tabletop-decor",
+		"price": 50
+	  },
+	  {
+		"label": "Tabletop decor",
+		"value": "tabletop-decor",
+		"price": 50
+	  },
+		{
+		  "label": "USB Drive of All Recordings",
+		  "value": "usb-delivery",
+		  "price": 50
+		}
     ],
     "currency": "CAD",
     "Sale": "N",
     "features": [
       "Phone recording device",
-      "Custom welcome message",
       "Unlimited voice recordings",
-      "USB or digital download of all audio messages",
-      "Tabletop setup with d\u00e9cor",
-      "Signage with instructions for guests"
+      "Digital download of all audio messages",
+      "Tabletop setup",
     ],
     "dateAdded": "07-01-2025",
     "New": "N"
