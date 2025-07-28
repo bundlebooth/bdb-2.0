@@ -2588,8 +2588,8 @@ async function initializeStripe() {
 const ribbon = isSpecial ? 
     `<div class="corner-ribbon">${
         bundle.discountType === 'Fixed' ? 
-        `$${bundle.discountAmount} OFF` : 
-        `${bundle.discountAmount || bundle.discountPercentage}% OFF`
+        `$${bundle.discountAmount} OFF!` : 
+        `${bundle.discountAmount || bundle.discountPercentage}% OFF!`
     }</div>` : '';
             
         // Add plus symbol for custom bundle
