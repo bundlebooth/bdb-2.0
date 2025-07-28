@@ -681,10 +681,10 @@
     }
 
 .confirmation-message {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    position: absolute;  /* Changed from fixed to absolute */
+    top: auto;          /* Remove fixed positioning */
+    left: auto;         /* Remove fixed positioning */
+    transform: none;    /* Remove transform */
     z-index: 1001;
     background-color: white;
     padding: 30px;
@@ -694,6 +694,7 @@
     max-width: 500px;
     display: none;
     text-align: center;
+    margin-top: 20px;   /* Add some spacing from the payment form */
 }
 
     .confirmation-icon {
@@ -1657,7 +1658,7 @@
 }
 
 .confirmation-overlay {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
