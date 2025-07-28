@@ -697,6 +697,21 @@
     margin-top: 20px;   /* Add some spacing from the payment form */
 }
 
+#confirmation-message {
+  background: #fff;
+  border-radius: 12px;
+  padding: 30px;
+  margin-top: 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+#confirmation-message .confirmation-icon {
+  font-size: 48px;
+  color: var(--bb-green);
+  margin-bottom: 16px;
+}
+
     .confirmation-icon {
       font-size: 48px;
       color: var(--bb-green);
@@ -1994,27 +2009,30 @@
 </div>
 <!-- Payment Section (now separate from Important Notes) -->
 <div id="stripe-payment-form" style="display:none;">
-<h3>Payment Information</h3>
-<div id="payment-errors"></div>
-<div id="card-element"></div> <!-- This is where the card element will mount -->
-<button class="book-now-button" id="submit-payment">Pay <span id="payment-amount"></span> Now</button>
-<div class="processing-message" id="processing-message">Hang tight! We're processing your booking — this may take a moment.</div>
+  <h3>Payment Information</h3>
+  <div id="payment-errors"></div>
+  <div id="card-element"></div> <!-- This is where the card element will mount -->
+  <button class="book-now-button" id="submit-payment">Pay <span id="payment-amount"></span> Now</button>
+  <div class="processing-message" id="processing-message">Hang tight! We're processing your booking — this may take a moment.</div>
 </div>
+
 <div class="payment-info" id="payment-info" style="display:none;">
-<p><strong>Payment Amount:</strong> <span id="payment-info-amount"></span></p>
+  <p><strong>Payment Amount:</strong> <span id="payment-info-amount"></span></p>
 </div>
+
 <div class="action-buttons">
-<button class="book-now-button back-button" id="back-to-services">Back to Services</button>
-<button class="book-now-button" id="submit-booking">Book Now</button>
+  <button class="book-now-button back-button" id="back-to-services">Back to Services</button>
+  <button class="book-now-button" id="submit-booking">Book Now</button>
 </div>
-<div class="confirmation-overlay" id="confirmation-overlay"></div>
-<div class="confirmation-message" id="confirmation-message">
-<div class="confirmation-icon">✓</div>
-<h3>Booking Confirmed!</h3>
-<p>Thank you for your booking. Your payment of <span id="confirmed-amount">$0.00</span> was successful.</p>
-<p>A confirmation email has been sent to <span id="sent-email"></span> with your booking details.</p>
-<p id="countdown-timer">You will be redirected to homepage in 5 seconds...</p>
-<button class="book-now-button" id="new-bundle-button" style="margin-top: 20px;">Create Another Bundle</button>
+
+<!-- Embedded confirmation message - replaces the payment form when booking is complete -->
+<div id="confirmation-message" style="display:none;">
+  <div class="confirmation-icon">✓</div>
+  <h3>Booking Confirmed!</h3>
+  <p>Thank you for your booking. Your payment of <span id="confirmed-amount">$0.00</span> was successful.</p>
+  <p>A confirmation email has been sent to <span id="sent-email"></span> with your booking details.</p>
+  <p id="countdown-timer">You will be redirected to homepage in 5 seconds...</p>
+  <button class="book-now-button" id="new-bundle-button" style="margin-top: 20px;">Create Another Bundle</button>
 </div>
 <div class="confirmation-blur" id="confirmation-blur"></div>
 </div></main>
@@ -4060,7 +4078,6 @@ document.getElementById('stripe-payment-form').style.display = 'none';
 document.getElementById('payment-info').style.display = 'none';
 document.getElementById('back-to-services').style.display = 'none';
 document.getElementById('submit-booking').style.display = 'none';
-document.getElementById('confirmation-overlay').style.display = 'block';
 document.getElementById('confirmation-message').style.display = 'block';
 document.getElementById('confirmed-amount').textContent = `C$${total.toFixed(2)}`;
 document.getElementById('sent-email').textContent = bookingData.email;
@@ -4075,8 +4092,8 @@ const countdownInterval = setInterval(() => {
     countdownElement.textContent = `You will be redirected to homepage in ${seconds} seconds...`;
     
     if (seconds <= 0) {
-    clearInterval(countdownInterval);
-    window.open('https://bundlebooth.ca/', '_blank');
+        clearInterval(countdownInterval);
+        window.open('https://bundlebooth.ca/', '_blank');
     }
 }, 1000);
             
