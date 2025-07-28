@@ -2585,8 +2585,12 @@ async function initializeStripe() {
         }).join('');
         
         // Add special ribbon if applicable
-        const ribbon = isSpecial && bundle.discountPercentage ? 
-            `<div class="corner-ribbon">${bundle.discountPercentage}% OFF</div>` : '';
+        const ribbon = isSpecial ? 
+        `<div class="corner-ribbon">${
+            bundle.discountType === 'fixed' ? 
+            `C$${bundle.discountAmount} OFF` : 
+            `${bundle.discountAmount || bundle.discountPercentage}% OFF`
+        }</div>` : '';
             
         // Add plus symbol for custom bundle
         const servicesIncludedContent = bundle.isCustom ? 
@@ -2883,28 +2887,43 @@ function updateMonthNavigationButtons() {
     // Update prices with discounts
 // In the updatePrices() function, replace with:
 function updatePrices() {
-   const subtotal = selectedServices.reduce((sum, service) => 
+    const subtotal = selectedServices.reduce((sum, service) => 
         sum + (service.selectedPrice || service.price || 0), 0);
     
-    // Get bundle discount (either from bundle data or default 0 for non-custom bundles)
-    const bundleDiscountValue = selectedBundle.isCustom ? 0 : 
-                              (selectedBundle.discountPercentage ? selectedBundle.discountPercentage/100 : 0);
+    // Calculate bundle discount based on type
+    let bundleDiscountValue = 0;
+    if (selectedBundle.Special) {
+        if (selectedBundle.discountType === 'percentage') {
+            bundleDiscountValue = subtotal * (selectedBundle.discountAmount / 100);
+        } else if (selectedBundle.discountType === 'fixed') {
+            bundleDiscountValue = selectedBundle.discountAmount;
+        }
+    } else if (!selectedBundle.isCustom) {
+        // Default bundle discount (percentage)
+        bundleDiscountValue = subtotal * (selectedBundle.discountPercentage ? selectedBundle.discountPercentage/100 : 0);
+    }
     
-    const discount = subtotal * bundleDiscountValue;
-    const totalBeforePromo = subtotal - discount;
+    const totalBeforePromo = Math.max(0, subtotal - bundleDiscountValue);
     const total = Math.max(0, totalBeforePromo - promoDiscount);
     
     // Update price displays
     document.getElementById('subtotal-price').textContent = `C$${subtotal.toFixed(2)}`;
     
     // Show bundle discount only if there is one
-    if (discount > 0) {
+    if (bundleDiscountValue > 0) {
         document.getElementById('discount-row').style.display = 'flex';
-        const discountText = selectedBundle.discountPercentage ? 
-            `Bundle Discount (${selectedBundle.discountPercentage}%):` : 
-            `Bundle Discount:`;
+        let discountText;
+        if (selectedBundle.Special && selectedBundle.discountType === 'fixed') {
+            discountText = `Bundle Discount (C$${selectedBundle.discountAmount.toFixed(2)} off):`;
+        } else if (selectedBundle.Special && selectedBundle.discountType === 'percentage') {
+            discountText = `Bundle Discount (${selectedBundle.discountAmount}%):`;
+        } else {
+            discountText = selectedBundle.discountPercentage ? 
+                `Bundle Discount (${selectedBundle.discountPercentage}%):` : 
+                `Bundle Discount:`;
+        }
         document.querySelector('.discount-row span:first-child').textContent = discountText;
-        document.getElementById('discount-amount').textContent = `-C$${discount.toFixed(2)}`;
+        document.getElementById('discount-amount').textContent = `-C$${bundleDiscountValue.toFixed(2)}`;
     } else {
         document.getElementById('discount-row').style.display = 'none';
     }
@@ -4026,12 +4045,17 @@ async function handlePaymentSubmit(e) {
             services: selectedServices,
             bundleName: selectedBundle.name,
             bundleDescription: selectedBundle.description,
-            selectedBundle: {
-                name: selectedBundle.name,
-                isCustom: selectedBundle.isCustom,
-                discountPercentage: selectedBundle.discountPercentage || 0,
-                discountValue: discount
-            },
+             selectedBundle: {
+        name: selectedBundle.name,
+        isCustom: selectedBundle.isCustom,
+        isSpecial: selectedBundle.Special,
+        discountType: selectedBundle.discountType,
+        discountValue: selectedBundle.Special ? 
+            (selectedBundle.discountType === 'percentage' ? 
+                subtotal * (selectedBundle.discountAmount / 100) : 
+                selectedBundle.discountAmount) : 
+            (selectedBundle.discountPercentage ? subtotal * (selectedBundle.discountPercentage / 100) : 0)
+    },
             subtotal: subtotal,
             discount: discount,
             promoCodeApplied: promoCodeApplied ? {
