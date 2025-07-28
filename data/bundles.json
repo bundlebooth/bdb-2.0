@@ -1,9 +1,10 @@
 [
   {
-    "name": "💍 Deluxe Wedding Bundle",
-    "description": "For weddings with glam and customization",
+    "name": "💒 Signature Wedding",
+    "description": "A perfect match of photo fun and magical ambiance, ideal for weddings.",
     "Special": true,
-    "discountPercentage": 15,
+    "discountType": "Fixed",
+    "discountAmount": 100,
     "duration": 3,
     "categories": {
       "Interactive Booths": 1,
@@ -11,21 +12,24 @@
     }
   },
   {
-    "name": "🏢 Corporate Essentials",
-    "description": "Professional-grade booths and effects for corporate events.",
+    "name": "🎉 Complete Celebration",
+    "description": "Celebrate in full with a perfect mix of fun, effects, and sweet treats.",
     "Special": true,
-    "discountPercentage": 10,
+    "discountType": "Fixed",
+    "discountAmount": 200,
     "duration": 3,
     "categories": {
       "Interactive Booths": 1,
-      "Scene Setters": 1
+      "Scene Setters": 1,
+      "Sweets and Brews": 1
     }
   },
   {
-    "name": "💖 Luxury Wedding Experience",
-    "description": "High-end wedding atmosphere with double booths and sweets.",
+    "name": "💎 Diamond Wedding Experience",
+    "description": "The ultimate wedding package — booths, special effects, and gourmet service.",
     "Special": true,
-    "discountPercentage": 18,
+    "discountType": "Fixed",
+    "discountAmount": 400,
     "duration": 3,
     "categories": {
       "Interactive Booths": 2,
@@ -34,14 +38,15 @@
     }
   },
   {
-    "name": "💫 Luxury Wedding Experience",
-    "description": "High-end wedding atmosphere with double booths and sweets.",
+    "name": "🎭 Ultimate Event Fusion",
+    "description": "Designed for grand weddings, galas, and high-impact events — full experience.",
     "Special": true,
-    "discountPercentage": 18,
+    "discountType": "Fixed",
+    "discountAmount": 500,
     "duration": 3,
     "categories": {
       "Interactive Booths": 2,
-      "Scene Setters": 1,
+      "Scene Setters": 2,
       "Sweets and Brews": 1
     }
   }
