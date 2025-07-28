@@ -25,27 +25,6 @@ app.get('/', (req, res) => {
   });
 });
 
-// Helper function to format duration text (X hour or X hours)
-function formatDuration(durationText) {
-    if (!durationText) return '';
-    
-    // If it's already a number, format it directly
-    if (typeof durationText === 'number') {
-        return durationText === 1 ? '1 hour' : `${durationText} hours`;
-    }
-    
-    // Extract number from duration text
-    const hoursMatch = durationText.toString().match(/(\d+)\s*hours?/i) || 
-                      durationText.toString().match(/(\d+)\s*h/i);
-    
-    if (hoursMatch) {
-        const hours = parseInt(hoursMatch[1]);
-        return hours === 1 ? '1 hour' : `${hours} hours`;
-    }
-    
-    return durationText; // Return original if we can't parse
-}
-
 // Function to generate iCalendar content
 function generateICalendarContent(eventDetails) {
   const { 
@@ -208,6 +187,21 @@ app.post('/send-booking-email', async (req, res) => {
         border-radius: 16px !important;
         margin: 10px !important;
       }
+      table {
+        width: 100% !important;
+      }
+      td, th {
+        display: block !important;
+        width: 100% !important;
+        text-align: left !important;
+        padding: 8px !important;
+      }
+      td:before {
+        content: attr(data-label);
+        font-weight: bold;
+        display: inline-block;
+        width: 120px;
+      }
     }
   </style>
 </head>
@@ -303,67 +297,80 @@ app.post('/send-booking-email', async (req, res) => {
                   </div>
                   
                   <h3 style="font-size: 18px; color: #222; font-weight: 600;">Services Booked:</h3>
-                  <div style="margin: 20px 0; background-color: #f8f9fa; padding: 20px; border-radius: 10px;">
-                    <ul style="margin: 0; padding-left: 20px; list-style-type: none;">
-                      ${services.map(service => {
-                        let serviceDetails = `<li style="margin-bottom: 12px; font-weight: 500; color: #444;">${service.name} (C$${(service.selectedPrice || service.price || 0).toFixed(2)})</li>`;
+                  <table width="100%" cellspacing="0" cellpadding="0" style="border-collapse: collapse; margin: 20px 0;">
+                    <tr style="border-bottom: 1px solid rgba(0,0,0,0.08);">
+                      <th style="text-align: left; padding: 12px 0; font-weight: bold; color: #555;">Service</th>
+                      <th style="text-align: left; padding: 12px 0; font-weight: bold; color: #555;">Category</th>
+                      <th style="text-align: left; padding: 12px 0; font-weight: bold; color: #555;">Options</th>
+                      <th style="text-align: right; padding: 12px 0; font-weight: bold; color: #555;">Price</th>
+                    </tr>
+                    ${services.map(service => {
+                      let optionsContent = 'Standard';
+                      
+                      if (service.selectedTier || service.selectedAddons?.length > 0) {
+                        optionsContent = '<ul style="margin: 0; padding-left: 20px; list-style-type: disc;">';
                         
-                        // Add service type
-                        serviceDetails += `<li style="margin-left: 20px; margin-bottom: 8px; color: #666;">• Category: ${service.ServiceType}</li>`;
-                        
-                        // Add duration if available
-                        if (service.duration) {
-                          serviceDetails += `<li style="margin-left: 20px; margin-bottom: 8px; color: #666;">• Duration: ${formatDuration(service.duration)}</li>`;
-                        }
-                        
-                        // Add selected options/tiers
                         if (service.selectedTier) {
                           if (service.ServiceType === "Sweets and Brews") {
-                            serviceDetails += `<li style="margin-left: 20px; margin-bottom: 8px; color: #666;">• Guest Size: ${service.selectedTier.value}</li>`;
+                            optionsContent += `<li>Guest Size: ${service.selectedTier.value}</li>`;
                           } else if (service.ServiceType === "Scene Setters" && service.slug === "sparklers-box") {
-                            serviceDetails += `<li style="margin-left: 20px; margin-bottom: 8px; color: #666;">• Sparklers Quantity: ${service.selectedTier.value}</li>`;
+                            optionsContent += `<li>Sparklers Quantity: ${service.selectedTier.value}</li>`;
                           } else if (service.ServiceType === "Interactive Booths" && service.slug === "photo-booth") {
-                            serviceDetails += `<li style="margin-left: 20px; margin-bottom: 8px; color: #666;">• Option: ${service.selectedTier.label}</li>`;
+                            optionsContent += `<li>Option: ${service.selectedTier.label}</li>`;
                           }
                         }
                         
-                        // Add any additional add-ons
                         if (service.selectedAddons?.length > 0) {
-                          serviceDetails += `<li style="margin-left: 20px; margin-bottom: 8px; color: #666;">• Add-ons: ${service.selectedAddons.map(a => a.label).join(', ')}</li>`;
+                          service.selectedAddons.forEach(addon => {
+                            optionsContent += `<li>${addon.label}</li>`;
+                          });
                         }
                         
-                        return serviceDetails;
-                      }).join('')}
-                    </ul>
-                  </div>
-
-                  <!-- Pricing Summary -->
-                  <h3 style="font-size: 18px; color: #222; font-weight: 600;">Pricing Summary:</h3>
-                  <div style="margin: 20px 0;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                      <span>Subtotal:</span>
-                      <span>C$${calculatedSubtotal.toFixed(2)}</span>
-                    </div>
+                        optionsContent += '</ul>';
+                      }
+                      
+                      return `
+                      <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                        <td style="padding: 12px 0; color: #444;">${service.name}</td>
+                        <td style="padding: 12px 0; color: #444;">${service.ServiceType}</td>
+                        <td style="padding: 12px 0; color: #444;">${optionsContent}</td>
+                        <td style="padding: 12px 0; text-align: right; color: #444;">C$${(service.selectedPrice || service.price || 0).toFixed(2)}</td>
+                      </tr>
+                      `;
+                    }).join('')}
                     
+                    <!-- Subtotal -->
+                    <tr>
+                      <td colspan="3" style="padding: 12px 0; text-align: right; font-weight: bold;">Subtotal:</td>
+                      <td style="padding: 12px 0; text-align: right;">C$${calculatedSubtotal.toFixed(2)}</td>
+                    </tr>
+                    
+                    <!-- Bundle Discount -->
                     ${bundleDiscountValue > 0 ? `
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: #27ae60;">
-                      <span>${bundleDiscountPercentage > 0 ? `Bundle Discount (${bundleDiscountPercentage}%)` : 'Bundle Discount'}:</span>
-                      <span>-C$${bundleDiscountValue.toFixed(2)}</span>
-                    </div>
+                    <tr>
+                      <td colspan="3" style="padding: 12px 0; text-align: right; font-weight: bold; color: #27ae60;">
+                        ${bundleDiscountPercentage > 0 ? `Bundle Discount (${bundleDiscountPercentage}%)` : 'Bundle Discount'}:
+                      </td>
+                      <td style="padding: 12px 0; text-align: right; color: #27ae60;">-C$${bundleDiscountValue.toFixed(2)}</td>
+                    </tr>
                     ` : ''}
-                    
+
+                    <!-- Promo Discount -->
                     ${promoDiscount > 0 ? `
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: #27ae60;">
-                      <span>Promo Discount (${promoCode || ''}):</span>
-                      <span>-C$${promoDiscount.toFixed(2)}</span>
-                    </div>
+                    <tr>
+                      <td colspan="3" style="padding: 12px 0; text-align: right; font-weight: bold; color: #27ae60;">
+                        Promo Discount (${promoCode || ''}):
+                      </td>
+                      <td style="padding: 12px 0; text-align: right; color: #27ae60;">-C$${promoDiscount.toFixed(2)}</td>
+                    </tr>
                     ` : ''}
                     
-                    <div style="display: flex; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid #eee; font-weight: bold;">
-                      <span>Total:</span>
-                      <span>C$${calculatedTotal.toFixed(2)}</span>
-                    </div>
-                  </div>
+                    <!-- Total -->
+                    <tr style="font-weight: bold; border-top: 2px solid rgba(0,0,0,0.1);">
+                      <td colspan="3" style="padding: 12px 0; text-align: right;">Total:</td>
+                      <td style="padding: 12px 0; text-align: right;">C$${calculatedTotal.toFixed(2)}</td>
+                    </tr>
+                  </table>
                   
                   <h3 style="font-size: 18px; color: #222; font-weight: 600;">Payment Information:</h3>
                   <div style="margin: 20px 0;">
