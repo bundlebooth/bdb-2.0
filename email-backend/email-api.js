@@ -187,21 +187,6 @@ app.post('/send-booking-email', async (req, res) => {
         border-radius: 16px !important;
         margin: 10px !important;
       }
-      table {
-        width: 100% !important;
-      }
-      td, th {
-        display: block !important;
-        width: 100% !important;
-        text-align: left !important;
-        padding: 8px !important;
-      }
-      td:before {
-        content: attr(data-label);
-        font-weight: bold;
-        display: inline-block;
-        width: 120px;
-      }
     }
   </style>
 </head>
@@ -300,53 +285,35 @@ app.post('/send-booking-email', async (req, res) => {
                   <table width="100%" cellspacing="0" cellpadding="0" style="border-collapse: collapse; margin: 20px 0;">
                     <tr style="border-bottom: 1px solid rgba(0,0,0,0.08);">
                       <th style="text-align: left; padding: 12px 0; font-weight: bold; color: #555;">Service</th>
+                      <th style="text-align: left; padding: 12px 0; font-weight: bold; color: #555;">Category</th>
                       <th style="text-align: left; padding: 12px 0; font-weight: bold; color: #555;">Options</th>
                       <th style="text-align: right; padding: 12px 0; font-weight: bold; color: #555;">Price</th>
                     </tr>
-                    ${services.map(service => {
-                      let optionsContent = 'Standard';
-                      
-                      if (service.selectedTier || service.selectedAddons?.length > 0) {
-                        optionsContent = '<ul style="margin: 0; padding-left: 20px; list-style-type: disc;">';
-                        
-                        if (service.selectedTier) {
-                          if (service.ServiceType === "Sweets and Brews") {
-                            optionsContent += `<li>Guest Size: ${service.selectedTier.value}</li>`;
-                          } else if (service.ServiceType === "Scene Setters" && service.slug === "sparklers-box") {
-                            optionsContent += `<li>Sparklers Quantity: ${service.selectedTier.value}</li>`;
-                          } else if (service.ServiceType === "Interactive Booths" && service.slug === "photo-booth") {
-                            optionsContent += `<li>Option: ${service.selectedTier.label}</li>`;
-                          }
-                        }
-                        
-                        if (service.selectedAddons?.length > 0) {
-                          service.selectedAddons.forEach(addon => {
-                            optionsContent += `<li>${addon.label}</li>`;
-                          });
-                        }
-                        
-                        optionsContent += '</ul>';
-                      }
-                      
-                      return `
-                      <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
-                        <td style="padding: 12px 0; color: #444;">${service.name}</td>
-                        <td style="padding: 12px 0; color: #444;">${optionsContent}</td>
-                        <td style="padding: 12px 0; text-align: right; color: #444;">C$${(service.selectedPrice || service.price || 0).toFixed(2)}</td>
-                      </tr>
-                      `;
-                    }).join('')}
+                    ${services.map(service => `
+                    <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                      <td style="padding: 12px 0; color: #444;">${service.name}</td>
+                      <td style="padding: 12px 0; color: #444;">${service.ServiceType}</td>
+                      <td style="padding: 12px 0; color: #444;">
+                        ${service.selectedTier ? `
+                          ${service.ServiceType === "Sweets and Brews" ? `Guests: ${service.selectedTier.value}` : ''}
+                          ${service.ServiceType === "Scene Setters" && service.slug === "sparklers-box" ? `Quantity: ${service.selectedTier.value} sparklers` : ''}
+                          ${service.ServiceType === "Interactive Booths" && service.slug === "photo-booth" ? `Option: ${service.selectedTier.label}` : ''}
+                        ` : 'Standard'}
+                      </td>
+                      <td style="padding: 12px 0; text-align: right; color: #444;">C$${(service.selectedPrice || service.price || 0).toFixed(2)}</td>
+                    </tr>
+                    `).join('')}
                     
                     <!-- Subtotal -->
                     <tr>
-                      <td colspan="2" style="padding: 12px 0; text-align: right; font-weight: bold;">Subtotal:</td>
+                      <td colspan="3" style="padding: 12px 0; text-align: right; font-weight: bold;">Subtotal:</td>
                       <td style="padding: 12px 0; text-align: right;">C$${calculatedSubtotal.toFixed(2)}</td>
                     </tr>
                     
                     <!-- Bundle Discount -->
                     ${bundleDiscountValue > 0 ? `
                     <tr>
-                      <td colspan="2" style="padding: 12px 0; text-align: right; font-weight: bold; color: #27ae60;">
+                      <td colspan="3" style="padding: 12px 0; text-align: right; font-weight: bold; color: #27ae60;">
                         ${bundleDiscountPercentage > 0 ? `Bundle Discount (${bundleDiscountPercentage}%)` : 'Bundle Discount'}:
                       </td>
                       <td style="padding: 12px 0; text-align: right; color: #27ae60;">-C$${bundleDiscountValue.toFixed(2)}</td>
@@ -356,7 +323,7 @@ app.post('/send-booking-email', async (req, res) => {
                     <!-- Promo Discount -->
                     ${promoDiscount > 0 ? `
                     <tr>
-                      <td colspan="2" style="padding: 12px 0; text-align: right; font-weight: bold; color: #27ae60;">
+                      <td colspan="3" style="padding: 12px 0; text-align: right; font-weight: bold; color: #27ae60;">
                         Promo Discount (${promoCode || ''}):
                       </td>
                       <td style="padding: 12px 0; text-align: right; color: #27ae60;">-C$${promoDiscount.toFixed(2)}</td>
@@ -365,7 +332,7 @@ app.post('/send-booking-email', async (req, res) => {
                     
                     <!-- Total -->
                     <tr style="font-weight: bold; border-top: 2px solid rgba(0,0,0,0.1);">
-                      <td colspan="2" style="padding: 12px 0; text-align: right;">Total:</td>
+                      <td colspan="3" style="padding: 12px 0; text-align: right;">Total:</td>
                       <td style="padding: 12px 0; text-align: right;">C$${calculatedTotal.toFixed(2)}</td>
                     </tr>
                   </table>
