@@ -1,6 +1,6 @@
 [
   {
-    "name": "\ud83d\udcf8 Photo Booth",
+    "name": "📸 Photo Booth",
     "slug": "photo-booth",
     "ServiceType": "Interactive Booths",
     "description": "The photo booth experience adds a vibrant touch to any event, creating instant, tangible memories for your guests. All photos delivered digitally.",
@@ -11,8 +11,8 @@
         "label": "Unlimited Prints",
         "value": "unlimited-prints",
         "price": 100
-      },	
-	  {
+      },
+      {
         "label": "Floral Decor",
         "value": "floral-decor",
         "price": 100
@@ -37,19 +37,19 @@
     "Sale": "N",
     "features": [
       "Sleek modern booth",
-	  "White Backdrop",
+      "White Backdrop",
       "Unlimited digital photo sessions",
       "On-site attendant",
       "Custom photo overlay",
       "Fun prop set",
       "Instant Sharing (Text/Airdrop/QR)",
-      "Online gallery for download",
+      "Online gallery for download"
     ],
     "dateAdded": "07-01-2025",
     "New": "N"
   },
   {
-    "name": "\ud83c\udfa5 360 Video Booth",
+    "name": "🎥 360 Video Booth",
     "slug": "360-video-booth",
     "ServiceType": "Interactive Booths",
     "description": "Elevate your event with the sophistication of our 360 Video Booth experience. Guests are invited to step onto a sleek platform as a rotating camera captures elegant, slow-motion videos from every angle.",
@@ -66,11 +66,11 @@
         "value": "custom-overlay",
         "price": 100
       },
-	  {
-      "label": "Instant Sharing (Text/Airdrop/QR)",
-      "value": "sharing-station",
-      "price": 80
-	  }
+      {
+        "label": "Instant Sharing (Text/Airdrop/QR)",
+        "value": "sharing-station",
+        "price": 80
+      }
     ],
     "currency": "CAD",
     "Sale": "N",
@@ -87,38 +87,33 @@
     "New": "N"
   },
   {
-    "name": "\u260e\ufe0f Audio Guest Book",
+    "name": "☎️ Audio Guest Book",
     "slug": "audio-guest-book",
     "ServiceType": "Interactive Booths",
     "description": "The Audio Guest Book offers a timeless and personal way to capture heartfelt moments. Guests simply pick up the vintage-style phone and leave a message.",
     "duration": 3,
     "price": 400,
     "pricingTiers": [
-	  {
-		"label": "Custom Display Stand",
-		"value": "signage",
-		"price": 50
-	  },
-	  {
-		"label": "Personalized Welcome Message",
-		"value": "welcome-message",
-		"price": 50
-	  },
-	  {
-		"label": "Tabletop decor",
-		"value": "tabletop-decor",
-		"price": 50
-	  },
-	  {
-		"label": "Tabletop decor",
-		"value": "tabletop-decor",
-		"price": 50
-	  },
-		{
-		  "label": "USB Drive of All Recordings",
-		  "value": "usb-delivery",
-		  "price": 50
-		}
+      {
+        "label": "Custom Display Stand",
+        "value": "signage",
+        "price": 50
+      },
+      {
+        "label": "Personalized Welcome Message",
+        "value": "welcome-message",
+        "price": 50
+      },
+      {
+        "label": "Tabletop decor",
+        "value": "tabletop-decor",
+        "price": 50
+      },
+      {
+        "label": "USB Drive of All Recordings",
+        "value": "usb-delivery",
+        "price": 50
+      }
     ],
     "currency": "CAD",
     "Sale": "N",
@@ -126,13 +121,13 @@
       "Phone recording device",
       "Unlimited voice recordings",
       "Digital download of all audio messages",
-      "Tabletop setup",
+      "Tabletop setup"
     ],
     "dateAdded": "07-01-2025",
     "New": "N"
   },
   {
-    "name": "\u2b50\ufe0f Magazine Photo Booth",
+    "name": "⭐️ Magazine Photo Booth",
     "slug": "magazine-photo-booth",
     "ServiceType": "Interactive Booths",
     "description": "Bring the allure of a fashion magazine cover to your next event with our Magazine Photo Booth Box. Guests pose inside a life-sized, custom-branded magazine frame.",
@@ -167,10 +162,10 @@
     "New": "N"
   },
   {
-    "name": "\u2615\ufe0f Espresso Booth",
+    "name": "☕️ Espresso Booth",
     "slug": "espresso-booth",
     "ServiceType": "Sweets and Brews",
-    "description": "Bring the caf\u00e9 experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
+    "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
     "duration": 3,
     "price": 700,
     "pricingTiers": [
@@ -202,10 +197,10 @@
     "New": "N"
   },
   {
-    "name": "\ud83e\uddc7 Waffle Booth",
+    "name": "🧇 Waffle Booth",
     "slug": "waffle-booth",
     "ServiceType": "Sweets and Brews",
-    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings\u2014from fresh fruits and whipped cream to chocolate drizzle and syrups.",
+    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings—from fresh fruits and whipped cream to chocolate drizzle and syrups.",
     "duration": 3,
     "price": 800,
     "pricingTiers": [
@@ -250,7 +245,7 @@
     "New": "N"
   },
   {
-    "name": "\ud83c\udf79 Smoothie Booth",
+    "name": "🍹 Smoothie Booth",
     "slug": "smoothie-booth",
     "ServiceType": "Sweets and Brews",
     "description": "Add a fresh, healthy twist to your event with our vibrant Smoothie Booth! We blend delicious smoothies with real fruits, natural ingredients and a variety of add-ins.",
@@ -298,7 +293,7 @@
     "New": "N"
   },
   {
-    "name": "\u2728 Sparklers Box",
+    "name": "✨ Sparklers Box",
     "slug": "sparklers-box",
     "ServiceType": "Scene Setters",
     "description": "Light up your celebration with our elegant Sparkler Boxes! A stylish station offering guests premium sparklers for that magical photo moment or grand finale.",
@@ -333,7 +328,7 @@
     "New": "N"
   },
   {
-    "name": "\u2601\ufe0f Dry Ice Fog",
+    "name": "☁️ Dry Ice Fog",
     "slug": "dry-ice-fog",
     "ServiceType": "Scene Setters",
     "description": "Create a stunning, cinematic atmosphere with our Dry Ice Fog Effect! This low-lying fog adds a magical touch to first dances, stage entrances, or any moment you want to make unforgettable.",
@@ -365,7 +360,7 @@
     "New": "N"
   },
   {
-    "name": "\ud83e\udea9 Laser First Dance",
+    "name": "🪩 Laser First Dance",
     "slug": "laser-first-dance",
     "ServiceType": "Scene Setters",
     "description": "Make your first dance truly unforgettable with our Laser First Dance Experience! Set beneath a canopy of synchronized laser lights and dreamy effects.",
