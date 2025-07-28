@@ -1,200 +1,39 @@
 [
   {
-    "name": "📸 Photo Booth",
-    "slug": "photo-booth",
-    "ServiceType": "Interactive Booths",
-    "description": "The photo booth experience adds a vibrant touch to any event, creating instant, tangible memories for your guests. All photos delivered digitally.",
-    "duration": 3,
-    "price": 600,
-    "pricingTiers": [
-      {
-        "label": "Unlimited Prints",
-        "value": "unlimited-prints",
-        "price": 100
-      },
-      {
-        "label": "Floral Decor",
-        "value": "floral-decor",
-        "price": 100
-      },
-      {
-        "label": "Custom Backdrop",
-        "value": "custom-backdrop",
-        "price": 100
-      },
-      {
-        "label": "Premium Props Package",
-        "value": "premium-props",
-        "price": 75
-      },
-      {
-        "label": "Online Gallery with Branding",
-        "value": "gallery-branding",
-        "price": 50
-      }
-    ],
-    "currency": "CAD",
-    "Sale": "N",
-    "features": [
-      "Sleek modern booth",
-      "White Backdrop",
-      "Unlimited digital photo sessions",
-      "On-site attendant",
-      "Custom photo overlay",
-      "Fun prop set",
-      "Instant Sharing (Text/Airdrop/QR)",
-      "Online gallery for download"
-    ],
-    "dateAdded": "07-01-2025",
-    "New": "N"
-  },
-  {
-    "name": "🎥 360 Video Booth",
-    "slug": "360-video-booth",
-    "ServiceType": "Interactive Booths",
-    "description": "Elevate your event with the sophistication of our 360 Video Booth experience. Guests are invited to step onto a sleek platform as a rotating camera captures elegant, slow-motion videos from every angle.",
-    "duration": 3,
-    "price": 600,
-    "pricingTiers": [
-      {
-        "label": "Red Carpet Setup",
-        "value": "red-carpet",
-        "price": 75
-      },
-      {
-        "label": "Custom Video Overlay",
-        "value": "custom-overlay",
-        "price": 100
-      },
-      {
-        "label": "Instant Sharing (Text/Airdrop/QR)",
-        "value": "sharing-station",
-        "price": 80
-      }
-    ],
-    "currency": "CAD",
-    "Sale": "N",
-    "features": [
-      "360 platform with HD slow-motion video capture",
-      "Studio lighting setup",
-      "On-site attendant",
-      "Custom video overlay",
-      "Fun prop set",
-      "Instant sharing via Airdrop/SMS/Email",
-      "Online gallery for download"
-    ],
-    "dateAdded": "07-01-2025",
-    "New": "N"
-  },
-  {
-    "name": "☎️ Audio Guest Book",
-    "slug": "audio-guest-book",
-    "ServiceType": "Interactive Booths",
-    "description": "The Audio Guest Book offers a timeless and personal way to capture heartfelt moments. Guests simply pick up the vintage-style phone and leave a message.",
-    "duration": 3,
-    "price": 400,
-    "pricingTiers": [
-      {
-        "label": "Custom Display Stand",
-        "value": "signage",
-        "price": 50
-      },
-      {
-        "label": "Personalized Welcome Message",
-        "value": "welcome-message",
-        "price": 50
-      },
-      {
-        "label": "Tabletop decor",
-        "value": "tabletop-decor",
-        "price": 50
-      },
-      {
-        "label": "USB Drive of All Recordings",
-        "value": "usb-delivery",
-        "price": 50
-      }
-    ],
-    "currency": "CAD",
-    "Sale": "N",
-    "features": [
-      "Phone recording device",
-      "Unlimited voice recordings",
-      "Digital download of all audio messages",
-      "Tabletop setup"
-    ],
-    "dateAdded": "07-01-2025",
-    "New": "N"
-  },
-  {
-    "name": "⭐️ Magazine Photo Booth",
-    "slug": "magazine-photo-booth",
-    "ServiceType": "Interactive Booths",
-    "description": "Bring the allure of a fashion magazine cover to your next event with our Magazine Photo Booth Box. Guests pose inside a life-sized, custom-branded magazine frame.",
-    "duration": 3,
-    "price": 700,
-    "pricingTiers": [
-      {
-        "label": "Unlimited Prints",
-        "value": "unlimited-prints",
-        "price": 100
-      },
-      {
-        "label": "Custom Magazine Template",
-        "value": "custom-template",
-        "price": 100
-      }
-    ],
-    "currency": "CAD",
-    "Sale": "N",
-    "features": [
-      "Sleek modern booth",
-      "Unlimited digital photo sessions",
-      "On-site attendant",
-      "Custom photo overlay",
-      "Choice of backdrop",
-      "Fun prop set",
-      "Instant sharing via Airdrop/SMS/Email",
-      "Online gallery for download",
-      "Optional 4x6 printing (if included in package)"
-    ],
-    "dateAdded": "07-01-2025",
-    "New": "N"
-  },
-  {
     "name": "☕️ Espresso Booth",
     "slug": "espresso-booth",
     "ServiceType": "Sweets and Brews",
     "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
     "duration": 3,
     "price": 1500,
-  "pricingTiers": [
-   {
-      "label": "Espresso Drinks & Coffee",
-      "value": "espresso-coffee-drinks",
-      "price": 0
-    },
-    {
-      "label": "Matcha",
-      "value": "matcha",
-      "price": 200
-    },
-    {
-      "label": "Iced Drinks (Iced Lattés & Matchas)",
-      "value": "branding-signage",
-      "price": 200
-    }
-  ]
+    "pricingTiers": [
+      {
+        "label": "Espresso Drinks & Coffee",
+        "value": "espresso-coffee-drinks",
+        "price": 0
+      },
+      {
+        "label": "Matcha",
+        "value": "matcha",
+        "price": 200
+      },
+      {
+        "label": "Iced Drinks (Iced Lattés & Matchas)",
+        "value": "iced-drinks",
+        "price": 200
+      }
+    ],
     "currency": "CAD",
     "Sale": "N",
     "features": [
-	  "Espresso and Coffee Options",
-	  "Modern self-contained espresso station",
-	  "Professional barista on-site",
-	  "Unlimited servings during service time",
-	  "Choice of regular and decaf beans",
-	  "Dairy and non-dairy milk options",
-	  "Eco-friendly disposable cups, lids, and stirrers"
+      "Espresso and Coffee Options",
+      "Modern self-contained espresso station",
+      "Professional barista on-site",
+      "Unlimited servings during service time",
+      "Choice of regular and decaf beans",
+      "Dairy and non-dairy milk options",
+      "Eco-friendly disposable cups, lids, and stirrers",
+      "Set-up & clean-up service"
     ],
     "dateAdded": "07-01-2025",
     "New": "N"
@@ -208,23 +47,23 @@
     "price": 800,
     "pricingTiers": [
       {
-        "label": "50 Guests",
-        "value": 50,
+        "label": "Branded serving trays",
+        "value": "branded-serving-trays",
         "price": 0
       },
       {
         "label": "100 Guests",
-        "value": 100,
+        "value": "100-guests",
         "price": 400
       },
       {
         "label": "150 Guests",
-        "value": 150,
+        "value": "150-guests",
         "price": 800
       },
       {
         "label": "200 Guests",
-        "value": 200,
+        "value": "200-guests",
         "price": 1200
       },
       {
@@ -239,7 +78,6 @@
       "Freshly made Belgian or bubble waffles",
       "Choice of toppings (syrups, fruits, sprinkles, etc.)",
       "On-site attendant to prep and serve",
-      "Branded serving trays or cones (optional)",
       "Sweet or savory customization (if available)",
       "Set-up & clean-up service",
       "All materials and disposables included"
@@ -257,22 +95,22 @@
     "pricingTiers": [
       {
         "label": "50 Guests",
-        "value": 50,
+        "value": "50-guests",
         "price": 0
       },
       {
         "label": "100 Guests",
-        "value": 100,
+        "value": "100-guests",
         "price": 400
       },
       {
         "label": "150 Guests",
-        "value": 150,
+        "value": "150-guests",
         "price": 800
       },
       {
         "label": "200 Guests",
-        "value": 200,
+        "value": "200-guests",
         "price": 1200
       },
       {
@@ -305,17 +143,17 @@
     "pricingTiers": [
       {
         "label": "2 Sparklers",
-        "value": 2,
+        "value": "2-sparklers",
         "price": 0
       },
       {
         "label": "4 Sparklers",
-        "value": 4,
+        "value": "4-sparklers",
         "price": 300
       },
       {
         "label": "6 Sparklers",
-        "value": 6,
+        "value": "6-sparklers",
         "price": 600
       },
       {
@@ -327,75 +165,6 @@
     "currency": "CAD",
     "Sale": "N",
     "features": [],
-    "dateAdded": "07-01-2025",
-    "New": "N"
-  },
-  {
-    "name": "☁️ Dry Ice Fog",
-    "slug": "dry-ice-fog",
-    "ServiceType": "Scene Setters",
-    "description": "Create a stunning, cinematic atmosphere with our Dry Ice Fog Effect! This low-lying fog adds a magical touch to first dances, stage entrances, or any moment you want to make unforgettable.",
-    "duration": 1,
-    "price": 550,
-    "pricingTiers": [
-      {
-        "label": "Standard",
-        "value": "standard",
-        "price": 550
-      },
-      {
-        "label": "Fog Refill",
-        "value": "fog-refill",
-        "price": 125
-      }
-    ],
-    "currency": "CAD",
-    "Sale": "N",
-    "features": [
-      "Low-lying fog machine using dry ice",
-      "Perfect for first dance 'dancing on a cloud' effect",
-      "No smoke alarms triggered",
-      "Technician on site to manage fog timing",
-      "Requires proper ventilation access",
-      "Stunning visual for photos/videos"
-    ],
-    "dateAdded": "07-01-2025",
-    "New": "N"
-  },
-  {
-    "name": "🪩 Laser First Dance",
-    "slug": "laser-first-dance",
-    "ServiceType": "Scene Setters",
-    "description": "Make your first dance truly unforgettable with our Laser First Dance Experience! Set beneath a canopy of synchronized laser lights and dreamy effects.",
-    "duration": 1,
-    "price": 900,
-    "pricingTiers": [
-      {
-        "label": "Standard",
-        "value": "standard",
-        "price": 0
-      },
-      {
-        "label": "Name/Date Projection",
-        "value": "projection",
-        "price": 100
-      },
-      {
-        "label": "Audio-Synced Show",
-        "value": "synced-show",
-        "price": 150
-      }
-    ],
-    "currency": "CAD",
-    "Sale": "N",
-    "features": [
-      "Custom laser light show synced to music",
-      "Name/date projection options",
-      "Operator to manage timing and effects",
-      "Works best in dim/dark environments",
-      "Adds wow-factor to first dance",
-      "Can be personalized (colors, patterns, text)"
-    ],
     "dateAdded": "07-01-2025",
     "New": "N"
   }
