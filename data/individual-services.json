@@ -8,8 +8,13 @@
     "price": 600,
     "pricingTiers": [
       {
-        "label": "Unlimited Prints",
-        "value": "unlimited-prints",
+        "label": "Unlimited 2x6 Prints",
+        "value": "unlimited-2x6-prints",
+        "price": 50
+      },
+	  {
+        "label": "Unlimited 4x6 Prints",
+        "value": "unlimited-4x6-prints",
         "price": 100
       },
       {
@@ -119,6 +124,7 @@
     "Sale": "N",
     "features": [
       "Phone recording device",
+	  "Display Stand",
       "Unlimited voice recordings",
       "Digital download of all audio messages",
       "Tabletop setup"
@@ -134,30 +140,35 @@
     "duration": 3,
     "price": 700,
     "pricingTiers": [
-      {
-        "label": "Unlimited Prints",
+	  {
+        "label": "Photo Prints",
         "value": "unlimited-prints",
         "price": 100
       },
       {
-        "label": "Custom Magazine Template",
-        "value": "custom-template",
+        "label": "Baloon Props",
+        "value": "Baloon-decor",
         "price": 100
+      },
+	{
+        "label": "Instant Sharing (Text/Airdrop/QR)",
+        "value": "sharing-station",
+        "price": 50
       }
     ],
     "currency": "CAD",
     "Sale": "N",
-    "features": [
-      "Sleek modern booth",
-      "Unlimited digital photo sessions",
-      "On-site attendant",
-      "Custom photo overlay",
-      "Choice of backdrop",
-      "Fun prop set",
-      "Instant sharing via Airdrop/SMS/Email",
-      "Online gallery for download",
-      "Optional 4x6 printing (if included in package)"
-    ],
+	"features": [
+	  "Modern self-contained espresso station",
+	  "Professional barista on-site",
+	  "Unlimited servings during service time",
+	  "Espresso, cappuccino, latte, and americano options",
+	  "Choice of regular and decaf beans",
+	  "Customizable menu signage",
+	  "Dairy and non-dairy milk options (e.g., oat, almond, soy)",
+	  "Eco-friendly disposable cups, lids, and stirrers",
+	  "Optional branded cup sleeves or custom signage"
+	]
     "dateAdded": "07-01-2025",
     "New": "N"
   },
@@ -169,30 +180,68 @@
     "duration": 3,
     "price": 700,
     "pricingTiers": [
-      {
-        "label": "50 Guests",
-        "value": 50,
-        "price": 0
-      },
-      {
-        "label": "100 Guests",
-        "value": 100,
-        "price": 400
-      },
-      {
-        "label": "150 Guests",
-        "value": 150,
-        "price": 800
-      },
-      {
-        "label": "200 Guests",
-        "value": 200,
-        "price": 1200
-      }
-    ],
+  {
+    "label": "Custom Display Stand with Branding",
+    "value": "custom-stand-branding",
+    "price": 75
+  },
+  {
+    "label": "Personalized Welcome Message Sign",
+    "value": "welcome-message",
+    "price": 50
+  },
+  {
+    "label": "Elegant Tabletop Decor Setup",
+    "value": "tabletop-decor",
+    "price": 50
+  },
+  {
+    "label": "Branded Espresso Cups & Sleeves",
+    "value": "branded-cups",
+    "price": 100
+  },
+  {
+    "label": "Flavored Syrup Bar (Vanilla, Caramel, etc.)",
+    "value": "syrup-bar",
+    "price": 60
+  },
+  {
+    "label": "Cold Brew or Iced Coffee Upgrade",
+    "value": "cold-brew-upgrade",
+    "price": 80
+  },
+  {
+    "label": "Dessert Pairing Platter (Pastries or Cookies)",
+    "value": "dessert-platter",
+    "price": 100
+  },
+  {
+    "label": "Extra Barista for Faster Service",
+    "value": "extra-barista",
+    "price": 150
+  },
+  {
+    "label": "Extended Service Time (1 Extra Hour)",
+    "value": "extra-hour",
+    "price": 125
+  },
+  {
+    "label": "Custom Menu Design & Display",
+    "value": "custom-menu",
+    "price": 60
+  }
+],
     "currency": "CAD",
     "Sale": "N",
-    "features": [],
+    "features": [
+      "Sleek modern booth",
+      "Unlimited digital photo sessions",
+      "Custom photo overlay",
+      "Fun prop set",
+      "Instant sharing via Airdrop/SMS/Email",
+      "Online gallery for download",
+      "Optional 4x6 printing (if included in package)"
+    ],
     "dateAdded": "07-01-2025",
     "New": "N"
   },
