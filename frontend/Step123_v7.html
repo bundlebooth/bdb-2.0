@@ -681,20 +681,48 @@
     }
 
 .confirmation-message {
-    position: absolute;  /* Changed from fixed to absolute */
-    top: auto;          /* Remove fixed positioning */
-    left: auto;         /* Remove fixed positioning */
-    transform: none;    /* Remove transform */
-    z-index: 0;
+    position: relative;
+    z-index: 1001;
     background-color: white;
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
     width: 90%;
     max-width: 500px;
+    margin: 20px auto; /* Center horizontally */
+    text-align: center; /* Center text */
     display: none;
-    text-align: center;
-    margin-top: 20px;   /* Add some spacing from the payment form */
+}
+
+
+.confirmation-message h3 {
+    margin-top: 0;
+    color: var(--bb-green);
+    font-size: 1.5rem;
+}
+
+.confirmation-message p {
+    margin: 10px 0;
+    color: var(--bb-dark);
+    line-height: 1.6;
+}
+
+.confirmation-icon {
+    font-size: 48px;
+    color: var(--bb-green);
+    margin-bottom: 16px;
+    display: inline-block;
+}
+
+#new-bundle-button {
+    margin-top: 20px;
+    background: var(--bb-accent);
+    color: white;
+}
+
+#new-bundle-button:hover {
+    background: var(--bb-hover-grey);
+    color: white;
 }
 
 #confirmation-message {
@@ -2025,13 +2053,13 @@
 </div>
 
 <!-- Embedded confirmation message - replaces the payment form when booking is complete -->
-<div id="confirmation-message" style="display:none;">
-  <div class="confirmation-icon">✓</div>
-  <h3>Booking Confirmed!</h3>
-  <p>Thank you for your booking. Your payment of <span id="confirmed-amount">$0.00</span> was successful.</p>
-  <p>A confirmation email has been sent to <span id="sent-email"></span> with your booking details.</p>
-  <p id="countdown-timer">You will be redirected to homepage in 5 seconds...</p>
-  <button class="book-now-button" id="new-bundle-button" style="margin-top: 20px;">Create Another Bundle</button>
+<div id="confirmation-message" class="confirmation-message">
+    <div class="confirmation-icon">✓</div>
+    <h3>Booking Confirmed!</h3>
+    <p>Thank you for your booking. Your payment of <strong id="confirmed-amount">$0.00</strong> was successful.</p>
+    <p>A confirmation email has been sent to <strong id="sent-email"></strong> with your booking details.</p>
+    <p id="countdown-timer">You will be redirected to homepage in 5 seconds...</p>
+    <button class="book-now-button" id="new-bundle-button">Create Another Bundle</button>
 </div>
 <div class="confirmation-overlay" id="confirmation-overlay"></div>
 <div class="confirmation-blur" id="confirmation-blur"></div>
@@ -4074,6 +4102,7 @@ async function handlePaymentSubmit(e) {
             await sendConfirmationEmail(bookingData);
             
 // 6. Show success
+// In your handlePaymentSubmit function where you show the confirmation:
 document.getElementById('stripe-payment-form').style.display = 'none';
 document.getElementById('payment-info').style.display = 'none';
 document.getElementById('back-to-services').style.display = 'none';
@@ -4082,6 +4111,12 @@ document.getElementById('confirmation-message').style.display = 'block';
 document.getElementById('confirmation-overlay').style.display = 'block';
 document.getElementById('confirmed-amount').textContent = `C$${total.toFixed(2)}`;
 document.getElementById('sent-email').textContent = bookingData.email;
+
+// Scroll to the confirmation message
+document.getElementById('confirmation-message').scrollIntoView({
+    behavior: 'smooth',
+    block: 'center'
+});
 
 // Start countdown
 let seconds = 5;
