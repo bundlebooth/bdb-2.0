@@ -184,7 +184,7 @@
         "value": "iced-drinks",
         "price": 200
       },
-	  {
+      {
         "label": "Branded serving cups",
         "value": "branded-serving-cups",
         "price": 100
@@ -222,23 +222,23 @@
         "label": "Nutella Bar Add-on",
         "value": "nutella-bar",
         "price": 100
-      }, 
-	   {
-      "label": "Premium Toppings Bar (Caramel, Honey, Seasonal Berries)",
-      "value": "premium-toppings",
-      "price": 150
-    }
+      },
+      {
+        "label": "Premium Toppings Bar (Caramel, Honey, Seasonal Berries)",
+        "value": "premium-toppings",
+        "price": 150
+      }
     ],
     "currency": "CAD",
     "Sale": "N",
     "features": [
       "Freshly made bubble waffles",
-	  "Mini Waffle Sticks (Bite-sized Servings)",
+      "Mini Waffle Sticks (Bite-sized Servings)",
       "Choice of toppings (Syrups, Fruits & Sprinkles)",
       "On-site attendant to prep and serve",
       "Set-up & clean-up service",
       "Disposable trays and utensils",
-	  "Set-up & clean-up service"
+      "Set-up & clean-up service"
     ],
     "dateAdded": "07-01-2025",
     "New": "N"
@@ -251,21 +251,21 @@
     "duration": 3,
     "price": 900,
     "pricingTiers": [
-     {
-      "label": "Tropical Fruit Add-on (Mango, Pineapple, Passionfruit)",
-      "value": "tropical-fruit",
-      "price": 200
-    },
-    {
-      "label": "Protein Power Add-on (Whey, Plant-Based Protein)",
-      "value": "protein-power",
-      "price": 100
-    },
-    {
-      "label": "Branded Smoothie Name Tags",
-      "value": "custom-name-tags",
-      "price": 50
-    },
+      {
+        "label": "Tropical Fruit Add-on (Mango, Pineapple, Passionfruit)",
+        "value": "tropical-fruit",
+        "price": 200
+      },
+      {
+        "label": "Protein Power Add-on (Whey, Plant-Based Protein)",
+        "value": "protein-power",
+        "price": 100
+      },
+      {
+        "label": "Branded Smoothie Name Tags",
+        "value": "custom-name-tags",
+        "price": 50
+      }
     ],
     "currency": "CAD",
     "Sale": "N",
@@ -350,7 +350,7 @@
         "label": "Standard",
         "value": "standard",
         "price": 0
-	  }
+      }
     ],
     "currency": "CAD",
     "Sale": "N",
