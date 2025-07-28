@@ -170,7 +170,7 @@
     "price": 1500,
     "pricingTiers": [
       {
-        "label": "Espresso Drinks & Coffee",
+        "label": "Espresso Drinks & Coffee (Standard)",
         "value": "espresso-coffee-drinks",
         "price": 0
       },
@@ -181,8 +181,13 @@
       },
       {
         "label": "Iced Drinks (Iced Lattés & Matchas)",
-        "value": "branding-signage",
+        "value": "iced-drinks",
         "price": 200
+      },
+	  {
+        "label": "Branded serving cups",
+        "value": "branded-serving-cups",
+        "price": 100
       }
     ],
     "currency": "CAD",
@@ -194,7 +199,7 @@
       "Unlimited servings during service time",
       "Choice of regular and decaf beans",
       "Dairy and non-dairy milk options",
-      "Eco-friendly disposable cups, lids, and stirrers",
+      "Disposable cups, lids, and stirrers",
       "Set-up & clean-up service"
     ],
     "dateAdded": "07-01-2025",
@@ -206,43 +211,34 @@
     "ServiceType": "Sweets and Brews",
     "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings—from fresh fruits and whipped cream to chocolate drizzle and syrups.",
     "duration": 3,
-    "price": 800,
+    "price": 1000,
     "pricingTiers": [
       {
         "label": "Branded serving trays",
-        "value": 50,
-        "price": 0
-      },
-      {
-        "label": "100 Guests",
-        "value": 100,
-        "price": 400
-      },
-      {
-        "label": "150 Guests",
-        "value": 150,
-        "price": 800
-      },
-      {
-        "label": "200 Guests",
-        "value": 200,
-        "price": 1200
+        "value": "branded-serving-trays",
+        "price": 100
       },
       {
         "label": "Nutella Bar Add-on",
         "value": "nutella-bar",
-        "price": 50
-      }
+        "price": 100
+      }, 
+	   {
+      "label": "Premium Toppings Bar (Caramel, Honey, Seasonal Berries)",
+      "value": "premium-toppings",
+      "price": 150
+    }
     ],
     "currency": "CAD",
     "Sale": "N",
     "features": [
-      "Freshly made Belgian or bubble waffles",
-      "Choice of toppings (syrups, fruits, sprinkles, etc.)",
+      "Freshly made bubble waffles",
+	  "Mini Waffle Sticks (Bite-sized Servings)",
+      "Choice of toppings (Syrups, Fruits & Sprinkles)",
       "On-site attendant to prep and serve",
-      "Sweet or savory customization (if available)",
       "Set-up & clean-up service",
-      "All materials and disposables included"
+      "Disposable trays and utensils",
+	  "Set-up & clean-up service"
     ],
     "dateAdded": "07-01-2025",
     "New": "N"
@@ -255,31 +251,21 @@
     "duration": 3,
     "price": 900,
     "pricingTiers": [
-      {
-        "label": "50 Guests",
-        "value": 50,
-        "price": 0
-      },
-      {
-        "label": "100 Guests",
-        "value": 100,
-        "price": 400
-      },
-      {
-        "label": "150 Guests",
-        "value": 150,
-        "price": 800
-      },
-      {
-        "label": "200 Guests",
-        "value": 200,
-        "price": 1200
-      },
-      {
-        "label": "Superfood Boosts",
-        "value": "superfood-boosts",
-        "price": 50
-      }
+     {
+      "label": "Tropical Fruit Add-on (Mango, Pineapple, Passionfruit)",
+      "value": "tropical-fruit",
+      "price": 200
+    },
+    {
+      "label": "Protein Power Add-on (Whey, Plant-Based Protein)",
+      "value": "protein-power",
+      "price": 100
+    },
+    {
+      "label": "Branded Smoothie Name Tags",
+      "value": "custom-name-tags",
+      "price": 50
+    },
     ],
     "currency": "CAD",
     "Sale": "N",
@@ -304,24 +290,19 @@
     "price": 400,
     "pricingTiers": [
       {
-        "label": "2 Sparklers",
-        "value": 2,
+        "label": "2 Sparklers (Standard)",
+        "value": "2-sparklers",
         "price": 0
       },
       {
         "label": "4 Sparklers",
-        "value": 4,
+        "value": "4-sparklers",
         "price": 300
       },
       {
         "label": "6 Sparklers",
-        "value": 6,
+        "value": "6-sparklers",
         "price": 600
-      },
-      {
-        "label": "Timed Cue Operator",
-        "value": "operator",
-        "price": 100
       }
     ],
     "currency": "CAD",
@@ -341,12 +322,7 @@
       {
         "label": "Standard",
         "value": "standard",
-        "price": 550
-      },
-      {
-        "label": "Fog Refill",
-        "value": "fog-refill",
-        "price": 125
+        "price": 0
       }
     ],
     "currency": "CAD",
@@ -374,17 +350,7 @@
         "label": "Standard",
         "value": "standard",
         "price": 0
-      },
-      {
-        "label": "Name/Date Projection",
-        "value": "projection",
-        "price": 100
-      },
-      {
-        "label": "Audio-Synced Show",
-        "value": "synced-show",
-        "price": 150
-      }
+	  }
     ],
     "currency": "CAD",
     "Sale": "N",
