@@ -12,7 +12,7 @@
         "value": "unlimited-2x6-prints",
         "price": 50
       },
-	  {
+      {
         "label": "Unlimited 4x6 Prints",
         "value": "unlimited-4x6-prints",
         "price": 100
@@ -124,7 +124,7 @@
     "Sale": "N",
     "features": [
       "Phone recording device",
-	  "Display Stand",
+      "Display Stand",
       "Unlimited voice recordings",
       "Digital download of all audio messages",
       "Tabletop setup"
@@ -140,7 +140,7 @@
     "duration": 3,
     "price": 700,
     "pricingTiers": [
-	  {
+      {
         "label": "Photo Prints",
         "value": "unlimited-prints",
         "price": 100
@@ -150,7 +150,7 @@
         "value": "Baloon-decor",
         "price": 100
       },
-	{
+      {
         "label": "Instant Sharing (Text/Airdrop/QR)",
         "value": "sharing-station",
         "price": 50
@@ -158,17 +158,17 @@
     ],
     "currency": "CAD",
     "Sale": "N",
-	"features": [
-	  "Modern self-contained espresso station",
-	  "Professional barista on-site",
-	  "Unlimited servings during service time",
-	  "Espresso, cappuccino, latte, and americano options",
-	  "Choice of regular and decaf beans",
-	  "Customizable menu signage",
-	  "Dairy and non-dairy milk options (e.g., oat, almond, soy)",
-	  "Eco-friendly disposable cups, lids, and stirrers",
-	  "Optional branded cup sleeves or custom signage"
-	]
+    "features": [
+      "Modern self-contained espresso station",
+      "Professional barista on-site",
+      "Unlimited servings during service time",
+      "Espresso, cappuccino, latte, and americano options",
+      "Choice of regular and decaf beans",
+      "Customizable menu signage",
+      "Dairy and non-dairy milk options (e.g., oat, almond, soy)",
+      "Eco-friendly disposable cups, lids, and stirrers",
+      "Optional branded cup sleeves or custom signage"
+    ],
     "dateAdded": "07-01-2025",
     "New": "N"
   },
@@ -180,57 +180,57 @@
     "duration": 3,
     "price": 700,
     "pricingTiers": [
-  {
-    "label": "Custom Display Stand with Branding",
-    "value": "custom-stand-branding",
-    "price": 75
-  },
-  {
-    "label": "Personalized Welcome Message Sign",
-    "value": "welcome-message",
-    "price": 50
-  },
-  {
-    "label": "Elegant Tabletop Decor Setup",
-    "value": "tabletop-decor",
-    "price": 50
-  },
-  {
-    "label": "Branded Espresso Cups & Sleeves",
-    "value": "branded-cups",
-    "price": 100
-  },
-  {
-    "label": "Flavored Syrup Bar (Vanilla, Caramel, etc.)",
-    "value": "syrup-bar",
-    "price": 60
-  },
-  {
-    "label": "Cold Brew or Iced Coffee Upgrade",
-    "value": "cold-brew-upgrade",
-    "price": 80
-  },
-  {
-    "label": "Dessert Pairing Platter (Pastries or Cookies)",
-    "value": "dessert-platter",
-    "price": 100
-  },
-  {
-    "label": "Extra Barista for Faster Service",
-    "value": "extra-barista",
-    "price": 150
-  },
-  {
-    "label": "Extended Service Time (1 Extra Hour)",
-    "value": "extra-hour",
-    "price": 125
-  },
-  {
-    "label": "Custom Menu Design & Display",
-    "value": "custom-menu",
-    "price": 60
-  }
-],
+      {
+        "label": "Custom Display Stand with Branding",
+        "value": "custom-stand-branding",
+        "price": 75
+      },
+      {
+        "label": "Personalized Welcome Message Sign",
+        "value": "welcome-message",
+        "price": 50
+      },
+      {
+        "label": "Elegant Tabletop Decor Setup",
+        "value": "tabletop-decor",
+        "price": 50
+      },
+      {
+        "label": "Branded Espresso Cups & Sleeves",
+        "value": "branded-cups",
+        "price": 100
+      },
+      {
+        "label": "Flavored Syrup Bar (Vanilla, Caramel, etc.)",
+        "value": "syrup-bar",
+        "price": 60
+      },
+      {
+        "label": "Cold Brew or Iced Coffee Upgrade",
+        "value": "cold-brew-upgrade",
+        "price": 80
+      },
+      {
+        "label": "Dessert Pairing Platter (Pastries or Cookies)",
+        "value": "dessert-platter",
+        "price": 100
+      },
+      {
+        "label": "Extra Barista for Faster Service",
+        "value": "extra-barista",
+        "price": 150
+      },
+      {
+        "label": "Extended Service Time (1 Extra Hour)",
+        "value": "extra-hour",
+        "price": 125
+      },
+      {
+        "label": "Custom Menu Design & Display",
+        "value": "custom-menu",
+        "price": 60
+      }
+    ],
     "currency": "CAD",
     "Sale": "N",
     "features": [
