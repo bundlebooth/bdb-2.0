@@ -5,32 +5,32 @@
     "ServiceType": "Interactive Booths",
     "description": "The photo booth experience adds a vibrant touch to any event, creating instant, tangible memories for your guests. All photos delivered digitally.",
     "duration": 3,
-    "price": 0.25,
+    "price": 600,
     "pricingTiers": [
       {
         "label": "Unlimited Prints",
         "value": "unlimited-prints",
-        "price": 0.25
+        "price": 100
       },
       {
         "label": "Floral Decor",
         "value": "floral-decor",
-        "price": 0.25
+        "price": 100
       },
       {
         "label": "Custom Backdrop",
         "value": "custom-backdrop",
-        "price": 0.25
+        "price": 100
       },
       {
         "label": "Premium Props Package",
         "value": "premium-props",
-        "price": 0.25
+        "price": 75
       },
       {
         "label": "Online Gallery with Branding",
         "value": "gallery-branding",
-        "price": 0.25
+        "price": 50
       }
     ],
     "currency": "CAD",
@@ -54,22 +54,22 @@
     "ServiceType": "Interactive Booths",
     "description": "Elevate your event with the sophistication of our 360 Video Booth experience. Guests are invited to step onto a sleek platform as a rotating camera captures elegant, slow-motion videos from every angle.",
     "duration": 3,
-    "price": 0.25,
+    "price": 600,
     "pricingTiers": [
       {
         "label": "Red Carpet Setup",
         "value": "red-carpet",
-        "price": 0.25
+        "price": 75
       },
       {
         "label": "Custom Video Overlay",
         "value": "custom-overlay",
-        "price": 0.25
+        "price": 100
       },
       {
         "label": "Instant Sharing (Text/Airdrop/QR)",
         "value": "sharing-station",
-        "price": 0.25
+        "price": 80
       }
     ],
     "currency": "CAD",
@@ -92,27 +92,27 @@
     "ServiceType": "Interactive Booths",
     "description": "The Audio Guest Book offers a timeless and personal way to capture heartfelt moments. Guests simply pick up the vintage-style phone and leave a message.",
     "duration": 3,
-    "price": 0.25,
+    "price": 400,
     "pricingTiers": [
       {
         "label": "Custom Display Stand",
         "value": "signage",
-        "price": 0.25
+        "price": 50
       },
       {
         "label": "Personalized Welcome Message",
         "value": "welcome-message",
-        "price": 0.25
+        "price": 50
       },
       {
         "label": "Tabletop decor",
         "value": "tabletop-decor",
-        "price": 0.25
+        "price": 50
       },
       {
         "label": "USB Drive of All Recordings",
         "value": "usb-delivery",
-        "price": 0.25
+        "price": 50
       }
     ],
     "currency": "CAD",
@@ -132,17 +132,17 @@
     "ServiceType": "Interactive Booths",
     "description": "Bring the allure of a fashion magazine cover to your next event with our Magazine Photo Booth Box. Guests pose inside a life-sized, custom-branded magazine frame.",
     "duration": 3,
-    "price": 0.25,
+    "price": 700,
     "pricingTiers": [
       {
         "label": "Unlimited Prints",
         "value": "unlimited-prints",
-        "price": 0.25
+        "price": 100
       },
       {
         "label": "Custom Magazine Template",
         "value": "custom-template",
-        "price": 0.25
+        "price": 100
       }
     ],
     "currency": "CAD",
@@ -167,27 +167,27 @@
     "ServiceType": "Sweets and Brews",
     "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
     "duration": 3,
-    "price": 0.25,
+    "price": 1300,
     "pricingTiers": [
       {
         "label": "Espresso Drinks & Coffee (Standard)",
         "value": "espresso-coffee-drinks",
-        "price": 0.25
+        "price": 0
       },
       {
         "label": "Matcha",
         "value": "matcha",
-        "price": 0.25
+        "price": 200
       },
       {
         "label": "Iced Drinks (Iced Lattés & Matchas)",
         "value": "iced-drinks",
-        "price": 0.25
+        "price": 200
       },
       {
         "label": "Branded serving cups",
         "value": "branded-serving-cups",
-        "price": 0.25
+        "price": 100
       }
     ],
     "currency": "CAD",
@@ -211,21 +211,21 @@
     "ServiceType": "Sweets and Brews",
     "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings—from fresh fruits and whipped cream to chocolate drizzle and syrups.",
     "duration": 3,
-    "price": 0.25,
+    "price": 1000,
     "pricingTiers": [
       {
         "label": "Nutella Bar Add-on",
         "value": "nutella-bar",
-        "price": 0.25
+        "price": 100
       },
       {
         "label": "Premium Toppings Bar (Caramel, Honey, Seasonal Berries)",
         "value": "premium-toppings",
-        "price": 0.25
+        "price": 150
       },       {
         "label": "Branded serving trays",
         "value": "branded-serving-trays",
-        "price": 0.25
+        "price": 100
       }
     ],
     "currency": "CAD",
@@ -248,22 +248,22 @@
     "ServiceType": "Sweets and Brews",
     "description": "Add a fresh, healthy twist to your event with our vibrant Smoothie Booth! We blend delicious smoothies with real fruits, natural ingredients and a variety of add-ins.",
     "duration": 3,
-    "price": 0.25,
+    "price": 1100,
     "pricingTiers": [
       {
         "label": "Tropical Fruit Smoothies (Mango, Pineapple, Passionfruit)",
         "value": "tropical-fruit",
-        "price": 0.25
+        "price": 200
       },
       {
         "label": "Protein Power Add-on (Whey, Plant-Based Protein)",
         "value": "protein-power",
-        "price": 0.25
+        "price": 100
       },
       {
         "label": "Branded Smoothie Name Tags",
         "value": "custom-name-tags",
-        "price": 0.25
+        "price": 50
       }
     ],
     "currency": "CAD",
@@ -286,22 +286,22 @@
     "ServiceType": "Scene Setters",
     "description": "Light up your celebration with our elegant Sparkler Boxes! A stylish station offering guests premium sparklers for that magical photo moment or grand finale.",
     "duration": 1,
-    "price": 0.25,
+    "price": 400,
     "pricingTiers": [
       {
         "label": "2 Sparklers (Standard)",
         "value": "2-sparklers",
-        "price": 0.25
+        "price": 0
       },
       {
         "label": "4 Sparklers",
         "value": "4-sparklers",
-        "price": 0.25
+        "price": 300
       },
       {
         "label": "6 Sparklers",
         "value": "6-sparklers",
-        "price": 0.25
+        "price": 500
       }
     ],
     "currency": "CAD",
@@ -323,12 +323,12 @@
     "ServiceType": "Scene Setters",
     "description": "Create a stunning, cinematic atmosphere with our Dry Ice Fog Effect! This low-lying fog adds a magical touch to first dances, stage entrances, or any moment you want to make unforgettable.",
     "duration": 1,
-    "price": 0.25,
+    "price": 400,
     "pricingTiers": [
       {
         "label": "Color Tinted Fog",
         "value": "colored-fog",
-        "price": 0.25
+        "price": 200
       }
     ],
     "currency": "CAD",
@@ -350,22 +350,22 @@
     "ServiceType": "Scene Setters",
     "description": "Make your first dance truly unforgettable with our Laser First Dance Experience! Set beneath a canopy of synchronized laser lights and dreamy effects.",
     "duration": 1,
-    "price": 0.25,
+    "price": 900,
     "pricingTiers": [
       {
         "label": "Custom Color Scheme",
         "value": "custom-color-scheme",
-        "price": 0.25
+        "price": 100
       },
       {
         "label": "Personalized Text Projection",
         "value": "laser-text-projection",
-        "price": 0.25
+        "price": 150
       },
       {
         "label": "Fog Effect Add-On",
         "value": "fog-effect",
-        "price": 0.25
+        "price": 350
       }
     ],
     "currency": "CAD",
