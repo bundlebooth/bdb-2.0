@@ -3843,6 +3843,20 @@ if (!isBooked) {
         document.getElementById('time-slots-container').innerHTML = '';
     }
 	
+	// Add this with your other global functions
+function checkAndUpdateContentSize() {
+    const height = document.body.scrollHeight;
+    try {
+        window.parent.postMessage({
+            type: 'contentSizeUpdate',
+            height: height
+        }, 'https://bundlebooth.ca');
+    } catch (e) {
+        console.log('Could not communicate with parent');
+    }
+    return height;
+}
+	
 function clearPromoCode() {
     const promoCodeInput = document.getElementById('promo-code');
     const errorElement = document.getElementById('promo-error');
@@ -4165,13 +4179,12 @@ let lastStep = null;
 let lastHeight = 0;
 function notifyParentOfStepChange() {
     const currentStep = getCurrentStep();
-    const currentHeight = document.body.scrollHeight;
+    const currentHeight = checkAndUpdateContentSize(); // Modified this line
     
     try {
-        // 1. Always notify parent of height changes
         const parentOrigin = (() => {
             try { return window.parent.location.origin; } 
-            catch { return 'https://bundlebooth.ca'; } // Cross-origin fallback
+            catch { return 'https://bundlebooth.ca'; }
         })();
         
         window.parent.postMessage({
@@ -4180,20 +4193,16 @@ function notifyParentOfStepChange() {
             height: currentHeight
         }, parentOrigin);
 
-        // 2. Only scroll to top inside iframe WHEN STEP IS THE SAME
         if (currentStep === lastStep) {
-            // Target the first meaningful element or fallback to body
             const scrollTarget = document.querySelector('[data-scroll-top]') || 
                                document.body.firstElementChild || 
                                document.body;
             scrollTarget.scrollIntoView({
                 behavior: 'smooth',
-                block: 'start' // Aligns to top
+                block: 'start'
             });
-			 console.log('Step is the same');
         }
         
-        // Update tracking variables
         lastStep = currentStep;
         lastHeight = currentHeight;
         
