@@ -2714,8 +2714,10 @@ function scrollToOptions() {
             type: 'scrollToPosition',
             position: scrollPosition,
             element: 'options-section'
-        }, 'https://bundlebooth.ca'); // Use your domain here
-		console.log('called made from Parent: Scrolltoposition');
+        }, 'https://bundlebooth.ca');
+        
+        // Force content size check after scroll
+        setTimeout(checkAndUpdateContentSize, 300);
     } catch (error) {
         console.error('Error sending scroll message:', error);
         // Fallback to local scroll if parent communication fails
