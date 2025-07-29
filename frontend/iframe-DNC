@@ -1,6 +1,6 @@
 <iframe 
   id="bundlebooth-iframe"
-  src="https://bundlebooth.github.io/bdb-2.0/frontend/Step123_v7.html" 
+  src="https://bundlebooth.github.io/bdb-2.0/frontend/Step123_resizefix.html" 
   style="width: 100%; border: 0; display: block;" 
   scrolling="no"
   allowfullscreen>
@@ -106,14 +106,19 @@ window.addEventListener('message', function(event) {
       const absolutePosition = iframeRect.top + event.data.position + 850;
       
       // Scroll parent to this position
+      // Scroll parent to this position
       window.parent.scrollTo({
         top: absolutePosition,
         behavior: 'smooth'
       });
-	  console.log('Iframe: Recieved..');
-	   console.log("iframeRect: " + iframeRect);
-	    console.log("absolutePosition: " + absolutePosition);
-		
+    }
+    // Handle content size updates
+    else if (event.data?.type === 'contentSizeUpdate') {
+      const iframe = document.getElementById('bundlebooth-iframe');
+      if (iframe && event.data.height) {
+        iframe.style.height = `${event.data.height}px`;
+		 console.log('contentSizeUpdate called');
+      }
     }
   } catch (error) {
     console.error('Iframe message error:', error);
