@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -2714,8 +2713,10 @@ function scrollToOptions() {
             type: 'scrollToPosition',
             position: scrollPosition,
             element: 'options-section'
-        }, 'https://bundlebooth.ca'); // Use your domain here
-		console.log('called made from Parent: Scrolltoposition');
+        }, 'https://bundlebooth.ca');
+        
+        // Force content size check after scroll
+        setTimeout(checkAndUpdateContentSize, 300);
     } catch (error) {
         console.error('Error sending scroll message:', error);
         // Fallback to local scroll if parent communication fails
@@ -3442,6 +3443,7 @@ if (service.features) {
         
         // Show/hide options section based on selections
         setupOptionsSection();
+		checkAndUpdateContentSize();
     }
 	
 	   // Function to position the scroll arrow next to the selected service
@@ -3843,6 +3845,20 @@ if (!isBooked) {
         document.getElementById('time-slots-container').innerHTML = '';
     }
 	
+	// Add this with your other global functions
+function checkAndUpdateContentSize() {
+    const height = document.body.scrollHeight;
+    try {
+        window.parent.postMessage({
+            type: 'contentSizeUpdate',
+            height: height
+        }, 'https://bundlebooth.ca');
+    } catch (e) {
+        console.log('Could not communicate with parent');
+    }
+    return height;
+}
+	
 function clearPromoCode() {
     const promoCodeInput = document.getElementById('promo-code');
     const errorElement = document.getElementById('promo-error');
@@ -4163,15 +4179,15 @@ console.log('Script loaded in Step123_Iframe_test.html');
 // Modified notifyParentOfStepChange function
 let lastStep = null;
 let lastHeight = 0;
+
 function notifyParentOfStepChange() {
     const currentStep = getCurrentStep();
-    const currentHeight = document.body.scrollHeight;
+    const currentHeight = checkAndUpdateContentSize(); // Modified this line
     
     try {
-        // 1. Always notify parent of height changes
         const parentOrigin = (() => {
             try { return window.parent.location.origin; } 
-            catch { return 'https://bundlebooth.ca'; } // Cross-origin fallback
+            catch { return 'https://bundlebooth.ca'; }
         })();
         
         window.parent.postMessage({
@@ -4180,20 +4196,16 @@ function notifyParentOfStepChange() {
             height: currentHeight
         }, parentOrigin);
 
-        // 2. Only scroll to top inside iframe WHEN STEP IS THE SAME
         if (currentStep === lastStep) {
-            // Target the first meaningful element or fallback to body
             const scrollTarget = document.querySelector('[data-scroll-top]') || 
                                document.body.firstElementChild || 
                                document.body;
             scrollTarget.scrollIntoView({
                 behavior: 'smooth',
-                block: 'start' // Aligns to top
+                block: 'start'
             });
-			 console.log('Step is the same');
         }
         
-        // Update tracking variables
         lastStep = currentStep;
         lastHeight = currentHeight;
         
@@ -4202,7 +4214,14 @@ function notifyParentOfStepChange() {
     }
 }
 
-
+function notifyContentChanged() {
+    checkAndUpdateContentSize();
+    
+    // Also notify parent of step changes if applicable
+    if (typeof notifyParentOfStepChange === 'function') {
+        notifyParentOfStepChange();
+    }
+}
 
 function scrollToTop() {
     console.log('Attempting to scroll iframe to top');
