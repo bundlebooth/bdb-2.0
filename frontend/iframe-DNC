@@ -42,7 +42,7 @@ function scrollToIframeStart() {
 
   // Determine start position based on screen size
   const isMobile = window.matchMedia('(max-width: 480px)').matches;
-  const iframeStartPosition = isMobile ? 1100 : 900;
+  const iframeStartPosition = isMobile ? 800 : 800;
 
   // Scroll parent window to iframe's start position
   try {
@@ -103,7 +103,7 @@ window.addEventListener('message', function(event) {
       
       // Calculate the absolute position in the parent document
       const iframeRect = iframe.getBoundingClientRect();
-      const absolutePosition = iframeRect.top + event.data.position + 950;
+      const absolutePosition = iframeRect.top + event.data.position + 850;
       
       // Scroll parent to this position
       window.parent.scrollTo({
