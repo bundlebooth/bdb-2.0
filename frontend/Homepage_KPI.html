@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 
 <html lang="en">
@@ -7,254 +8,276 @@
 <title>BundleRush KPI Dashboard</title>
 <link href="styles.css" rel="stylesheet"/>
 <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
 
-        html {
-            margin: 0;
-            padding: 0;
-        }
+    :root {
+      --bb-blue: #2c3e50;
+    }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #FFFFFF;
-            color: #c0c0c0;
-            margin: 0;
-            padding: 0.5rem;
-            display: block;
-        }
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      background: #FFFFFF;
+      color: #c0c0c0;
+    }
 
-        .kpi-container {
-            display: flex;
-            flex-wrap: nowrap;
-            gap: 1.5rem;
-            max-width: 1200px;
-            width: 100%;
-            padding: 1rem;
-            justify-content: center;
-            margin: 0 auto;
-        }
+    .kpi-container {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 1.5rem;
+      max-width: 1200px;
+      padding: 1rem;
+      justify-content: center;
+      margin: 0 auto;
+    }
 
-        .kpi-card {
-            background: #FFFFFF;
-            border: 1px solid #E5E7EB;
-            border-radius: 1rem;
-            padding: 2rem;
-            text-align: center;
-            flex: 1;
-            min-width: 220px;
-            max-width: 270px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            animation: fadeInUp 0.6s ease forwards;
-            animation-delay: calc(var(--order) * 0.1s);
-            opacity: 0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
+    .kpi-card {
+      background: #FFFFFF;
+      border: 1px solid #E5E7EB;
+      border-radius: 1rem;
+      padding: 2rem;
+      text-align: center;
+      flex: 1;
+      min-width: 220px;
+      max-width: 270px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      animation: fadeInUp 0.6s ease forwards;
+      animation-delay: calc(var(--order) * 0.1s);
+      opacity: 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
 
-        .kpi-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-        }
+    .kpi-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    }
 
-        .kpi-icon {
-            color: #666666;
-            margin-bottom: 0.75rem;
-            font-size: 1.75rem;
-        }
+    .kpi-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.5rem;
+      color: #666666;
+      margin-bottom: 0.75rem;
+      font-size: 1.75rem;
+    }
 
-        .kpi-number {
-            font-size: 2.75rem;
-            font-weight: 700;
-            color: #666666;
-            margin-bottom: 0.75rem;
-            position: relative;
-            display: inline-block;
-        }
+    .kpi-number {
+  line-height: 1;
+  display: inline-block;
+  vertical-align: middle;
+      font-size: 2.75rem;
+      font-weight: 700;
+      color: #666666;
+      margin-bottom: 0.75rem;
+      position: relative;
+    }
 
-        .kpi-number::after {
-            content: '+';
-            position: absolute;
-            right: -1.5rem;
-            top: 50%;
-            transform: translateY(-50%) scale(0) rotate(0deg);
-            font-size: 1.5rem;
-            color: #666666;
-            opacity: 0;
-            transition: transform 0.4s ease, opacity 0.4s ease, rotate 0.4s ease;
-        }
+    .kpi-number::after {
+      content: '+';
+      position: absolute;
+      right: -1.5rem;
+      top: 50%;
+      transform: translateY(-50%) scale(0) rotate(0deg);
+      font-size: 1.5rem;
+      color: #666666;
+      opacity: 0;
+      transition: transform 0.4s ease, opacity 0.4s ease, rotate 0.4s ease;
+    }
 
-        .kpi-number.complete::after {
-            transform: translateY(-50%) scale(1) rotate(360deg);
-            opacity: 1;
-        }
+    .kpi-number.complete::after {
+      transform: translateY(-50%) scale(1) rotate(360deg);
+      opacity: 1;
+    }
 
-        .kpi-label {
-            font-size: 1rem;
-            color: #808080;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            font-weight: 600;
-        }
+    .kpi-label {
+      font-size: 1rem;
+      color: #808080;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+    }
 
-        .platform-badge {
-            display: inline-block;
-            background: #c0c0c0;
-            color: #000000;
-            font-size: 0.9rem;
-            padding: 0.4rem 1rem;
-            border-radius: 1.5rem;
-            margin-top: 0.75rem;
-            transition: transform 0.3s ease;
-            text-decoration: none;
-        }
+    .learn-more-button {
+      display: inline-block;
+      padding: 8px 16px;
+      background: rgba(44, 62, 80, 0.1);
+      color: var(--bb-blue);
+      font-weight: 500;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      margin-top: 1rem;
+    }
 
-        .platform-badge:hover {
-            transform: scale(1.05);
-        }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+    @media (max-width: 768px) {
+      .kpi-container {
+        flex-wrap: wrap;
+        gap: 1.25rem;
+        padding: 0.5rem;
+      }
+      .kpi-card {
+        min-width: 180px;
+        max-width: 230px;
+      }
+      .kpi-number {
+  line-height: 1;
+  display: inline-block;
+  vertical-align: middle; font-size: 2.25rem; }
+      .kpi-label { font-size: 0.85rem; }
+      .kpi-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.5rem; font-size: 1.5rem; }
+      .learn-more-button {
+        font-size: 12px;
+        padding: 6px 12px;
+      }
+    }
+  
 
-        @media (max-width: 768px) {
-            .kpi-container {
-                flex-wrap: wrap;
-                gap: 1.25rem;
-                padding: 0.5rem;
-            }
-            .kpi-card {
-                min-width: 180px;
-                max-width: 230px;
-            }
-            .kpi-number {
-                font-size: 2.25rem;
-            }
-            .kpi-label {
-                font-size: 0.85rem;
-            }
-            .platform-badge {
-                font-size: 0.8rem;
-                padding: 0.3rem 0.8rem;
-            }
-            .kpi-icon {
-                font-size: 1.5rem;
-            }
-        }
-    </style>
+.kpi-icon-number-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.kpi-icon {
+  font-size: 1.75rem;
+  margin: 0;
+}
+
+.kpi-number {
+  font-size: 2.75rem;
+  font-weight: 700;
+  color: #666666;
+  position: relative;
+}
+</style>
 </head>
 <body>
-<div class="kpi-container" id="kpi-container"><div class="kpi-card" style="--order: 1"><a href="https://bundlebooth.ca/bundles" rel="noopener noreferrer" style="text-decoration: none; color: inherit; display: block; height: 100%; width: 100%;" target="_blank">
-<span aria-hidden="true" class="kpi-icon">📸</span>
-<div class="kpi-number" id="equipment-count">0</div>
-<div class="kpi-label">Add-ons &amp; Upgrades</div>
-</a></div><div class="kpi-card" style="--order: 2"><a href="https://bundlebooth.ca/bundles" rel="noopener noreferrer" style="text-decoration: none; color: inherit; display: block; height: 100%; width: 100%;" target="_blank">
-<span aria-hidden="true" class="kpi-icon">🎁</span>
-<div class="kpi-number" id="bundle-count">0</div>
-<div class="kpi-label">Customizable Services</div>
-</a></div><div class="kpi-card" style="--order: 3"><a href="https://bundlebooth.ca/bundles" rel="noopener noreferrer" style="text-decoration: none; color: inherit; display: block; height: 100%; width: 100%;" target="_blank">
-<span aria-hidden="true" class="kpi-icon">🎉</span>
-<div class="kpi-number" id="event-type-count">0</div>
-<div class="kpi-label">Service Categories</div>
-</a></div><div class="kpi-card" style="--order: 4"><a href="https://bundlebooth.ca/bundles" rel="noopener noreferrer" style="text-decoration: none; color: inherit; display: block; height: 100%; width: 100%;" target="_blank">
-<span aria-hidden="true" class="kpi-icon">🔗</span>
-<div class="kpi-number" id="platform-count">0</div>
-<div class="kpi-label">Booking Platform</div>
-</a><a href="https://bundlebooth.ca/bundles" style="display: inline-block; background-color: #e5e7eb; color: black; padding: 0.75rem 1.5rem; font-weight: bold; text-transform: uppercase; border-radius: 0.5rem; font-family: 'Inter', sans-serif; text-decoration: none;" target="_blank">Build Your Bundle</a></div></div>
+<div class="kpi-container" id="kpi-container">
+<div class="kpi-card" style="--order: 1">
+<a href="https://bundlebooth.ca/bundles" style="text-decoration: none; color: inherit; display: block;" target="_blank">
 
+
+<div class="kpi-icon-number-row"><div class="kpi-icon">📸</div><div class="kpi-number" id="equipment-count">0</div></div><div class="kpi-label">Add-ons &amp; Upgrades</div>
+</a>
+</div>
+<div class="kpi-card" style="--order: 2">
+<a href="https://bundlebooth.ca/bundles" style="text-decoration: none; color: inherit; display: block;" target="_blank">
+
+
+<div class="kpi-icon-number-row"><div class="kpi-icon">🎁</div><div class="kpi-number" id="bundle-count">0</div></div><div class="kpi-label">Customizable Services</div>
+</a>
+</div>
+<div class="kpi-card" style="--order: 3">
+<a href="https://bundlebooth.ca/bundles" style="text-decoration: none; color: inherit; display: block;" target="_blank">
+
+
+<div class="kpi-icon-number-row"><div class="kpi-icon">🎉</div><div class="kpi-number" id="event-type-count">0</div></div><div class="kpi-label">Service Categories</div>
+</a>
+</div>
+<div class="kpi-card" style="--order: 4">
+<a href="https://bundlebooth.ca/bundles" style="text-decoration: none; color: inherit; display: block;" target="_blank">
+
+
+<div class="kpi-icon-number-row"><div class="kpi-icon">🔗</div><div class="kpi-number" id="platform-count">0</div></div><div class="kpi-label">Booking Platform</div>
+</a>
+<a class="learn-more-button" href="https://bundlebooth.ca/bundles" target="_blank">Build Your Bundle</a>
+</div>
+</div>
 <script>
     let hasStarted = false;
-
     async function loadKPIs() {
-        if (hasStarted) return;
-        hasStarted = true;
+      if (hasStarted) return;
+      hasStarted = true;
 
-        try {
-            const response = await fetch(`https://raw.githubusercontent.com/bundlebooth/bdb-2.0/refs/heads/main/data/individual-services.json?cachebust=${Date.now()}`);
-            const services = await response.json();
+      try {
+        const response = await fetch('https://raw.githubusercontent.com/bundlebooth/bdb-2.0/refs/heads/main/data/individual-services.json?cachebust=' + Date.now());
+        const services = await response.json();
 
-            const serviceCount = services.length;
+        const serviceCount = services.length;
+        let addonCount = 0;
+        const categorySet = new Set();
 
-            let addonCount = 0;
-            const categorySet = new Set();
+        services.forEach(service => {
+          if (Array.isArray(service.pricingTiers)) {
+            addonCount += service.pricingTiers.length;
+          }
+          if (service.ServiceType) {
+            categorySet.add(service.ServiceType.trim());
+          }
+        });
 
-            services.forEach(service => {
-                if (Array.isArray(service.pricingTiers)) {
-                    addonCount += service.pricingTiers.length;
-                }
-                if (service.ServiceType) {
-                    categorySet.add(service.ServiceType.trim());
-                }
+        const categoryCount = categorySet.size;
+        const platformCount = 1;
+
+        animateCounter('equipment-count', addonCount, true, () => {
+          animateCounter('bundle-count', serviceCount, true, () => {
+            animateCounter('event-type-count', categoryCount, true, () => {
+              animateCounter('platform-count', platformCount, false);
             });
+          });
+        });
+      } catch (err) {
+        console.error('Failed to fetch KPI data', err);
+      }
+    }
 
-            const categoryCount = categorySet.size;
-            const platformCount = 1;
-
-            // Animate sequentially from left to right
-            animateCounter('equipment-count', addonCount, true, () => {
-                animateCounter('bundle-count', serviceCount, true, () => {
-                    animateCounter('event-type-count', categoryCount, true, () => {
-                        animateCounter('platform-count', platformCount, false);
-                    });
-                });
-            });
-        } catch (error) {
-            console.error('Error fetching KPI data:', error);
+    function animateCounter(id, target, addPlus, cb) {
+      const el = document.getElementById(id);
+      let curr = 0;
+      const inc = target / 30;
+      const interval = setInterval(() => {
+        curr += inc;
+        if (curr >= target) {
+          curr = target;
+          clearInterval(interval);
+          el.textContent = Math.round(curr);
+          if (addPlus) el.classList.add('complete');
+          if (cb) cb();
+        } else {
+          el.textContent = Math.round(curr);
         }
+      }, 30);
     }
 
-    function animateCounter(elementId, target, addPlus, callback) {
-        const element = document.getElementById(elementId);
-        let current = 0;
-        const increment = target / 30;
-        const interval = setInterval(() => {
-            current += increment;
-            if (current >= target) {
-                current = target;
-                clearInterval(interval);
-                element.textContent = Math.round(current);
-                if (addPlus) {
-                    element.classList.add('complete');
-                }
-                if (callback) callback();
-            } else {
-                element.textContent = Math.round(current);
-            }
-        }, 30);
-    }
-
-    function isElementInViewport(el) {
-        const rect = el.getBoundingClientRect();
-        const windowHeight = window.innerHeight || document.documentElement.clientHeight;
-        const windowWidth = window.innerWidth || document.documentElement.clientWidth;
-
-        return (
-            rect.top <= windowHeight * 0.9 &&
-            rect.bottom >= 0 &&
-            rect.left <= windowWidth &&
-            rect.right >= 0
-        );
+    function isInView(el) {
+      const rect = el.getBoundingClientRect();
+      return (
+        rect.top <= window.innerHeight * 0.9 &&
+        rect.bottom >= 0
+      );
     }
 
     function checkVisibility() {
-        const kpiContainer = document.getElementById('kpi-container');
-        if (kpiContainer && isElementInViewport(kpiContainer)) {
-            loadKPIs();
-            window.removeEventListener('scroll', checkVisibility);
-            window.removeEventListener('resize', checkVisibility);
-        }
+      const el = document.getElementById('kpi-container');
+      if (el && isInView(el)) {
+        loadKPIs();
+        window.removeEventListener('scroll', checkVisibility);
+        window.removeEventListener('resize', checkVisibility);
+      }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        checkVisibility();
-        window.addEventListener('scroll', checkVisibility);
-        window.addEventListener('resize', checkVisibility);
+      checkVisibility();
+      window.addEventListener('scroll', checkVisibility);
+      window.addEventListener('resize', checkVisibility);
     });
-</script>
+  </script>
 </body>
 </html>
