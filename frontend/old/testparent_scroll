@@ -1,0 +1,137 @@
+<div style="font-family: Arial, sans-serif; border: 2px solid #4a6ea9; border-radius: 8px; padding: 20px; background: #f8fafc; max-width: 600px; margin: 0 auto;">
+  <h2 style="color: #4a6ea9; margin-top: 0;">Parent Window Scroll Controller</h2>
+  
+  <!-- Scroll Controls -->
+  <div style="margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+    <button onclick="scrollParentTo(0)" style="padding: 8px 15px; background: #4a6ea9; color: white; border: none; border-radius: 4px; cursor: pointer; flex: 1;">
+      Scroll to Top
+    </button>
+    <button onclick="scrollParentTo(500)" style="padding: 8px 15px; background: #5cb85c; color: white; border: none; border-radius: 4px; cursor: pointer; flex: 1;">
+      Scroll to 500px
+    </button>
+    <button onclick="scrollParentTo(document.body.scrollHeight)" style="padding: 8px 15px; background: #f0ad4e; color: white; border: none; border-radius: 4px; cursor: pointer; flex: 1;">
+      Scroll to Bottom
+    </button>
+  </div>
+  
+  <!-- Custom Position -->
+  <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+    <input type="number" id="scrollPosition" value="0" placeholder="Enter pixels" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; flex: 1;">
+    <button onclick="scrollToCustomPosition()" style="padding: 8px 15px; background: #d9534f; color: white; border: none; border-radius: 4px; cursor: pointer;">
+      Go
+    </button>
+  </div>
+  
+  <!-- Status Display -->
+  <div id="status" style="padding: 10px; background: white; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 15px;">
+    <strong>Status:</strong> <span style="color: #5cb85c;">Ready to control parent scroll</span>
+  </div>
+  
+  <!-- Debug Log -->
+  <div style="margin-bottom: 10px; font-weight: bold;">Debug Log:</div>
+  <div id="debug-log" style="height: 150px; overflow-y: auto; padding: 10px; background: white; border: 1px solid #ddd; border-radius: 4px; font-family: monospace; font-size: 13px;"></div>
+</div>
+
+<script>
+  // ===== SCROLL CONTROL FUNCTIONS ===== //
+  function scrollParentTo(position) {
+    try {
+      // Attempt to scroll parent window
+      window.parent.scrollTo({
+        top: position,
+        behavior: 'smooth'
+      });
+      log(`Successfully scrolled parent to ${position}px`);
+      updateStatus(`Parent scrolled to ${position}px`, 'success');
+    } catch (error) {
+      log(`Error: ${error.message}`, 'error');
+      updateStatus('Failed to scroll parent', 'error');
+      
+      // Fallback attempt (less reliable)
+      try {
+        window.parent.window.scrollTo(0, position);
+        log('Used fallback scroll method', 'warning');
+      } catch (fallbackError) {
+        log(`Fallback failed: ${fallbackError.message}`, 'error');
+      }
+    }
+  }
+
+  function scrollToCustomPosition() {
+    const input = document.getElementById('scrollPosition');
+    const position = parseInt(input.value);
+    
+    if (!isNaN(position)) {
+      scrollParentTo(position);
+    } else {
+      log('Please enter a valid number', 'error');
+      updateStatus('Invalid position', 'error');
+    }
+  }
+
+  // ===== HELPER FUNCTIONS ===== //
+  function log(message, type = 'info') {
+    const colors = {
+      info: 'black',
+      success: '#5cb85c',
+      warning: '#f0ad4e',
+      error: '#d9534f'
+    };
+    const logElement = document.getElementById('debug-log');
+    const timestamp = new Date().toLocaleTimeString();
+    logElement.innerHTML += `<div style="color: ${colors[type]}; margin-bottom: 3px;">[${timestamp}] ${message}</div>`;
+    logElement.scrollTop = logElement.scrollHeight;
+  }
+
+  function updateStatus(message, type = 'info') {
+    const colors = {
+      info: '#5bc0de',
+      success: '#5cb85c',
+      warning: '#f0ad4e',
+      error: '#d9534f'
+    };
+    const statusElement = document.getElementById('status');
+    statusElement.innerHTML = `<strong>Status:</strong> <span style="color: ${colors[type]}">${message}</span>`;
+  }
+
+  // ===== INITIALIZATION ===== //
+  window.addEventListener('DOMContentLoaded', function() {
+    log('Iframe scroll controller initialized');
+    
+    // Try to reset parent scroll on load (solves your "not loading from top" issue)
+    setTimeout(() => {
+      try {
+        window.parent.scrollTo(0, 0);
+        log('Reset parent scroll to top on initialization');
+      } catch (error) {
+        log('Could not automatically reset parent scroll: ' + error.message, 'warning');
+      }
+    }, 500);
+  });
+
+  // ===== ALTERNATIVE SCROLL METHODS ===== //
+  // These provide additional ways to control the parent scroll if the primary method fails
+  
+  // Method 1: URL hash technique
+  function scrollViaHash(position) {
+    try {
+      window.parent.location.hash = `scrollTo=${position}`;
+      log(`Used URL hash to scroll to ${position}px`, 'warning');
+    } catch (error) {
+      log(`URL hash method failed: ${error.message}`, 'error');
+    }
+  }
+
+  // Method 2: PostMessage fallback
+  function scrollViaPostMessage(position) {
+    try {
+      window.parent.postMessage({
+        type: 'scrollTo',
+        position: position
+      }, '*');
+      log(`Used postMessage to request scroll to ${position}px`, 'warning');
+    } catch (error) {
+      log(`postMessage failed: ${error.message}`, 'error');
+    }
+  }
+</script>
