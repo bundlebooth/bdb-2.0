@@ -1,6 +1,6 @@
 [
   {
-    "name": "💒 Signature Wedding",
+    "name": "💖 Perfect Pair Bundle",
     "description": "A perfect match of photo fun and magical ambiance, ideal for weddings.",
     "Special": true,
     "discountType": "Fixed",
@@ -12,7 +12,7 @@
     }
   },
   {
-    "name": "🎉 Complete Celebration",
+    "name": "🎊 Party Essentials Bundle",
     "description": "Celebrate in full with a perfect mix of fun, effects, and sweet treats.",
     "Special": true,
     "discountType": "Fixed",
@@ -25,7 +25,7 @@
     }
   },
   {
-    "name": "💎 Diamond Wedding Experience",
+    "name": "💫 Prestige Wedding Bundle",
     "description": "The ultimate wedding package — booths, special effects, and gourmet service.",
     "Special": true,
     "discountType": "Fixed",
@@ -38,7 +38,7 @@
     }
   },
   {
-    "name": "🎭 Ultimate Event Fusion",
+    "name": "💎 Luxe Celebration Bundle",
     "description": "Designed for grand weddings, galas, and high-impact events — full experience.",
     "Special": true,
     "discountType": "Fixed",
