@@ -4,7 +4,7 @@
     "description": "A perfect match of photo fun and magical ambiance, ideal for weddings.",
     "Special": true,
     "discountType": "Fixed",
-    "discountAmount": 100,
+    "discountAmount": 50,
     "duration": 3,
     "categories": {
       "Interactive Booths": 1,
@@ -16,7 +16,7 @@
     "description": "Celebrate in full with a perfect mix of fun, effects, and sweet treats.",
     "Special": true,
     "discountType": "Fixed",
-    "discountAmount": 200,
+    "discountAmount": 100,
     "duration": 3,
     "categories": {
       "Interactive Booths": 1,
@@ -29,7 +29,7 @@
     "description": "The ultimate wedding package — booths, special effects, and gourmet service.",
     "Special": true,
     "discountType": "Fixed",
-    "discountAmount": 300,
+    "discountAmount": 150,
     "duration": 3,
     "categories": {
       "Interactive Booths": 2,
@@ -42,7 +42,7 @@
     "description": "Designed for grand weddings, galas, and high-impact events — full experience.",
     "Special": true,
     "discountType": "Fixed",
-    "discountAmount": 400,
+    "discountAmount": 200,
     "duration": 3,
     "categories": {
       "Interactive Booths": 2,
