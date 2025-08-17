@@ -1,9 +1,9 @@
 [
   {
-    "promoCode": "SUMMER26",
+    "promoCode": "CESAR&IRENE",
     "discountType": "percentage",
-    "discountValue": 25,
-    "description": "25% off your total order",
+    "discountValue": 10,
+    "description": "10% off your total order",
     "isActive": true,
     "validFrom": "2025-01-01T00:00:00Z",
     "validTo": "2025-12-31T23:59:59Z",
