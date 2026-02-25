@@ -1,12 +1,12 @@
 [
   {
-    "promoCode": "ALA&ALEX",
+    "promoCode": "GLENDALOUGH",
     "discountType": "percentage",
     "discountValue": 10,
     "description": "10% off your total order",
     "isActive": true,
-    "validFrom": "2025-01-01T00:00:00Z",
-    "validTo": "2025-12-31T23:59:59Z",
+    "validFrom": "2026-02-25T00:00:00Z",
+    "validTo": "2026-03-11T23:59:59Z",
     "minimumOrderValue": 0,
     "applicableCategories": []
   }
